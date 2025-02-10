@@ -6,6 +6,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
+import '../../login/presentation/login_screen.dart';
 
 class PinState {
   final String pin;
@@ -123,7 +124,12 @@ class ConfirmPinScreen extends HookConsumerWidget {
                   text: "Next",
                   width: double.infinity,
                   height: 48,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()));
+                  },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,
                 ),
