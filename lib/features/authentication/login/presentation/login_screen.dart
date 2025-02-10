@@ -154,15 +154,4 @@ class LoginScreen extends HookConsumerWidget {
       ),
     );
   }
-
-  Widget _buildCriteriaIcon(bool isMet, String label) {
-    return Row(
-      children: [
-        Icon(isMet ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: isMet ? Colors.green : Colors.grey, size: 18),
-        const SizedBox(width: 5),
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-      ],
-    );
-  }
 }
