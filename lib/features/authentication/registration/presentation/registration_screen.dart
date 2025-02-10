@@ -7,7 +7,9 @@ import 'package:mdiho/features/authentication/registration/presentation/widget/s
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../pin_creation/presentation/create_pin.dart';
 
 final pageControllerProvider = Provider<PageController>((ref) {
   return PageController();
@@ -101,15 +103,17 @@ class RegistrationScreen extends HookConsumerWidget {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        title: StepProgressIndicator(
+          currentStep: pageIndex.value + 1,
+          totalSteps: 3,
+          onBack: pageIndex.value > 0 ? goBack : null,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            StepProgressIndicator(
-              currentStep: pageIndex.value + 1,
-              totalSteps: 3,
-              onBack: pageIndex.value > 0 ? goBack : null,
-            ),
             Expanded(
               child: PageView(
                 controller: pageController,
@@ -125,9 +129,10 @@ class RegistrationScreen extends HookConsumerWidget {
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut)),
                   UserDetailsStep(onFinish: () {
-                    // Handle final submission
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Registration Completed!")));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CreatePinScreen()));
                   }),
                 ],
               ),
@@ -280,20 +285,13 @@ class EmailPasswordStep extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               // Continue Button
-              ElevatedButton(
+              FullButton(
+                text: "Continue",
+                width: double.infinity,
+                height: 48,
                 onPressed: onNext,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: Colors.orange.withOpacity(0.8),
-                  disabledBackgroundColor: Colors.orange.withOpacity(0.5),
-                ),
-                child: const Text(
-                  "Continue",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
+                textColor: Colors.white,
+                color: AppColors.primaryColor.shade500,
               ),
 
               const SizedBox(height: 20),
@@ -418,15 +416,14 @@ class OtpVerificationStep extends HookConsumerWidget {
               const SizedBox(height: 30),
 
               // Verify Button
-              ElevatedButton(
+
+              FullButton(
+                text: "Verify",
+                width: double.infinity,
+                height: 48,
                 onPressed: onNext,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor:
-                      Colors.orange.withOpacity(isOtpFilled.value ? 1.0 : 0.5),
-                ),
-                child: const Text("Verify",
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                textColor: Colors.white,
+                color: AppColors.primaryColor.shade500,
               ),
             ],
           ),
@@ -560,15 +557,13 @@ class UserDetailsStep extends HookConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // Sign Up Button
-              ElevatedButton(
+              FullButton(
+                text: "Continue",
+                width: double.infinity,
+                height: 48,
                 onPressed: onFinish,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: Colors.orange.withOpacity(0.8),
-                ),
-                child: const Text("Sign Up",
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                textColor: Colors.white,
+                color: AppColors.primaryColor.shade500,
               ),
             ],
           ),

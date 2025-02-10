@@ -52,7 +52,8 @@ class StepProgressIndicator extends StatelessWidget {
                     child: Container(
                       height: 6,
                       decoration: BoxDecoration(
-                        color: Colors.orange, // Progress color
+                        color:
+                            AppColors.primaryColor.shade500, // Progress color
                         borderRadius: BorderRadius.circular(5),
                       ),
                     ),
