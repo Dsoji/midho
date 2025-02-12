@@ -1,8 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
 import 'package:mdiho/features/authentication/registration/presentation/widget/step_progress_indicator.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -104,6 +106,7 @@ class RegistrationScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: StepProgressIndicator(
           currentStep: pageIndex.value + 1,
           totalSteps: 3,
@@ -198,7 +201,10 @@ class EmailPasswordStep extends HookConsumerWidget {
             children: [
               const Text(
                 "Let's Set Up Your Account",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -250,11 +256,7 @@ class EmailPasswordStep extends HookConsumerWidget {
               const SizedBox(height: 10),
 
               // Password Criteria
-              Wrap(
-                spacing: 10, // Horizontal space between items
-                runSpacing: 5, // Vertical space between wrapped rows
-                alignment: WrapAlignment.start, // Aligns items to the left
-                direction: Axis.horizontal,
+              Row(
                 children: [
                   _buildCriteriaIcon(
                       passwordController.text.length >= 8, "8 characters long"),
@@ -264,12 +266,13 @@ class EmailPasswordStep extends HookConsumerWidget {
                   _buildCriteriaIcon(
                       RegExp(r'[0-9]').hasMatch(passwordController.text),
                       "Number"),
-                  _buildCriteriaIcon(
-                      RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                          .hasMatch(passwordController.text),
-                      "Special character"),
                 ],
               ),
+              const Gap(4),
+              _buildCriteriaIcon(
+                  RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                      .hasMatch(passwordController.text),
+                  "Special character"),
               const SizedBox(height: 20),
 
               // Referral Code (Optional)
@@ -297,18 +300,29 @@ class EmailPasswordStep extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               // Already have an account?
-              Center(
-                child: RichText(
-                  text: const TextSpan(
-                    text: "Already Have An Account? ",
-                    style: TextStyle(color: Colors.black, fontSize: 14),
-                    children: [
-                      TextSpan(
-                        text: "Log In",
-                        style: TextStyle(
-                            color: Colors.orange, fontWeight: FontWeight.bold),
-                      ),
-                    ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+                child: Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Already Have An Account? ",
+                      style: const TextStyle(color: Colors.black, fontSize: 14),
+                      children: [
+                        TextSpan(
+                          text: "Log In",
+                          style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -368,7 +382,10 @@ class OtpVerificationStep extends HookConsumerWidget {
             children: [
               const Text(
                 "Verify Your Email",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -461,7 +478,10 @@ class UserDetailsStep extends HookConsumerWidget {
             children: [
               const Text(
                 "Let's Set Up Your Account",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
               const SizedBox(height: 8),
               const Text(

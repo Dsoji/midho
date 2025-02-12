@@ -8,6 +8,8 @@ import 'package:mdiho/features/authentication/forgot_password/presentation/forgo
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../bottomNav/navbar.dart';
+import '../../registration/presentation/registration_screen.dart';
 
 @RoutePage()
 class LoginScreen extends HookConsumerWidget {
@@ -68,7 +70,10 @@ class LoginScreen extends HookConsumerWidget {
               children: [
                 const Text(
                   "Welcome back boss!",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -123,7 +128,12 @@ class LoginScreen extends HookConsumerWidget {
                   text: "Continue",
                   width: double.infinity,
                   height: 48,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NaviBar()));
+                  },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,
                 ),
@@ -131,19 +141,30 @@ class LoginScreen extends HookConsumerWidget {
                 const SizedBox(height: 20),
 
                 // Already have an account?
-                Center(
-                  child: RichText(
-                    text: const TextSpan(
-                      text: "Don't Have An Account? ",
-                      style: TextStyle(color: Colors.black, fontSize: 14),
-                      children: [
-                        TextSpan(
-                          text: "Sign Up",
-                          style: TextStyle(
-                              color: Colors.orange,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegistrationScreen(),
+                      ),
+                    );
+                  },
+                  child: Center(
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Don't Have An Account? ",
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 14),
+                        children: [
+                          TextSpan(
+                            text: "Sign Up",
+                            style: TextStyle(
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

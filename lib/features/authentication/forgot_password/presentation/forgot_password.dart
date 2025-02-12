@@ -199,7 +199,10 @@ class EmailPasswordStep extends HookConsumerWidget {
             children: [
               const Text(
                 "Enter your mail to reset Password",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -286,7 +289,10 @@ class OtpVerificationStep extends HookConsumerWidget {
             children: [
               const Text(
                 "Verify Your Email",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -380,7 +386,10 @@ class UserDetailsStep extends HookConsumerWidget {
             children: [
               const Text(
                 "Reset Password",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -397,11 +406,8 @@ class UserDetailsStep extends HookConsumerWidget {
                 isPassword: true,
               ),
               const SizedBox(height: 15),
-              Wrap(
-                spacing: 10, // Horizontal space between items
-                runSpacing: 5, // Vertical space between wrapped rows
-                alignment: WrapAlignment.start, // Aligns items to the left
-                direction: Axis.horizontal,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildCriteriaIcon(
                       passwordController.text.length >= 8, "8 characters long"),
@@ -411,12 +417,13 @@ class UserDetailsStep extends HookConsumerWidget {
                   _buildCriteriaIcon(
                       RegExp(r'[0-9]').hasMatch(passwordController.text),
                       "Number"),
-                  _buildCriteriaIcon(
-                      RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                          .hasMatch(passwordController.text),
-                      "Special character"),
                 ],
               ),
+              const Gap(4),
+              _buildCriteriaIcon(
+                  RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                      .hasMatch(passwordController.text),
+                  "Special character"),
 
               // Last Name Field
               const SizedBox(height: 20),

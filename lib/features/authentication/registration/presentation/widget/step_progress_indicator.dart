@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 
 class StepProgressIndicator extends StatelessWidget {
@@ -33,7 +34,11 @@ class StepProgressIndicator extends StatelessWidget {
             if (currentStep > 1) // Show back button only on step 2 and 3
               GestureDetector(
                 onTap: onBack,
-                child: const Icon(Icons.arrow_back, color: Colors.black),
+                child: const Icon(
+                  IconsaxPlusLinear.arrow_left_1,
+                  color: Colors.black,
+                  size: 20,
+                ),
               ),
             const Gap(33),
             Expanded(

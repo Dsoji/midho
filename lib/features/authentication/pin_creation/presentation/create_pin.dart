@@ -69,7 +69,10 @@ class CreatePinScreen extends HookConsumerWidget {
               children: [
                 const Text(
                   "Create Pin",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                 ),
                 const SizedBox(height: 8),
                 const Text(

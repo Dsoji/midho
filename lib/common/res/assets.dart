@@ -39,19 +39,16 @@ class PlaceholderAssets {
 class ImageAssets {
   static const _base = BasePaths.baseImagePath;
 
-  static const google = '$_base/google.png';
+  static const onboard1 = '$_base/onboard_one.png';
+  static const onboard2 = '$_base/onboard_two.png';
+  static const onboard3 = '$_base/onboard_three.png';
+  static const onboard4 = '$_base/onboar_four.png';
 }
 
 class SvgAssets {
   static const _base = BasePaths.baseSvgPath;
 
-  static const splashLogo = '$_base/splash_logo.svg';
-  static const notice = '$_base/notice.svg';
-  static const onboard = '$_base/onboard.svg';
-  static const network = '$_base/network.svg';
-  static const calendar = '$_base/calendar.svg';
-  static const clock = '$_base/clock.svg';
-  static const graph = '$_base/graph.svg';
+  static const onboardSvg = '$_base/onboardbg.svg';
 }
 
 class GifAssets {

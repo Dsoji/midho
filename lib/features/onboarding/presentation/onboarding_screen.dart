@@ -1,10 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
 import 'package:mdiho/features/authentication/registration/presentation/registration_screen.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_buttons.dart';
 
 @RoutePage()
@@ -18,25 +21,26 @@ class OnboardingScreen extends HookWidget {
 
     final pages = [
       const OnboardingPage(
-        image: Icons.currency_bitcoin,
+        image: ImageAssets.onboard1,
         title: "Sell Your Crypto",
         description:
             "Convert your Bitcoin or other supported tokens to Naira in just a few taps. Enjoy the best rates and instant payments.",
       ),
       const OnboardingPage(
-        image: Icons.currency_exchange,
+        image: ImageAssets.onboard2,
         title: "Trade Gift Cards for Cash",
         description:
             "Got unused gift cards? Trade them for Naira at competitive rates. Support for popular brands like Amazon, Steam, and more.",
       ),
       const OnboardingPage(
-        image: Icons.currency_bitcoin,
+        image: ImageAssets.onboard3,
         title: "Pay Your Bills",
         description:
             "Top up airtime, pay for electricity, subscribe to data bundles, or renew your cable TV, all in a few taps.",
       ),
       const OnboardingPage(
-        image: Icons.currency_bitcoin,
+        image: ImageAssets.onboard4,
+        imgHeight: double.infinity,
         title: "Earn Rewards",
         description:
             "Share your referral code with friends and earn rewards in Naira for every successful signup and transaction.",
@@ -67,7 +71,7 @@ class OnboardingScreen extends HookWidget {
                   height: 8.0,
                   decoration: BoxDecoration(
                     color: currentPage.value == index
-                        ? Colors.orange
+                        ? AppColors.primaryColor.shade500
                         : Colors.grey,
                     borderRadius: BorderRadius.circular(4.0),
                   ),
@@ -98,9 +102,16 @@ class OnboardingScreen extends HookWidget {
                 ),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                    );
+                  },
                   child: const Text("Sign In",
-                      style: TextStyle(color: Colors.black54)),
+                      style: TextStyle(color: Colors.black)),
                 ),
                 const Gap(24),
               ],
@@ -113,15 +124,19 @@ class OnboardingScreen extends HookWidget {
 }
 
 class OnboardingPage extends StatelessWidget {
-  final IconData image;
+  final String image;
   final String title;
   final String description;
+  final double? imgHeight;
+  final double? imgWidth;
 
   const OnboardingPage({
     super.key,
     required this.image,
     required this.title,
     required this.description,
+    this.imgHeight = 147,
+    this.imgWidth = double.infinity,
   });
 
   @override
@@ -138,17 +153,49 @@ class OnboardingPage extends StatelessWidget {
               height: 300, // Reduced height to fit smaller screens
               width: 300, // Reduced width to maintain proportions
               decoration: BoxDecoration(
-                color: Colors.orange.shade100,
+                color: const Color(0xFFFEEEE9),
                 borderRadius: BorderRadius.circular(20),
               ),
-              padding: const EdgeInsets.all(30),
-              child: Icon(image, size: 80, color: Colors.orange),
+              child: Stack(
+                alignment: Alignment.center, // Centers children by default
+                children: [
+                  SvgPicture.asset(
+                    SvgAssets.onboardSvg,
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: AppColors.primaryColor,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Image.asset(
+                      image,
+                      height: imgHeight,
+                      width: imgWidth,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const Gap(20),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [
+                  Color(0xFF672510),
+                  Color(0xFFCD4A20),
+                ], // Replace with your gradient colors
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors
+                      .white, // Required but won't be visible due to ShaderMask
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
             const Gap(10),
             Padding(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'common/app_theme.dart';
-import 'features/onoarding/presentation/onboarding_screen.dart';
+import 'features/onboarding/presentation/onboarding_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -14,9 +14,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       home: const OnboardingScreen(),
