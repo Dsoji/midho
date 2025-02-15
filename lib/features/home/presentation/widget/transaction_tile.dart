@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../transaction/presentation/transaction_history.dart';
 
 class TransactionCard extends StatelessWidget {
   const TransactionCard({super.key});
@@ -84,7 +85,14 @@ class TransactionCard extends StatelessWidget {
             text: "View All Activity",
             width: double.infinity,
             height: 48,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TransactionHistory(),
+                ),
+              );
+            },
             textColor: AppColors.secondaryColor.shade300,
             color: const Color(0xFFF9F9FB),
             fontSize: 13,

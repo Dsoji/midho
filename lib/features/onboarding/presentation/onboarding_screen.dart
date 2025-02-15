@@ -3,51 +3,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
 import 'package:mdiho/features/authentication/registration/presentation/registration_screen.dart';
 
+import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_buttons.dart';
 
 @RoutePage()
-class OnboardingScreen extends HookWidget {
+class OnboardingScreen extends HookConsumerWidget {
   const OnboardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final pageController = usePageController();
     final currentPage = useState(0);
 
+    // Get the current theme mode
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
+
     final pages = [
-      const OnboardingPage(
+      OnboardingPage(
         image: ImageAssets.onboard1,
         title: "Sell Your Crypto",
         description:
             "Convert your Bitcoin or other supported tokens to Naira in just a few taps. Enjoy the best rates and instant payments.",
+        isDarkMode: isDarkMode,
       ),
-      const OnboardingPage(
+      OnboardingPage(
         image: ImageAssets.onboard2,
         title: "Trade Gift Cards for Cash",
         description:
             "Got unused gift cards? Trade them for Naira at competitive rates. Support for popular brands like Amazon, Steam, and more.",
+        isDarkMode: isDarkMode,
       ),
-      const OnboardingPage(
+      OnboardingPage(
         image: ImageAssets.onboard3,
         title: "Pay Your Bills",
         description:
             "Top up airtime, pay for electricity, subscribe to data bundles, or renew your cable TV, all in a few taps.",
+        isDarkMode: isDarkMode,
       ),
-      const OnboardingPage(
+      OnboardingPage(
         image: ImageAssets.onboard4,
         imgHeight: double.infinity,
         title: "Earn Rewards",
         description:
             "Share your referral code with friends and earn rewards in Naira for every successful signup and transaction.",
+        isDarkMode: isDarkMode,
       ),
     ];
 
     return Scaffold(
+      backgroundColor:
+          isDarkMode ? Colors.black : Colors.white, // Dynamic Background
       body: Column(
         children: [
           const Gap(100),
@@ -110,8 +121,11 @@ class OnboardingScreen extends HookWidget {
                       ),
                     );
                   },
-                  child: const Text("Sign In",
-                      style: TextStyle(color: Colors.black)),
+                  child: Text(
+                    "Sign In",
+                    style: TextStyle(
+                        color: isDarkMode ? Colors.white : Colors.black),
+                  ),
                 ),
                 const Gap(24),
               ],
@@ -129,6 +143,7 @@ class OnboardingPage extends StatelessWidget {
   final String description;
   final double? imgHeight;
   final double? imgWidth;
+  final bool isDarkMode;
 
   const OnboardingPage({
     super.key,
@@ -137,12 +152,12 @@ class OnboardingPage extends StatelessWidget {
     required this.description,
     this.imgHeight = 147,
     this.imgWidth = double.infinity,
+    required this.isDarkMode, // Add isDarkMode
   });
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      // <-- Wrap Column inside SingleChildScrollView
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -150,14 +165,16 @@ class OnboardingPage extends StatelessWidget {
           children: [
             const Gap(44),
             Container(
-              height: 300, // Reduced height to fit smaller screens
-              width: 300, // Reduced width to maintain proportions
+              height: 300, // Adjusted for smaller screens
+              width: 300,
               decoration: BoxDecoration(
-                color: const Color(0xFFFEEEE9),
+                color: isDarkMode
+                    ? Colors.grey.shade900
+                    : const Color(0xFFFEEEE9), // Dynamic Background
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Stack(
-                alignment: Alignment.center, // Centers children by default
+                alignment: Alignment.center,
                 children: [
                   SvgPicture.asset(
                     SvgAssets.onboardSvg,
@@ -178,32 +195,34 @@ class OnboardingPage extends StatelessWidget {
             ),
             const Gap(20),
             ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  Color(0xFF672510),
-                  Color(0xFFCD4A20),
-                ], // Replace with your gradient colors
+              shaderCallback: (bounds) => LinearGradient(
+                colors: isDarkMode
+                    ? [Colors.white70, Colors.white]
+                    : [
+                        const Color(0xFF672510),
+                        const Color(0xFFCD4A20)
+                      ], // Dark mode gradient
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ).createShader(bounds),
               child: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors
-                      .white, // Required but won't be visible due to ShaderMask
+                  color: isDarkMode ? Colors.white : Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
             const Gap(10),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16), // Add padding
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 description,
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                    fontSize: 16,
+                    color: isDarkMode ? Colors.white70 : Colors.grey),
                 textAlign: TextAlign.center,
               ),
             ),

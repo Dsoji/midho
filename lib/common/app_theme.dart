@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'res/app_colors.dart';
 
@@ -84,3 +85,19 @@ class CustomColors extends ThemeExtension<CustomColors> {
     );
   }
 }
+
+class ThemeNotifier extends StateNotifier<ThemeMode> {
+  ThemeNotifier() : super(ThemeMode.system); // Start with system mode
+
+  void toggleTheme() {
+    state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  void setTheme(ThemeMode mode) {
+    state = mode;
+  }
+}
+
+final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>(
+  (ref) => ThemeNotifier(),
+);
