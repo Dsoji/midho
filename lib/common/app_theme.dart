@@ -9,17 +9,22 @@ class AppTheme {
     brightness: Brightness.light,
     primarySwatch: AppColors.primaryColor,
     scaffoldBackgroundColor: AppColors.scaffoldColorLight,
-    extensions: [
-      CustomColors(
-        // Light theme container color
-        textColor: Colors.black,
-        onboardContainerColor:
-            AppColors.primaryColor.shade100, // Light theme text color
-      ),
-    ],
     textTheme: const TextTheme(
+      displayLarge: TextStyle(color: Colors.black),
+      displayMedium: TextStyle(color: Colors.black),
+      displaySmall: TextStyle(color: Colors.black),
+      headlineLarge: TextStyle(color: Colors.black),
+      headlineMedium: TextStyle(color: Colors.black),
+      headlineSmall: TextStyle(color: Colors.black),
+      titleLarge: TextStyle(color: Colors.black),
+      titleMedium: TextStyle(color: Colors.black),
+      titleSmall: TextStyle(color: Colors.black),
       bodyLarge: TextStyle(color: Colors.black),
-      bodyMedium: TextStyle(color: Colors.black54),
+      bodyMedium: TextStyle(color: Colors.black),
+      bodySmall: TextStyle(color: Colors.black),
+      labelLarge: TextStyle(color: Colors.black),
+      labelMedium: TextStyle(color: Colors.black),
+      labelSmall: TextStyle(color: Colors.black),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.whiteColor.shade100,
@@ -33,22 +38,14 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     fontFamily: 'Figtree',
     brightness: Brightness.dark,
-    primarySwatch: AppColors.primaryColor,
+    primarySwatch: AppColors.secondaryColor,
     scaffoldBackgroundColor: AppColors.secondaryColor.shade700,
-    extensions: [
-      CustomColors(
-        // Light theme container color
-        textColor: Colors.black,
-        onboardContainerColor:
-            AppColors.secondaryColor.shade700, // Light theme text color
-      ),
-    ],
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.white),
       bodyMedium: TextStyle(color: Colors.white70),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.greyColor[800],
+      backgroundColor: AppColors.secondaryColor.shade500,
       iconTheme: const IconThemeData(color: Colors.white),
     ),
     cardColor: AppColors.greyColor[700],

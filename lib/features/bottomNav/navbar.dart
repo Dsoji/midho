@@ -58,6 +58,7 @@ class _NaviBarState extends State<NaviBar> {
   // }
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       extendBody: true,
       body: pageList[pageIndex],
@@ -72,7 +73,9 @@ class _NaviBarState extends State<NaviBar> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(0),
           ),
-          color: AppColors.whiteColor,
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade600
+              : Colors.white,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.max,

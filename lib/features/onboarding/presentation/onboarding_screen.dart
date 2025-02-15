@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -56,9 +58,22 @@ class OnboardingScreen extends HookConsumerWidget {
       ),
     ];
 
+    useEffect(() {
+      Timer? timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+        if (pageController.hasClients) {
+          int nextPage = (pageController.page!.toInt() + 1) % pages.length;
+          pageController.animateToPage(
+            nextPage,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+
+      return () => timer.cancel(); // Cleanup when widget unmounts
+    }, []);
+
     return Scaffold(
-      backgroundColor:
-          isDarkMode ? Colors.black : Colors.white, // Dynamic Background
       body: Column(
         children: [
           const Gap(100),
@@ -121,10 +136,9 @@ class OnboardingScreen extends HookConsumerWidget {
                       ),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Sign In",
-                    style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black),
+                    style: TextStyle(),
                   ),
                 ),
                 const Gap(24),
@@ -157,6 +171,9 @@ class OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final containerWidth = screenWidth * 0.8;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -165,11 +182,11 @@ class OnboardingPage extends StatelessWidget {
           children: [
             const Gap(44),
             Container(
-              height: 300, // Adjusted for smaller screens
-              width: 300,
+              height: 360, // Adjusted for smaller screens
+              width: containerWidth,
               decoration: BoxDecoration(
-                color: isDarkMode
-                    ? Colors.grey.shade900
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade600
                     : const Color(0xFFFEEEE9), // Dynamic Background
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -180,14 +197,16 @@ class OnboardingPage extends StatelessWidget {
                     SvgAssets.onboardSvg,
                     width: double.infinity,
                     height: double.infinity,
-                    color: AppColors.primaryColor,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.primaryColor,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Image.asset(
                       image,
                       height: imgHeight,
-                      width: imgWidth,
+                      width: containerWidth - 0.2,
                     ),
                   ),
                 ],
@@ -196,7 +215,7 @@ class OnboardingPage extends StatelessWidget {
             const Gap(20),
             ShaderMask(
               shaderCallback: (bounds) => LinearGradient(
-                colors: isDarkMode
+                colors: theme.brightness == Brightness.dark
                     ? [Colors.white70, Colors.white]
                     : [
                         const Color(0xFF672510),
@@ -207,10 +226,10 @@ class OnboardingPage extends StatelessWidget {
               ).createShader(bounds),
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.white,
+                  color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -222,7 +241,9 @@ class OnboardingPage extends StatelessWidget {
                 description,
                 style: TextStyle(
                     fontSize: 16,
-                    color: isDarkMode ? Colors.white70 : Colors.grey),
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade100
+                        : Colors.grey),
                 textAlign: TextAlign.center,
               ),
             ),

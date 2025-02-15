@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/transaction/presentation/widget/transaction_card.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -13,7 +15,7 @@ class TransactionHistory extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final transactions = [
       {
-        "icon": Icons.arrow_downward,
+        "icon": IconsaxPlusLinear.arrow_down_1,
         "title": "Crypto Sale",
         "date": "Jan 15, 2025",
         "amount": 500000.00,
@@ -21,7 +23,7 @@ class TransactionHistory extends HookConsumerWidget {
         "statusColor": Colors.green,
       },
       {
-        "icon": Icons.arrow_upward,
+        "icon": IconsaxPlusLinear.arrow_up,
         "title": "Gift Card Purchase",
         "date": "Jan 10, 2025",
         "amount": 120000.00,
@@ -29,7 +31,7 @@ class TransactionHistory extends HookConsumerWidget {
         "statusColor": Colors.orange,
       },
       {
-        "icon": Icons.arrow_downward,
+        "icon": IconsaxPlusLinear.arrow_down_1,
         "title": "Bill Payment",
         "date": "Jan 5, 2025",
         "amount": 30000.00,
@@ -163,38 +165,29 @@ class FilterBottomSheet extends HookWidget {
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    selectedTransactionType.value = "All";
-                    selectedStatus.value = "All";
-                    selectedSortBy.value = "Newest First";
-                    fromDate.value = "DD/MM/YY";
-                    toDate.value = "DD/MM/YY";
-                  },
-                  child: const Text("Clear Filter"),
+                child: FullButton(
+                  text: 'Clear Filters',
+                  width: 173,
+                  height: 60,
+                  onPressed: () {},
+                  textColor: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, {
-                      'transactionType': selectedTransactionType.value,
-                      'status': selectedStatus.value,
-                      'sortBy': selectedSortBy.value,
-                      'fromDate': fromDate.value,
-                      'toDate': toDate.value,
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text("Apply Filters"),
+                child: FullButton(
+                  text: 'Apply Filters',
+                  width: 173,
+                  height: 60,
+                  onPressed: () {},
+                  textColor: Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ],
           ),
+          const Gap(34),
         ],
       ),
     );
@@ -206,13 +199,6 @@ class FilterBottomSheet extends HookWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       width: double.infinity,
       child: Column(
@@ -274,7 +260,7 @@ class FilterBottomSheet extends HookWidget {
                 value: option,
                 groupValue: selectedValue.value,
                 onChanged: (value) => selectedValue.value = value!,
-                activeColor: Colors.orange,
+                activeColor: AppColors.primaryColor.shade500,
               ),
               Text(option),
             ],

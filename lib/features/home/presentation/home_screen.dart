@@ -12,7 +12,7 @@ class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isDarkMode = false; // Get this from ThemeMode in a real app
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: const Padding(
@@ -52,20 +52,19 @@ class HomeScreen extends HookConsumerWidget {
           Gap(24),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
           children: [
-            const Gap(16),
+            Gap(16),
             WalletBalanceCard(
-              isDarkMode: isDarkMode,
               balance: 950000.00,
             ),
-            const Gap(16),
-            const QuickActionsGrid(),
-            const Gap(16),
-            const TransactionCard(),
-            const Gap(
+            Gap(16),
+            QuickActionsGrid(),
+            Gap(16),
+            TransactionCard(),
+            Gap(
               100,
             )
           ],
@@ -80,10 +79,14 @@ class ReferralButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5FDFE), // Light background color
+        color: theme.brightness == Brightness.dark
+            ? Colors.transparent
+            : const Color(0xFFF5FDFE), // Light background color
         borderRadius: BorderRadius.circular(30), // Rounded corners
         border: Border.all(
           color: AppColors.tertiaryColor.shade500,
@@ -118,19 +121,22 @@ class CustomIconContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       width: 32, // Diameter = 2 * radius
       height: 32,
       decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.whiteColor.shade50,
+          color: theme.brightness == Brightness.dark
+              ? Colors.transparent
+              : AppColors.whiteColor.shade50,
           border: Border.all(
             color: AppColors.whiteColor.shade600,
           )),
       child: const Center(
         child: Icon(
           IconsaxPlusLinear.notification,
-          color: Colors.black,
           size: 20,
         ),
       ),

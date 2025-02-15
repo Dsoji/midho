@@ -25,6 +25,8 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -41,7 +43,9 @@ class TransactionCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         margin: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade500
+              : Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -55,17 +59,24 @@ class TransactionCard extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 25,
-                      backgroundColor: AppColors.whiteColor.shade500,
-                      child: Icon(icon, color: Colors.black, size: 20),
+                      backgroundColor: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor.shade700
+                          : AppColors.whiteColor.shade500,
+                      child: Icon(icon, size: 18),
                     ),
                     Positioned(
                       bottom: 0,
                       right: 0,
                       child: CircleAvatar(
                         radius: 12,
-                        backgroundColor: AppColors.primaryColor.shade50,
+                        backgroundColor: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade400
+                            : Colors.white,
                         child: Icon(IconsaxPlusLinear.bitcoin_convert,
-                            color: AppColors.primaryColor.shade500, size: 8.11),
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.whiteColor
+                                : AppColors.primaryColor.shade500,
+                            size: 8.11),
                       ),
                     ),
                   ],
@@ -76,10 +87,12 @@ class TransactionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.whiteColor
+                            : Colors.black,
                       ),
                     ),
                     const Gap(4),
@@ -101,10 +114,12 @@ class TransactionCard extends StatelessWidget {
               children: [
                 Text(
                   "₦${amount.toStringAsFixed(2)}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.whiteColor
+                        : Colors.black,
                   ),
                 ),
                 const Gap(4),

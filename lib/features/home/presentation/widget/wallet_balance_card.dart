@@ -21,26 +21,29 @@ final balanceVisibilityProvider =
 
 // Wallet Balance Card Widget
 class WalletBalanceCard extends HookConsumerWidget {
-  final bool isDarkMode;
   final double balance;
 
   const WalletBalanceCard({
     super.key,
-    required this.isDarkMode,
     required this.balance,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
-
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDarkMode
+        color: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade600
             : const Color(0xFF1F1F1F),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade400
+              : Colors.white,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +74,7 @@ class WalletBalanceCard extends HookConsumerWidget {
                 width: 21,
                 height: 21,
                 decoration: ShapeDecoration(
-                  color: isDarkMode
+                  color: theme.brightness == Brightness.dark
                       ? AppColors.secondaryColor.shade400
                       : AppColors.greyColor.shade500,
                   shape: RoundedRectangleBorder(

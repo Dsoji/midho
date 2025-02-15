@@ -16,13 +16,13 @@ class ActionItem {
 // Riverpod Provider for Quick Actions List
 final quickActionsProvider = Provider<List<ActionItem>>((ref) {
   return [
-    ActionItem(IconsaxPlusLinear.coin, "Sell Crypto"),
+    ActionItem(IconsaxPlusLinear.bitcoin_convert, "Sell Crypto"),
     ActionItem(IconsaxPlusLinear.gift, "Sell Gift Cards"),
     ActionItem(IconsaxPlusLinear.mobile, "Buy Airtime"),
-    ActionItem(IconsaxPlusLinear.wifi, "Buy Data"),
-    ActionItem(IconsaxPlusLinear.game, "Betting"),
-    ActionItem(IconsaxPlusLinear.cloud_lightning, "Buy Electricity"),
-    ActionItem(Icons.tv_outlined, "Tv Cable"),
+    ActionItem(IconsaxPlusLinear.wifi_square, "Buy Data"),
+    ActionItem(Icons.sports_football_outlined, "Betting"),
+    ActionItem(IconsaxPlusLinear.lamp_charge, "Buy Electricity"),
+    ActionItem(Icons.monitor, "Tv Cable"),
     ActionItem(IconsaxPlusLinear.bank, "Bank network"),
   ];
 });
@@ -34,13 +34,20 @@ class QuickActionsGrid extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final actions = ref.watch(quickActionsProvider); // Watch the provider
-
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       height: 270, // Increased height slightly to avoid overflow
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade600
+            : Colors.white,
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade400
+              : Colors.white,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +56,9 @@ class QuickActionsGrid extends HookConsumerWidget {
           Text(
             "Quick Actions",
             style: TextStyle(
-              color: AppColors.secondaryColor.shade200,
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : AppColors.secondaryColor.shade400,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -86,13 +95,21 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         Container(
           padding: const EdgeInsets.all(12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Color(0xFFFFFBFA), // Light orange background
+            color: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade600
+                : const Color(0xFFFFFBFA), // Light orange background
+            border: Border.all(
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade400
+                  : const Color(0xFFFFFBFA),
+            ),
           ),
           child: Icon(action.icon,
               color: AppColors.primaryColor.shade500, size: 18.5),
@@ -100,7 +117,13 @@ class ActionButton extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           action.label,
-          style: const TextStyle(fontSize: 10, color: Colors.black87),
+          style: TextStyle(
+            fontSize: 10,
+            color: theme.brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
           textAlign: TextAlign.center,
         ),
       ],

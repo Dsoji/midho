@@ -20,7 +20,7 @@ class TransactionDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, dynamic> transactionDetails =
         _getTransactionDetails(type, status);
-
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Transaction History",
@@ -37,19 +37,24 @@ class TransactionDetailsPage extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: _buildTransactionSummary(transactionDetails)),
+                child: _buildTransactionSummary(transactionDetails, context)),
             const Gap(12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade500
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: _buildBreakdown(
                 transactionDetails["breakdown"],
+                context,
               ),
             ),
             const Gap(16),
@@ -59,7 +64,9 @@ class TransactionDetailsPage extends StatelessWidget {
               height: 60,
               onPressed: () {},
               textColor: AppColors.whiteColor,
-              color: Colors.black,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.primaryColor.shade500
+                  : Colors.black,
             ),
             const Gap(4),
             FullButton(
@@ -67,7 +74,9 @@ class TransactionDetailsPage extends StatelessWidget {
               width: double.infinity,
               height: 60,
               onPressed: () {},
-              textColor: Colors.black,
+              textColor: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
               color: Colors.transparent,
             ),
           ],
@@ -76,13 +85,21 @@ class TransactionDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionSummary(Map<String, dynamic> details) {
+  Widget _buildTransactionSummary(
+      Map<String, dynamic> details, BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Transaction Summary",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: theme.brightness == Brightness.dark
+                ? AppColors.whiteColor
+                : Colors.black,
+          ),
         ),
         const Gap(20),
         _buildDetailRow("Transaction ID", details["transactionId"]),
@@ -99,13 +116,21 @@ class TransactionDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBreakdown(Map<String, dynamic> breakdown) {
+  Widget _buildBreakdown(Map<String, dynamic> breakdown, BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start, // Aligns items to the left
       children: [
-        const Text(
+        Text(
           "Breakdown",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: theme.brightness == Brightness.dark
+                ? AppColors.whiteColor
+                : Colors.black,
+          ),
         ),
         const Gap(20),
         ...breakdown.entries.map(
@@ -123,8 +148,16 @@ class TransactionDetailsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-          Text(value, style: TextStyle(color: color ?? Colors.black)),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w400)),
+          const Gap(35),
+          Flexible(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+              softWrap: true,
+              textAlign: TextAlign.end,
+            ),
+          ),
         ],
       ),
     );

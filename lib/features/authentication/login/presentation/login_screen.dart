@@ -49,6 +49,8 @@ class LoginScreen extends HookConsumerWidget {
       }
     }
 
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -59,7 +61,9 @@ class LoginScreen extends HookConsumerWidget {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
             decoration: ShapeDecoration(
-              color: AppColors.whiteColor.shade100,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : AppColors.whiteColor.shade100,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -71,9 +75,9 @@ class LoginScreen extends HookConsumerWidget {
                 const Text(
                   "Welcome back boss!",
                   style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -154,8 +158,12 @@ class LoginScreen extends HookConsumerWidget {
                     child: RichText(
                       text: TextSpan(
                         text: "Don't Have An Account? ",
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 14),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.greyColor.shade700,
+                        ),
                         children: [
                           TextSpan(
                             text: "Sign Up",

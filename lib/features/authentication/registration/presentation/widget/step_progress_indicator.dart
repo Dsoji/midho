@@ -20,7 +20,7 @@ class StepProgressIndicator extends StatelessWidget {
     double progress = currentStep / totalSteps;
 
     return Container(
-      color: AppColors.whiteColor.shade100,
+      color: Theme.of(context).appBarTheme.backgroundColor,
       height: 52,
       child: Padding(
         padding: const EdgeInsets.only(
@@ -36,7 +36,6 @@ class StepProgressIndicator extends StatelessWidget {
                 onTap: onBack,
                 child: const Icon(
                   IconsaxPlusLinear.arrow_left_1,
-                  color: Colors.black,
                   size: 20,
                 ),
               ),
@@ -46,7 +45,7 @@ class StepProgressIndicator extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 children: [
                   Container(
-                    height: 6,
+                    height: 12,
                     decoration: BoxDecoration(
                       color: Colors.grey[200], // Background
                       borderRadius: BorderRadius.circular(5),
@@ -55,7 +54,7 @@ class StepProgressIndicator extends StatelessWidget {
                   FractionallySizedBox(
                     widthFactor: progress,
                     child: Container(
-                      height: 6,
+                      height: 12,
                       decoration: BoxDecoration(
                         color:
                             AppColors.primaryColor.shade500, // Progress color
@@ -66,11 +65,25 @@ class StepProgressIndicator extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            Text(
-              "$currentStep/$totalSteps",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
+            const Gap(30),
+            RichText(
+              text: TextSpan(
+                text: "$currentStep",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+                children: [
+                  TextSpan(
+                    text: "/$totalSteps",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),

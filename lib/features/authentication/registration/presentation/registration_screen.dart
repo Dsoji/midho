@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
 import 'package:mdiho/features/authentication/registration/presentation/widget/step_progress_indicator.dart';
@@ -104,6 +107,7 @@ class RegistrationScreen extends HookConsumerWidget {
       }
     }
 
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -120,7 +124,7 @@ class RegistrationScreen extends HookConsumerWidget {
             Expanded(
               child: PageView(
                 controller: pageController,
-                physics: const NeverScrollableScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 onPageChanged: (index) => pageIndex.value = index,
                 children: [
                   EmailPasswordStep(
@@ -184,13 +188,36 @@ class EmailPasswordStep extends HookConsumerWidget {
       }
     }
 
+    List<Map<String, dynamic>> passwordCriteria = [
+      {
+        "regex": (String password) => password.length >= 8,
+        "label": "8 characters long",
+      },
+      {
+        "regex": (String password) => RegExp(r'[A-Z]').hasMatch(password),
+        "label": "Uppercase",
+      },
+      {
+        "regex": (String password) => RegExp(r'[0-9]').hasMatch(password),
+        "label": "Number",
+      },
+      {
+        "regex": (String password) =>
+            RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password),
+        "label": "Special character",
+      },
+    ];
+
+    final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: ShapeDecoration(
-            color: AppColors.whiteColor.shade100,
+            color: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade600
+                : AppColors.whiteColor.shade100,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -202,14 +229,16 @@ class EmailPasswordStep extends HookConsumerWidget {
               const Text(
                 "Let's Set Up Your Account",
                 style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
                 "Provide the following details to set up your account",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -229,7 +258,7 @@ class EmailPasswordStep extends HookConsumerWidget {
               CustomTextField(
                 controller: passwordController,
                 label: "Password",
-                prefixIcon: Icons.lock_outline, // Optional
+                prefixIcon: IconsaxPlusLinear.lock, // Optional
                 isPassword: true,
               ),
 
@@ -255,18 +284,16 @@ class EmailPasswordStep extends HookConsumerWidget {
               ),
               const SizedBox(height: 10),
 
-              // Password Criteria
-              Row(
-                children: [
-                  _buildCriteriaIcon(
-                      passwordController.text.length >= 8, "8 characters long"),
-                  _buildCriteriaIcon(
-                      RegExp(r'[A-Z]').hasMatch(passwordController.text),
-                      "Uppercase"),
-                  _buildCriteriaIcon(
-                      RegExp(r'[0-9]').hasMatch(passwordController.text),
-                      "Number"),
-                ],
+              Wrap(
+                alignment: WrapAlignment.start,
+                spacing: 12,
+                runSpacing: 8,
+                direction: Axis.horizontal,
+                children: passwordCriteria
+                    .map((criteria) => _buildCriteriaIcon(
+                        criteria["regex"](passwordController.text),
+                        criteria["label"]))
+                    .toList(),
               ),
               const Gap(4),
               _buildCriteriaIcon(
@@ -279,10 +306,14 @@ class EmailPasswordStep extends HookConsumerWidget {
               CustomTextField(
                 controller: referralController,
                 label: "Referral Code (Optional)",
-                suffixIcon: Icons.paste,
+                hintText: "Enter referral code",
+                suffixIcon: PasteButton(
+                  onTap: () {},
+                ),
                 onSuffixTap: () {
                   referralController.text = "REF123"; // Simulate pasting a code
                 },
+                prefixIcon: Icons.people_outline,
               ),
 
               const SizedBox(height: 20),
@@ -313,7 +344,12 @@ class EmailPasswordStep extends HookConsumerWidget {
                   child: RichText(
                     text: TextSpan(
                       text: "Already Have An Account? ",
-                      style: const TextStyle(color: Colors.black, fontSize: 14),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade700,
+                      ),
                       children: [
                         TextSpan(
                           text: "Log In",
@@ -334,13 +370,30 @@ class EmailPasswordStep extends HookConsumerWidget {
   }
 
   Widget _buildCriteriaIcon(bool isMet, String label) {
-    return Row(
-      children: [
-        Icon(isMet ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: isMet ? Colors.green : Colors.grey, size: 18),
-        const SizedBox(width: 5),
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-      ],
+    return SizedBox(
+      width: 140, // Increased width slightly for better text fitting
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            isMet ? Icons.check_circle : Icons.radio_button_unchecked,
+            color: isMet ? Colors.green : Colors.grey,
+            size: 20, // Slightly larger for better visibility
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isMet ? FontWeight.bold : FontWeight.normal,
+                color: isMet ? Colors.green[700] : Colors.grey,
+              ),
+              overflow: TextOverflow.ellipsis, // Prevents overflow issues
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -354,16 +407,28 @@ class OtpVerificationStep extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final otpController = useTextEditingController();
     final isOtpFilled = useState(false);
-    final countdown = useState(100); // 1 min 40 seconds
+    final countdown = useState(100);
+    final isCounting = useState(true);
 
     useEffect(() {
-      Future.delayed(const Duration(seconds: 1), () {
-        if (countdown.value > 0) {
-          countdown.value--;
-        }
-      });
-      return null;
-    }, [countdown.value]);
+      Timer? timer;
+
+      if (isCounting.value) {
+        countdown.value = 100; // Reset countdown when starting
+        timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (countdown.value > 0) {
+            countdown.value--;
+          } else {
+            isCounting.value = false; // Stop timer and show "Resend Code"
+            timer.cancel();
+          }
+        });
+      }
+
+      return () => timer?.cancel(); // Cleanup the timer on unmount
+    }, [isCounting.value]); // Only restart timer when "Resend Code" is tapped
+
+    final theme = Theme.of(context);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -371,7 +436,9 @@ class OtpVerificationStep extends HookConsumerWidget {
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: ShapeDecoration(
-            color: AppColors.whiteColor.shade100,
+            color: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade500
+                : AppColors.whiteColor.shade100,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -383,14 +450,16 @@ class OtpVerificationStep extends HookConsumerWidget {
               const Text(
                 "Verify Your Email",
                 style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
                 "Enter the 6-digit code we just sent to johndoe@gmail.com",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -401,18 +470,28 @@ class OtpVerificationStep extends HookConsumerWidget {
                 controller: otpController,
                 keyboardType: TextInputType.number,
                 animationType: AnimationType.fade,
+                textStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.whiteColor.shade50
+                        : Colors.black),
                 pinTheme: PinTheme(
                   shape: PinCodeFieldShape.box,
                   borderRadius: BorderRadius.circular(8),
-                  fieldHeight: 50,
+                  fieldHeight: 45,
                   fieldWidth: 45,
-                  activeFillColor: Colors.white,
-                  selectedColor: Colors.orange,
-                  activeColor: Colors.orange,
+                  activeFillColor: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade400
+                      : const Color(0x0fffff5f),
+                  inactiveFillColor: AppColors.secondaryColor.shade400,
+                  selectedFillColor: AppColors.secondaryColor.shade400,
+                  selectedColor: AppColors.primaryColor,
+                  activeColor: AppColors.primaryColor,
                   inactiveColor: Colors.grey,
                 ),
                 onChanged: (value) {
-                  isOtpFilled.value = value.length == 6;
+                  isOtpFilled.value = value.trim().length == 6;
                 },
               ),
 
@@ -422,18 +501,32 @@ class OtpVerificationStep extends HookConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Text("Didn't receive code? "),
-                  Text(
-                    "${countdown.value ~/ 60}:${(countdown.value % 60).toString().padLeft(2, '0')}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  const Text("Didn't receive code "),
+                  isCounting.value
+                      ? Text(
+                          "${countdown.value ~/ 60}:${(countdown.value % 60).toString().padLeft(2, '0')}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            // Restart countdown
+                            isCounting.value = true;
+                          },
+                          child: Text(
+                            "Resend Code",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors
+                                  .primaryColor, // Highlight clickable text
+                            ),
+                          ),
+                        ),
                 ],
               ),
 
               const SizedBox(height: 30),
 
               // Verify Button
-
               FullButton(
                 text: "Verify",
                 width: double.infinity,
@@ -461,13 +554,15 @@ class UserDetailsStep extends HookConsumerWidget {
     final lastNameController = useTextEditingController();
     final phoneController = useTextEditingController();
     final selectedCountry = useState("Nigeria");
-
+    final theme = Theme.of(context);
     return Column(
       children: [
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: ShapeDecoration(
-            color: AppColors.whiteColor.shade100,
+            color: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade600
+                : AppColors.whiteColor.shade100,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -479,14 +574,16 @@ class UserDetailsStep extends HookConsumerWidget {
               const Text(
                 "Let's Set Up Your Account",
                 style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
                 "Provide the following details to set up your account",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -507,16 +604,24 @@ class UserDetailsStep extends HookConsumerWidget {
               const SizedBox(height: 15),
 
               // Country Dropdown
-              const Text("Select Country",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+              Text("Select Country",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.greyColor.shade700,
+                  )),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 value: selectedCountry.value,
+                icon: const Icon(
+                  IconsaxPlusLinear.arrow_down,
+                  size: 18,
+                ),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8)),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
                 onChanged: (value) => selectedCountry.value = value!,
                 items: ["Nigeria", "Ghana", "Kenya", "South Africa"]
@@ -529,12 +634,16 @@ class UserDetailsStep extends HookConsumerWidget {
               const SizedBox(height: 15),
 
               // Phone Number Field with Country Code
-              const Text("Phone",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              // Phone Number Field using IntlPhoneField
-              const Text("Phone",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+              Text(
+                "Phone",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : AppColors.greyColor.shade700,
+                ),
+              ),
               const SizedBox(height: 8),
               IntlPhoneField(
                 controller: phoneController,
@@ -542,36 +651,51 @@ class UserDetailsStep extends HookConsumerWidget {
                   labelText: "Enter phone number",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8)),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
                 initialCountryCode: "NG",
                 onChanged: (phone) {
                   selectedCountry.value = phone.countryCode;
                 },
+                disableLengthCheck: true,
               ),
               const SizedBox(height: 20),
 
               // Terms and Conditions
               RichText(
-                text: const TextSpan(
+                textAlign: TextAlign.center,
+                text: TextSpan(
                   text: "By pressing Sign up securely, you agree to our ",
-                  style: TextStyle(color: Colors.black, fontSize: 14),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.greyColor.shade700,
+                  ),
                   children: [
                     TextSpan(
                       text: "Terms & Conditions",
                       style: TextStyle(
-                          color: Colors.orange, fontWeight: FontWeight.bold),
+                        color: AppColors.primaryColor.shade500,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    TextSpan(text: " and "),
+                    const TextSpan(text: " and "),
                     TextSpan(
                       text: "Privacy Policy",
                       style: TextStyle(
-                          color: Colors.orange, fontWeight: FontWeight.bold),
+                          color: AppColors.primaryColor.shade500,
+                          fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                        text:
-                            ". Digital-only support available 24/7 via the in-app chat. Your data will be securely encrypted with TLS 🔒"),
+                      text:
+                          ". Digital-only support available 24/7 via the in-app chat. Your data will be securely encrypted with TLS 🔒",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade700,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -589,6 +713,62 @@ class UserDetailsStep extends HookConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class PasteButton extends StatelessWidget {
+  final VoidCallback? onTap;
+
+  const PasteButton({super.key, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade400
+              : AppColors.whiteColor.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade300
+                  : AppColors.whiteColor.shade600,
+              width: 0.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Paste",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.whiteColor.shade500
+                    : AppColors.greyColor.shade500,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.rotationY(3.1416), // Flip horizontally
+              child: Icon(
+                IconsaxPlusLinear.copy,
+                size: 20,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.whiteColor.shade500
+                    : AppColors.greyColor.shade500,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

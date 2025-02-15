@@ -50,7 +50,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
     final pinController = useTextEditingController();
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
-
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -70,7 +70,9 @@ class ConfirmPinScreen extends HookConsumerWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : AppColors.whiteColor.shade100,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -80,9 +82,9 @@ class ConfirmPinScreen extends HookConsumerWidget {
                 const Text(
                   "Confirm Pin",
                   style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -94,7 +96,8 @@ class ConfirmPinScreen extends HookConsumerWidget {
                 // PIN Code Field
                 Row(
                   children: [
-                    Expanded(
+                    SizedBox(
+                      width: 201,
                       child: PinCodeTextField(
                         appContext: context,
                         length: 4,
@@ -102,12 +105,22 @@ class ConfirmPinScreen extends HookConsumerWidget {
                         obscureText: pinState.isPinHidden,
                         keyboardType: TextInputType.number,
                         animationType: AnimationType.fade,
+                        textStyle: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.whiteColor.shade50
+                                : Colors.black),
                         pinTheme: PinTheme(
                           shape: PinCodeFieldShape.box,
                           borderRadius: BorderRadius.circular(8),
-                          fieldHeight: 50,
-                          fieldWidth: 50,
-                          activeFillColor: Colors.white,
+                          fieldHeight: 45,
+                          fieldWidth: 45,
+                          activeFillColor: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : const Color(0x0fffff5f),
+                          inactiveFillColor: AppColors.secondaryColor.shade400,
+                          selectedFillColor: AppColors.secondaryColor.shade400,
                           selectedColor: AppColors.primaryColor,
                           activeColor: AppColors.primaryColor,
                           inactiveColor: Colors.grey,
@@ -117,13 +130,13 @@ class ConfirmPinScreen extends HookConsumerWidget {
                         },
                       ),
                     ),
-
+                    const Spacer(),
                     // Visibility Toggle Button
                     IconButton(
                       icon: Icon(
                         pinState.isPinHidden
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                         color: Colors.grey,
                       ),
                       onPressed: pinNotifier.toggleVisibility,
