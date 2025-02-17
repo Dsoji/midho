@@ -91,6 +91,7 @@ class TransactionCard extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
+                              fontFamily: '',
                               color: theme.brightness == Brightness.dark
                                   ? Colors.white
                                   : Colors.black,

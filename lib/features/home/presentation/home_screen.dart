@@ -5,6 +5,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/res/assets.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/wallet_balance_card.dart';
 
@@ -20,6 +21,9 @@ class HomeScreen extends HookConsumerWidget {
           child: CircleAvatar(
             radius: 19,
             backgroundColor: Colors.grey,
+            backgroundImage: AssetImage(
+              PlaceholderAssets.pfp,
+            ),
           ),
         ),
         centerTitle: false,
@@ -90,7 +94,7 @@ class ReferralButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30), // Rounded corners
         border: Border.all(
           color: AppColors.tertiaryColor.shade500,
-          width: 1.5,
+          width: 0.5,
         ), // Light blue border
       ),
       child: Row(
@@ -107,7 +111,7 @@ class ReferralButton extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: AppColors.tertiaryColor.shade700,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],

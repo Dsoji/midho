@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
+import 'package:mdiho/features/authentication/registration/presentation/widget/custom_dropdown.dart';
 import 'package:mdiho/features/authentication/registration/presentation/widget/step_progress_indicator.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -221,6 +221,14 @@ class EmailPasswordStep extends HookConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // Light shadow color
+                blurRadius: 8, // Soft shadow effect
+                spreadRadius: 1, // Spread of the shadow
+                offset: const Offset(0, 2), // Moves shadow slightly down
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -262,44 +270,6 @@ class EmailPasswordStep extends HookConsumerWidget {
                 isPassword: true,
               ),
 
-              const SizedBox(height: 5),
-
-              Row(
-                children: [
-                  const Text("Password Strength: ",
-                      style: TextStyle(fontSize: 14, color: Colors.grey)),
-                  Text(
-                    passwordStrength.value,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: passwordStrength.value == "Weak"
-                          ? Colors.red
-                          : passwordStrength.value == "Medium"
-                              ? Colors.orange
-                              : Colors.green,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              Wrap(
-                alignment: WrapAlignment.start,
-                spacing: 12,
-                runSpacing: 8,
-                direction: Axis.horizontal,
-                children: passwordCriteria
-                    .map((criteria) => _buildCriteriaIcon(
-                        criteria["regex"](passwordController.text),
-                        criteria["label"]))
-                    .toList(),
-              ),
-              const Gap(4),
-              _buildCriteriaIcon(
-                  RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                      .hasMatch(passwordController.text),
-                  "Special character"),
               const SizedBox(height: 20),
 
               // Referral Code (Optional)
@@ -442,6 +412,14 @@ class OtpVerificationStep extends HookConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // Light shadow color
+                blurRadius: 8, // Soft shadow effect
+                spreadRadius: 1, // Spread of the shadow
+                offset: const Offset(0, 2), // Moves shadow slightly down
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -464,35 +442,38 @@ class OtpVerificationStep extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               // PIN Code Field
-              PinCodeTextField(
-                appContext: context,
-                length: 6,
-                controller: otpController,
-                keyboardType: TextInputType.number,
-                animationType: AnimationType.fade,
-                textStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.whiteColor.shade50
-                        : Colors.black),
-                pinTheme: PinTheme(
-                  shape: PinCodeFieldShape.box,
-                  borderRadius: BorderRadius.circular(8),
-                  fieldHeight: 45,
-                  fieldWidth: 45,
-                  activeFillColor: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : const Color(0x0fffff5f),
-                  inactiveFillColor: AppColors.secondaryColor.shade400,
-                  selectedFillColor: AppColors.secondaryColor.shade400,
-                  selectedColor: AppColors.primaryColor,
-                  activeColor: AppColors.primaryColor,
-                  inactiveColor: Colors.grey,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: PinCodeTextField(
+                  appContext: context,
+                  length: 6,
+                  controller: otpController,
+                  keyboardType: TextInputType.number,
+                  animationType: AnimationType.fade,
+                  textStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.whiteColor.shade50
+                          : Colors.black),
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape.box,
+                    borderRadius: BorderRadius.circular(8),
+                    fieldHeight: 45,
+                    fieldWidth: 45,
+                    activeFillColor: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade400
+                        : const Color(0x0fffff5f),
+                    inactiveFillColor: AppColors.secondaryColor.shade400,
+                    selectedFillColor: AppColors.secondaryColor.shade400,
+                    selectedColor: AppColors.primaryColor,
+                    activeColor: AppColors.primaryColor,
+                    inactiveColor: Colors.grey,
+                  ),
+                  onChanged: (value) {
+                    isOtpFilled.value = value.trim().length == 6;
+                  },
                 ),
-                onChanged: (value) {
-                  isOtpFilled.value = value.trim().length == 6;
-                },
               ),
 
               const SizedBox(height: 20),
@@ -566,6 +547,14 @@ class UserDetailsStep extends HookConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // Light shadow color
+                blurRadius: 8, // Soft shadow effect
+                spreadRadius: 1, // Spread of the shadow
+                offset: const Offset(0, 2), // Moves shadow slightly down
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -613,24 +602,8 @@ class UserDetailsStep extends HookConsumerWidget {
                         : AppColors.greyColor.shade700,
                   )),
               const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: selectedCountry.value,
-                icon: const Icon(
-                  IconsaxPlusLinear.arrow_down,
-                  size: 18,
-                ),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                onChanged: (value) => selectedCountry.value = value!,
-                items: ["Nigeria", "Ghana", "Kenya", "South Africa"]
-                    .map((country) => DropdownMenuItem(
-                          value: country,
-                          child: Text(country),
-                        ))
-                    .toList(),
-              ),
+              const CustomDropdown(),
+
               const SizedBox(height: 15),
 
               // Phone Number Field with Country Code

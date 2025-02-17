@@ -243,7 +243,7 @@ class OnboardingPage extends StatelessWidget {
                     fontSize: 16,
                     color: theme.brightness == Brightness.dark
                         ? AppColors.secondaryColor.shade100
-                        : Colors.grey),
+                        : AppColors.secondaryColor.shade200),
                 textAlign: TextAlign.center,
               ),
             ),

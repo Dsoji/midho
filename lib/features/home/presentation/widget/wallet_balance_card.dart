@@ -67,6 +67,7 @@ class WalletBalanceCard extends HookConsumerWidget {
                   color: Colors.white,
                   fontSize: 29,
                   fontWeight: FontWeight.w600,
+                  fontFamily: '',
                 ),
               ),
               const Gap(8),

@@ -67,6 +67,14 @@ class LoginScreen extends HookConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
+              shadows: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1), // Light shadow color
+                  blurRadius: 8, // Soft shadow effect
+                  spreadRadius: 1, // Spread of the shadow
+                  offset: const Offset(0, 2), // Moves shadow slightly down
+                ),
+              ],
             ),
             padding: const EdgeInsets.all(16),
             child: Column(

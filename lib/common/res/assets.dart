@@ -30,9 +30,8 @@ import 'package:mdiho/common/res/base.dart';
 class PlaceholderAssets {
   static const _base = BasePaths.basePlaceholderPath;
 
-  static const logo = '$_base/logo.png';
-  static const qrCode = '$_base/qrcode.png';
   static const pfp = '$_base/pfp.png';
+  static const qrCode = '$_base/qrcode.png';
   static const onboard = '$_base/onboard.png';
 }
 

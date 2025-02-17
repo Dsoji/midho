@@ -71,7 +71,7 @@ class TransactionCard extends StatelessWidget {
                         radius: 12,
                         backgroundColor: theme.brightness == Brightness.dark
                             ? AppColors.secondaryColor.shade400
-                            : Colors.white,
+                            : const Color(0xFFFEEEE9),
                         child: Icon(IconsaxPlusLinear.bitcoin_convert,
                             color: theme.brightness == Brightness.dark
                                 ? AppColors.whiteColor

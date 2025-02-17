@@ -74,6 +74,14 @@ class ConfirmPinScreen extends HookConsumerWidget {
                   ? AppColors.secondaryColor.shade500
                   : AppColors.whiteColor.shade100,
               borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1), // Light shadow color
+                  blurRadius: 8, // Soft shadow effect
+                  spreadRadius: 1, // Spread of the shadow
+                  offset: const Offset(0, 2), // Moves shadow slightly down
+                ),
+              ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -197,6 +197,14 @@ class EmailPasswordStep extends HookConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // Light shadow color
+                blurRadius: 8, // Soft shadow effect
+                spreadRadius: 1, // Spread of the shadow
+                offset: const Offset(0, 2), // Moves shadow slightly down
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -303,6 +311,14 @@ class OtpVerificationStep extends HookConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // Light shadow color
+                blurRadius: 8, // Soft shadow effect
+                spreadRadius: 1, // Spread of the shadow
+                offset: const Offset(0, 2), // Moves shadow slightly down
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -325,35 +341,38 @@ class OtpVerificationStep extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               // PIN Code Field
-              PinCodeTextField(
-                appContext: context,
-                length: 6,
-                controller: otpController,
-                keyboardType: TextInputType.number,
-                animationType: AnimationType.fade,
-                textStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.whiteColor.shade50
-                        : Colors.black),
-                pinTheme: PinTheme(
-                  shape: PinCodeFieldShape.box,
-                  borderRadius: BorderRadius.circular(8),
-                  fieldHeight: 45,
-                  fieldWidth: 45,
-                  activeFillColor: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : const Color(0x0fffff5f),
-                  inactiveFillColor: AppColors.secondaryColor.shade400,
-                  selectedFillColor: AppColors.secondaryColor.shade400,
-                  selectedColor: AppColors.primaryColor,
-                  activeColor: AppColors.primaryColor,
-                  inactiveColor: Colors.grey,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: PinCodeTextField(
+                  appContext: context,
+                  length: 6,
+                  controller: otpController,
+                  keyboardType: TextInputType.number,
+                  animationType: AnimationType.fade,
+                  textStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.whiteColor.shade50
+                          : Colors.black),
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape.box,
+                    borderRadius: BorderRadius.circular(8),
+                    fieldHeight: 45,
+                    fieldWidth: 45,
+                    activeFillColor: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade400
+                        : const Color(0x0fffff5f),
+                    inactiveFillColor: AppColors.secondaryColor.shade400,
+                    selectedFillColor: AppColors.secondaryColor.shade400,
+                    selectedColor: AppColors.primaryColor,
+                    activeColor: AppColors.primaryColor,
+                    inactiveColor: Colors.grey,
+                  ),
+                  onChanged: (value) {
+                    isOtpFilled.value = value.trim().length == 6;
+                  },
                 ),
-                onChanged: (value) {
-                  isOtpFilled.value = value.trim().length == 6;
-                },
               ),
 
               const SizedBox(height: 20),
@@ -429,6 +448,14 @@ class UserDetailsStep extends HookConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // Light shadow color
+                blurRadius: 8, // Soft shadow effect
+                spreadRadius: 1, // Spread of the shadow
+                offset: const Offset(0, 2), // Moves shadow slightly down
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(

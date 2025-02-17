@@ -44,6 +44,7 @@ dependencies:
   iconsax_plus: ^1.0.0
   flutter_svg: ^2.0.17
   lucide_icons: ^0.257.0
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:
