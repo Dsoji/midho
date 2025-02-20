@@ -4,6 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 
+import '../../../withdrawal/presentation/withdraw_funds_screen.dart';
+
 // StateNotifier for Balance Visibility
 class BalanceVisibilityNotifier extends StateNotifier<bool> {
   BalanceVisibilityNotifier() : super(true);
@@ -102,7 +104,12 @@ class WalletBalanceCard extends HookConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WithdrawFundsScreen()));
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor.shade500,
                 padding: const EdgeInsets.symmetric(vertical: 14),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
+import '../res/app_colors.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool showBackButton;
@@ -27,8 +29,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-      elevation: 2,
+      backgroundColor: theme.brightness == Brightness.dark
+          ? AppColors.secondaryColor.shade500
+          : Colors.white,
       centerTitle: centerTitle,
       leading: showBackButton
           ? IconButton(

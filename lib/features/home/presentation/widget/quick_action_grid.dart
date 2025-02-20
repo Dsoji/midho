@@ -119,8 +119,7 @@ class ActionButton extends StatelessWidget {
               shape: BoxShape.circle,
               color: theme.brightness == Brightness.dark
                   ? AppColors.secondaryColor.shade600
-                  : const Color.fromARGB(
-                      255, 64, 63, 63), // Light orange background
+                  : const Color(0xFFFFFBFA), // Light orange background
               border: Border.all(
                 color: theme.brightness == Brightness.dark
                     ? AppColors.secondaryColor.shade400
