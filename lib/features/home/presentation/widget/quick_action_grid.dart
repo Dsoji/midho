@@ -2,28 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/features/home/presentation/home_screen.dart';
 
-import '../../../../common/res/app_colors.dart'; // Add this package in pubspec.yaml
+import '../../../../common/res/app_colors.dart';
+import '../../../bank_network/presentation/bank_network_screen.dart'; // Add this package in pubspec.yaml
 
 // Define Action Model
 class ActionItem {
   final IconData icon;
   final String label;
+  final Widget? page;
 
-  ActionItem(this.icon, this.label);
+  ActionItem(this.icon, this.label, this.page);
 }
 
 // Riverpod Provider for Quick Actions List
 final quickActionsProvider = Provider<List<ActionItem>>((ref) {
   return [
-    ActionItem(IconsaxPlusLinear.bitcoin_convert, "Sell Crypto"),
-    ActionItem(IconsaxPlusLinear.gift, "Sell Gift Cards"),
-    ActionItem(IconsaxPlusLinear.mobile, "Buy Airtime"),
-    ActionItem(IconsaxPlusLinear.wifi_square, "Buy Data"),
-    ActionItem(Icons.sports_football_outlined, "Betting"),
-    ActionItem(IconsaxPlusLinear.lamp_charge, "Buy Electricity"),
-    ActionItem(Icons.monitor, "Tv Cable"),
-    ActionItem(IconsaxPlusLinear.bank, "Bank network"),
+    ActionItem(
+        IconsaxPlusLinear.bitcoin_convert, "Sell Crypto", const HomeScreen()),
+    ActionItem(IconsaxPlusLinear.gift, "Sell Gift Cards", const HomeScreen()),
+    ActionItem(IconsaxPlusLinear.mobile, "Buy Airtime", const HomeScreen()),
+    ActionItem(IconsaxPlusLinear.wifi_square, "Buy Data", const HomeScreen()),
+    ActionItem(Icons.sports_football_outlined, "Betting", const HomeScreen()),
+    ActionItem(
+        IconsaxPlusLinear.lamp_charge, "Buy Electricity", const HomeScreen()),
+    ActionItem(Icons.monitor, "Tv Cable", const HomeScreen()),
+    ActionItem(
+        IconsaxPlusLinear.bank, "Bank network", const BankNetworkScreen()),
   ];
 });
 
@@ -72,7 +78,7 @@ class QuickActionsGrid extends HookConsumerWidget {
               itemCount: actions.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4, // 4 items per row
-                crossAxisSpacing: 20,
+                crossAxisSpacing: 18,
                 mainAxisSpacing: 20,
                 childAspectRatio: 1, // Ensures square layout
               ),
@@ -96,37 +102,48 @@ class ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: theme.brightness == Brightness.dark
-                ? AppColors.secondaryColor.shade600
-                : const Color(0xFFFFFBFA), // Light orange background
-            border: Border.all(
+    return GestureDetector(
+      onTap: () {
+        if (action.page != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => action.page!),
+          );
+        }
+      },
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
               color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade400
-                  : const Color(0xFFFFFBFA),
+                  ? AppColors.secondaryColor.shade600
+                  : const Color.fromARGB(
+                      255, 64, 63, 63), // Light orange background
+              border: Border.all(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade400
+                    : const Color(0xFFFFFBFA),
+              ),
             ),
+            child: Icon(action.icon,
+                color: AppColors.primaryColor.shade500, size: 15.5),
           ),
-          child: Icon(action.icon,
-              color: AppColors.primaryColor.shade500, size: 18.5),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          action.label,
-          style: TextStyle(
-            fontSize: 10,
-            color: theme.brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
-            fontWeight: FontWeight.w600,
+          const Gap(2),
+          Text(
+            action.label,
+            style: TextStyle(
+              fontSize: 10,
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

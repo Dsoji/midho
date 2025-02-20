@@ -33,6 +33,9 @@ class PlaceholderAssets {
   static const pfp = '$_base/pfp.png';
   static const qrCode = '$_base/qrcode.png';
   static const onboard = '$_base/onboard.png';
+  static const gtbank = '$_base/gtbank.png';
+  static const opay = '$_base/opay.png';
+  static const uba = '$_base/uba.png';
 }
 
 class ImageAssets {

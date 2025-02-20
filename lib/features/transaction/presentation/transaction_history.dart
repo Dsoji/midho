@@ -68,10 +68,13 @@ class TransactionHistory extends HookConsumerWidget {
   }
 
   void showFilterBottomSheet(BuildContext context) {
+    final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.scaffoldColorLight,
+      backgroundColor: theme.brightness == Brightness.dark
+          ? AppColors.secondaryColor.shade700
+          : AppColors.scaffoldColorLight,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -90,7 +93,7 @@ class FilterBottomSheet extends HookWidget {
     final selectedSortBy = useState<String>("Newest First");
     final fromDate = useState<String>("DD/MM/YY");
     final toDate = useState<String>("DD/MM/YY");
-
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
@@ -103,7 +106,9 @@ class FilterBottomSheet extends HookWidget {
               height: 6,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(3),
-                color: Colors.grey.shade300,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade500
+                    : Colors.grey.shade300,
               ),
             ),
           ),
@@ -113,7 +118,6 @@ class FilterBottomSheet extends HookWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
             ),
           ),
           const SizedBox(height: 16),
@@ -131,6 +135,7 @@ class FilterBottomSheet extends HookWidget {
                 ),
               ],
             ),
+            context: context,
           ),
           const SizedBox(height: 8),
           _buildFilterCard(
@@ -139,6 +144,7 @@ class FilterBottomSheet extends HookWidget {
               ["All", "Gift Cards", "Utilities", "Crypto"],
               selectedTransactionType,
             ),
+            context: context,
           ),
           const SizedBox(height: 8),
           _buildFilterCard(
@@ -147,6 +153,7 @@ class FilterBottomSheet extends HookWidget {
               ["All", "Completed", "Pending", "Failed"],
               selectedStatus,
             ),
+            context: context,
           ),
           const SizedBox(height: 8),
           _buildFilterCard(
@@ -160,6 +167,7 @@ class FilterBottomSheet extends HookWidget {
               ],
               selectedSortBy,
             ),
+            context: context,
           ),
           const SizedBox(height: 20),
           Row(
@@ -170,8 +178,12 @@ class FilterBottomSheet extends HookWidget {
                   width: 173,
                   height: 60,
                   onPressed: () {},
-                  textColor: Colors.black,
-                  color: Colors.white,
+                  textColor: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.white,
                 ),
               ),
               const SizedBox(width: 10),
@@ -182,7 +194,9 @@ class FilterBottomSheet extends HookWidget {
                   height: 60,
                   onPressed: () {},
                   textColor: Colors.white,
-                  color: Colors.black,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.primaryColor.shade500
+                      : Colors.black,
                 ),
               ),
             ],
@@ -193,11 +207,17 @@ class FilterBottomSheet extends HookWidget {
     );
   }
 
-  Widget _buildFilterCard({required String title, required Widget child}) {
+  Widget _buildFilterCard(
+      {required String title,
+      required Widget child,
+      required BuildContext context}) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade500
+            : Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       width: double.infinity,

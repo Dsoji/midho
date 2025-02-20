@@ -17,7 +17,7 @@ class MyApp extends HookConsumerWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      themeMode: themeMode,
+      themeMode: ThemeMode.dark,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       home: const OnboardingScreen(),

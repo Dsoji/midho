@@ -5,7 +5,7 @@ import '../res/app_colors.dart';
 
 class CustomTextField extends HookWidget {
   final TextEditingController controller;
-  final String label;
+  final String? label;
   final String? hintText;
   final IconData? prefixIcon;
   final Widget? suffixIcon; // Now supports any widget, not just IconData
@@ -18,7 +18,7 @@ class CustomTextField extends HookWidget {
   const CustomTextField({
     super.key,
     required this.controller,
-    required this.label,
+    this.label,
     this.hintText,
     this.prefixIcon,
     this.suffixIcon,
@@ -37,79 +37,83 @@ class CustomTextField extends HookWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : AppColors.greyColor.shade700,
-            )),
+        if (label != null && label!.isNotEmpty)
+          Text(label!,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.greyColor.shade700,
+              )),
         const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText.value,
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            prefixIcon: prefixIcon != null
-                ? Icon(
-                    prefixIcon,
-                    color: Colors.grey,
-                    size: 21,
-                  )
-                : null,
-            suffixIcon: isPassword
-                ? IconButton(
-                    icon: Icon(
-                      obscureText.value
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
+        SizedBox(
+          height: 52,
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText.value,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              prefixIcon: prefixIcon != null
+                  ? Icon(
+                      prefixIcon,
                       color: Colors.grey,
-                      size: 20,
-                    ),
-                    onPressed: () => obscureText.value = !obscureText.value,
-                  )
-                : (suffixIcon != null
-                    ? GestureDetector(
-                        onTap: onSuffixTap, // Allow suffix tap action
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: suffixIcon,
-                        ),
-                      )
-                    : null),
-            hintText: hintText ?? "Enter $label",
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                width: 1,
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.greyColor.shade50
-                    : AppColors.secondaryColor.shade400,
+                      size: 21,
+                    )
+                  : null,
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        obscureText.value
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
+                      onPressed: () => obscureText.value = !obscureText.value,
+                    )
+                  : (suffixIcon != null
+                      ? GestureDetector(
+                          onTap: onSuffixTap, // Allow suffix tap action
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: suffixIcon,
+                          ),
+                        )
+                      : null),
+              hintText: hintText ?? "Enter $label",
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  width: 1,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.greyColor.shade50
+                      : AppColors.secondaryColor.shade400,
+                ),
               ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                width: 1,
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.greyColor.shade50
-                    : AppColors.secondaryColor.shade400,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  width: 1,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.greyColor.shade50
+                      : AppColors.secondaryColor.shade400,
+                ),
               ),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                width: 1,
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.greyColor.shade50
-                    : AppColors.secondaryColor.shade400,
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  width: 1,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.greyColor.shade50
+                      : AppColors.secondaryColor.shade400,
+                ),
               ),
+              filled: true,
+              fillColor: Colors.transparent,
             ),
-            filled: true,
-            fillColor: Colors.transparent,
+            validator: validator,
           ),
-          validator: validator,
         ),
       ],
     );
