@@ -112,7 +112,7 @@ class FilterBottomSheet extends HookWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const Gap(10),
           const Text(
             "Filters",
             style: TextStyle(

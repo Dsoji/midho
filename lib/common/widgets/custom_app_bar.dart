@@ -37,6 +37,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? IconButton(
               icon: const Icon(
                 IconsaxPlusLinear.arrow_left_1,
+                size: 21,
               ),
               onPressed: onBackPressed ?? () => Navigator.pop(context),
             )
@@ -45,7 +46,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? Text(
               title ?? "",
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
             )

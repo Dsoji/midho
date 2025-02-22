@@ -65,6 +65,7 @@ class FullButton extends StatelessWidget {
   final double height;
   final Color textColor;
   final VoidCallback onPressed;
+  final VoidCallback? doublePressed;
   final double fontSize;
   final double radius;
   final bool isLoading;
@@ -82,6 +83,7 @@ class FullButton extends StatelessWidget {
     this.radius = 12,
     this.isLoading = false,
     this.isDisabled = false,
+    this.doublePressed,
   });
 
   @override
@@ -90,6 +92,7 @@ class FullButton extends StatelessWidget {
       absorbing: isDisabled || isLoading,
       child: GestureDetector(
         onTap: isDisabled || isLoading ? null : onPressed,
+        onDoubleTap: doublePressed,
         child: Container(
           height: height,
           width: width,

@@ -52,16 +52,6 @@ class BankNetworkScreen extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Center(
-              child: Text(
-                'Bank Network strength availability',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-            const Gap(8),
             const NetworkStatusIndicator(),
             const Gap(16),
             CustomTextField(
@@ -171,24 +161,38 @@ class NetworkStatusIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade500
-            : Colors.white,
-        borderRadius: BorderRadius.circular(25), // Rounded edges
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildIndicator(Colors.red, "0% - 49%"),
-          const Gap(18),
-          _buildIndicator(Colors.amber, "50% - 79%"),
-          const Gap(18),
-          _buildIndicator(Colors.green, "80% - 100%"),
-        ],
-      ),
+    return Column(
+      children: [
+        const Center(
+          child: Text(
+            'Bank Network strength availability',
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+            ),
+          ),
+        ),
+        const Gap(8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade500
+                : Colors.white,
+            borderRadius: BorderRadius.circular(25), // Rounded edges
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildIndicator(Colors.red, "0% - 49%"),
+              const Gap(18),
+              _buildIndicator(Colors.amber, "50% - 79%"),
+              const Gap(18),
+              _buildIndicator(Colors.green, "80% - 100%"),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
