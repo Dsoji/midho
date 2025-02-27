@@ -1,16 +1,19 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 
-class TransactionDetailsPage extends StatelessWidget {
+@RoutePage()
+class TransactionDetailsScreen extends StatelessWidget {
   final String type;
   final String status;
 
-  const TransactionDetailsPage({
+  const TransactionDetailsScreen({
     super.key,
     required this.type,
     required this.status,
@@ -59,7 +62,7 @@ class TransactionDetailsPage extends StatelessWidget {
             ),
             const Gap(16),
             FullButton(
-              text: "Download Reciept",
+              text: status == 'Failed' ? 'Retry Trade' : "Download Reciept",
               width: double.infinity,
               height: 60,
               onPressed: () {},
@@ -102,16 +105,12 @@ class TransactionDetailsPage extends StatelessWidget {
           ),
         ),
         const Gap(20),
-        _buildDetailRow("Transaction ID", details["transactionId"]),
-        _buildDetailRow("Date & Time", details["dateTime"]),
-        _buildDetailRow("Type", type),
-        _buildDetailRow("Amount", "₦${details["amount"]}"),
-        _buildDetailRow("Fee", "₦${details["fee"]}"),
-        _buildDetailRow(
-          "Status",
-          status,
-          color: _getStatusColor(status),
-        ),
+        _buildDetailRow("Transaction ID", details["transactionId"], context),
+        _buildDetailRow("Date & Time", details["dateTime"], context),
+        _buildDetailRow("Type", type, context),
+        _buildDetailRow("Amount", "₦${details["amount"]}", context),
+        _buildDetailRow("Fee", "₦${details["fee"]}", context),
+        _buildDetailRow("Status", status, context),
       ],
     );
   }
@@ -134,13 +133,20 @@ class TransactionDetailsPage extends StatelessWidget {
         ),
         const Gap(20),
         ...breakdown.entries.map(
-          (entry) => _buildDetailRow(entry.key, entry.value.toString()),
+          (entry) =>
+              _buildDetailRow(entry.key, entry.value.toString(), context),
         ),
       ],
     );
   }
 
-  Widget _buildDetailRow(String title, String value, {Color? color}) {
+  Widget _buildDetailRow(
+    String title,
+    String value,
+    BuildContext context,
+  ) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 7.5),
       margin: const EdgeInsets.only(bottom: 4),
@@ -148,36 +154,52 @@ class TransactionDetailsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w400)),
+          Text(title,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.whiteColor
+                    : Colors.black,
+              )),
           const Gap(35),
-          Flexible(
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-              softWrap: true,
-              textAlign: TextAlign.end,
-            ),
-          ),
+          value == 'View Screenshot'
+              ? const ViewScreenshotButton()
+              : Flexible(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: _getStatusColor(value, context),
+                    ),
+                    softWrap: true,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
         ],
       ),
     );
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(String status, BuildContext context) {
+    final theme = Theme.of(context);
     switch (status.toLowerCase()) {
       case "completed":
         return Colors.green;
       case "failed":
         return Colors.red;
       default:
-        return Colors.black;
+        return theme.brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black;
     }
   }
 
   Map<String, dynamic> _getTransactionDetails(String type, String status) {
+    Map<String, dynamic> details = {};
+
     switch (type) {
       case "Crypto Sale":
-        return {
+        details = {
           "transactionId": "#TRX123456",
           "dateTime": "Jan 15, 2025, 10:30 AM",
           "amount": "500,000.00",
@@ -189,9 +211,10 @@ class TransactionDetailsPage extends StatelessWidget {
             "Total Received": "₦500,000.00",
           }
         };
+        break;
       case "Gift Card Purchase":
         if (status == "Completed") {
-          return {
+          details = {
             "transactionId": "#TRX123456",
             "dateTime": "Jan 15, 2025, 10:30 AM",
             "amount": "37,500.00",
@@ -203,8 +226,8 @@ class TransactionDetailsPage extends StatelessWidget {
               "Total Received": "₦37,000.00",
             }
           };
-        } else {
-          return {
+        } else if (status == "Failed") {
+          details = {
             "transactionId": "#TRX123456",
             "dateTime": "Jan 15, 2025, 10:30 AM",
             "amount": "37,500.00",
@@ -217,21 +240,64 @@ class TransactionDetailsPage extends StatelessWidget {
               "Proof of Failure": "View Screenshot",
             }
           };
+        } else {
+          details = {
+            "transactionId": "#TRX123456",
+            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "amount": "37,500.00",
+            "fee": "500.00",
+            "breakdown": {
+              "Gift Card Sold": "STEAM 50-500",
+              "Rate": "₦750/USD",
+              "Amount Sold": "\$50",
+              "Total Received": "₦37,000.00",
+            }
+          };
         }
+        break;
       case "Bill Payment":
-        return {
-          "transactionId": "#TRX123456",
-          "dateTime": "Jan 15, 2025, 10:30 AM",
-          "amount": "10,000.00",
-          "fee": "500.00",
-          "breakdown": {
-            "Provider": "Ikeja Electric",
-            "Account Number": "1234567890",
-            "Total Charged": "₦10,500.00",
-          }
-        };
+        if (status == "Completed") {
+          details = {
+            "transactionId": "#TRX123456",
+            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "amount": "10,000.00",
+            "fee": "500.00",
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "₦10,500.00",
+            }
+          };
+        } else if (status == "Failed") {
+          details = {
+            "transactionId": "#TRX123456",
+            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "amount": "10,000.00",
+            "fee": "500.00",
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "₦10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": "#TRX123456",
+            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "amount": "10,000.00",
+            "fee": "500.00",
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "₦10,500.00",
+            }
+          };
+        }
+        break;
       case "Withdrawal":
-        return {
+        details = {
           "transactionId": "#TRX123456",
           "dateTime": "Jan 15, 2025, 10:30 AM",
           "amount": "100,000.00",
@@ -242,8 +308,72 @@ class TransactionDetailsPage extends StatelessWidget {
             "Total Deducted": "₦101,000.00",
           }
         };
+        break;
       default:
-        return {};
+        details = {
+          "transactionId": "N/A",
+          "dateTime": "N/A",
+          "amount": "0.00",
+          "fee": "0.00",
+          "breakdown": {}
+        };
     }
+
+    return details;
+  }
+}
+
+class ViewScreenshotButton extends StatelessWidget {
+  const ViewScreenshotButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return OutlinedButton(
+      onPressed: () {
+        // Handle button click
+      },
+      style: OutlinedButton.styleFrom(
+        backgroundColor: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade400
+            : AppColors.primaryColor.shade50, // Light pink background
+        side: BorderSide.none, // Remove border
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Rounded corners
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Button Text
+          Flexible(
+            child: Text(
+              "View Screenshot",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+                // Dark text color
+              ),
+              softWrap: true,
+              textAlign: TextAlign.start,
+            ),
+          ),
+          const SizedBox(width: 8),
+
+          // Screenshot Icon
+          Icon(
+            IconsaxPlusLinear.image, // Replace with actual screenshot icon
+            color: theme.brightness == Brightness.dark
+                ? Colors.white
+                : AppColors.primaryColor.shade500,
+            size: 22,
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -116,7 +116,7 @@ class OnboardingScreen extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const RegistrationScreen(),
@@ -129,7 +129,7 @@ class OnboardingScreen extends HookConsumerWidget {
                 const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const LoginScreen(),

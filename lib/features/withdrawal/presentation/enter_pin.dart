@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
+import 'package:mdiho/features/withdrawal/presentation/widget/success_dialogue.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
-import 'withdraw_funds_screen.dart';
 
 class PinState {
   final String pin;
@@ -187,8 +188,14 @@ class TransactionPinScreen extends HookConsumerWidget {
                       OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
+                          backgroundColor: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : Colors.transparent,
                           side: BorderSide(
-                              color: Colors.grey.shade300), // Border color
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.secondaryColor.shade300
+                                : Colors.grey.shade300,
+                          ), // Border color
                           shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.circular(8), // Matches the image
@@ -196,11 +203,14 @@ class TransactionPinScreen extends HookConsumerWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 10),
                         ),
-                        child: const Text(
+                        child: Text(
                           "Reset PIN",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ),
@@ -224,7 +234,7 @@ class TransactionPinScreen extends HookConsumerWidget {
   void showWithdrawalSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => const WithdrawalSuccessDialog(),
+      builder: (context) => const WithdrawalSuccessDialogScreen(),
     );
   }
 
@@ -232,131 +242,6 @@ class TransactionPinScreen extends HookConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => const WithdrawalFailedDialog(),
-    );
-  }
-}
-
-class WithdrawalSuccessDialog extends StatelessWidget {
-  const WithdrawalSuccessDialog({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AlertDialog(
-      backgroundColor: theme.brightness == Brightness.dark
-          ? AppColors.secondaryColor.shade500
-          : Colors.white, // Dark theme background
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Success Icon
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.green.shade100,
-            child:
-                const Icon(Icons.check_circle, size: 60, color: Colors.green),
-          ),
-          const SizedBox(height: 16),
-
-          // Title
-          const Text(
-            "Withdrawal Successful",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // Description
-          const Text(
-            "Your withdrawal of ₦50,000.00 to GTBank - ****5678 has been processed successfully!",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: '',
-            ),
-          ),
-          const Gap(16),
-
-          // Transaction Details
-          _buildDetailRow("Transaction ID", "#TRX123456", context),
-          _buildDetailRow("Date & Time", "Jan 27, 2025, 11:00 AM", context),
-          _buildDetailRow("Bank Account", "GTBank\n****5678", context),
-          _buildDetailRow("Withdrawal Amount", "₦50,000.00", context),
-          _buildDetailRow("Fee", "₦500.00", context),
-          _buildDetailRow("Total Amount Sent", "₦49,500.00", context),
-
-          const Gap(16),
-
-          // Info Banner
-          InfoWidget(
-            text: "Thank you for using M-Diho!",
-            theme: theme,
-          ),
-
-          const SizedBox(height: 16),
-
-          // View Transaction Details Button
-          FullButton(
-            text: "View Transaction Details",
-            width: double.infinity,
-            height: 48,
-            onPressed: () {},
-            textColor: Colors.white,
-            color: AppColors.primaryColor.shade500,
-          ),
-          const SizedBox(height: 12),
-
-          // Back to Dashboard
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Back to Dashboard",
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Function to Create Detail Row
-  Widget _buildDetailRow(String title, String value, BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title,
-              style: TextStyle(
-                fontSize: 12,
-                fontFamily: '',
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-              )),
-          Text(value,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                fontFamily: '',
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-              )),
-        ],
-      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -9,6 +10,7 @@ import '../../../common/res/assets.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/wallet_balance_card.dart';
 
+@RoutePage()
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
   @override

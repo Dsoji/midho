@@ -1,8 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/features/home/presentation/home_screen.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../bank_network/presentation/bank_network_screen.dart'; // Add this package in pubspec.yaml
@@ -11,39 +11,46 @@ import '../../../bank_network/presentation/bank_network_screen.dart'; // Add thi
 class ActionItem {
   final IconData icon;
   final String label;
-  final Widget? page;
+  final VoidCallback? onTap; // Accepts context for navigation
 
-  ActionItem(this.icon, this.label, this.page);
+  ActionItem(this.icon, this.label, {this.onTap});
 }
 
 // Riverpod Provider for Quick Actions List
-final quickActionsProvider = Provider<List<ActionItem>>((ref) {
-  return [
-    ActionItem(
-        IconsaxPlusLinear.bitcoin_convert, "Sell Crypto", const HomeScreen()),
-    ActionItem(IconsaxPlusLinear.gift, "Sell Gift Cards", const HomeScreen()),
-    ActionItem(IconsaxPlusLinear.mobile, "Buy Airtime", const HomeScreen()),
-    ActionItem(IconsaxPlusLinear.wifi_square, "Buy Data", const HomeScreen()),
-    ActionItem(Icons.sports_football_outlined, "Betting", const HomeScreen()),
-    ActionItem(
-        IconsaxPlusLinear.lamp_charge, "Buy Electricity", const HomeScreen()),
-    ActionItem(Icons.monitor, "Tv Cable", const HomeScreen()),
-    ActionItem(
-        IconsaxPlusLinear.bank, "Bank network", const BankNetworkScreen()),
-  ];
-});
 
 // Quick Actions Widget
-class QuickActionsGrid extends HookConsumerWidget {
+class QuickActionsGrid extends ConsumerWidget {
   const QuickActionsGrid({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final actions = ref.watch(quickActionsProvider); // Watch the provider
     final theme = Theme.of(context);
+    final quickActionsProvider = Provider<List<ActionItem>>((ref) {
+      return [
+        ActionItem(IconsaxPlusLinear.bitcoin_convert, "Sell Crypto", onTap: () {
+          final tabsRouter = AutoTabsRouter.of(
+            context,
+          );
+
+          tabsRouter.setActiveIndex(2);
+        }),
+        ActionItem(IconsaxPlusLinear.gift, "Sell Gift Cards"),
+        ActionItem(IconsaxPlusLinear.mobile, "Buy Airtime"),
+        ActionItem(IconsaxPlusLinear.wifi_square, "Buy Data"),
+        ActionItem(Icons.sports_football_outlined, "Betting"),
+        ActionItem(IconsaxPlusLinear.lamp_charge, "Buy Electricity"),
+        ActionItem(Icons.monitor, "Tv Cable"),
+        ActionItem(IconsaxPlusLinear.bank, "Bank network", onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const BankNetworkScreen()),
+          );
+        }),
+      ];
+    });
+    final actions = ref.watch(quickActionsProvider);
     return Container(
       padding: const EdgeInsets.all(16),
-      height: 270, // Increased height slightly to avoid overflow
+      height: 270,
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade600
@@ -58,7 +65,6 @@ class QuickActionsGrid extends HookConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Text(
             "Quick Actions",
             style: TextStyle(
@@ -70,17 +76,15 @@ class QuickActionsGrid extends HookConsumerWidget {
             ),
           ),
           const Gap(16),
-
-          // Use Expanded to prevent overflow
           Expanded(
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               itemCount: actions.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, // 4 items per row
+                crossAxisCount: 4,
                 crossAxisSpacing: 18,
                 mainAxisSpacing: 20,
-                childAspectRatio: 1, // Ensures square layout
+                childAspectRatio: 1,
               ),
               itemBuilder: (context, index) {
                 return ActionButton(actions[index]);
@@ -103,14 +107,7 @@ class ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return GestureDetector(
-      onTap: () {
-        if (action.page != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => action.page!),
-          );
-        }
-      },
+      onTap: action.onTap,
       child: Column(
         children: [
           Container(
@@ -119,7 +116,7 @@ class ActionButton extends StatelessWidget {
               shape: BoxShape.circle,
               color: theme.brightness == Brightness.dark
                   ? AppColors.secondaryColor.shade600
-                  : const Color(0xFFFFFBFA), // Light orange background
+                  : const Color(0xFFFFFBFA),
               border: Border.all(
                 color: theme.brightness == Brightness.dark
                     ? AppColors.secondaryColor.shade400

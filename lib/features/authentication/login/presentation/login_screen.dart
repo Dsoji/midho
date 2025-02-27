@@ -8,7 +8,7 @@ import 'package:mdiho/features/authentication/forgot_password/presentation/forgo
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
-import '../../../bottomNav/navbar.dart';
+import '../../../bottomNav/app_router.gr.dart';
 import '../../registration/presentation/registration_screen.dart';
 
 @RoutePage()
@@ -141,10 +141,7 @@ class LoginScreen extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NaviBar()));
+                    context.router.replace(const NaviBarRoute());
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,

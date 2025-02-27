@@ -643,21 +643,23 @@ class UserDetailsStep extends HookConsumerWidget {
                     color: theme.brightness == Brightness.dark
                         ? Colors.white
                         : AppColors.greyColor.shade700,
+                    height: 16.8 / 12,
                   ),
                   children: [
                     TextSpan(
                       text: "Terms & Conditions",
                       style: TextStyle(
                         color: AppColors.primaryColor.shade500,
-                        fontWeight: FontWeight.bold,
+                        height: 16.8 / 12,
                       ),
                     ),
                     const TextSpan(text: " and "),
                     TextSpan(
                       text: "Privacy Policy",
                       style: TextStyle(
-                          color: AppColors.primaryColor.shade500,
-                          fontWeight: FontWeight.bold),
+                        color: AppColors.primaryColor.shade500,
+                        height: 16.8 / 12,
+                      ),
                     ),
                     TextSpan(
                       text:
@@ -667,6 +669,7 @@ class UserDetailsStep extends HookConsumerWidget {
                         color: theme.brightness == Brightness.dark
                             ? Colors.white
                             : AppColors.greyColor.shade700,
+                        height: 16.8 / 12,
                       ),
                     ),
                   ],
@@ -675,7 +678,7 @@ class UserDetailsStep extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               FullButton(
-                text: "Continue",
+                text: "Sign Up",
                 width: double.infinity,
                 height: 48,
                 onPressed: onFinish,

@@ -139,10 +139,59 @@ class BankInfoCard extends HookConsumerWidget {
               ],
             ),
             const Spacer(),
-            Icon(
-              icon,
-              size: 16,
-            ),
+            icon == Icons.more_horiz
+                ? PopupMenuButton<int>(
+                    itemBuilder: (context) => [
+                      // Edit option
+                      const PopupMenuItem(
+                        value: 1,
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_outlined,
+                                color: Colors.blue), // Blue edit icon
+                            SizedBox(width: 10),
+                            Text(
+                              "Edit",
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Delete option
+                      const PopupMenuItem(
+                        value: 2,
+                        child: Row(
+                          children: [
+                            Icon(IconsaxPlusLinear.trash,
+                                color: Colors.red), // Red delete icon
+                            SizedBox(width: 10),
+                            Text(
+                              "Delete",
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    offset: const Offset(
+                        0, 40), // Adjust offset for correct positioning
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade400
+                        : Colors.white, // White background
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // Rounded corners
+                    ),
+                    onSelected: (value) {
+                      if (value == 1) {
+                        // Handle edit action
+                      } else if (value == 2) {
+                        // Handle delete action
+                      }
+                    },
+                  )
+                : Icon(
+                    icon,
+                    size: 16,
+                  ),
           ],
         ),
       ),

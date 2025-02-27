@@ -36,6 +36,9 @@ class PlaceholderAssets {
   static const gtbank = '$_base/gtbank.png';
   static const opay = '$_base/opay.png';
   static const uba = '$_base/uba.png';
+  static const btc = '$_base/btc.png';
+  static const eth = '$_base/eth.png';
+  static const ltc = '$_base/ltc.png';
 }
 
 class ImageAssets {

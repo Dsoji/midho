@@ -32,7 +32,7 @@ class TransactionCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TransactionDetailsPage(
+            builder: (context) => TransactionDetailsScreen(
               status: status,
               type: title,
             ),

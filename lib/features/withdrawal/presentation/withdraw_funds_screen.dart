@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -13,7 +14,9 @@ import '../../../common/widgets/custom_buttons.dart';
 import '../../bank_network/presentation/bank_network_screen.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
 import 'widget/bank_info_card.dart';
+import 'widget/info_widget.dart';
 
+@RoutePage()
 class WithdrawFundsScreen extends HookConsumerWidget {
   const WithdrawFundsScreen({super.key});
   @override
@@ -313,7 +316,7 @@ class AddBankScreen extends HookWidget {
               ),
             ),
           ),
-          const Gap(50),
+          const Gap(100),
         ],
       ),
     );
@@ -373,53 +376,5 @@ class AddBankScreen extends HookWidget {
     } else if (result == 'delete') {
       print("Delete account selected");
     }
-  }
-}
-
-class InfoWidget extends StatelessWidget {
-  const InfoWidget({
-    super.key,
-    required this.theme,
-    required this.text,
-  });
-
-  final ThemeData theme;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: ShapeDecoration(
-        color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade400
-            : const Color(0xFFF6F6F9),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(
-            IconsaxPlusLinear.info_circle,
-            size: 16,
-          ),
-          const Gap(8),
-          Flexible(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

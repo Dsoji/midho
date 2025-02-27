@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -9,8 +10,11 @@ import 'package:mdiho/features/transaction/presentation/widget/transaction_card.
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 
-class TransactionHistory extends HookConsumerWidget {
-  const TransactionHistory({super.key});
+@RoutePage()
+class TransactionHistoryScreen extends HookConsumerWidget {
+  const TransactionHistoryScreen({
+    super.key,
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transactions = [
@@ -42,7 +46,7 @@ class TransactionHistory extends HookConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Transaction History",
-        showBackButton: true,
+        showBackButton: false,
         showTitle: true,
         showAction: true,
         centerTitle: true,
@@ -201,7 +205,7 @@ class FilterBottomSheet extends HookWidget {
               ),
             ],
           ),
-          const Gap(34),
+          const Gap(120),
         ],
       ),
     );

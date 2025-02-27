@@ -1,16 +1,17 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../transaction/presentation/transaction_history.dart';
 
 class TransactionCard extends StatelessWidget {
   const TransactionCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final tabsRouter = AutoTabsRouter.of(context);
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -129,12 +130,7 @@ class TransactionCard extends StatelessWidget {
             width: double.infinity,
             height: 48,
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const TransactionHistory(),
-                ),
-              );
+              tabsRouter.setActiveIndex(3);
             },
             textColor: theme.brightness == Brightness.dark
                 ? Colors.white
