@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -61,7 +62,9 @@ class SellCryptoScreen extends HookConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -152,7 +155,11 @@ class SellCryptoScreen extends HookConsumerWidget {
                       text: "Next",
                       width: double.infinity,
                       height: 48,
-                      onPressed: () {},
+                      onPressed: () {
+                        context.router.push(
+                          const QrCryptoRoute(),
+                        );
+                      },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,
                     ),

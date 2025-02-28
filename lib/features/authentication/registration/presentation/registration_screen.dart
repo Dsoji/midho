@@ -6,9 +6,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
 import 'package:mdiho/features/authentication/registration/presentation/widget/custom_dropdown.dart';
 import 'package:mdiho/features/authentication/registration/presentation/widget/step_progress_indicator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
@@ -98,12 +100,47 @@ class RegistrationScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageController = ref.watch(pageControllerProvider);
     final pageIndex = useState(0);
-
+    final isInitialized = useState(false);
     void goBack() {
       if (pageIndex.value > 0) {
         pageController.previousPage(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut);
+      }
+    }
+
+    Future<void> requestPermissionsAndAuthenticate(BuildContext context) async {
+      final localAuth = LocalAuthentication();
+
+      // Step 1: Request notification permission first
+      PermissionStatus notificationPermission =
+          await Permission.notification.request();
+
+      // Step 2: Ensure the app is still mounted before proceeding
+      if (!context.mounted) return;
+
+      // Step 3: Check if biometric authentication is available
+      bool canAuthenticate = await localAuth.canCheckBiometrics ||
+          await localAuth.isDeviceSupported();
+      bool biometricSuccess = false;
+
+      if (canAuthenticate) {
+        try {
+          biometricSuccess = await localAuth.authenticate(
+            localizedReason: "Authenticate to continue",
+            options: const AuthenticationOptions(biometricOnly: true),
+          );
+        } catch (e) {
+          debugPrint("Biometric authentication failed: $e");
+        }
+      }
+
+      // Step 4: Ensure context is still mounted before navigating
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CreatePinScreen()),
+        );
       }
     }
 
@@ -135,12 +172,9 @@ class RegistrationScreen extends HookConsumerWidget {
                       onNext: () => pageController.nextPage(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut)),
-                  UserDetailsStep(onFinish: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const CreatePinScreen()));
-                  }),
+                  UserDetailsStep(
+                    onFinish: () => requestPermissionsAndAuthenticate(context),
+                  ),
                 ],
               ),
             ),

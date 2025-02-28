@@ -51,6 +51,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
