@@ -18,7 +18,7 @@ class MyApp extends HookConsumerWidget {
     final appRouter = AppRouter();
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
+      themeMode: themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       routerDelegate: appRouter.delegate(

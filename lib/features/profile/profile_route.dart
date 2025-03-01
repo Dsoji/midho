@@ -2,6 +2,22 @@ import 'package:auto_route/auto_route.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 final profileRoutes = AutoRoute(
-  page: ProfileRoute.page,
-  children: const [],
+  page: ProfileShellRoute.page,
+  children: [
+    AutoRoute(
+      page: ProfileRoute.page,
+    ),
+    AutoRoute(
+      page: PersonalInfoRoute.page,
+    ),
+    AutoRoute(
+      page: ChangeEmailRoute.page,
+    ),
+    AutoRoute(
+      page: SecurtiySettingsRoute.page,
+    ),
+    AutoRoute(
+      page: PreferenceRoute.page,
+    ),
+  ],
 );

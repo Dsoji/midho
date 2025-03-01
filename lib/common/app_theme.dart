@@ -84,14 +84,14 @@ class CustomColors extends ThemeExtension<CustomColors> {
 }
 
 class ThemeNotifier extends StateNotifier<ThemeMode> {
-  ThemeNotifier() : super(ThemeMode.system); // Start with system mode
+  ThemeNotifier() : super(ThemeMode.light); // Start with system mode
 
   void toggleTheme() {
     state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
   }
 
-  void setTheme(ThemeMode mode) {
-    state = mode;
+  void setThemeMode(ThemeMode mode) {
+    state = mode; // ✅ This updates the theme mode
   }
 }
 

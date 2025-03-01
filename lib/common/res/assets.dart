@@ -39,6 +39,12 @@ class PlaceholderAssets {
   static const btc = '$_base/btc.png';
   static const eth = '$_base/eth.png';
   static const ltc = '$_base/ltc.png';
+  static const amazon = '$_base/amazon.png';
+  static const apple = '$_base/apple.png';
+  static const google = '$_base/google.png';
+  static const steam = '$_base/steam.png';
+  static const visa = '$_base/visa.png';
+  static const walmart = '$_base/walmart.png';
 }
 
 class ImageAssets {

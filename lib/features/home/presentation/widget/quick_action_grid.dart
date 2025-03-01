@@ -34,17 +34,32 @@ class QuickActionsGrid extends ConsumerWidget {
 
           tabsRouter.setActiveIndex(2);
         }),
-        ActionItem(IconsaxPlusLinear.gift, "Sell Gift Cards"),
+        ActionItem(
+          IconsaxPlusLinear.gift,
+          "Sell Gift Cards",
+          onTap: () {
+            final tabsRouter = AutoTabsRouter.of(
+              context,
+            );
+
+            tabsRouter.setActiveIndex(1);
+          },
+        ),
         ActionItem(IconsaxPlusLinear.mobile, "Buy Airtime"),
         ActionItem(IconsaxPlusLinear.wifi_square, "Buy Data"),
         ActionItem(Icons.sports_football_outlined, "Betting"),
         ActionItem(IconsaxPlusLinear.lamp_charge, "Buy Electricity"),
         ActionItem(Icons.monitor, "Tv Cable"),
-        ActionItem(IconsaxPlusLinear.bank, "Bank network", onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const BankNetworkScreen()),
-          );
-        }),
+        ActionItem(
+          IconsaxPlusLinear.bank,
+          "Bank network",
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => const BankNetworkScreen()),
+            );
+          },
+        ),
       ];
     });
     final actions = ref.watch(quickActionsProvider);
