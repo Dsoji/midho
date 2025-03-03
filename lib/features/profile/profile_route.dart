@@ -19,5 +19,17 @@ final profileRoutes = AutoRoute(
     AutoRoute(
       page: PreferenceRoute.page,
     ),
+    AutoRoute(
+      page: ChangePasswordRoute.page,
+    ),
+    AutoRoute(
+      page: ChangePinRoute.page,
+    ),
+    AutoRoute(
+      page: LinkedBanksRoute.page,
+    ),
+    AutoRoute(
+      page: AddNewBankRoute.page,
+    ),
   ],
 );

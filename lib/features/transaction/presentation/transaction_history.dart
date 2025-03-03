@@ -42,6 +42,14 @@ class TransactionHistoryScreen extends HookConsumerWidget {
         "status": "Failed",
         "statusColor": Colors.red,
       },
+      {
+        "icon": IconsaxPlusLinear.arrow_down_1,
+        "title": "Withdrawal",
+        "date": "Jan 15, 2025",
+        "amount": 500000.00,
+        "status": "Completed",
+        "statusColor": Colors.green,
+      },
     ];
     return Scaffold(
       appBar: CustomAppBar(

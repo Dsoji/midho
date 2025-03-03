@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/features/transaction/presentation/transaction_details.dart';
 
 import '../../../../common/res/app_colors.dart';
@@ -113,13 +114,14 @@ class TransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "₦${amount.toStringAsFixed(2)}",
+                  "$amount".formatAsNaira(),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: theme.brightness == Brightness.dark
                         ? AppColors.whiteColor
                         : Colors.black,
+                    fontFamily: '',
                   ),
                 ),
                 const Gap(4),

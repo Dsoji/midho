@@ -9,7 +9,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
 import 'package:mdiho/features/authentication/registration/presentation/registration_screen.dart';
 
-import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_buttons.dart';
@@ -24,37 +23,32 @@ class OnboardingScreen extends HookConsumerWidget {
     final currentPage = useState(0);
 
     // Get the current theme mode
-    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
 
     final pages = [
-      OnboardingPage(
+      const OnboardingPage(
         image: ImageAssets.onboard1,
         title: "Sell Your Crypto",
         description:
             "Convert your Bitcoin or other supported tokens to Naira in just a few taps. Enjoy the best rates and instant payments.",
-        isDarkMode: isDarkMode,
       ),
-      OnboardingPage(
+      const OnboardingPage(
         image: ImageAssets.onboard2,
         title: "Trade Gift Cards for Cash",
         description:
             "Got unused gift cards? Trade them for Naira at competitive rates. Support for popular brands like Amazon, Steam, and more.",
-        isDarkMode: isDarkMode,
       ),
-      OnboardingPage(
+      const OnboardingPage(
         image: ImageAssets.onboard3,
         title: "Pay Your Bills",
         description:
             "Top up airtime, pay for electricity, subscribe to data bundles, or renew your cable TV, all in a few taps.",
-        isDarkMode: isDarkMode,
       ),
-      OnboardingPage(
+      const OnboardingPage(
         image: ImageAssets.onboard4,
         imgHeight: double.infinity,
         title: "Earn Rewards",
         description:
             "Share your referral code with friends and earn rewards in Naira for every successful signup and transaction.",
-        isDarkMode: isDarkMode,
       ),
     ];
 
@@ -157,7 +151,6 @@ class OnboardingPage extends StatelessWidget {
   final String description;
   final double? imgHeight;
   final double? imgWidth;
-  final bool isDarkMode;
 
   const OnboardingPage({
     super.key,
@@ -166,7 +159,6 @@ class OnboardingPage extends StatelessWidget {
     required this.description,
     this.imgHeight = 147,
     this.imgWidth = double.infinity,
-    required this.isDarkMode, // Add isDarkMode
   });
 
   @override

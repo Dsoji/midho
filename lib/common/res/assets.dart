@@ -45,6 +45,8 @@ class PlaceholderAssets {
   static const steam = '$_base/steam.png';
   static const visa = '$_base/visa.png';
   static const walmart = '$_base/walmart.png';
+  static const us = '$_base/us.png';
+  static const ng = '$_base/ng.png';
 }
 
 class ImageAssets {

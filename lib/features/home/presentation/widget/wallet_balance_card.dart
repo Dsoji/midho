@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 
 import '../../../withdrawal/presentation/withdraw_funds_screen.dart';
@@ -63,7 +64,7 @@ class WalletBalanceCard extends HookConsumerWidget {
             children: [
               Text(
                 isBalanceVisible
-                    ? "₦${balance.toStringAsFixed(2)}"
+                    ? balance.toStringAsFixed(2).formatAsNaira()
                     : "••••••••",
                 style: const TextStyle(
                   color: Colors.white,

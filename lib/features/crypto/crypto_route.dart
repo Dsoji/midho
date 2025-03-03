@@ -13,5 +13,8 @@ final cryptoRoutes = AutoRoute(
     AutoRoute(
       page: QrCryptoRoute.page,
     ),
+    AutoRoute(
+      page: StandAloneTransactionDetailsRoute.page,
+    ),
   ],
 );

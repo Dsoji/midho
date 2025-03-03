@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 
 import '../../../../common/res/app_colors.dart';
@@ -88,7 +89,7 @@ class TransactionCard extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: "₦500,000",
+                            text: "500,000".formatAsNaira(),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,

@@ -4,9 +4,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/features/profile/presentation/security_settings/change_password.dart';
+import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart';
 
-import '../../../common/res/app_colors.dart';
-import '../../../common/widgets/custom_app_bar.dart';
+import '../../../../common/res/app_colors.dart';
+import '../../../../common/widgets/custom_app_bar.dart';
 
 @RoutePage()
 class SecurtiySettingsScreen extends HookConsumerWidget {
@@ -46,14 +48,6 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                shadows: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Light shadow color
-                    blurRadius: 8, // Soft shadow effect
-                    spreadRadius: 1, // Spread of the shadow
-                    offset: const Offset(0, 2), // Moves shadow slightly down
-                  ),
-                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -62,14 +56,25 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                     icon: IconsaxPlusLinear.lock_1,
                     title: "Password",
                     actionText: "Change Password",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ChangePasswordScreen()));
+                    },
                     context: context,
                   ),
                   _buildSettingsOption(
                     icon: IconsaxPlusLinear.lock,
                     title: "Transaction PIN",
                     actionText: "Reset PIN",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChangePinScreen()));
+                    },
                     context: context,
                   ),
                   _buildSettingsOption(
@@ -122,6 +127,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
       leading: Icon(
         icon,
         color: AppColors.primaryColor.shade500,
+        size: 16,
       ),
       title: Row(
         mainAxisSize: MainAxisSize.min,
@@ -134,7 +140,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                 color: theme.brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,
-                fontSize: 16,
+                fontSize: 12,
               ),
             ),
           ),

@@ -160,7 +160,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LoginScreen()));

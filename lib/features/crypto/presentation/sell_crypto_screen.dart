@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
@@ -136,14 +138,60 @@ class SellCryptoScreen extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildCurrencyField("You Pay", usdController, "USD",
-                        "assets/flags/us.png", convertUSDToNGN, "\$ ", context),
-                    const SizedBox(height: 16),
-                    const Center(
-                        child: Icon(Icons.arrow_downward, color: Colors.grey)),
-                    const SizedBox(height: 16),
-                    _buildCurrencyField("You Receive", ngnController, "NGN",
-                        "assets/flags/ng.png", convertNGNToUSD, "₦ ", context),
+                    SizedBox(
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              _buildCurrencyField(
+                                  "You Pay",
+                                  usdController,
+                                  "USD",
+                                  PlaceholderAssets.us,
+                                  convertUSDToNGN,
+                                  "\$ ",
+                                  context),
+                              const Gap(4),
+                              _buildCurrencyField(
+                                  "You Receive",
+                                  ngnController,
+                                  "NGN",
+                                  PlaceholderAssets.ng,
+                                  convertNGNToUSD,
+                                  "₦ ",
+                                  context),
+                            ],
+                          ),
+                          Positioned(
+                              top: 0,
+                              bottom: 0,
+                              right: 0,
+                              left: 0,
+                              child: CircleAvatar(
+                                radius: 24, // Adjust size as needed
+                                backgroundColor: Colors
+                                    .transparent, // Transparent background
+                                child: Container(
+                                  padding: const EdgeInsets.all(
+                                      8), // Space around the icon
+                                  decoration: BoxDecoration(
+                                    color: theme.brightness == Brightness.dark
+                                        ? AppColors.secondaryColor.shade400
+                                        : AppColors.primaryColor.shade50,
+                                    shape: BoxShape.circle, // Makes it circular
+                                    // Grey border
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_downward,
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : AppColors.primaryColor.shade500,
+                                  ),
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     InfoWidget(
                       theme: theme,
@@ -207,20 +255,37 @@ class SellCryptoScreen extends HookConsumerWidget {
                     prefixText: currencySign,
                   ),
                   onChanged: onChanged,
+                  style: const TextStyle(
+                    fontFamily: '',
+                  ),
                 ),
               ),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: Colors.white,
-                    backgroundImage: AssetImage(flagPath),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(currency,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 12), // Adds spacing inside the container
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.white, // Background color
+                  borderRadius: BorderRadius.circular(16), // Rounded corners
+                  // Light grey border
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 12,
+                      backgroundColor: Colors.white,
+                      backgroundImage: AssetImage(flagPath),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      currency,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ],

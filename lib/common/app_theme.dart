@@ -83,18 +83,18 @@ class CustomColors extends ThemeExtension<CustomColors> {
   }
 }
 
-class ThemeNotifier extends StateNotifier<ThemeMode> {
-  ThemeNotifier() : super(ThemeMode.light); // Start with system mode
+class ThemeNotifier extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.light;
 
-  void toggleTheme() {
-    state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-  }
+  ThemeMode get themeMode => _themeMode;
 
-  void setThemeMode(ThemeMode mode) {
-    state = mode; // ✅ This updates the theme mode
+  void toggleTheme(ThemeMode mode) {
+    _themeMode = mode;
+    notifyListeners(); // Notify widgets listening
   }
 }
 
-final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>(
-  (ref) => ThemeNotifier(),
-);
+// Create a provider for ThemeNotifier
+final themeNotifierProvider = ChangeNotifierProvider<ThemeNotifier>((ref) {
+  return ThemeNotifier();
+});

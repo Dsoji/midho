@@ -5,9 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-import '../../../common/res/app_colors.dart';
-import '../../../common/widgets/custom_app_bar.dart';
-import '../../../common/widgets/custom_buttons.dart';
+import '../../../../common/res/app_colors.dart';
+import '../../../../common/widgets/custom_app_bar.dart';
+import '../../../../common/widgets/custom_buttons.dart';
 
 @RoutePage()
 class EmailVerificationScreen extends HookConsumerWidget {

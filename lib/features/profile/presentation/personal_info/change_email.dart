@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/profile/presentation/email_verification.dart';
+import 'package:mdiho/features/profile/presentation/personal_info/email_verification.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
-import '../../../common/res/app_colors.dart';
-import '../../../common/widgets/custom_app_bar.dart';
-import '../../../common/widgets/custom_buttons.dart';
-import '../../../common/widgets/custom_textfield.dart';
+import '../../../../common/res/app_colors.dart';
+import '../../../../common/widgets/custom_app_bar.dart';
+import '../../../../common/widgets/custom_buttons.dart';
+import '../../../../common/widgets/custom_textfield.dart';
 
 @RoutePage()
 class ChangeEmailScreen extends HookConsumerWidget {
@@ -23,7 +23,7 @@ class ChangeEmailScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Personal Information",
-        showBackButton: false,
+        showBackButton: true,
         showTitle: true,
         showAction: false,
       ),
@@ -41,7 +41,6 @@ class ChangeEmailScreen extends HookConsumerWidget {
             ),
             const Gap(10),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
                     ? AppColors.secondaryColor.shade500

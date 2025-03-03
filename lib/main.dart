@@ -6,19 +6,19 @@ import 'common/app_theme.dart';
 import 'features/bottomNav/route_observer.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends HookConsumerWidget {
-  const MyApp({super.key});
-
+  MyApp({super.key});
+  final appRouter = AppRouter();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
-    final appRouter = AppRouter();
+    final themeNotifier = ref.watch(themeNotifierProvider);
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      themeMode: themeMode,
+      themeMode: themeNotifier.themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       routerDelegate: appRouter.delegate(

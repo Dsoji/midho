@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -312,7 +313,12 @@ class EmailPasswordStep extends HookConsumerWidget {
                 label: "Referral Code (Optional)",
                 hintText: "Enter referral code",
                 suffixIcon: PasteButton(
-                  onTap: () {},
+                  onTap: () async {
+                    ClipboardData? data = await Clipboard.getData('text/plain');
+                    if (data != null) {
+                      referralController.text = data.text!;
+                    }
+                  },
                 ),
                 onSuffixTap: () {
                   referralController.text = "REF123"; // Simulate pasting a code

@@ -13,8 +13,12 @@ import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../bank_network/presentation/bank_network_screen.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
+import '../../profile/presentation/bank/add_bank.dart';
 import 'widget/bank_info_card.dart';
 import 'widget/info_widget.dart';
+
+final selectedBankProvider =
+    StateProvider<Map<String, dynamic>?>((ref) => null);
 
 @RoutePage()
 class WithdrawFundsScreen extends HookConsumerWidget {
@@ -24,6 +28,8 @@ class WithdrawFundsScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
     final amountController = useTextEditingController();
+    final selectedBank = ref.watch(selectedBankProvider);
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Withdraw Funds",
@@ -124,13 +130,14 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                   ),
                   const Gap(8),
                   BankInfoCard(
-                    image: PlaceholderAssets.gtbank,
-                    name: 'GT Bank',
-                    color: AppColors.primaryColor.shade500,
-                    status: 'Poor Network',
-                    percentage: '90',
-                    actNumber: '1210125678',
-                    actName: 'John Doe',
+                    image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
+                    name: selectedBank?["name"] ?? 'GT Bank',
+                    color: selectedBank?["color"] ??
+                        AppColors.primaryColor.shade500,
+                    status: selectedBank?["status"] ?? 'Poor Network',
+                    percentage: selectedBank?["percentage"] ?? '90',
+                    actNumber: selectedBank?["actNumber"] ?? '1210125678',
+                    actName: selectedBank?["actName"] ?? 'John Doe',
                     onTap: () => _showAddBankDetailsSheet(context),
                   ),
                   const Gap(24),
@@ -144,7 +151,7 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                     controller: amountController,
                     label: "Amount",
                     // Optional
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.number,
                   ),
                   const Gap(24),
                   InfoWidget(
@@ -192,11 +199,10 @@ class WithdrawFundsScreen extends HookConsumerWidget {
   }
 }
 
-class AddBankScreen extends HookWidget {
+class AddBankScreen extends HookConsumerWidget {
   const AddBankScreen({super.key});
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final List<Map<String, dynamic>> bankList = [
       {
         "name": "GTBank",
@@ -269,22 +275,23 @@ class AddBankScreen extends HookWidget {
               itemBuilder: (context, index) {
                 final bank = bankList[index];
 
-                return BankInfoCard(
-                  image: bank["image"] ??
-                      "assets/default.png", // Use a default image if null
-                  name: bank["name"] ?? "Unknown Bank",
-                  color: bank["color"] ?? Colors.grey,
-                  status: bank["status"] ?? "No Status",
-                  percentage: bank["percentage"] ?? "0%",
-                  actNumber: bank["actNumber"] ?? "N/A",
-                  actName: bank["actName"] ?? "N/A",
-                  showBorder: false,
-                  icon: Icons.more_horiz,
-                  onTap: () {
-                    final GlobalKey<State<StatefulWidget>> globalKey =
-                        GlobalKey();
-                    _showPopupMenu(context, globalKey);
-                  },
+                return GestureDetector(
+                  child: BankInfoCard(
+                    image: bank["image"] ??
+                        "assets/default.png", // Use a default image if null
+                    name: bank["name"] ?? "Unknown Bank",
+                    color: bank["color"] ?? Colors.grey,
+                    status: bank["status"] ?? "No Status",
+                    percentage: bank["percentage"] ?? "0%",
+                    actNumber: bank["actNumber"] ?? "N/A",
+                    actName: bank["actName"] ?? "N/A",
+                    showBorder: false,
+                    icon: Icons.more_horiz,
+                    onTap: () {
+                      ref.read(selectedBankProvider.notifier).state = bank;
+                      Navigator.pop(context);
+                    },
+                  ),
                 );
               },
             ),
@@ -294,10 +301,10 @@ class AddBankScreen extends HookWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => const WithdrawFundsScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddNewBankScreen()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor.shade500,

@@ -136,7 +136,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                           },
                         ),
                       ),
-                      const Spacer(),
+                      const Gap(23),
                       // Visibility Toggle Button
                       GestureDetector(
                         onTap: pinNotifier.toggleVisibility,

@@ -5,12 +5,13 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:mdiho/features/profile/presentation/personal_info/change_email.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
-import '../../../common/res/app_colors.dart';
-import '../../../common/widgets/custom_app_bar.dart';
-import '../../../common/widgets/custom_buttons.dart';
-import '../../../common/widgets/custom_textfield.dart';
+import '../../../../common/res/app_colors.dart';
+import '../../../../common/widgets/custom_app_bar.dart';
+import '../../../../common/widgets/custom_buttons.dart';
+import '../../../../common/widgets/custom_textfield.dart';
 
 @RoutePage()
 class PersonalInfoScreen extends HookConsumerWidget {
@@ -54,28 +55,30 @@ class PersonalInfoScreen extends HookConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                shadows: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Light shadow color
-                    blurRadius: 8, // Soft shadow effect
-                    spreadRadius: 1, // Spread of the shadow
-                    offset: const Offset(0, 2), // Moves shadow slightly down
-                  ),
-                ],
               ),
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomTextField(
-                    controller: emailController,
-                    label: "Email",
-                    prefixIcon: Icons.email_outlined, // Optional
-                    keyboardType: TextInputType.emailAddress,
-                    suffixIcon: Icon(
-                      IconsaxPlusLinear.edit_2,
-                      size: 16,
-                      color: AppColors.primaryColor.shade600,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChangeEmailScreen()));
+                    },
+                    child: AbsorbPointer(
+                      child: CustomTextField(
+                        controller: emailController,
+                        label: "Email",
+                        prefixIcon: Icons.email_outlined, // Optional
+                        keyboardType: TextInputType.emailAddress,
+                        suffixIcon: Icon(
+                          IconsaxPlusLinear.edit_2,
+                          size: 16,
+                          color: AppColors.primaryColor.shade600,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -143,7 +146,9 @@ class PersonalInfoScreen extends HookConsumerWidget {
                     text: "Save Changes",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
                   ),

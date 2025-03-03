@@ -8,6 +8,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../../common/widgets/custom_buttons.dart';
 
 @RoutePage()
 class PreferenceScreen extends HookConsumerWidget {
@@ -19,12 +20,13 @@ class PreferenceScreen extends HookConsumerWidget {
     final twoFactorEnabled = useState(true);
     final biometricEnabled = useState(true);
     final selectedIndex = useState(0);
-    final themeNotifier = ref.read(themeProvider.notifier);
+    final themeNotifier =
+        ref.watch(themeNotifierProvider); // ✅ Watch ThemeNotifier
 
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Preferences & Notifications",
-        showBackButton: false,
+        showBackButton: true,
         showTitle: true,
         showAction: false,
       ),
@@ -107,7 +109,9 @@ class PreferenceScreen extends HookConsumerWidget {
                   GestureDetector(
                     onTap: () {
                       selectedIndex.value = 0;
-                      themeNotifier.setThemeMode(ThemeMode.light);
+                      ref
+                          .read(themeNotifierProvider)
+                          .toggleTheme(ThemeMode.light);
                     },
                     child: Container(
                       height: 100, // Fixed height
@@ -128,7 +132,9 @@ class PreferenceScreen extends HookConsumerWidget {
                   GestureDetector(
                     onTap: () {
                       selectedIndex.value = 1;
-                      themeNotifier.setThemeMode(ThemeMode.dark);
+                      ref
+                          .read(themeNotifierProvider)
+                          .toggleTheme(ThemeMode.dark);
                     },
                     child: Container(
                       height: 100, // Fixed height
@@ -147,6 +153,17 @@ class PreferenceScreen extends HookConsumerWidget {
                   ),
                 ],
               ),
+            ),
+            const Gap(16),
+            FullButton(
+              text: "Save Changes",
+              width: double.infinity,
+              height: 48,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              textColor: Colors.white,
+              color: AppColors.primaryColor.shade500,
             ),
           ],
         ),
@@ -168,6 +185,7 @@ class PreferenceScreen extends HookConsumerWidget {
       leading: Icon(
         icon,
         color: AppColors.primaryColor.shade500,
+        size: 16,
       ),
       title: Row(
         mainAxisSize: MainAxisSize.min,
@@ -180,7 +198,7 @@ class PreferenceScreen extends HookConsumerWidget {
                 color: theme.brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,
-                fontSize: 16,
+                fontSize: 12,
               ),
             ),
           ),

@@ -85,7 +85,7 @@ class GiftCardGrid extends HookWidget {
         crossAxisCount: 3, // 2 columns
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 1.1,
+        childAspectRatio: 1,
       ),
       itemCount: giftCards.value.length,
       itemBuilder: (context, index) {
@@ -109,7 +109,7 @@ class GiftCardItem extends StatelessWidget {
       width: 116, // Fixed width
       height: 112, // Fixed height
       child: Card(
-        elevation: 3,
+        elevation: 1,
         color: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade500
             : Colors.white,
