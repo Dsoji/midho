@@ -53,6 +53,7 @@ dependencies:
   image: ^4.5.3
   path_provider: ^2.1.5
   share_plus: ^10.1.4
+  animated_segmented_tab_control: ^2.0.0
 
 dev_dependencies:
   flutter_test:

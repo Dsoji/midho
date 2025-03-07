@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/features/bills/presentation/buy_airtime.dart';
+import 'package:mdiho/features/bills/presentation/cable_bill.dart';
+import 'package:mdiho/features/bills/presentation/electricity_bill.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../bank_network/presentation/bank_network_screen.dart'; // Add this package in pubspec.yaml
+import '../../../bank_network/presentation/bank_network_screen.dart';
+import '../../../bills/presentation/buy_data.dart'; // Add this package in pubspec.yaml
 
 // Define Action Model
 class ActionItem {
@@ -45,11 +49,44 @@ class QuickActionsGrid extends ConsumerWidget {
             tabsRouter.setActiveIndex(1);
           },
         ),
-        ActionItem(IconsaxPlusLinear.mobile, "Buy Airtime"),
-        ActionItem(IconsaxPlusLinear.wifi_square, "Buy Data"),
+        ActionItem(
+          IconsaxPlusLinear.mobile,
+          "Buy Airtime",
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const BuyAirtimeScreen()),
+            );
+          },
+        ),
+        ActionItem(
+          IconsaxPlusLinear.wifi_square,
+          "Buy Data",
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const BuyDataScreen()),
+            );
+          },
+        ),
         ActionItem(Icons.sports_football_outlined, "Betting"),
-        ActionItem(IconsaxPlusLinear.lamp_charge, "Buy Electricity"),
-        ActionItem(Icons.monitor, "Tv Cable"),
+        ActionItem(
+          IconsaxPlusLinear.lamp_charge,
+          "Buy Electricity",
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => const ElectricityBillScreen()),
+            );
+          },
+        ),
+        ActionItem(
+          Icons.monitor,
+          "Tv Cable",
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const CableBillScreen()),
+            );
+          },
+        ),
         ActionItem(
           IconsaxPlusLinear.bank,
           "Bank network",

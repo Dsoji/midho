@@ -96,6 +96,7 @@ class WithdrawalSuccessDialogScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               context.router.push(const HomeRoute());
+              Navigator.pop(context);
             },
             child: Text(
               "Back to Dashboard",

@@ -47,6 +47,12 @@ class PlaceholderAssets {
   static const walmart = '$_base/walmart.png';
   static const us = '$_base/us.png';
   static const ng = '$_base/ng.png';
+  static const airtel = '$_base/airtel.png';
+  static const glo = '$_base/glo.png';
+  static const etisalat = '$_base/etisalat.png';
+  static const mtn = '$_base/mtn.png';
+  static const ie = '$_base/ie.png';
+  static const dstv = '$_base/dstv.png';
 }
 
 class ImageAssets {

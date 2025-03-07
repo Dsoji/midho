@@ -165,7 +165,7 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>

@@ -14,6 +14,8 @@ class CustomTextField extends HookWidget {
   final String? Function(String?)? validator;
   final VoidCallback? onSuffixTap;
   final TextInputType keyboardType;
+  final Color? fillColor;
+  final double? borderRadius;
 
   const CustomTextField({
     super.key,
@@ -27,6 +29,8 @@ class CustomTextField extends HookWidget {
     this.validator,
     this.onSuffixTap,
     this.keyboardType = TextInputType.text,
+    this.fillColor,
+    this.borderRadius,
   });
 
   @override
@@ -82,35 +86,53 @@ class CustomTextField extends HookWidget {
                         )
                       : null),
               hintText: hintText ?? "Enter $label",
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius ?? 12),
                 borderSide: BorderSide(
-                  width: 1,
-                  color: theme.brightness == Brightness.dark
+                  width: 0.5,
+                  color: theme.brightness == Brightness.light
+                      ? AppColors.greyColor.shade50
+                      : AppColors.secondaryColor.shade400,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius ?? 12),
+                borderSide: BorderSide(
+                  width: 0.5,
+                  color: theme.brightness == Brightness.light
+                      ? AppColors.greyColor.shade50
+                      : AppColors.secondaryColor.shade400,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius ?? 12),
+                borderSide: BorderSide(
+                  width: 0.5,
+                  color: theme.brightness == Brightness.light
                       ? AppColors.greyColor.shade50
                       : AppColors.secondaryColor.shade400,
                 ),
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(borderRadius ?? 12),
                 borderSide: BorderSide(
-                  width: 1,
-                  color: theme.brightness == Brightness.dark
+                  width: 0.5,
+                  color: theme.brightness == Brightness.light
                       ? AppColors.greyColor.shade50
                       : AppColors.secondaryColor.shade400,
                 ),
               ),
               disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(borderRadius ?? 12),
                 borderSide: BorderSide(
-                  width: 1,
-                  color: theme.brightness == Brightness.dark
+                  width: 0.5,
+                  color: theme.brightness == Brightness.light
                       ? AppColors.greyColor.shade50
                       : AppColors.secondaryColor.shade400,
                 ),
               ),
               filled: true,
-              fillColor: Colors.transparent,
+              fillColor: fillColor ?? Colors.transparent,
             ),
             validator: validator,
           ),

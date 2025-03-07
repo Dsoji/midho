@@ -39,6 +39,8 @@ class GiftCardScreen extends HookConsumerWidget {
             CustomTextField(
               controller: searchController,
               hintText: "Search Gift Card",
+              fillColor: Colors.white,
+              suffixIcon: const Icon(Icons.search),
             ),
             const Gap(16),
             const GiftCardGrid(),
