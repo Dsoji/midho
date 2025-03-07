@@ -168,7 +168,7 @@ class TransactionPinScreen extends HookConsumerWidget {
 
                   // Next Button
                   FullButton(
-                    text: "Next",
+                    text: "Confirm",
                     width: double.infinity,
                     height: 48,
                     onPressed: () => showWithdrawalSuccessDialog(context),

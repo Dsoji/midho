@@ -91,7 +91,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                     controller: numberController,
                     providers: providers,
                   ),
-                  const Gap(16),
+                  const Gap(24),
                   CustomTextField(
                     controller: amountController,
                     hintText: 'Enter amount',

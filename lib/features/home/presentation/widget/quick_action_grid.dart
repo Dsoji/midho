@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/features/bills/presentation/betting_screen.dart';
 import 'package:mdiho/features/bills/presentation/buy_airtime.dart';
 import 'package:mdiho/features/bills/presentation/cable_bill.dart';
 import 'package:mdiho/features/bills/presentation/electricity_bill.dart';
@@ -67,7 +68,15 @@ class QuickActionsGrid extends ConsumerWidget {
             );
           },
         ),
-        ActionItem(Icons.sports_football_outlined, "Betting"),
+        ActionItem(
+          Icons.sports_football_outlined,
+          "Betting",
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const BettingScreen()),
+            );
+          },
+        ),
         ActionItem(
           IconsaxPlusLinear.lamp_charge,
           "Buy Electricity",
