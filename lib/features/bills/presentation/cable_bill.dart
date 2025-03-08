@@ -46,7 +46,9 @@ class CableBillScreen extends HookConsumerWidget {
     void showSubPlanSheet(BuildContext context) {
       showModalBottomSheet(
         context: context,
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade500
+            : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
@@ -101,7 +103,9 @@ class CableBillScreen extends HookConsumerWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.greyColor.shade500,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade500,
                       ),
                     ),
                   ),
@@ -115,8 +119,11 @@ class CableBillScreen extends HookConsumerWidget {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: AppColors.greyColor.shade50,
+                          width: 0.3,
                         ), // Slightly darker border
-                        color: Colors.white, // Ensures white background
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.transparent
+                            : Colors.white, // Ensures white background
                       ),
                       child: Row(
                         children: [
@@ -133,17 +140,18 @@ class CableBillScreen extends HookConsumerWidget {
                           Expanded(
                             child: Text(
                               selectedPlan.value,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.black, // Ensures dark text
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black, // Ensures dark text
                               ),
                             ),
                           ),
                           const Icon(
                             Icons.arrow_forward_ios,
                             size: 16, // Slightly larger for better visibility
-                            color: Colors.black54, // Softer black tone
                           ),
                         ],
                       ),
@@ -170,7 +178,9 @@ class CableBillScreen extends HookConsumerWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.greyColor.shade500,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade500,
                       ),
                     ),
                   ),
@@ -182,7 +192,10 @@ class CableBillScreen extends HookConsumerWidget {
                           horizontal: 16, vertical: 20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.greyColor.shade50),
+                        border: Border.all(
+                          color: AppColors.greyColor.shade50,
+                          width: 0.3,
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,7 +208,6 @@ class CableBillScreen extends HookConsumerWidget {
                           const Icon(
                             Icons.arrow_forward_ios,
                             size: 12,
-                            color: Colors.black,
                           ),
                         ],
                       ),
@@ -249,6 +261,7 @@ class ProviderBottomSheet extends HookConsumerWidget {
       },
     ];
     final searchController = useTextEditingController();
+    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -274,13 +287,17 @@ class ProviderBottomSheet extends HookConsumerWidget {
             hintText: 'Search Provider',
             isPassword: false,
             suffixIcon: const Icon(Icons.search),
-            fillColor: Colors.white,
+            fillColor: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade500
+                : Colors.white,
             borderRadius: 12,
           ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
             child: Column(
@@ -332,6 +349,7 @@ class SubPlanBottomSheet extends HookConsumerWidget {
       "DSTV Yanga - ₦3,500/Month",
     ];
     final searchController = useTextEditingController();
+    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -342,7 +360,9 @@ class SubPlanBottomSheet extends HookConsumerWidget {
             width: 50,
             height: 4,
             decoration: BoxDecoration(
-              color: const Color(0xFFD9D9D9),
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : const Color(0xFFD9D9D9),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -357,14 +377,18 @@ class SubPlanBottomSheet extends HookConsumerWidget {
             hintText: 'Search subscription Plan',
             isPassword: false,
             suffixIcon: const Icon(Icons.search),
-            fillColor: Colors.white,
+            fillColor: theme.brightness == Brightness.dark
+                ? Colors.transparent
+                : Colors.white,
             borderRadius: 12,
           ),
           const SizedBox(height: 12),
           Container(
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
             child: ListView.separated(

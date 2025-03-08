@@ -35,7 +35,9 @@ class BuyDataScreen extends HookConsumerWidget {
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
         context: context,
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade600
+            : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
@@ -97,7 +99,9 @@ class BuyDataScreen extends HookConsumerWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.greyColor.shade300,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.greyColor.shade300,
                         ),
                       ),
                       RichText(
@@ -106,7 +110,9 @@ class BuyDataScreen extends HookConsumerWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.greyColor.shade300,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : AppColors.greyColor.shade300,
                           ),
                           children: [
                             TextSpan(
@@ -114,7 +120,9 @@ class BuyDataScreen extends HookConsumerWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.greyColor.shade500,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.greyColor.shade500,
                               ),
                             ),
                           ],
@@ -143,7 +151,6 @@ class BuyDataScreen extends HookConsumerWidget {
                           const Icon(
                             Icons.arrow_forward_ios,
                             size: 12,
-                            color: Colors.black,
                           ),
                         ],
                       ),
@@ -189,6 +196,7 @@ class DataPlanBottomSheet extends HookConsumerWidget {
       "500 MB for 1 Day  NGN 500.00",
     ];
     final searchController = useTextEditingController();
+    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -214,14 +222,18 @@ class DataPlanBottomSheet extends HookConsumerWidget {
             hintText: 'Search Data Plan',
             isPassword: false,
             suffixIcon: const Icon(Icons.search),
-            fillColor: Colors.white,
+            fillColor: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade500
+                : Colors.white,
             borderRadius: 12,
           ),
           const SizedBox(height: 12),
           Container(
             height: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
             child: ListView.separated(

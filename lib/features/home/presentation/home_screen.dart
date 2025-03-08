@@ -64,7 +64,7 @@ class HomeScreen extends HookConsumerWidget {
           children: [
             Gap(16),
             WalletBalanceCard(
-              balance: 950000.00,
+              balance: 9500000,
             ),
             Gap(16),
             QuickActionsGrid(),

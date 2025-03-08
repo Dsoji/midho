@@ -31,7 +31,9 @@ class BettingScreen extends HookConsumerWidget {
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
         context: context,
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade600
+            : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
@@ -105,7 +107,9 @@ class BettingScreen extends HookConsumerWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.greyColor.shade500,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade500,
                       ),
                     ),
                   ),
@@ -119,8 +123,11 @@ class BettingScreen extends HookConsumerWidget {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: AppColors.greyColor.shade50,
+                          width: 0.2,
                         ), // Slightly darker border
-                        color: Colors.white, // Ensures white background
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.transparent
+                            : Colors.white, // Ensures white background
                       ),
                       child: Row(
                         children: [
@@ -137,17 +144,18 @@ class BettingScreen extends HookConsumerWidget {
                           Expanded(
                             child: Text(
                               selectedPlan.value,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.black, // Ensures dark text
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black, // Ensures dark text
                               ),
                             ),
                           ),
                           const Icon(
                             Icons.arrow_forward_ios,
                             size: 16, // Slightly larger for better visibility
-                            color: Colors.black54, // Softer black tone
                           ),
                         ],
                       ),
@@ -195,19 +203,34 @@ class BettingScreen extends HookConsumerWidget {
                           highlightColor: Colors.orange
                               .withOpacity(0.1), // Customize highlight color
                           child: Material(
-                            color: const Color(0xFFFAFAFA), // Background color
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.transparent
+                                : const Color(0xFFFAFAFA), // Background color
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
-                              height: 38,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors
+                                          .white54 // Light border for dark mode
+                                      : Colors
+                                          .transparent, // Subtle border for light mode
+                                  width: 1, // Border width
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               padding: const EdgeInsets.symmetric(
                                   vertical:
-                                      8), // Adds spacing for better tap feedback
+                                      4), // Adds spacing for better tap feedback
                               alignment: Alignment.center,
                               child: Text(
                                 amount,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.grey.shade800,
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey.shade800,
                                 ),
                               ),
                             ),
@@ -255,6 +278,8 @@ class ProviderBottomSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
     final List<Map<String, String>> providers = [
       {
         "name": "Sporty Bet",
@@ -280,7 +305,9 @@ class ProviderBottomSheet extends HookConsumerWidget {
             width: 50,
             height: 4,
             decoration: BoxDecoration(
-              color: const Color(0xFFD9D9D9),
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade300
+                  : const Color(0xFFD9D9D9),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -295,13 +322,17 @@ class ProviderBottomSheet extends HookConsumerWidget {
             hintText: 'Search Provider',
             isPassword: false,
             suffixIcon: const Icon(Icons.search),
-            fillColor: Colors.white,
+            fillColor: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade500
+                : Colors.white,
             borderRadius: 12,
           ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
             child: Column(

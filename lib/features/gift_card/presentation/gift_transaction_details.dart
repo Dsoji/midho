@@ -1,44 +1,53 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
-import 'package:mdiho/features/bottomNav/app_router.gr.dart';
-import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
+import 'package:screenshot/screenshot.dart';
 
-import '../../../../common/res/app_colors.dart';
-import '../../../../common/widgets/custom_app_bar.dart';
+import '../../../common/mixin/share_mixin.dart';
+import '../../../common/res/app_colors.dart';
+import '../../../common/widgets/custom_app_bar.dart';
+import '../../transaction/presentation/transaction_details.dart';
 
 @RoutePage()
-class StandAloneTransactionDetailsScreen extends StatelessWidget {
+class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
   final String type;
   final String status;
+  final bool? showAppBar;
 
-  const StandAloneTransactionDetailsScreen({
+  const GiftTransactionDetailsScreen({
     super.key,
     required this.type,
     required this.status,
+    this.showAppBar = true,
   });
 
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> transactionDetails =
         _getTransactionDetails(type, status);
+    final screenshotController = useMemoized(() => ScreenshotController());
+
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Transaction History",
-        showBackButton: false,
-        showTitle: false,
-        showAction: false,
-      ),
-      body: SingleChildScrollView(
+      appBar: showAppBar == true
+          ? const CustomAppBar(
+              title: "Transaction History",
+              showBackButton: true,
+              showTitle: false,
+              showAction: false,
+            )
+          : null,
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (showAppBar != true) const Gap(72),
             Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -48,17 +57,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
                       : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Column(
-                  children: [
-                    _buildTransactionSummary(transactionDetails, context),
-                    const Gap(20),
-                    InfoWidget(
-                      theme: theme,
-                      text:
-                          "The admin team will review your transaction. O,nce approved, you will receive a notification, and your wallet will be credited promptly.",
-                    ),
-                  ],
-                )),
+                child: _buildTransactionSummary(transactionDetails, context)),
             const Gap(12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -73,36 +72,57 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
                 context,
               ),
             ),
-            const Gap(16),
-            FullButton(
-              text: "Go Home",
-              width: double.infinity,
-              height: 60,
-              onPressed: () {
-                context.router.replaceAll([const CryptoRoute()]);
-
-                final tabsRouter = AutoTabsRouter.of(
-                  context,
-                );
-
-                tabsRouter.setActiveIndex(0);
-              },
-              textColor: AppColors.whiteColor,
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.primaryColor.shade500
-                  : Colors.black,
-            ),
-            const Gap(4),
-            FullButton(
-              text: "Contact Support",
-              width: double.infinity,
-              height: 60,
-              onPressed: () {},
-              textColor: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-              color: Colors.transparent,
-            ),
+            if (showAppBar == true)
+              Column(
+                children: [
+                  const Gap(16),
+                  FullButton(
+                    text:
+                        status == 'Failed' ? 'Retry Trade' : "Download Reciept",
+                    width: double.infinity,
+                    height: 60,
+                    onPressed: () async {
+                      if (status != 'Failed') {
+                        await screenshotController
+                            .captureFromWidget(
+                              MediaQuery(
+                                data: MediaQueryData.fromView(
+                                    WidgetsBinding.instance.window),
+                                child: InheritedTheme.captureAll(
+                                  context,
+                                  TransactionDetailsScreen(
+                                    type: type,
+                                    status: status,
+                                    showAppBar: false,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .then(processAndSaveImage)
+                            .catchError((onError) {
+                          // Handle error
+                          debugPrint('Screenshot error: $onError');
+                        });
+                      }
+                    },
+                    textColor: AppColors.whiteColor,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.primaryColor.shade500
+                        : Colors.black,
+                  ),
+                  const Gap(4),
+                  FullButton(
+                    text: "Contact Support",
+                    width: double.infinity,
+                    height: 60,
+                    onPressed: () {},
+                    textColor: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    color: Colors.transparent,
+                  ),
+                ],
+              )
           ],
         ),
       ),
@@ -184,7 +204,10 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               )),
           const Gap(35),
           value == 'View Screenshot'
-              ? const ViewScreenshotButton()
+              ? ViewScreenshotButton(
+                  type: type,
+                  status: status,
+                )
               : Flexible(
                   child: Text(
                     value.formatAsNaira(),
@@ -232,7 +255,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "Crypto Sold": "Bitcoin (BTC)",
             "Rate": "₦25,000,000/BTC",
             "Amount Sold": "0.02 BTC",
-            "Total Received": "500,000.00",
+            "Total Received": "500000",
           }
         };
         break;
@@ -274,7 +297,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               "Gift Card Sold": "STEAM 50-500",
               "Rate": "₦750/USD",
               "Amount Sold": "\$50",
-              "Total Received": "37,000.00",
+              "Total Received": "37000",
             }
           };
         }
@@ -289,7 +312,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
+              "Total Charged": "10500",
             }
           };
         } else if (status == "Failed") {
@@ -315,7 +338,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
+              "Total Charged": "10500",
             }
           };
         }
@@ -347,15 +370,48 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
   }
 }
 
-class ViewScreenshotButton extends StatelessWidget {
-  const ViewScreenshotButton({super.key});
+class ViewScreenshotButton extends HookWidget with ShareMixin {
+  const ViewScreenshotButton({
+    super.key,
+    required this.type,
+    required this.status,
+  });
+  final String type;
+  final String status;
 
   @override
   Widget build(BuildContext context) {
+    final screenshotController = useMemoized(() => ScreenshotController());
+
     final theme = Theme.of(context);
     return OutlinedButton(
-      onPressed: () {
-        // Handle button click
+      onPressed: () async {
+        await screenshotController
+            .captureFromWidget(
+          MediaQuery(
+            data: MediaQueryData.fromView(WidgetsBinding.instance.window),
+            child: InheritedTheme.captureAll(
+              context,
+              TransactionDetailsScreen(
+                type: type,
+                status: status,
+                showAppBar: false,
+              ),
+            ),
+          ),
+        )
+            .then((image) {
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              backgroundColor: Colors.white,
+              content: Image.memory(image),
+            ),
+          );
+        }).catchError((onError) {
+          // Handle error
+          debugPrint('Screenshot error: $onError');
+        });
       },
       style: OutlinedButton.styleFrom(
         backgroundColor: theme.brightness == Brightness.dark

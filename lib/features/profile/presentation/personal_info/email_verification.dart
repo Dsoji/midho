@@ -223,12 +223,8 @@ class EmailVerificationScreen extends HookConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   onPressed: () {
-                    //
-                    context.router.pushAndPopUntil(
-                      const ProfileRoute(),
-                      predicate: (route) =>
-                          route.settings.name == EmailVerificationRoute.name,
-                    );
+                    context.router.replaceAll([const ProfileRoute()]);
+
                     Navigator.pop(context);
                   },
                   child: const Text("Return to Profile"),

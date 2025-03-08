@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
@@ -15,6 +16,7 @@ class GiftCardScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Sell Gift Card",
@@ -39,7 +41,9 @@ class GiftCardScreen extends HookConsumerWidget {
             CustomTextField(
               controller: searchController,
               hintText: "Search Gift Card",
-              fillColor: Colors.white,
+              fillColor: theme.brightness == Brightness.dark
+                  ? Colors.transparent
+                  : Colors.white,
               suffixIcon: const Icon(Icons.search),
             ),
             const Gap(16),
@@ -92,7 +96,16 @@ class GiftCardGrid extends HookWidget {
       itemCount: giftCards.value.length,
       itemBuilder: (context, index) {
         final card = giftCards.value[index];
-        return GiftCardItem(giftCard: card);
+        return InkWell(
+          onTap: () {
+            context.router.push(
+              EnterCardDetailsRoute(
+                giftCard: giftCards.value[index],
+              ),
+            );
+          },
+          child: GiftCardItem(giftCard: card),
+        );
       },
     );
   }
@@ -110,13 +123,14 @@ class GiftCardItem extends StatelessWidget {
     return SizedBox(
       width: 116, // Fixed width
       height: 112, // Fixed height
-      child: Card(
-        elevation: 1,
-        color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade500
-            : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: ShapeDecoration(
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade500
+              : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),

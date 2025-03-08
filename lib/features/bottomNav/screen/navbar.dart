@@ -62,7 +62,7 @@ class NaviBarScreen extends HookConsumerWidget {
                   final icons = [
                     [IconsaxPlusBold.home_2, IconsaxPlusLinear.home_2],
                     [IconsaxPlusBold.gift, IconsaxPlusLinear.gift],
-                    [IconsaxPlusBold.coin, IconsaxPlusLinear.coin],
+                    [IconsaxPlusBold.coin_1, IconsaxPlusLinear.coin_1],
                     [IconsaxPlusBold.arrow_swap, IconsaxPlusLinear.arrow_swap],
                     [IconsaxPlusBold.user, IconsaxPlusLinear.user],
                   ];

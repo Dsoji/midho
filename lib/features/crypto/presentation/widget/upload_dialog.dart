@@ -16,14 +16,25 @@ class UploadProofDialog extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageFile = useState<File?>(null);
+    final imageFiles = useState<List<File>>([]);
     final picker = ImagePicker();
 
     Future<void> pickImage() async {
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        imageFile.value = File(pickedFile.path);
-      }
+      if (imageFiles.value.length >= 2) return; // Enforce max limit of 3
+
+      final pickedFiles = await picker.pickMultiImage();
+      final newImages = pickedFiles
+          .map((file) => File(file.path))
+          .where((file) => !imageFiles.value.contains(file))
+          .toList();
+
+      imageFiles.value = [...imageFiles.value, ...newImages].take(3).toList();
+    }
+
+    void removeImage(int index) {
+      final updatedList = [...imageFiles.value];
+      updatedList.removeAt(index);
+      imageFiles.value = updatedList;
     }
 
     final theme = Theme.of(context);
@@ -54,63 +65,115 @@ class UploadProofDialog extends HookWidget {
           ),
           const SizedBox(height: 12),
           GestureDetector(
-              onTap: pickImage,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade400
-                          : AppColors.greyColor.shade200,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.transparent),
-                child: imageFile.value == null
-                    ? SizedBox(
-                        height: 120,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              IconsaxPlusLinear.image,
-                              size: 24,
+            onTap: imageFiles.value.length < 3 ? pickImage : null,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade400
+                      : AppColors.greyColor.shade200,
+                ),
+                borderRadius: BorderRadius.circular(10),
+                color: theme.brightness == Brightness.dark
+                    ? Colors.transparent
+                    : AppColors.greyColor.shade50,
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (imageFiles.value.isEmpty) ...[
+                    SizedBox(
+                      height: 98,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            IconsaxPlusLinear.image,
+                            size: 24,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Upload Screenshot or Proof of Payment",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
                               color: theme.brightness == Brightness.dark
                                   ? Colors.white
                                   : Colors.black,
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Upload Screenshot or Proof of Payment",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                          ),
+                        ],
+                      ),
+                    )
+                  ] else ...[
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: List.generate(
+                        imageFiles.value.length,
+                        (index) => Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                imageFiles.value[index],
+                                height: 150,
+                                width: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => removeImage(index),
+                              child: const CircleAvatar(
+                                radius: 12,
+                                backgroundColor: Colors.red,
+                                child: Icon(Icons.close,
+                                    color: Colors.white, size: 16),
                               ),
                             ),
                           ],
                         ),
-                      )
-                    : Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(imageFile.value!,
-                                height: 150, fit: BoxFit.cover),
-                          ),
-                          GestureDetector(
-                            onTap: () => imageFile.value = null,
-                            child: const CircleAvatar(
-                              radius: 14,
-                              backgroundColor: Colors.red,
-                              child: Icon(Icons.close,
-                                  color: Colors.white, size: 16),
-                            ),
-                          ),
-                        ],
                       ),
-              )),
+                    ),
+                    if (imageFiles.value.length < 2) ...[
+                      GestureDetector(
+                        onTap: pickImage,
+                        child: Container(
+                          height: 150,
+                          width: 100,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 8),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : AppColors.greyColor.shade100,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.transparent,
+                          ),
+                          child: const Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(IconsaxPlusLinear.add_circle, size: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ]
+                  ]
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
           FullButton(
             text: 'Submit Proof',
@@ -188,12 +251,11 @@ class UploadProofDialog extends HookWidget {
                     ),
                   ),
                   onPressed: () {
-                    context.router.pushAndPopUntil(
+                    context.router.replaceAll([
                       StandAloneTransactionDetailsRoute(
                           type: 'Crypto Sale', status: 'Pending'),
-                      predicate: (route) =>
-                          route.settings.name == QrCryptoRoute.name,
-                    );
+                    ]);
+
                     Navigator.pop(context);
                   },
                   child: const Text(

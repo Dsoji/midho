@@ -80,7 +80,7 @@ class ProviderPhoneInput extends HookWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12), // Full rounded
         border: Border.all(color: Colors.grey.shade300),
-        color: Colors.white,
+        color: Colors.transparent,
       ),
       child: Row(
         children: [

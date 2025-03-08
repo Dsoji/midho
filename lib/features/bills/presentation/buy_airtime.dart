@@ -126,19 +126,31 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                           highlightColor: Colors.orange
                               .withOpacity(0.1), // Customize highlight color
                           child: Material(
-                            color: const Color(0xFFFAFAFA), // Background color
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.transparent
+                                : const Color(0xFFFAFAFA), // Background color
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
-                              height: 38,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors
+                                          .white54 // Light border for dark mode
+                                      : Colors
+                                          .transparent, // Subtle border for light mode
+                                  width: 1, // Border width
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               padding: const EdgeInsets.symmetric(
                                   vertical:
-                                      8), // Adds spacing for better tap feedback
+                                      4), // Adds spacing for better tap feedback
                               alignment: Alignment.center,
                               child: Text(
                                 amount,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.grey.shade800,
                                 ),
                               ),
                             ),
