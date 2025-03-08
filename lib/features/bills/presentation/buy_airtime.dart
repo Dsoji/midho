@@ -175,6 +175,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const TransactionPinScreen(
+                                    selectedType: 'Airtime',
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
                                   )));

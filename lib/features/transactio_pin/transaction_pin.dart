@@ -10,6 +10,8 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../common/widgets/success_dialog.dart';
+import '../bottomNav/app_router.gr.dart';
 
 class PinState {
   final String pin;
@@ -46,15 +48,145 @@ class TransactionPinScreen extends HookConsumerWidget {
   const TransactionPinScreen({
     super.key,
     required this.info,
+    this.selectedType,
   });
 
   final String info;
+  final String? selectedType;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinController = useTextEditingController();
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
+    void handleDialog() {
+      if (selectedType == "Airtime") {
+        showSuccessDialog(
+          context: context,
+          title: "Airtime Purchase Successful!",
+          details: [
+            {"Network": "Glo"},
+            {"Phone Number": "08012345678"},
+            {"Amount Sold": "₦500"},
+            {"Payment Source": "Wallet"},
+          ],
+          buttonText: "View Details",
+          onButtonPressed: () {
+            context.router.replaceAll([
+              StandAloneTransactionDetailsRoute(
+                  type: 'Bill Payment', status: 'Completed'),
+            ]);
+            Navigator.pop(context);
+          },
+          onSecondaryAction: () {
+            context.router.replaceAll([const BuyAirtimeRoute()]);
+          },
+          primaryButtonColor: Colors.orange,
+          backgroundColor: Colors.blue.shade900,
+        );
+      } else if (selectedType == "Data") {
+        showSuccessDialog(
+          context: context,
+          title: "Data Purchase Successful!",
+          details: [
+            {"Network": "MTN"},
+            {"Phone Number": "08012345678"},
+            {"Plan": "1GB @ ₦500"},
+            {"Payment Source": "Wallet"},
+          ],
+          buttonText: "View Details",
+          onButtonPressed: () {
+            context.router.replaceAll([
+              StandAloneTransactionDetailsRoute(
+                  type: 'Bill Payment', status: 'Completed'),
+            ]);
+            Navigator.pop(context);
+          },
+          onSecondaryAction: () {
+            context.router.replaceAll([const BuyDataRoute()]);
+          },
+          primaryButtonColor: Colors.orange,
+          backgroundColor: Colors.blue.shade900,
+        );
+      } else if (selectedType == "Electricity") {
+        showSuccessDialog(
+          context: context,
+          title: "Transaction Summary",
+          details: [
+            {"Provider": "Ikeja Electric"},
+            {"Meter Number": "12345678901"},
+            {"Meter Type": "Prepaid"},
+            {"Amount": "₦5,000"},
+            {"Payment Source": "Wallet"},
+            {"Token": "1234-5678-9012"},
+          ],
+          buttonText: "View Details",
+          onButtonPressed: () {
+            context.router.replaceAll([
+              StandAloneTransactionDetailsRoute(
+                  type: 'Bill Payment', status: 'Completed'),
+            ]);
+            Navigator.pop(context);
+          },
+          onSecondaryAction: () {
+            context.router.replaceAll([const ElectricityBillRoute()]);
+          },
+          primaryButtonColor: Colors.orange,
+          backgroundColor: Colors.blue.shade900,
+        );
+      } else if (selectedType == "DSTV") {
+        showSuccessDialog(
+          context: context,
+          title: "Subscription Successful!",
+          details: [
+            {"Provider": "DSTV"},
+            {"Smart Card Number": "12345678901"},
+            {"Package": "DSTV Compact\n₦8,000/Month"},
+            {"Amount": "₦8,000"},
+            {"Payment Source": "Wallet"},
+            {"Token": "1234-5678-9012"},
+          ],
+          buttonText: "View Details",
+          onButtonPressed: () {
+            context.router.replaceAll([
+              StandAloneTransactionDetailsRoute(
+                  type: 'Bill Payment', status: 'Completed'),
+            ]);
+            Navigator.pop(context);
+          },
+          onSecondaryAction: () {
+            context.router.replaceAll([const CableBillRoute()]);
+          },
+          primaryButtonColor: Colors.orange,
+          backgroundColor: Colors.white,
+        );
+      } else if (selectedType == "Betting") {
+        showSuccessDialog(
+          context: context,
+          title: "Your deposit of ₦5,000 to SportyBet was successful.",
+          details: [],
+          buttonText: "View Details",
+          onButtonPressed: () {
+            context.router.replaceAll([
+              StandAloneTransactionDetailsRoute(
+                  type: 'Bill Payment', status: 'Completed'),
+            ]);
+            Navigator.pop(context);
+          },
+          onSecondaryAction: () {
+            context.router.replaceAll([const BettingRoute()]);
+          },
+          primaryButtonColor: Colors.black,
+          backgroundColor: Colors.white,
+        );
+      } else if (selectedType == null) {
+        showDialog(
+          context: context,
+          builder: (context) => const WithdrawalSuccessDialogScreen(),
+        );
+      }
+    }
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'Enter Your Transaction Pin',
@@ -171,7 +303,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                     text: "Confirm",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () => showWithdrawalSuccessDialog(context),
+                    onPressed: () => handleDialog(),
                     doublePressed: () => showWithdrawalFailedDialog(context),
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
@@ -229,13 +361,6 @@ class TransactionPinScreen extends HookConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void showWithdrawalSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const WithdrawalSuccessDialogScreen(),
     );
   }
 

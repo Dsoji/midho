@@ -16,90 +16,102 @@ class ProfileScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Profile",
-        showBackButton: false,
-        showTitle: true,
-        showAction: false,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Manage your personal information, security settings, and linked accounts all in one place.",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const Gap(10),
+    return PopScope(
+      canPop: false, // Prevent default back navigation
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          final tabsRouter = AutoTabsRouter.of(
+            context,
+          );
 
-            // User Info Card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(18),
+          tabsRouter.setActiveIndex(0);
+        }
+      },
+      child: Scaffold(
+        appBar: const CustomAppBar(
+          title: "Profile",
+          showBackButton: false,
+          showTitle: true,
+          showAction: false,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Manage your personal information, security settings, and linked accounts all in one place.",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "John Doe",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
+              const Gap(10),
+
+              // User Info Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "John Doe",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           ),
-                        ),
-                        const Text(
-                          "john.doe@example.com",
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
-                      ],
+                          const Text(
+                            "john.doe@example.com",
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const ReferralButton(),
-                ],
+                    const ReferralButton(),
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Profile Options List (Fixed: Using SizedBox instead of Expanded)
-            // Adjust height as needed
-            const ProfileOption(),
-            const Gap(20),
+              // Profile Options List (Fixed: Using SizedBox instead of Expanded)
+              // Adjust height as needed
+              const ProfileOption(),
+              const Gap(20),
 
-            // Sign Out Section in a Separate Container
-            Container(
-              height: 48,
-              padding: const EdgeInsets.only(bottom: 4),
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(12),
+              // Sign Out Section in a Separate Container
+              Container(
+                height: 48,
+                padding: const EdgeInsets.only(bottom: 4),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: buildProfileOption(
+                  IconsaxPlusLinear.logout,
+                  "Sign Out",
+                  context,
+                  () {},
+                  isDestructive: true,
+                ),
               ),
-              child: buildProfileOption(
-                IconsaxPlusLinear.logout,
-                "Sign Out",
-                context,
-                () {},
-                isDestructive: true,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

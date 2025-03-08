@@ -223,6 +223,7 @@ class CableBillScreen extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const TransactionPinScreen(
+                                    selectedType: 'DSTV',
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
                                   )));

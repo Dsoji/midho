@@ -79,7 +79,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               width: double.infinity,
               height: 60,
               onPressed: () {
-                context.router.replaceAll([const CryptoRoute()]);
+                context.router.replaceAll([const HomeRoute()]);
 
                 final tabsRouter = AutoTabsRouter.of(
                   context,

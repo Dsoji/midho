@@ -17,38 +17,50 @@ class GiftCardScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Sell Gift Card",
-        showBackButton: false,
-        showTitle: true,
-        showAction: false,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Choose the type of gift card you'd like to sell from our supported list",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+    return PopScope(
+      canPop: false, // Prevent default back navigation
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          final tabsRouter = AutoTabsRouter.of(
+            context,
+          );
+
+          tabsRouter.setActiveIndex(0);
+        }
+      },
+      child: Scaffold(
+        appBar: const CustomAppBar(
+          title: "Sell Gift Card",
+          showBackButton: false,
+          showTitle: true,
+          showAction: false,
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Choose the type of gift card you'd like to sell from our supported list",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
-            ),
-            const Gap(16),
-            CustomTextField(
-              controller: searchController,
-              hintText: "Search Gift Card",
-              fillColor: theme.brightness == Brightness.dark
-                  ? Colors.transparent
-                  : Colors.white,
-              suffixIcon: const Icon(Icons.search),
-            ),
-            const Gap(16),
-            const GiftCardGrid(),
-          ],
+              const Gap(16),
+              CustomTextField(
+                controller: searchController,
+                hintText: "Search Gift Card",
+                fillColor: theme.brightness == Brightness.dark
+                    ? Colors.transparent
+                    : Colors.white,
+                suffixIcon: const Icon(Icons.search),
+              ),
+              const Gap(16),
+              const GiftCardGrid(),
+            ],
+          ),
         ),
       ),
     );

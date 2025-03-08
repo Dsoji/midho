@@ -13,5 +13,23 @@ final homeRoutes = AutoRoute(
     AutoRoute(
       page: TransactionPinRoute.page,
     ),
+    AutoRoute(
+      page: BuyAirtimeRoute.page,
+    ),
+    AutoRoute(
+      page: BuyDataRoute.page,
+    ),
+    AutoRoute(
+      page: ElectricityBillRoute.page,
+    ),
+    AutoRoute(
+      page: BettingRoute.page,
+    ),
+    AutoRoute(
+      page: CableBillRoute.page,
+    ),
+    AutoRoute(
+      page: StandAloneTransactionDetailsRoute.page,
+    ),
   ],
 );

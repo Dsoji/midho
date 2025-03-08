@@ -33,26 +33,38 @@ class CryptoScreen extends HookConsumerWidget {
       },
     ];
 
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Select Crypto To Sell",
-        showBackButton: false,
-        showTitle: true,
-        showAction: false,
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: cryptoData.length,
-        separatorBuilder: (context, index) => const Gap(8),
-        itemBuilder: (context, index) {
-          final data = cryptoData[index];
-          return CryptoCard(
-            img: data['img']!,
-            name: data['name']!,
-            symbol: data['symbol']!,
-            rate: data['rate']!,
+    return PopScope(
+      canPop: false, // Prevent default back navigation
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          final tabsRouter = AutoTabsRouter.of(
+            context,
           );
-        },
+
+          tabsRouter.setActiveIndex(0);
+        }
+      },
+      child: Scaffold(
+        appBar: const CustomAppBar(
+          title: "Select Crypto To Sell",
+          showBackButton: false,
+          showTitle: true,
+          showAction: false,
+        ),
+        body: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: cryptoData.length,
+          separatorBuilder: (context, index) => const Gap(8),
+          itemBuilder: (context, index) {
+            final data = cryptoData[index];
+            return CryptoCard(
+              img: data['img']!,
+              name: data['name']!,
+              symbol: data['symbol']!,
+              rate: data['rate']!,
+            );
+          },
+        ),
       ),
     );
   }

@@ -281,6 +281,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const TransactionPinScreen(
+                                    selectedType: 'Electricity',
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
                                   )));

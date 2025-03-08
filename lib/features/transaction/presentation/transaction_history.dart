@@ -51,30 +51,42 @@ class TransactionHistoryScreen extends HookConsumerWidget {
         "statusColor": Colors.green,
       },
     ];
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: "Transaction History",
-        showBackButton: false,
-        showTitle: true,
-        showAction: true,
-        centerTitle: true,
-        onActionPressed: () => showFilterBottomSheet(context),
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        itemCount: transactions.length,
-        separatorBuilder: (context, index) => const Gap(8),
-        itemBuilder: (context, index) {
-          final transaction = transactions[index];
-          return TransactionCard(
-            icon: transaction["icon"] as IconData,
-            title: transaction["title"] as String,
-            date: transaction["date"] as String,
-            amount: transaction["amount"] as double,
-            status: transaction["status"] as String,
-            statusColor: transaction["statusColor"] as Color,
+    return PopScope(
+      canPop: false, // Prevent default back navigation
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          final tabsRouter = AutoTabsRouter.of(
+            context,
           );
-        },
+
+          tabsRouter.setActiveIndex(0);
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: "Transaction History",
+          showBackButton: false,
+          showTitle: true,
+          showAction: true,
+          centerTitle: true,
+          onActionPressed: () => showFilterBottomSheet(context),
+        ),
+        body: ListView.separated(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          itemCount: transactions.length,
+          separatorBuilder: (context, index) => const Gap(8),
+          itemBuilder: (context, index) {
+            final transaction = transactions[index];
+            return TransactionCard(
+              icon: transaction["icon"] as IconData,
+              title: transaction["title"] as String,
+              date: transaction["date"] as String,
+              amount: transaction["amount"] as double,
+              status: transaction["status"] as String,
+              statusColor: transaction["statusColor"] as Color,
+            );
+          },
+        ),
       ),
     );
   }

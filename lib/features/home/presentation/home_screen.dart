@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -16,64 +17,94 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 24.0),
-          child: CircleAvatar(
-            radius: 19,
-            backgroundColor: Colors.grey,
-            backgroundImage: AssetImage(
-              PlaceholderAssets.pfp,
+    int backPressCounter = 0;
+    DateTime? lastBackPressTime;
+    return PopScope(
+      canPop: false, // Prevent default back navigation
+      onPopInvoked: (didPop) async {
+        DateTime now = DateTime.now();
+
+        // Reset counter if last press was more than 2 seconds ago
+        if (lastBackPressTime == null ||
+            now.difference(lastBackPressTime!) > const Duration(seconds: 2)) {
+          backPressCounter = 0;
+        }
+
+        lastBackPressTime = now;
+        backPressCounter++;
+
+        if (backPressCounter < 2) {
+          Fluttertoast.showToast(
+            msg: "Swipe back again to exit",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black54,
+            textColor: Colors.white,
+            fontSize: 14.0,
+          );
+        } else {
+          Navigator.of(context).pop(); // Allow exit on second back swipe
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const Padding(
+            padding: EdgeInsets.only(left: 24.0),
+            child: CircleAvatar(
+              radius: 19,
+              backgroundColor: Colors.grey,
+              backgroundImage: AssetImage(
+                PlaceholderAssets.pfp,
+              ),
             ),
           ),
+          centerTitle: false,
+          title: const SizedBox(
+            width: 141,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome John 👋',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  'What are we doing today?',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                  ),
+                )
+              ],
+            ),
+          ),
+          actions: const [
+            ReferralButton(),
+            Gap(8),
+            CustomIconContainer(),
+            Gap(24),
+          ],
         ),
-        centerTitle: false,
-        title: const SizedBox(
-          width: 141,
+        body: const SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Welcome John 👋',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
+              Gap(16),
+              WalletBalanceCard(
+                balance: 9500000,
               ),
-              Text(
-                'What are we doing today?',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12,
-                ),
+              Gap(16),
+              QuickActionsGrid(),
+              Gap(16),
+              TransactionCard(),
+              Gap(
+                100,
               )
             ],
           ),
-        ),
-        actions: const [
-          ReferralButton(),
-          Gap(8),
-          CustomIconContainer(),
-          Gap(24),
-        ],
-      ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Column(
-          children: [
-            Gap(16),
-            WalletBalanceCard(
-              balance: 9500000,
-            ),
-            Gap(16),
-            QuickActionsGrid(),
-            Gap(16),
-            TransactionCard(),
-            Gap(
-              100,
-            )
-          ],
         ),
       ),
     );
