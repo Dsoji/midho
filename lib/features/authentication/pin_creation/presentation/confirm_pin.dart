@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -104,6 +105,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
 
                 // PIN Code Field
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
                       width: 201,
@@ -139,16 +141,29 @@ class ConfirmPinScreen extends HookConsumerWidget {
                         },
                       ),
                     ),
-                    const Spacer(),
+                    const Gap(8),
                     // Visibility Toggle Button
-                    IconButton(
-                      icon: Icon(
-                        pinState.isPinHidden
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: Colors.grey,
+                    InkWell(
+                      onTap: pinNotifier.toggleVisibility,
+                      child: Container(
+                        width: 53,
+                        height: 53,
+                        decoration: ShapeDecoration(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade300
+                              : Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            pinState.isPinHidden
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.grey,
+                          ),
+                        ),
                       ),
-                      onPressed: pinNotifier.toggleVisibility,
                     ),
                   ],
                 ),

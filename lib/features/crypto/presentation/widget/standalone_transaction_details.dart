@@ -103,6 +103,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
                   : Colors.black,
               color: Colors.transparent,
             ),
+            const Gap(150),
           ],
         ),
       ),

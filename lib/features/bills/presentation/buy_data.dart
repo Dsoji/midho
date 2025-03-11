@@ -34,6 +34,7 @@ class BuyDataScreen extends HookConsumerWidget {
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade600
@@ -51,7 +52,7 @@ class BuyDataScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: const CustomAppBar(
-        title: "Buy Airtime",
+        title: "Buy Data",
         showBackButton: true,
         showTitle: true,
         showAction: false,
@@ -199,7 +200,7 @@ class DataPlanBottomSheet extends HookConsumerWidget {
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -260,7 +261,7 @@ class DataPlanBottomSheet extends HookConsumerWidget {
               },
             ),
           ),
-          const Gap(150),
+          const Gap(130),
         ],
       ),
     );

@@ -101,6 +101,7 @@ class RegistrationScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageController = ref.watch(pageControllerProvider);
     final pageIndex = useState(0);
+
     final isInitialized = useState(false);
     void goBack() {
       if (pageIndex.value > 0) {
@@ -146,40 +147,51 @@ class RegistrationScreen extends HookConsumerWidget {
     }
 
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: StepProgressIndicator(
-          currentStep: pageIndex.value + 1,
-          totalSteps: 3,
-          onBack: pageIndex.value > 0 ? goBack : null,
+    return PopScope(
+      canPop: pageIndex.value == 0, // Prevents popping when not on first page
+      onPopInvoked: (didPop) {
+        if (!didPop && pageIndex.value > 0) {
+          goBack();
+        } else if (!didPop && pageIndex.value > 0) {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: StepProgressIndicator(
+            currentStep: pageIndex.value + 1,
+            totalSteps: 3,
+            onBack: pageIndex.value > 0 ? goBack : null,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              child: PageView(
-                controller: pageController,
-                physics: const BouncingScrollPhysics(),
-                onPageChanged: (index) => pageIndex.value = index,
-                children: [
-                  EmailPasswordStep(
-                      onNext: () => pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut)),
-                  OtpVerificationStep(
-                      onNext: () => pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut)),
-                  UserDetailsStep(
-                    onFinish: () => requestPermissionsAndAuthenticate(context),
-                  ),
-                ],
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: pageController,
+                  physics: const BouncingScrollPhysics(),
+                  onPageChanged: (index) => pageIndex.value = index,
+                  children: [
+                    EmailPasswordStep(
+                        onNext: () => pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut)),
+                    OtpVerificationStep(
+                        onNext: () => pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut)),
+                    UserDetailsStep(
+                      onFinish: () =>
+                          requestPermissionsAndAuthenticate(context),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

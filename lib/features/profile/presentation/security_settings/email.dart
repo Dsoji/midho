@@ -9,21 +9,24 @@ import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import 'email_verify.dart';
 
 @RoutePage()
-class ChangePasswordScreen extends HookConsumerWidget {
-  const ChangePasswordScreen({super.key});
+class VerifyEmailScreen extends HookConsumerWidget {
+  const VerifyEmailScreen({
+    super.key,
+    required this.type,
+  });
+  final String type;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final pswrdController = useTextEditingController();
-    final newPswrdController = useTextEditingController();
-    final confirmPswrdController = useTextEditingController();
+    final emailController = useTextEditingController();
 
     return Scaffold(
       appBar: const CustomAppBar(
-        title: 'Change Password',
+        title: "Verify Email",
         showBackButton: true,
         showTitle: true,
         showAction: false,
@@ -34,7 +37,7 @@ class ChangePasswordScreen extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Create a strong password to protect your account.",
+              "Input your email to recieve a verificaiton code.",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -44,57 +47,53 @@ class ChangePasswordScreen extends HookConsumerWidget {
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.secondaryColor.shade500
                     : AppColors.whiteColor.shade100,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
+                shadows: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1), // Light shadow color
+                    blurRadius: 8, // Soft shadow effect
+                    spreadRadius: 1, // Spread of the shadow
+                    offset: const Offset(0, 2), // Moves shadow slightly down
+                  ),
+                ],
               ),
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Email Field
                   CustomTextField(
-                    controller: pswrdController,
-                    label: "Current Password",
-                    prefixIcon: Icons.lock_outline, // Optional
-                    isPassword: true,
+                    controller: emailController,
+                    label: "Email",
+                    prefixIcon: Icons.email_outlined, // Optional
+                    keyboardType: TextInputType.emailAddress,
                   ),
-                  const Gap(28),
+
+                  const SizedBox(height: 28),
                   InfoWidget(
                     theme: theme,
                     text:
-                        "Use at least 8 characters, including numbers and special characters",
+                        'Ensure your email is valid. A verification code will be sent to confirm the change.',
                   ),
-                  const Gap(40),
-                  CustomTextField(
-                    controller: newPswrdController,
-                    label: "New Password",
-                    prefixIcon: Icons.lock_outline, // Optional
-                    isPassword: true,
-                  ),
-                  const Gap(28),
-                  CustomTextField(
-                    controller: confirmPswrdController,
-                    label: "Confirm New Password",
-                    prefixIcon: Icons.lock_outline, // Optional
-                    isPassword: true,
-                  ),
-                  const Gap(28),
-                  InfoWidget(
-                    theme: theme,
-                    text:
-                        "Avoid using easily guessable information like names or birthdates.",
-                  ),
-                  const Gap(25),
+                  const SizedBox(height: 20),
+                  // Continue Button
                   FullButton(
-                    text: "Save Changes",
+                    text: "Continue",
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EmailVerifyScreen(
+                            type: type,
+                          ),
+                        ),
+                      );
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
@@ -104,17 +103,17 @@ class ChangePasswordScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.of(context).pop();
                     },
                     textColor: theme.brightness == Brightness.dark
                         ? Colors.white
                         : Colors.black,
                     color: Colors.transparent,
                   ),
+                  const Gap(20),
                 ],
               ),
             ),
-            const Gap(150),
           ],
         ),
       ),

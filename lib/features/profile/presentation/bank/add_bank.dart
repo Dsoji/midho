@@ -29,7 +29,7 @@ class AddNewBankScreen extends HookConsumerWidget {
         showTitle: true,
         showAction: false,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -157,6 +157,7 @@ class AddNewBankScreen extends HookConsumerWidget {
                 ],
               ),
             ),
+            const Gap(150),
           ],
         ),
       ),

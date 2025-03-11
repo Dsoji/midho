@@ -30,6 +30,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     final selectedCategory = useState<String>("Select Sub-Category");
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         backgroundColor: const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(

@@ -4,8 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/features/profile/presentation/security_settings/change_password.dart';
-import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:mdiho/features/profile/presentation/security_settings/email.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
@@ -18,7 +18,29 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final twoFactorEnabled = useState(true);
-    final biometricEnabled = useState(true);
+    final biometricEnabled = useState(false);
+    final localAuth = LocalAuthentication();
+
+    Future<void> authenticateAndToggle(bool value) async {
+      bool canAuthenticate = await localAuth.canCheckBiometrics ||
+          await localAuth.isDeviceSupported();
+      bool biometricSuccess = false;
+
+      if (canAuthenticate) {
+        try {
+          biometricSuccess = await localAuth.authenticate(
+            localizedReason: "Enable biometric authentication",
+            options: const AuthenticationOptions(biometricOnly: true),
+          );
+        } catch (e) {
+          debugPrint("Biometric authentication failed: $e");
+        }
+      }
+
+      if (biometricSuccess) {
+        biometricEnabled.value = value;
+      }
+    }
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -58,10 +80,13 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                     actionText: "Change Password",
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const ChangePasswordScreen()));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const VerifyEmailScreen(
+                            type: 'password',
+                          ),
+                        ),
+                      );
                     },
                     context: context,
                   ),
@@ -71,9 +96,13 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                     actionText: "Reset PIN",
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ChangePinScreen()));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const VerifyEmailScreen(
+                            type: 'pin',
+                          ),
+                        ),
+                      );
                     },
                     context: context,
                   ),
@@ -82,7 +111,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                     title: "Two-Factor Authentication",
                     actionWidget: _buildComingSoonLabel(context),
                     trailing: Switch(
-                      value: twoFactorEnabled.value,
+                      value: false,
                       activeColor: Colors.green.shade700,
                       onChanged: (value) {
                         twoFactorEnabled.value = value;
@@ -97,9 +126,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                     trailing: Switch(
                       value: biometricEnabled.value,
                       activeColor: Colors.green.shade700,
-                      onChanged: (value) {
-                        biometricEnabled.value = value;
-                      },
+                      onChanged: (value) => authenticateAndToggle(value),
                       thumbColor: WidgetStateProperty.all(Colors.white),
                     ),
                     context: context,

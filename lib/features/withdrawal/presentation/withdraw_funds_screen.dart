@@ -177,6 +177,7 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                 ],
               ),
             ),
+            const Gap(150),
           ],
         ),
       ),

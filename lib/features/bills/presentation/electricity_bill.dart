@@ -37,6 +37,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade600
@@ -292,6 +293,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
                 ],
               ),
             ),
+            const Gap(150),
           ],
         ),
       ),

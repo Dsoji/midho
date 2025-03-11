@@ -110,6 +110,7 @@ class ProfileScreen extends HookConsumerWidget {
                   isDestructive: true,
                 ),
               ),
+              const Gap(150),
             ],
           ),
         ),

@@ -52,7 +52,7 @@ class QrCryptoScreen extends HookConsumerWidget {
           showTitle: true,
           showAction: false,
         ),
-        body: Padding(
+        body: SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,6 +187,7 @@ class QrCryptoScreen extends HookConsumerWidget {
                   ],
                 ),
               ),
+              const Gap(150),
             ],
           ),
         ));

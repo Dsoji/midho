@@ -41,7 +41,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               showAction: false,
             )
           : null,
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +121,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                     color: Colors.transparent,
                   ),
                 ],
-              )
+              ),
+            const Gap(150),
           ],
         ),
       ),

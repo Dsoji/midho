@@ -30,6 +30,7 @@ class CableBillScreen extends HookConsumerWidget {
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         backgroundColor: const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
@@ -45,6 +46,7 @@ class CableBillScreen extends HookConsumerWidget {
 
     void showSubPlanSheet(BuildContext context) {
       showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade500
@@ -234,6 +236,7 @@ class CableBillScreen extends HookConsumerWidget {
                 ],
               ),
             ),
+            const Gap(150)
           ],
         ),
       ),

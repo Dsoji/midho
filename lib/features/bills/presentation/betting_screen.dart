@@ -30,6 +30,7 @@ class BettingScreen extends HookConsumerWidget {
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade600
@@ -266,6 +267,7 @@ class BettingScreen extends HookConsumerWidget {
                 ],
               ),
             ),
+            const Gap(150),
           ],
         ),
       ),

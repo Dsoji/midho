@@ -277,6 +277,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                 ],
               ),
             ),
+            const Gap(150),
           ],
         ),
       ),
