@@ -182,7 +182,9 @@ class TransactionPinScreen extends HookConsumerWidget {
       } else if (selectedType == null) {
         showDialog(
           context: context,
-          builder: (context) => const WithdrawalSuccessDialogScreen(),
+          builder: (context) => const WithdrawalSuccessDialogScreen(
+            isHome: null,
+          ),
         );
       }
     }

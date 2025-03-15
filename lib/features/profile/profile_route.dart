@@ -31,5 +31,17 @@ final profileRoutes = AutoRoute(
     AutoRoute(
       page: AddNewBankRoute.page,
     ),
+    AutoRoute(
+      page: WithdrawReferallRoute.page,
+    ),
+    AutoRoute(
+      page: SuggestionRoute.page,
+    ),
+    AutoRoute(
+      page: ReferallRoute.page,
+    ),
+    AutoRoute(
+      page: SupportFaqRoute.page,
+    ),
   ],
 );

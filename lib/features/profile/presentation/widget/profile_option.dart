@@ -4,6 +4,8 @@ import 'package:mdiho/features/profile/presentation/bank/bank_list.dart';
 import 'package:mdiho/features/profile/presentation/personal_info/personal_information.dart';
 import 'package:mdiho/features/profile/presentation/preference_scren.dart';
 import 'package:mdiho/features/profile/presentation/security_settings/security_settings.dart';
+import 'package:mdiho/features/suggestion_box/presentation/suggestion_screen.dart';
+import 'package:mdiho/features/support_faq/presentation/support_faq_screen.dart';
 
 import '../../../../common/res/app_colors.dart';
 
@@ -88,7 +90,12 @@ class ProfileOption extends StatelessWidget {
             IconsaxPlusLinear.notification_status,
             "Suggestion Box",
             context,
-            () {},
+            () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SuggestionScreen()));
+            },
           ),
           Divider(
             thickness: 0.3,
@@ -98,7 +105,12 @@ class ProfileOption extends StatelessWidget {
             Icons.help_outline,
             "Support and FAQ",
             context,
-            () {},
+            () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SupportFaqScreen()));
+            },
           ),
         ],
       ),

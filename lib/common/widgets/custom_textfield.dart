@@ -16,9 +16,13 @@ class CustomTextField extends HookWidget {
   final TextInputType keyboardType;
   final Color? fillColor;
   final double? borderRadius;
+  final int? maxLines;
+  final int? maxLength;
 
   const CustomTextField({
     super.key,
+    this.maxLines = 1,
+    this.maxLength,
     required this.controller,
     this.label,
     this.hintText,
@@ -52,11 +56,13 @@ class CustomTextField extends HookWidget {
               )),
         const SizedBox(height: 8),
         SizedBox(
-          height: 52,
+          height: maxLines == 1 ? 52 : null,
           child: TextFormField(
             controller: controller,
             obscureText: obscureText.value,
             keyboardType: keyboardType,
+            maxLines: maxLines,
+            maxLength: maxLength,
             decoration: InputDecoration(
               prefixIcon: prefixIcon != null
                   ? Icon(
@@ -133,6 +139,7 @@ class CustomTextField extends HookWidget {
               ),
               filled: true,
               fillColor: fillColor ?? Colors.transparent,
+              counterText: "", // Hides maxLength counter
             ),
             validator: validator,
           ),

@@ -39,7 +39,7 @@ class InfoWidget extends StatelessWidget {
               text,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
-                fontSize: 14,
+                fontSize: 12,
                 color: theme.brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,

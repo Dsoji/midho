@@ -45,7 +45,9 @@ final pinProvider = StateNotifierProvider<PinNotifier, PinState>(
 class TransactionPinScreen extends HookConsumerWidget {
   const TransactionPinScreen({
     super.key,
+    required this.isHome,
   });
+  final bool isHome;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -234,7 +236,9 @@ class TransactionPinScreen extends HookConsumerWidget {
   void showWithdrawalSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => const WithdrawalSuccessDialogScreen(),
+      builder: (context) => WithdrawalSuccessDialogScreen(
+        isHome: isHome,
+      ),
     );
   }
 

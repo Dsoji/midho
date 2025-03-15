@@ -5,9 +5,11 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
+import 'package:mdiho/features/notification/notification_screen.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
+import '../../bottomNav/app_router.gr.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/wallet_balance_card.dart';
 
@@ -81,11 +83,18 @@ class HomeScreen extends HookConsumerWidget {
               ],
             ),
           ),
-          actions: const [
-            ReferralButton(),
-            Gap(8),
-            CustomIconContainer(),
-            Gap(24),
+          actions: [
+            const ReferralButton(),
+            const Gap(8),
+            CustomIconContainer(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NotificationScreen()));
+              },
+            ),
+            const Gap(24),
           ],
         ),
         body: const SingleChildScrollView(
@@ -118,63 +127,78 @@ class ReferralButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? Colors.transparent
-            : const Color(0xFFF5FDFE), // Light background color
-        borderRadius: BorderRadius.circular(30), // Rounded corners
-        border: Border.all(
-          color: AppColors.tertiaryColor.shade500,
-          width: 0.5,
-        ), // Light blue border
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            IconsaxPlusLinear.award, // Placeholder icon
-            color: AppColors.tertiaryColor.shade700,
-            size: 17,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            "referrals",
-            style: TextStyle(
-              fontSize: 14,
+    return GestureDetector(
+      onTap: () {
+        context.router.push(const ReferallRoute());
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => const ReferallScreen(),
+        //   ),
+        // );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.brightness == Brightness.dark
+              ? Colors.transparent
+              : const Color(0xFFF5FDFE), // Light background color
+          borderRadius: BorderRadius.circular(30), // Rounded corners
+          border: Border.all(
+            color: AppColors.tertiaryColor.shade500,
+            width: 0.5,
+          ), // Light blue border
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              IconsaxPlusLinear.award, // Placeholder icon
               color: AppColors.tertiaryColor.shade700,
-              fontWeight: FontWeight.w400,
+              size: 17,
             ),
-          ),
-        ],
+            const SizedBox(width: 6),
+            Text(
+              "referrals",
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.tertiaryColor.shade700,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class CustomIconContainer extends StatelessWidget {
-  const CustomIconContainer({super.key});
+  const CustomIconContainer({super.key, this.onTap});
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      width: 32, // Diameter = 2 * radius
-      height: 32,
-      decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: theme.brightness == Brightness.dark
-              ? Colors.transparent
-              : AppColors.whiteColor.shade50,
-          border: Border.all(
-            color: AppColors.whiteColor.shade600,
-          )),
-      child: const Center(
-        child: Icon(
-          IconsaxPlusLinear.notification,
-          size: 20,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 32, // Diameter = 2 * radius
+        height: 32,
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: theme.brightness == Brightness.dark
+                ? Colors.transparent
+                : AppColors.whiteColor.shade50,
+            border: Border.all(
+              color: AppColors.whiteColor.shade600,
+            )),
+        child: const Center(
+          child: Icon(
+            IconsaxPlusLinear.notification,
+            size: 20,
+          ),
         ),
       ),
     );

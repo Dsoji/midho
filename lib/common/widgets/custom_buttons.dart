@@ -2,6 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 
+class GradientIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const GradientIconButton({
+    super.key,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [
+              theme.brightness == Brightness.dark
+                  ? AppColors.whiteColor.shade500
+                  : const Color(0xFFFAFAFA),
+              theme.brightness == Brightness.dark
+                  ? AppColors.whiteColor.shade300
+                  : Colors.white,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: theme.brightness == Brightness.dark
+              ? AppColors.whiteColor.shade500
+              : AppColors.greyColor.shade500,
+        ),
+      ),
+    );
+  }
+}
+
 // class TradeButton extends StatelessWidget {
 //   final String title;
 //   final IconData icon;

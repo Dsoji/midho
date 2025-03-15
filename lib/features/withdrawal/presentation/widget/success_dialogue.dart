@@ -10,7 +10,8 @@ import 'info_widget.dart';
 
 @RoutePage()
 class WithdrawalSuccessDialogScreen extends StatelessWidget {
-  const WithdrawalSuccessDialogScreen({super.key});
+  const WithdrawalSuccessDialogScreen({super.key, this.isHome});
+  final bool? isHome;
 
   @override
   Widget build(BuildContext context) {
@@ -95,8 +96,13 @@ class WithdrawalSuccessDialogScreen extends StatelessWidget {
           // Back to Dashboard
           TextButton(
             onPressed: () {
-              context.router.replaceAll([const HomeRoute()]);
-              Navigator.pop(context);
+              if (isHome == true) {
+                context.router.replaceAll([const HomeRoute()]);
+                Navigator.pop(context);
+              } else if (isHome == false) {
+                context.router.replaceAll([const ProfileRoute()]);
+                Navigator.pop(context);
+              }
             },
             child: Text(
               "Back to Dashboard",

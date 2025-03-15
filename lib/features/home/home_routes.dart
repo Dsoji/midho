@@ -31,5 +31,8 @@ final homeRoutes = AutoRoute(
     AutoRoute(
       page: StandAloneTransactionDetailsRoute.page,
     ),
+    AutoRoute(
+      page: NotificationRoute.page,
+    ),
   ],
 );

@@ -54,6 +54,7 @@ class PlaceholderAssets {
   static const ie = '$_base/ie.png';
   static const dstv = '$_base/dstv.png';
   static const sporty = '$_base/sporty.png';
+  static const whatsapp = '$_base/whatsapp.png';
 }
 
 class ImageAssets {

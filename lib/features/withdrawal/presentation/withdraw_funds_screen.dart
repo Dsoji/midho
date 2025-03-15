@@ -168,8 +168,9 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const TransactionPinScreen()));
+                              builder: (context) => const TransactionPinScreen(
+                                    isHome: true,
+                                  )));
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
