@@ -108,7 +108,7 @@ class GiftCardGrid extends HookWidget {
       itemCount: giftCards.value.length,
       itemBuilder: (context, index) {
         final card = giftCards.value[index];
-        return InkWell(
+        return GestureDetector(
           onTap: () {
             context.router.push(
               EnterCardDetailsRoute(

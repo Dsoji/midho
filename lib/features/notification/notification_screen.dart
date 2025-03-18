@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 
+import '../../common/res/app_colors.dart';
 import '../../common/widgets/custom_app_bar.dart';
 
 @RoutePage()
@@ -64,11 +66,14 @@ class NotificationScreen extends HookConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Stay updated with your transactions and activities.",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Stay updated with your transactions and activities.",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             const Gap(16),
@@ -76,6 +81,13 @@ class NotificationScreen extends HookConsumerWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: [
+                const Text(
+                  "Recent Notifications",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey),
+                ),
                 ...notifications
                     .where((n) => !n.isYesterday)
                     .map((n) => NotificationCard(notification: n)),
@@ -107,41 +119,60 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: theme.brightness == Brightness.dark
+          ? AppColors.secondaryColor.shade600
+          : Colors.white,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.orange.shade100,
-                  child: const Icon(Icons.notifications, color: Colors.orange),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
+            CircleAvatar(
+              backgroundColor: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade400
+                  : const Color(0xFFFEEEE9),
+              child: Icon(
+                IconsaxPlusLinear.notification_1,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.primaryColor.shade500,
+                size: 15,
+              ),
+            ),
+            const Gap(12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(width: 12),
+                  Text(
                     notification.title,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 14, fontWeight: FontWeight.bold),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              notification.message,
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              notification.date,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  const SizedBox(height: 8),
+                  Text(
+                    notification.message,
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    notification.date,
+                    style: const TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

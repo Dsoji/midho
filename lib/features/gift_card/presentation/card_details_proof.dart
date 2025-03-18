@@ -182,13 +182,16 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                         : Colors.black,
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
-                                    "Upload Screenshot or Proof of Payment",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: theme.brightness == Brightness.dark
-                                          ? Colors.white
-                                          : Colors.black,
+                                  Flexible(
+                                    child: Text(
+                                      "Upload Screenshot or Proof of Payment",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color:
+                                            theme.brightness == Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
+                                      ),
                                     ),
                                   ),
                                 ],

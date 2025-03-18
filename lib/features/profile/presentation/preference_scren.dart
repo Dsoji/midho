@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/res/assets.dart';
 
 import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
@@ -60,11 +61,21 @@ class PreferenceScreen extends HookConsumerWidget {
                     title: "Push Notifications",
                     trailing: Switch(
                       value: twoFactorEnabled.value,
-                      activeColor: Colors.green.shade700,
+                      activeTrackColor:
+                          Colors.green.shade700, // Green track when ON
+                      inactiveTrackColor:
+                          Colors.grey.shade300, // Gray track when OFF
+                      thumbColor: WidgetStateProperty.resolveWith<Color>(
+                        (states) {
+                          if (states.contains(WidgetState.disabled)) {
+                            return Colors.grey; // Thumb color when disabled
+                          }
+                          return Colors.white; // White thumb in normal state
+                        },
+                      ),
                       onChanged: (value) {
                         twoFactorEnabled.value = value;
                       },
-                      thumbColor: WidgetStateProperty.all(Colors.white),
                     ),
                     context: context,
                   ),
@@ -73,11 +84,21 @@ class PreferenceScreen extends HookConsumerWidget {
                     title: "Email Alerts",
                     trailing: Switch(
                       value: biometricEnabled.value,
-                      activeColor: Colors.green.shade700,
+                      activeTrackColor:
+                          Colors.green.shade700, // Green track when ON
+                      inactiveTrackColor:
+                          Colors.grey.shade300, // Gray track when OFF
+                      thumbColor: WidgetStateProperty.resolveWith<Color>(
+                        (states) {
+                          if (states.contains(WidgetState.disabled)) {
+                            return Colors.grey; // Thumb color when disabled
+                          }
+                          return Colors.white; // White thumb in normal state
+                        },
+                      ),
                       onChanged: (value) {
                         biometricEnabled.value = value;
                       },
-                      thumbColor: WidgetStateProperty.all(Colors.white),
                     ),
                     context: context,
                   ),
@@ -114,17 +135,38 @@ class PreferenceScreen extends HookConsumerWidget {
                           .toggleTheme(ThemeMode.light);
                     },
                     child: Container(
-                      height: 100, // Fixed height
-                      width: 143, // Fixed width
+                      height: 118,
+                      width: 143,
+                      padding: const EdgeInsets.all(11),
                       decoration: ShapeDecoration(
-                        color: const Color(0xFFF7F7F7),
+                        color: const Color(0xFFFFFBFA),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: selectedIndex.value == 0
                               ? BorderSide(
-                                  color: AppColors.primaryColor, width: 3)
+                                  color: AppColors.primaryColor, width: 0.5)
                               : BorderSide.none,
                         ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            height: 66, // Fixed height
+                            width: 121, // Fixed width
+                            PlaceholderAssets.lightmode,
+                          ),
+                          const Gap(12),
+                          Text(
+                            'Light Mode',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.primaryColor,
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),
@@ -137,17 +179,40 @@ class PreferenceScreen extends HookConsumerWidget {
                           .toggleTheme(ThemeMode.dark);
                     },
                     child: Container(
-                      height: 100, // Fixed height
-                      width: 143, // Fixed width
+                      height: 11,
+                      width: 143,
+                      padding: const EdgeInsets.all(11),
                       decoration: ShapeDecoration(
                         color: AppColors.secondaryColor.shade700,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: selectedIndex.value == 1
                               ? BorderSide(
-                                  color: AppColors.primaryColor, width: 3)
+                                  color: AppColors.primaryColor,
+                                  width: 0.5,
+                                )
                               : BorderSide.none,
                         ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            height: 66, // Fixed height
+                            width: 121, // Fixed width
+                            PlaceholderAssets.darkmode,
+                          ),
+                          const Gap(12),
+                          const Text(
+                            'Dark Mode',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),

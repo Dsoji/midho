@@ -5,7 +5,8 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mdiho/features/profile/presentation/security_settings/email.dart';
+import 'package:mdiho/features/profile/presentation/security_settings/change_password.dart';
+import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
@@ -82,9 +83,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const VerifyEmailScreen(
-                            type: 'password',
-                          ),
+                          builder: (context) => const ChangePasswordScreen(),
                         ),
                       );
                     },
@@ -98,9 +97,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const VerifyEmailScreen(
-                            type: 'pin',
-                          ),
+                          builder: (context) => const ChangePinScreen(),
                         ),
                       );
                     },
@@ -126,8 +123,19 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                     trailing: Switch(
                       value: biometricEnabled.value,
                       activeColor: Colors.green.shade700,
+                      activeTrackColor:
+                          Colors.green.shade700, // Green track when ON
+                      inactiveTrackColor:
+                          Colors.grey.shade300, // Gray track when OFF
+                      thumbColor: WidgetStateProperty.resolveWith<Color>(
+                        (states) {
+                          if (states.contains(WidgetState.disabled)) {
+                            return Colors.grey; // Thumb color when disabled
+                          }
+                          return Colors.white; // White thumb in normal state
+                        },
+                      ),
                       onChanged: (value) => authenticateAndToggle(value),
-                      thumbColor: WidgetStateProperty.all(Colors.white),
                     ),
                     context: context,
                   ),

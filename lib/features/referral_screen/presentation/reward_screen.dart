@@ -79,12 +79,17 @@ class RewardsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListView.separated(
       itemCount: rewards.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (context, index) =>
-          Divider(height: 1, color: Colors.grey.shade300),
+      separatorBuilder: (context, index) => Divider(
+          height: 1,
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade500
+              : Colors.grey.shade300),
       itemBuilder: (context, index) {
         final reward = rewards[index];
         return Padding(
@@ -96,12 +101,17 @@ class RewardsList extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFF9F9FB),
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor.shade400
+                          : const Color(0xFFF9F9FB),
                     ),
-                    child: const Icon(Icons.arrow_downward,
-                        size: 12, color: Color(0xFF2B2B2B)),
+                    child: Icon(Icons.arrow_downward,
+                        size: 12,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color(0xFF2B2B2B)),
                   ),
                   const SizedBox(width: 8),
                   RichText(
@@ -122,7 +132,11 @@ class RewardsList extends StatelessWidget {
               ),
               Text(
                 reward.date,
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                style: TextStyle(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.grey.shade600,
+                    fontSize: 14),
               ),
             ],
           ),

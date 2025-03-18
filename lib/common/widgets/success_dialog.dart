@@ -41,6 +41,7 @@ void showSuccessDialog({
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  fontFamily: '',
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -54,11 +55,13 @@ void showSuccessDialog({
                       children: [
                         Text(
                           detail.keys.first,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500, fontFamily: ''),
                         ),
                         Text(
                           detail.values.first,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontFamily: ''),
                         ),
                       ],
                     ),
@@ -79,7 +82,9 @@ void showSuccessDialog({
                 text: 'Make Another Purchase',
                 width: double.infinity,
                 height: 48,
-                onPressed: onSecondaryAction,
+                onPressed: () {
+                  onSecondaryAction(); // Wait for action to complete
+                },
                 textColor: theme.brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,

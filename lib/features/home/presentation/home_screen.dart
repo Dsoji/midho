@@ -50,13 +50,22 @@ class HomeScreen extends HookConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: const Padding(
-            padding: EdgeInsets.only(left: 24.0),
-            child: CircleAvatar(
-              radius: 19,
-              backgroundColor: Colors.grey,
-              backgroundImage: AssetImage(
-                PlaceholderAssets.pfp,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 24.0),
+            child: InkWell(
+              onTap: () {
+                final tabsRouter = AutoTabsRouter.of(
+                  context,
+                );
+
+                tabsRouter.setActiveIndex(4);
+              },
+              child: const CircleAvatar(
+                radius: 19,
+                backgroundColor: Colors.grey,
+                backgroundImage: AssetImage(
+                  PlaceholderAssets.pfp,
+                ),
               ),
             ),
           ),

@@ -10,6 +10,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../profile/presentation/security_settings/change_pin_screen.dart';
 
 class PinState {
   final String pin;
@@ -103,7 +104,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: 213,
+                        width: 233,
                         child: PinCodeTextField(
                           appContext: context,
                           length: 4,
@@ -188,7 +189,14 @@ class TransactionPinScreen extends HookConsumerWidget {
                         ),
                       ),
                       OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ChangePinScreen(),
+                            ),
+                          );
+                        },
                         style: OutlinedButton.styleFrom(
                           backgroundColor: theme.brightness == Brightness.dark
                               ? AppColors.secondaryColor.shade400

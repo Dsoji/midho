@@ -54,7 +54,7 @@ class LinkedBanksScreen extends HookConsumerWidget {
         actionColor: AppColors.primaryColor.shade500,
         onActionPressed: () {
           context.router.push(
-            const AddNewBankRoute(),
+            AddNewBankRoute(),
           );
         },
       ),

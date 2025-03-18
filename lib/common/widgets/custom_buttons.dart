@@ -25,10 +25,10 @@ class GradientIconButton extends StatelessWidget {
           gradient: LinearGradient(
             colors: [
               theme.brightness == Brightness.dark
-                  ? AppColors.whiteColor.shade500
+                  ? AppColors.secondaryColor.shade500
                   : const Color(0xFFFAFAFA),
               theme.brightness == Brightness.dark
-                  ? AppColors.whiteColor.shade300
+                  ? AppColors.secondaryColor.shade400
                   : Colors.white,
             ],
             begin: Alignment.topLeft,

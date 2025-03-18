@@ -98,7 +98,7 @@ class BuyDataScreen extends HookConsumerWidget {
                       Text(
                         "Select Data Plan",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: theme.brightness == Brightness.dark
                               ? Colors.white
@@ -109,7 +109,7 @@ class BuyDataScreen extends HookConsumerWidget {
                         text: TextSpan(
                           text: "Wallet Balance: ",
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: theme.brightness == Brightness.dark
                                 ? Colors.white
@@ -119,11 +119,12 @@ class BuyDataScreen extends HookConsumerWidget {
                             TextSpan(
                               text: "NGN 10,000.00",
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: theme.brightness == Brightness.dark
                                     ? Colors.white
                                     : AppColors.greyColor.shade500,
+                                fontFamily: '',
                               ),
                             ),
                           ],

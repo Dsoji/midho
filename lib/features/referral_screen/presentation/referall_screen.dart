@@ -35,11 +35,14 @@ class ReferallScreen extends HookConsumerWidget {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            Text(
-              "Earn rewards by inviting friends to M-Diho!",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Earn rewards by inviting friends to M-Diho!",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             Gap(16),
@@ -92,12 +95,14 @@ class RewardEmptyStateCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Your Rewards",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF565B8A),
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : const Color(0xFF565B8A),
                 ),
               ),
               IconButton(
@@ -111,19 +116,51 @@ class RewardEmptyStateCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Empty State Icon & Message
-          const Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.access_time, color: Colors.grey, size: 40),
-              SizedBox(height: 8),
-              SizedBox(
-                width: 192,
-                child: Text(
-                  "Your reward history is empty. Refer friends to earn rewards!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor.shade400
+                          : const Color(0xFFF9F9FB),
+                    ),
+                    child: Icon(Icons.arrow_downward,
+                        size: 12,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color(0xFF2B2B2B)),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  RichText(
+                    text: TextSpan(
+                      style: DefaultTextStyle.of(context)
+                          .style
+                          .copyWith(fontSize: 16),
+                      children: [
+                        TextSpan(
+                          text: '1,000'.formatAsNaira(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                'Jan 15, 2025',
+                style: TextStyle(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.grey.shade600,
+                    fontSize: 14),
               ),
             ],
           ),
@@ -141,27 +178,28 @@ class RewardEmptyStateCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade600
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.greyColor.shade500,
-                  width: 0.07,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade400
+                      : AppColors.greyColor.shade500,
+                  width: theme.brightness == Brightness.dark ? 0.5 : 0.07,
                 ),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(IconsaxPlusLinear.copy, size: 20, color: Colors.black54),
-                  SizedBox(width: 8),
-                  Text(
-                    'Share Code Now',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
+              child: Center(
+                child: Text(
+                  'View All Rewards',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87,
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -211,10 +249,14 @@ class ReferralCodeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Title
-          const Text(
+          Text(
             "Your Referral Code",
             style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.grey),
           ),
           const SizedBox(height: 4),
 
@@ -242,6 +284,7 @@ class ReferralCodeCard extends StatelessWidget {
               ),
             ],
           ),
+          const Gap(24),
           InfoWidget(
               theme: theme,
               text: 'Share your code with friends to earn rewards.'),
@@ -259,20 +302,26 @@ class ReferralCodeCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade600
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.greyColor.shade500,
-                  width: 0.07,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade400
+                      : AppColors.greyColor.shade500,
+                  width: theme.brightness == Brightness.dark ? 0.5 : 0.07,
                 ),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'View Your Referrals',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87,
                   ),
                 ),
               ),

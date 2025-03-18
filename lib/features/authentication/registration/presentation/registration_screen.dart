@@ -104,10 +104,19 @@ class RegistrationScreen extends HookConsumerWidget {
 
     final isInitialized = useState(false);
     void goBack() {
-      if (pageIndex.value > 0) {
+      if (pageIndex.value == 2) {
+        // If on page 2, always go back to page 0
+        pageController.animateToPage(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else if (pageIndex.value > 0) {
+        // Otherwise, go to the previous page normally
         pageController.previousPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
       }
     }
 

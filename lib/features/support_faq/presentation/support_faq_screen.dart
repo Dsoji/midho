@@ -149,10 +149,13 @@ class SupportTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 0,
-      color: AppColors.whiteColor.shade500,
+      color: theme.brightness == Brightness.dark
+          ? AppColors.secondaryColor.shade700
+          : AppColors.whiteColor.shade500,
       child: ListTile(
         title: Text(
           title,

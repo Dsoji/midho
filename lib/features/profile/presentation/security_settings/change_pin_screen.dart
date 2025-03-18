@@ -346,8 +346,6 @@ class ChangePinScreen extends HookConsumerWidget {
                     height: 48,
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

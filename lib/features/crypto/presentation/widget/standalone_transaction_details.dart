@@ -27,19 +27,63 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
     Map<String, dynamic> transactionDetails =
         _getTransactionDetails(type, status);
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Transaction History",
-        showBackButton: false,
-        showTitle: false,
-        showAction: false,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
+    return PopScope(
+      canPop: false, // Prevent default back navigation
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          if (type == 'Crypto Sale') {
+            context.router.replaceAll([const CryptoRoute()]);
+
+            final tabsRouter = AutoTabsRouter.of(
+              context,
+            );
+
+            tabsRouter.setActiveIndex(0);
+          } else {
+            context.router.replaceAll([const HomeRoute()]);
+
+            final tabsRouter = AutoTabsRouter.of(
+              context,
+            );
+
+            tabsRouter.setActiveIndex(0);
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: const CustomAppBar(
+          title: "Transaction History",
+          showBackButton: false,
+          showTitle: false,
+          showAction: false,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildTransactionSummary(transactionDetails, context),
+                      const Gap(20),
+                      InfoWidget(
+                        theme: theme,
+                        text:
+                            "The admin team will review your transaction. O,nce approved, you will receive a notification, and your wallet will be credited promptly.",
+                      ),
+                    ],
+                  )),
+              const Gap(12),
+              Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
@@ -48,63 +92,54 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
                       : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Column(
-                  children: [
-                    _buildTransactionSummary(transactionDetails, context),
-                    const Gap(20),
-                    InfoWidget(
-                      theme: theme,
-                      text:
-                          "The admin team will review your transaction. O,nce approved, you will receive a notification, and your wallet will be credited promptly.",
-                    ),
-                  ],
-                )),
-            const Gap(12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: _buildBreakdown(
-                transactionDetails["breakdown"],
-                context,
-              ),
-            ),
-            const Gap(16),
-            FullButton(
-              text: "Go Home",
-              width: double.infinity,
-              height: 60,
-              onPressed: () {
-                context.router.replaceAll([const HomeRoute()]);
-
-                final tabsRouter = AutoTabsRouter.of(
+                child: _buildBreakdown(
+                  transactionDetails["breakdown"],
                   context,
-                );
+                ),
+              ),
+              const Gap(16),
+              FullButton(
+                text: "Go Home",
+                width: double.infinity,
+                height: 60,
+                onPressed: () {
+                  if (type == 'Crypto Sale') {
+                    context.router.replaceAll([const CryptoRoute()]);
 
-                tabsRouter.setActiveIndex(0);
-              },
-              textColor: AppColors.whiteColor,
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.primaryColor.shade500
-                  : Colors.black,
-            ),
-            const Gap(4),
-            FullButton(
-              text: "Contact Support",
-              width: double.infinity,
-              height: 60,
-              onPressed: () {},
-              textColor: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-              color: Colors.transparent,
-            ),
-            const Gap(150),
-          ],
+                    final tabsRouter = AutoTabsRouter.of(
+                      context,
+                    );
+
+                    tabsRouter.setActiveIndex(0);
+                  } else {
+                    context.router.replaceAll([const HomeRoute()]);
+
+                    final tabsRouter = AutoTabsRouter.of(
+                      context,
+                    );
+
+                    tabsRouter.setActiveIndex(0);
+                  }
+                },
+                textColor: AppColors.whiteColor,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.primaryColor.shade500
+                    : Colors.black,
+              ),
+              const Gap(4),
+              FullButton(
+                text: "Contact Support",
+                width: double.infinity,
+                height: 60,
+                onPressed: () {},
+                textColor: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+                color: Colors.transparent,
+              ),
+              const Gap(150),
+            ],
+          ),
         ),
       ),
     );

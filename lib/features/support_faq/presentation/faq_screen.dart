@@ -78,10 +78,14 @@ class FAQItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: ShapeDecoration(
-        color: Colors.white,
+        color: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade600
+            : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),

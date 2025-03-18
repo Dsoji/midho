@@ -30,6 +30,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     Map<String, dynamic> transactionDetails =
         _getTransactionDetails(type, status);
     final screenshotController = useMemoized(() => ScreenshotController());
+    final isProcessing = useState(false);
 
     final theme = Theme.of(context);
     return Scaffold(
@@ -80,30 +81,34 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                         status == 'Failed' ? 'Retry Trade' : "Download Reciept",
                     width: double.infinity,
                     height: 60,
-                    onPressed: () async {
-                      if (status != 'Failed') {
-                        await screenshotController
-                            .captureFromWidget(
-                              MediaQuery(
-                                data: MediaQueryData.fromView(
-                                    WidgetsBinding.instance.window),
-                                child: InheritedTheme.captureAll(
-                                  context,
-                                  TransactionDetailsScreen(
-                                    type: type,
-                                    status: status,
-                                    showAppBar: false,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .then(processAndSaveImage)
-                            .catchError((onError) {
-                          // Handle error
-                          debugPrint('Screenshot error: $onError');
-                        });
-                      }
-                    },
+                    onPressed: isProcessing.value == true
+                        ? () {}
+                        : () async {
+                            if (status != 'Failed') {
+                              isProcessing.value = true;
+                              await screenshotController
+                                  .captureFromWidget(
+                                    MediaQuery(
+                                      data: MediaQueryData.fromView(
+                                          WidgetsBinding.instance.window),
+                                      child: InheritedTheme.captureAll(
+                                        context,
+                                        TransactionDetailsScreen(
+                                          type: type,
+                                          status: status,
+                                          showAppBar: false,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .then(processAndSaveImage)
+                                  .catchError((onError) {
+                                // Handle error
+                                debugPrint('Screenshot error: $onError');
+                              });
+                              isProcessing.value = false;
+                            }
+                          },
                     textColor: AppColors.whiteColor,
                     color: theme.brightness == Brightness.dark
                         ? AppColors.primaryColor.shade500
@@ -382,37 +387,42 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
   @override
   Widget build(BuildContext context) {
     final screenshotController = useMemoized(() => ScreenshotController());
+    final isProcessing = useState(false);
 
     final theme = Theme.of(context);
     return OutlinedButton(
-      onPressed: () async {
-        await screenshotController
-            .captureFromWidget(
-          MediaQuery(
-            data: MediaQueryData.fromView(WidgetsBinding.instance.window),
-            child: InheritedTheme.captureAll(
-              context,
-              TransactionDetailsScreen(
-                type: type,
-                status: status,
-                showAppBar: false,
-              ),
-            ),
-          ),
-        )
-            .then((image) {
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              backgroundColor: Colors.white,
-              content: Image.memory(image),
-            ),
-          );
-        }).catchError((onError) {
-          // Handle error
-          debugPrint('Screenshot error: $onError');
-        });
-      },
+      onPressed: isProcessing.value == true
+          ? () {}
+          : () async {
+              isProcessing.value = true;
+              await screenshotController
+                  .captureFromWidget(
+                MediaQuery(
+                  data: MediaQueryData.fromView(WidgetsBinding.instance.window),
+                  child: InheritedTheme.captureAll(
+                    context,
+                    TransactionDetailsScreen(
+                      type: type,
+                      status: status,
+                      showAppBar: false,
+                    ),
+                  ),
+                ),
+              )
+                  .then((image) {
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    backgroundColor: Colors.white,
+                    content: Image.memory(image),
+                  ),
+                );
+              }).catchError((onError) {
+                // Handle error
+                debugPrint('Screenshot error: $onError');
+              });
+              isProcessing.value = false;
+            },
       style: OutlinedButton.styleFrom(
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade400

@@ -85,12 +85,17 @@ class ReferallList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListView.separated(
       itemCount: rewards.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (context, index) =>
-          Divider(height: 1, color: Colors.grey.shade300),
+      separatorBuilder: (context, index) => Divider(
+        height: 0.5,
+        color: Colors.grey.shade300,
+        thickness: 0.3,
+      ),
       itemBuilder: (context, index) {
         final reward = rewards[index];
         return Padding(
@@ -120,7 +125,11 @@ class ReferallList extends StatelessWidget {
               ),
               Text(
                 reward.date,
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                style: TextStyle(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.grey.shade600,
+                    fontSize: 14),
               ),
             ],
           ),

@@ -151,6 +151,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                                 amount,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w500,
+                                  fontFamily: '',
                                 ),
                               ),
                             ),

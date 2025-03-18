@@ -97,13 +97,15 @@ class UploadProofDialog extends HookWidget {
                                 : Colors.black,
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            "Upload Screenshot or Proof of Payment",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
+                          Flexible(
+                            child: Text(
+                              "Upload Screenshot or Proof \nof Payment",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
                             ),
                           ),
                         ],
@@ -266,6 +268,9 @@ class UploadProofDialog extends HookWidget {
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
+                    context.router.replaceAll([
+                      const CryptoRoute(),
+                    ]);
                     Navigator.pop(context);
                   },
                   child: Text(

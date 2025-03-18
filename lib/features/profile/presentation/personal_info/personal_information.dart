@@ -5,7 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:mdiho/features/profile/presentation/personal_info/change_email.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/profile/presentation/personal_info/change_username.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
@@ -63,10 +63,11 @@ class PersonalInfoScreen extends HookConsumerWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ChangeEmailScreen()));
+                      context.router.push(const ChangeEmailRoute());
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const ChangeEmailScreen()));
                     },
                     child: AbsorbPointer(
                       child: CustomTextField(

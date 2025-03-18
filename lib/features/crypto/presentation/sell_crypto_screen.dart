@@ -150,7 +150,8 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   PlaceholderAssets.us,
                                   convertUSDToNGN,
                                   "\$ ",
-                                  context),
+                                  context,
+                                  true),
                               const Gap(4),
                               _buildCurrencyField(
                                   "You Receive",
@@ -159,7 +160,8 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   PlaceholderAssets.ng,
                                   convertNGNToUSD,
                                   "₦ ",
-                                  context),
+                                  context,
+                                  false),
                             ],
                           ),
                           Positioned(
@@ -220,13 +222,15 @@ class SellCryptoScreen extends HookConsumerWidget {
   }
 
   Widget _buildCurrencyField(
-      String label,
-      TextEditingController controller,
-      String currency,
-      String flagPath,
-      Function(String) onChanged,
-      String currencySign,
-      BuildContext context) {
+    String label,
+    TextEditingController controller,
+    String currency,
+    String flagPath,
+    Function(String) onChanged,
+    String currencySign,
+    BuildContext context,
+    bool? isTop,
+  ) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -239,9 +243,37 @@ class SellCryptoScreen extends HookConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              const Spacer(),
+              if (isTop == true)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade400
+                        : const Color(0xFFFEEEE9),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    ' Minimum ~ \$10',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : AppColors.primaryColor.shade700,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 8),
           Row(
@@ -253,6 +285,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixText: currencySign,
+                    hintText: currencySign,
                   ),
                   onChanged: onChanged,
                   style: const TextStyle(

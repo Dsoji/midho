@@ -31,7 +31,7 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
     Map<String, dynamic> transactionDetails =
         _getTransactionDetails(type, status);
     final screenshotController = useMemoized(() => ScreenshotController());
-
+    final isProcessing = useState(false);
     final theme = Theme.of(context);
     return Scaffold(
       appBar: showAppBar == true
@@ -81,30 +81,34 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
                         status == 'Failed' ? 'Retry Trade' : "Download Reciept",
                     width: double.infinity,
                     height: 60,
-                    onPressed: () async {
-                      if (status != 'Failed') {
-                        await screenshotController
-                            .captureFromWidget(
-                              MediaQuery(
-                                data: MediaQueryData.fromView(
-                                    WidgetsBinding.instance.window),
-                                child: InheritedTheme.captureAll(
-                                  context,
-                                  TransactionDetailsScreen(
-                                    type: type,
-                                    status: status,
-                                    showAppBar: false,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .then(processAndSaveImage)
-                            .catchError((onError) {
-                          // Handle error
-                          debugPrint('Screenshot error: $onError');
-                        });
-                      }
-                    },
+                    onPressed: isProcessing.value == true
+                        ? () {}
+                        : () async {
+                            if (status != 'Failed') {
+                              isProcessing.value = true;
+                              await screenshotController
+                                  .captureFromWidget(
+                                    MediaQuery(
+                                      data: MediaQueryData.fromView(
+                                          WidgetsBinding.instance.window),
+                                      child: InheritedTheme.captureAll(
+                                        context,
+                                        TransactionDetailsScreen(
+                                          type: type,
+                                          status: status,
+                                          showAppBar: false,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .then(processAndSaveImage)
+                                  .catchError((onError) {
+                                // Handle error
+                                debugPrint('Screenshot error: $onError');
+                              });
+                              isProcessing.value = false;
+                            }
+                          },
                     textColor: AppColors.whiteColor,
                     color: theme.brightness == Brightness.dark
                         ? AppColors.primaryColor.shade500

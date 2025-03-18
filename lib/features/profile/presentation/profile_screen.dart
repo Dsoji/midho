@@ -125,6 +125,8 @@ class ProfileScreen extends HookConsumerWidget {
 
     return ListTile(
       onTap: onTap,
+      splashColor: Colors.transparent, // Removes splash effect
+      hoverColor: Colors.transparent, // Removes splash effect
       leading: Icon(
         icon,
         color: isDestructive ? Colors.red : AppColors.primaryColor.shade500,

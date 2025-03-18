@@ -12,6 +12,7 @@ import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/success_dialog.dart';
 import '../bottomNav/app_router.gr.dart';
+import '../profile/presentation/security_settings/change_pin_screen.dart';
 
 class PinState {
   final String pin;
@@ -76,10 +77,11 @@ class TransactionPinScreen extends HookConsumerWidget {
               StandAloneTransactionDetailsRoute(
                   type: 'Bill Payment', status: 'Completed'),
             ]);
-            Navigator.pop(context);
           },
           onSecondaryAction: () {
-            context.router.replaceAll([const BuyAirtimeRoute()]);
+            context.router.popUntil(
+                (route) => route.settings.name == BuyAirtimeRoute.name);
+            Navigator.of(context).pop;
           },
           primaryButtonColor: Colors.orange,
           backgroundColor: Colors.blue.shade900,
@@ -103,7 +105,9 @@ class TransactionPinScreen extends HookConsumerWidget {
             Navigator.pop(context);
           },
           onSecondaryAction: () {
-            context.router.replaceAll([const BuyDataRoute()]);
+            context.router
+                .popUntil((route) => route.settings.name == BuyDataRoute.name);
+            Navigator.pop(context);
           },
           primaryButtonColor: Colors.orange,
           backgroundColor: Colors.blue.shade900,
@@ -129,7 +133,9 @@ class TransactionPinScreen extends HookConsumerWidget {
             Navigator.pop(context);
           },
           onSecondaryAction: () {
-            context.router.replaceAll([const ElectricityBillRoute()]);
+            context.router.popUntil(
+                (route) => route.settings.name == ElectricityBillRoute.name);
+            Navigator.pop(context);
           },
           primaryButtonColor: Colors.orange,
           backgroundColor: Colors.blue.shade900,
@@ -155,7 +161,10 @@ class TransactionPinScreen extends HookConsumerWidget {
             Navigator.pop(context);
           },
           onSecondaryAction: () {
-            context.router.replaceAll([const CableBillRoute()]);
+            context.router.popUntil(
+                (route) => route.settings.name == CableBillRoute.name);
+
+            Navigator.pop(context);
           },
           primaryButtonColor: Colors.orange,
           backgroundColor: Colors.white,
@@ -174,7 +183,9 @@ class TransactionPinScreen extends HookConsumerWidget {
             Navigator.pop(context);
           },
           onSecondaryAction: () {
-            context.router.replaceAll([const BettingRoute()]);
+            context.router
+                .popUntil((route) => route.settings.name == BettingRoute.name);
+            Navigator.pop(context);
           },
           primaryButtonColor: Colors.black,
           backgroundColor: Colors.white,
@@ -237,7 +248,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: 213,
+                        width: 233,
                         child: PinCodeTextField(
                           appContext: context,
                           length: 4,
@@ -322,7 +333,14 @@ class TransactionPinScreen extends HookConsumerWidget {
                         ),
                       ),
                       OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ChangePinScreen(),
+                            ),
+                          );
+                        },
                         style: OutlinedButton.styleFrom(
                           backgroundColor: theme.brightness == Brightness.dark
                               ? AppColors.secondaryColor.shade400

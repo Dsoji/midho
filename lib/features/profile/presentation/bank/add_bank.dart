@@ -12,15 +12,21 @@ import '../../../../common/widgets/custom_textfield.dart';
 import '../../../bank_network/presentation/bank_network_screen.dart';
 import '../../../withdrawal/presentation/widget/bank_info_card.dart';
 import '../../../withdrawal/presentation/widget/info_widget.dart';
+import '../../../withdrawal/presentation/withdraw_funds_screen.dart';
 
 @RoutePage()
 class AddNewBankScreen extends HookConsumerWidget {
-  const AddNewBankScreen({super.key});
+  const AddNewBankScreen({
+    super.key,
+    this.isverif = false,
+  });
+  final bool? isverif;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bankController = useTextEditingController();
     final theme = Theme.of(context);
-    final isVerify = useState(false);
+    final isVerify = useState(isverif);
+    final selectedBank = ref.watch(selectedBankProvider);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -55,17 +61,17 @@ class AddNewBankScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Email Field
-                  GestureDetector(
+                  BankInfoCard(
+                    image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
+                    name: selectedBank?["name"] ?? 'GT Bank',
+                    color: selectedBank?["color"] ??
+                        AppColors.primaryColor.shade500,
+                    status: selectedBank?["status"] ?? 'Poor Network',
+                    percentage: selectedBank?["percentage"] ?? '90',
+                    actNumber: selectedBank?["actNumber"] ?? '1210125678',
+                    actName: selectedBank?["actName"] ?? 'John Doe',
                     onTap: () => _showAddBankDetailsSheet(context),
-                    child: AbsorbPointer(
-                      child: CustomTextField(
-                        controller: bankController,
-                        label: "Select Bank",
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                    ),
                   ),
-
                   const SizedBox(height: 28),
                   CustomTextField(
                     controller: bankController,
@@ -180,11 +186,11 @@ class AddNewBankScreen extends HookConsumerWidget {
   }
 }
 
-class AddBankScreen extends HookWidget {
+class AddBankScreen extends HookConsumerWidget {
   const AddBankScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final List<Map<String, dynamic>> bankList = [
       {
         "name": "GTBank",
@@ -258,9 +264,12 @@ class AddBankScreen extends HookWidget {
                   showBorder: false,
                   icon: Icons.more_horiz,
                   onTap: () {
+                    ref.read(selectedBankProvider.notifier).state = bank;
+
                     final GlobalKey<State<StatefulWidget>> globalKey =
                         GlobalKey();
                     _showPopupMenu(context, globalKey);
+                    Navigator.pop(context);
                   },
                 );
               },

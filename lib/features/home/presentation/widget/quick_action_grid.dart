@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/features/bills/presentation/betting_screen.dart';
-import 'package:mdiho/features/bills/presentation/buy_airtime.dart';
-import 'package:mdiho/features/bills/presentation/cable_bill.dart';
-import 'package:mdiho/features/bills/presentation/electricity_bill.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../bank_network/presentation/bank_network_screen.dart';
-import '../../../bills/presentation/buy_data.dart'; // Add this package in pubspec.yaml
 
 // Define Action Model
 class ActionItem {
@@ -54,46 +50,35 @@ class QuickActionsGrid extends ConsumerWidget {
           IconsaxPlusLinear.mobile,
           "Buy Airtime",
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const BuyAirtimeScreen()),
-            );
+            context.router.push(const BuyAirtimeRoute());
           },
         ),
         ActionItem(
           IconsaxPlusLinear.wifi_square,
           "Buy Data",
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const BuyDataScreen()),
-            );
+            context.router.push(const BuyDataRoute());
           },
         ),
         ActionItem(
           Icons.sports_football_outlined,
           "Betting",
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const BettingScreen()),
-            );
+            context.router.push(const BettingRoute());
           },
         ),
         ActionItem(
           IconsaxPlusLinear.lamp_charge,
           "Buy Electricity",
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => const ElectricityBillScreen()),
-            );
+            context.router.push(const ElectricityBillRoute());
           },
         ),
         ActionItem(
           Icons.monitor,
           "Tv Cable",
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const CableBillScreen()),
-            );
+            context.router.push(const CableBillRoute());
           },
         ),
         ActionItem(

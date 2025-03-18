@@ -339,18 +339,19 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                                 convertUSDToNGN,
                                 "\$ ",
                                 true,
-                                context),
+                                context,
+                                selectedPlan.value == "USD" ? "\$" : "₦"),
                             const Gap(4),
                             _buildCurrencyField(
-                              "You Will Receive",
-                              ngnController,
-                              "NGN",
-                              PlaceholderAssets.ng,
-                              convertNGNToUSD,
-                              "₦ ",
-                              false,
-                              context,
-                            ),
+                                "You Will Receive",
+                                ngnController,
+                                "NGN",
+                                PlaceholderAssets.ng,
+                                convertNGNToUSD,
+                                "₦ ",
+                                false,
+                                context,
+                                selectedPlan.value == "USD" ? "\$" : "₦"),
                           ],
                         ),
                         Positioned(
@@ -420,7 +421,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       Function(String) onChanged,
       String currencySign,
       final bool isTop,
-      BuildContext context) {
+      BuildContext context,
+      String sign) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -434,7 +436,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
                 label,
@@ -444,8 +447,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
               if (isTop == true) ...[
                 const Gap(6),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: theme.brightness == Brightness.dark
                         ? AppColors.secondaryColor.shade400
@@ -475,9 +477,12 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                 ),
               ] else ...[
                 const Spacer(),
-                const Text(
-                  'Rate~ ₦750/USD',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                Text(
+                  sign == '\$' ? 'Rate~ ₦750/USD' : "Rate~ \$0.0006/NGN",
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: ''),
                 ),
               ],
             ],
@@ -492,6 +497,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixText: currencySign,
+                    hintText: currencySign,
                   ),
                   onChanged: onChanged,
                   style: const TextStyle(
@@ -628,7 +634,7 @@ class CounterWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final count = useState(0);
+    final count = useState(1); // State variable
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -641,13 +647,13 @@ class CounterWidget extends HookWidget {
         children: [
           InkWell(
             onTap: () {
-              if (count.value > 0) {
-                count.value--;
-              }
-            },
+              count.value--;
+              print(count.value); // Decrement value
+            }, // Disable if count is 1
             child: Icon(
               Icons.remove,
-              color: count.value > 0 ? Colors.grey : Colors.grey.shade400,
+              color:
+                  count.value > 1 ? Colors.grey.shade800 : Colors.grey.shade400,
               size: 20,
             ),
           ),
@@ -666,6 +672,7 @@ class CounterWidget extends HookWidget {
           InkWell(
             onTap: () {
               count.value++;
+              print(count.value);
             },
             child: const Icon(
               Icons.add,

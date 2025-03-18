@@ -1,11 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
-
-import '../../../withdrawal/presentation/withdraw_funds_screen.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 // StateNotifier for Balance Visibility
 class BalanceVisibilityNotifier extends StateNotifier<bool> {
@@ -106,10 +106,11 @@ class WalletBalanceCard extends HookConsumerWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const WithdrawFundsScreen()));
+                context.router.push(const WithdrawFundsRoute());
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => const WithdrawFundsScreen()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor.shade500,
