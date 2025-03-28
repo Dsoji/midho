@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -150,12 +151,13 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
           ),
         ),
         const Gap(20),
-        _buildDetailRow("Transaction ID", details["transactionId"], context),
-        _buildDetailRow("Date & Time", details["dateTime"], context),
-        _buildDetailRow("Type", type, context),
-        _buildDetailRow("Amount", "₦${details["amount"]}", context),
-        _buildDetailRow("Fee", "₦${details["fee"]}", context),
-        _buildDetailRow("Status", status, context),
+        _buildDetailRow(
+            "Transaction ID", details["transactionId"], context, true),
+        _buildDetailRow("Date & Time", details["dateTime"], context, false),
+        _buildDetailRow("Type", type, context, false),
+        _buildDetailRow("Amount", "₦${details["amount"]}", context, false),
+        _buildDetailRow("Fee", "₦${details["fee"]}", context, false),
+        _buildDetailRow("Status", status, context, false),
       ],
     );
   }
@@ -178,8 +180,8 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
         ),
         const Gap(20),
         ...breakdown.entries.map(
-          (entry) =>
-              _buildDetailRow(entry.key, entry.value.toString(), context),
+          (entry) => _buildDetailRow(
+              entry.key, entry.value.toString(), context, false),
         ),
       ],
     );
@@ -189,6 +191,7 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
     String title,
     String value,
     BuildContext context,
+    bool isCopyable,
   ) {
     final theme = Theme.of(context);
 
@@ -213,15 +216,24 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
                   status: status,
                 )
               : Flexible(
-                  child: Text(
-                    value.formatAsNaira(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: _getStatusColor(value, context),
-                      fontFamily: '',
+                  child: InkWell(
+                    onTap: () {
+                      if (!isCopyable) return;
+                      Clipboard.setData(ClipboardData(text: value));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Copied to clipboard")),
+                      );
+                    },
+                    child: Text(
+                      value.formatAsNaira(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: _getStatusColor(value, context),
+                        fontFamily: '',
+                      ),
+                      softWrap: true,
+                      textAlign: TextAlign.end,
                     ),
-                    softWrap: true,
-                    textAlign: TextAlign.end,
                   ),
                 ),
         ],

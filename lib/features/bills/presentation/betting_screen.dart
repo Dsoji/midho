@@ -232,6 +232,7 @@ class BettingScreen extends HookConsumerWidget {
                                   color: theme.brightness == Brightness.dark
                                       ? Colors.white
                                       : Colors.grey.shade800,
+                                  fontFamily: '',
                                 ),
                               ),
                             ),
@@ -365,84 +366,6 @@ class ProviderBottomSheet extends HookConsumerWidget {
                   },
                 ),
               ],
-            ),
-          ),
-          const Gap(150),
-        ],
-      ),
-    );
-  }
-}
-
-class SubPlanBottomSheet extends HookConsumerWidget {
-  final ValueNotifier<String> selectedPlan;
-  const SubPlanBottomSheet({super.key, required this.selectedPlan});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final List<String> plans = [
-      "DSTV Compact - ₦8,000/Month",
-      "DSTV Flex - ₦5,000/Month",
-      "DSTV Original - ₦8,000/Month",
-      "DSTV Yanga - ₦3,500/Month",
-    ];
-    final searchController = useTextEditingController();
-
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 50,
-            height: 4,
-            decoration: BoxDecoration(
-              color: const Color(0xFFD9D9D9),
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            "Select Subscription Plan",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          CustomTextField(
-            controller: searchController,
-            hintText: 'Search subscription Plan',
-            isPassword: false,
-            suffixIcon: const Icon(Icons.search),
-            fillColor: Colors.white,
-            borderRadius: 12,
-          ),
-          const SizedBox(height: 12),
-          Container(
-            height: 300,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: ListView.separated(
-              itemCount: plans.length,
-              shrinkWrap: true,
-              separatorBuilder: (context, index) =>
-                  Divider(color: Colors.grey.shade100),
-              itemBuilder: (context, index) {
-                final plan = plans[index];
-                return ListTile(
-                  title: Center(
-                    child: Text(
-                      plan,
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center, // Ensures text is centered
-                    ),
-                  ),
-                  onTap: () {
-                    selectedPlan.value = plan;
-                    Navigator.pop(context);
-                  },
-                );
-              },
             ),
           ),
           const Gap(150),

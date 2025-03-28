@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'res/app_colors.dart';
@@ -85,12 +86,20 @@ class CustomColors extends ThemeExtension<CustomColors> {
 
 class ThemeNotifier extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
+  final Box _box = Hive.box('data');
+
+  ThemeNotifier() {
+    _themeMode = _box.get('themeMode', defaultValue: 'light') == 'dark'
+        ? ThemeMode.dark
+        : ThemeMode.light;
+  }
 
   ThemeMode get themeMode => _themeMode;
 
   void toggleTheme(ThemeMode mode) {
     _themeMode = mode;
-    notifyListeners(); // Notify widgets listening
+    _box.put('themeMode', mode == ThemeMode.dark ? 'dark' : 'light');
+    notifyListeners();
   }
 }
 

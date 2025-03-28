@@ -179,7 +179,7 @@ class PreferenceScreen extends HookConsumerWidget {
                           .toggleTheme(ThemeMode.dark);
                     },
                     child: Container(
-                      height: 11,
+                      height: 118,
                       width: 143,
                       padding: const EdgeInsets.all(11),
                       decoration: ShapeDecoration(

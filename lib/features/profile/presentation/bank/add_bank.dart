@@ -62,6 +62,7 @@ class AddNewBankScreen extends HookConsumerWidget {
                 children: [
                   // Email Field
                   BankInfoCard(
+                    isAddBank: true,
                     image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
                     name: selectedBank?["name"] ?? 'GT Bank',
                     color: selectedBank?["color"] ??

@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/authentication/registration/presentation/widget/step_progress_indicator.dart';
+import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/step_progress_indicator.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-import '../../../../common/res/app_colors.dart';
-import '../../../../common/widgets/custom_buttons.dart';
-import '../../../../common/widgets/custom_textfield.dart';
+import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/widgets/custom_buttons.dart';
+import '../../../../../common/widgets/custom_textfield.dart';
 import '../../pin_creation/presentation/create_pin.dart';
 
 final pageControllerProvider = Provider<PageController>((ref) {

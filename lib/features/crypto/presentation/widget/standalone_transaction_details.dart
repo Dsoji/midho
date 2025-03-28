@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
@@ -51,11 +52,30 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: const CustomAppBar(
+        appBar: CustomAppBar(
           title: "Transaction History",
-          showBackButton: false,
+          showBackButton: true,
           showTitle: false,
           showAction: false,
+          onBackPressed: () {
+            if (type == 'Crypto Sale') {
+              context.router.replaceAll([const CryptoRoute()]);
+
+              final tabsRouter = AutoTabsRouter.of(
+                context,
+              );
+
+              tabsRouter.setActiveIndex(0);
+            } else {
+              context.router.replaceAll([const HomeRoute()]);
+
+              final tabsRouter = AutoTabsRouter.of(
+                context,
+              );
+
+              tabsRouter.setActiveIndex(0);
+            }
+          },
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -78,7 +98,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
                       InfoWidget(
                         theme: theme,
                         text:
-                            "The admin team will review your transaction. O,nce approved, you will receive a notification, and your wallet will be credited promptly.",
+                            "The admin team will review your transaction. Once approved, you will receive a notification, and your wallet will be credited promptly.",
                       ),
                     ],
                   )),
@@ -162,12 +182,13 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
           ),
         ),
         const Gap(20),
-        _buildDetailRow("Transaction ID", details["transactionId"], context),
-        _buildDetailRow("Date & Time", details["dateTime"], context),
-        _buildDetailRow("Type", type, context),
-        _buildDetailRow("Amount", "₦${details["amount"]}", context),
-        _buildDetailRow("Fee", "₦${details["fee"]}", context),
-        _buildDetailRow("Status", status, context),
+        _buildDetailRow(
+            "Transaction ID", details["transactionId"], context, true),
+        _buildDetailRow("Date & Time", details["dateTime"], context, false),
+        _buildDetailRow("Type", type, context, false),
+        _buildDetailRow("Amount", "₦${details["amount"]}", context, false),
+        _buildDetailRow("Fee", "₦${details["fee"]}", context, false),
+        _buildDetailRow("Status", status, context, false),
       ],
     );
   }
@@ -190,8 +211,8 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         ),
         const Gap(20),
         ...breakdown.entries.map(
-          (entry) =>
-              _buildDetailRow(entry.key, entry.value.toString(), context),
+          (entry) => _buildDetailRow(
+              entry.key, entry.value.toString(), context, false),
         ),
       ],
     );
@@ -201,6 +222,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
     String title,
     String value,
     BuildContext context,
+    bool isCopyable,
   ) {
     final theme = Theme.of(context);
 
@@ -222,15 +244,24 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
           value == 'View Screenshot'
               ? const ViewScreenshotButton()
               : Flexible(
-                  child: Text(
-                    value.formatAsNaira(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: _getStatusColor(value, context),
-                      fontFamily: '',
+                  child: InkWell(
+                    onTap: () {
+                      if (!isCopyable) return;
+                      Clipboard.setData(ClipboardData(text: value));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Copied to clipboard")),
+                      );
+                    },
+                    child: Text(
+                      value.formatAsNaira(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: _getStatusColor(value, context),
+                        fontFamily: '',
+                      ),
+                      softWrap: true,
+                      textAlign: TextAlign.end,
                     ),
-                    softWrap: true,
-                    textAlign: TextAlign.end,
                   ),
                 ),
         ],

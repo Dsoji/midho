@@ -337,7 +337,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                                 "USD",
                                 PlaceholderAssets.us,
                                 convertUSDToNGN,
-                                "\$ ",
+                                selectedPlan.value == "USD" ? "\$ " : "₦",
                                 true,
                                 context,
                                 selectedPlan.value == "USD" ? "\$" : "₦"),
@@ -345,10 +345,12 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                             _buildCurrencyField(
                                 "You Will Receive",
                                 ngnController,
-                                "NGN",
-                                PlaceholderAssets.ng,
+                                selectedPlan.value == "USD" ? "NGN" : "USD",
+                                selectedPlan.value == "USD"
+                                    ? PlaceholderAssets.ng
+                                    : PlaceholderAssets.us,
                                 convertNGNToUSD,
-                                "₦ ",
+                                selectedPlan.value == "USD" ? "₦ " : "\$ ",
                                 false,
                                 context,
                                 selectedPlan.value == "USD" ? "\$" : "₦"),
@@ -636,51 +638,61 @@ class CounterWidget extends HookWidget {
   Widget build(BuildContext context) {
     final count = useState(1); // State variable
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(
-            onTap: () {
-              count.value--;
-              print(count.value); // Decrement value
-            }, // Disable if count is 1
-            child: Icon(
-              Icons.remove,
-              color:
-                  count.value > 1 ? Colors.grey.shade800 : Colors.grey.shade400,
-              size: 20,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              border: Border.symmetric(
-                vertical: BorderSide(color: Colors.grey.shade300),
+    return Material(
+      color: Colors.transparent, // Keep original background
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.transparent, // Keep original background
+
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            InkWell(
+              onTap: () {
+                if (count.value > 1) {
+                  count.value = count.value - 1;
+                  print("Decrement: ${count.value}");
+                }
+              },
+              child: Icon(
+                Icons.remove,
+                color: count.value > 1
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade400,
+                size: 20,
               ),
             ),
-            child: Text(
-              "${count.value}",
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            const SizedBox(width: 4), // Replace Gap(4) with SizedBox
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                border: Border.symmetric(
+                  vertical: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              child: Text(
+                "${count.value}",
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          InkWell(
-            onTap: () {
-              count.value++;
-              print(count.value);
-            },
-            child: const Icon(
-              Icons.add,
-              color: Colors.black,
-              size: 20,
+            const SizedBox(width: 4),
+            InkWell(
+              onTap: () {
+                count.value++;
+                print("Increment: ${count.value}");
+              },
+              child: const Icon(
+                Icons.add,
+                size: 20,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -34,5 +34,11 @@ final homeRoutes = AutoRoute(
     AutoRoute(
       page: NotificationRoute.page,
     ),
+    AutoRoute(
+      page: ReferallRoute.page,
+    ),
+    AutoRoute(
+      page: AddNewBankRoute.page,
+    ),
   ],
 );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 import '../res/app_colors.dart';
-import 'custom_buttons.dart';
 
 void showSuccessDialog({
   required BuildContext context,
@@ -70,25 +70,40 @@ void showSuccessDialog({
               ),
               const SizedBox(height: 12),
               // View Transaction Details Button
-              FullButton(
-                text: buttonText,
-                width: double.infinity,
-                height: 48,
-                onPressed: onButtonPressed,
-                textColor: Colors.white,
-                color: AppColors.primaryColor.shade500,
-              ),
-              FullButton(
-                text: 'Make Another Purchase',
-                width: double.infinity,
-                height: 48,
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE95A3B), // Orange button
+                  minimumSize: const Size(double.infinity, 45),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: () {
-                  onSecondaryAction(); // Wait for action to complete
+                  onButtonPressed();
+
+                  Navigator.pop(context);
                 },
-                textColor: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-                color: Colors.transparent,
+                child: Text(
+                  buttonText,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+              const Gap(10),
+              TextButton(
+                onPressed: () {
+                  onSecondaryAction();
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Make Another Purchase",
+                  style: TextStyle(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ],
           ),

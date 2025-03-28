@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/authentication/forgot_password/presentation/forgot_password.dart';
+import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/features/authentication/presentation/forgot_password/presentation/forgot_password.dart';
 import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
 
-import '../../../../common/res/app_colors.dart';
-import '../../../../common/widgets/custom_buttons.dart';
-import '../../../../common/widgets/custom_textfield.dart';
-import '../../../bottomNav/app_router.gr.dart';
+import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/widgets/custom_buttons.dart';
+import '../../../../../common/widgets/custom_textfield.dart';
+import '../../../../bottomNav/app_router.gr.dart';
 import '../../registration/presentation/registration_screen.dart';
 
 @RoutePage()
@@ -20,6 +21,7 @@ class LoginScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authentication = ref.read(authenticationControllerProvider.notifier);
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final referralController = useTextEditingController();
@@ -150,11 +152,32 @@ class LoginScreen extends HookConsumerWidget {
 
                   // Continue Button
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .login
+                        .isLoading,
                     text: "Continue",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      context.router.replace(const NaviBarRoute());
+                    onPressed: () async {
+                      final result = await authentication.signIn(
+                        emailController.text,
+                        passwordController.text,
+                      );
+                      if (result == true) {
+                        context.router.replace(const NaviBarRoute());
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Login failed. Please check your credentials.",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      //
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

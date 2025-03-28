@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/authentication/pin_creation/presentation/confirm_pin.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-import '../../../../common/res/app_colors.dart';
-import '../../../../common/widgets/custom_buttons.dart';
+import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/widgets/custom_buttons.dart';
+import '../../login/presentation/login_screen.dart';
 
 class PinState {
   final String pin;
@@ -40,8 +41,8 @@ final pinProvider = StateNotifierProvider<PinNotifier, PinState>(
 );
 
 @RoutePage()
-class CreatePinScreen extends HookConsumerWidget {
-  const CreatePinScreen({
+class ConfirmPinScreen extends HookConsumerWidget {
+  const ConfirmPinScreen({
     super.key,
   });
 
@@ -51,9 +52,19 @@ class CreatePinScreen extends HookConsumerWidget {
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            IconsaxPlusLinear.arrow_left_1,
+            color: Colors.black,
+            size: 20,
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -79,7 +90,7 @@ class CreatePinScreen extends HookConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Create Pin",
+                  "Confirm Pin",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -87,10 +98,8 @@ class CreatePinScreen extends HookConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Set PIN code for your transactions",
-                  style: TextStyle(
-                    fontSize: 14,
-                  ),
+                  "Type your PIN code again to confirm",
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
 
@@ -133,6 +142,7 @@ class CreatePinScreen extends HookConsumerWidget {
                       ),
                     ),
                     const Gap(8),
+                    // Visibility Toggle Button
                     InkWell(
                       onTap: pinNotifier.toggleVisibility,
                       child: Container(
@@ -165,10 +175,10 @@ class CreatePinScreen extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ConfirmPinScreen()));
+                            builder: (context) => const LoginScreen()));
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,

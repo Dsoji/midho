@@ -73,10 +73,10 @@ class TransactionPinScreen extends HookConsumerWidget {
           ],
           buttonText: "View Details",
           onButtonPressed: () {
-            context.router.replaceAll([
+            context.router.push(
               StandAloneTransactionDetailsRoute(
                   type: 'Bill Payment', status: 'Completed'),
-            ]);
+            );
           },
           onSecondaryAction: () {
             context.router.popUntil(
@@ -107,7 +107,6 @@ class TransactionPinScreen extends HookConsumerWidget {
           onSecondaryAction: () {
             context.router
                 .popUntil((route) => route.settings.name == BuyDataRoute.name);
-            Navigator.pop(context);
           },
           primaryButtonColor: Colors.orange,
           backgroundColor: Colors.blue.shade900,
@@ -135,7 +134,6 @@ class TransactionPinScreen extends HookConsumerWidget {
           onSecondaryAction: () {
             context.router.popUntil(
                 (route) => route.settings.name == ElectricityBillRoute.name);
-            Navigator.pop(context);
           },
           primaryButtonColor: Colors.orange,
           backgroundColor: Colors.blue.shade900,
@@ -158,13 +156,10 @@ class TransactionPinScreen extends HookConsumerWidget {
               StandAloneTransactionDetailsRoute(
                   type: 'Bill Payment', status: 'Completed'),
             ]);
-            Navigator.pop(context);
           },
           onSecondaryAction: () {
             context.router.popUntil(
                 (route) => route.settings.name == CableBillRoute.name);
-
-            Navigator.pop(context);
           },
           primaryButtonColor: Colors.orange,
           backgroundColor: Colors.white,
@@ -185,7 +180,6 @@ class TransactionPinScreen extends HookConsumerWidget {
           onSecondaryAction: () {
             context.router
                 .popUntil((route) => route.settings.name == BettingRoute.name);
-            Navigator.pop(context);
           },
           primaryButtonColor: Colors.black,
           backgroundColor: Colors.white,

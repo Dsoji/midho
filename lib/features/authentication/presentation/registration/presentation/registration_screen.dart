@@ -4,19 +4,22 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
-import 'package:mdiho/features/authentication/registration/presentation/widget/custom_dropdown.dart';
-import 'package:mdiho/features/authentication/registration/presentation/widget/step_progress_indicator.dart';
+import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/features/authentication/presentation/login/presentation/login_screen.dart';
+import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/custom_dropdown.dart';
+import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/step_progress_indicator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-import '../../../../common/res/app_colors.dart';
-import '../../../../common/widgets/custom_buttons.dart';
-import '../../../../common/widgets/custom_textfield.dart';
+import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/widgets/custom_buttons.dart';
+import '../../../../../common/widgets/custom_textfield.dart';
+import '../../../data/model/payload/sign_up_payload.dart';
 import '../../pin_creation/presentation/create_pin.dart';
 
 final pageControllerProvider = Provider<PageController>((ref) {
@@ -99,6 +102,7 @@ class RegistrationScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authService = ref.read(authenticationControllerProvider.notifier);
     final pageController = ref.watch(pageControllerProvider);
     final pageIndex = useState(0);
 
@@ -185,10 +189,21 @@ class RegistrationScreen extends HookConsumerWidget {
                   onPageChanged: (index) => pageIndex.value = index,
                   children: [
                     EmailPasswordStep(
-                        onNext: () => pageController.nextPage(
+                      isLoading: ref
+                          .watch(authenticationControllerProvider)
+                          .emailVerification
+                          .isLoading,
+                      onNext: () {
+                        pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut)),
+                            curve: Curves.easeInOut);
+                      },
+                    ),
                     OtpVerificationStep(
+                        isLoading: ref
+                            .watch(authenticationControllerProvider)
+                            .emailConfirmation
+                            .isLoading,
                         onNext: () => pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut)),
@@ -209,8 +224,10 @@ class RegistrationScreen extends HookConsumerWidget {
 
 class EmailPasswordStep extends HookConsumerWidget {
   final VoidCallback onNext;
+  final bool isLoading;
 
-  const EmailPasswordStep({super.key, required this.onNext});
+  const EmailPasswordStep(
+      {super.key, required this.onNext, this.isLoading = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -219,6 +236,7 @@ class EmailPasswordStep extends HookConsumerWidget {
     final referralController = useTextEditingController();
     final obscurePassword = useState(true);
     final passwordStrength = useState("Weak");
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     bool isValidEmail(String email) {
       return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
@@ -351,10 +369,39 @@ class EmailPasswordStep extends HookConsumerWidget {
 
               // Continue Button
               FullButton(
+                isLoading: isLoading,
                 text: "Continue",
                 width: double.infinity,
                 height: 48,
-                onPressed: onNext,
+                onPressed: () async {
+                  var box = Hive.box('data');
+                  box.put('email', emailController.text.trim());
+                  box.put('password', passwordController.text.trim());
+                  box.put('referral', referralController.text.trim());
+                  authService.updateSignUpDetails(
+                    SignUpPayload(
+                      email: emailController.text.trim(),
+                      password: passwordController.text.trim(),
+                      referral: referralController.text.trim(),
+                    ),
+                  );
+
+                  final result = await authService.emailVerify(
+                    emailController.text.trim(),
+                    referralController.text.trim(),
+                    'SIGNUP',
+                  );
+
+                  if (result == true) {
+                    onNext(); // Correctly invoke the function
+                  } else if (result == false) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Email verification failed.'),
+                      ),
+                    );
+                  }
+                },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,
               ),
@@ -431,12 +478,19 @@ class EmailPasswordStep extends HookConsumerWidget {
 
 class OtpVerificationStep extends HookConsumerWidget {
   final VoidCallback onNext;
+  final bool isLoading;
 
-  const OtpVerificationStep({super.key, required this.onNext});
+  const OtpVerificationStep({
+    super.key,
+    required this.onNext,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final otpController = useTextEditingController();
+    final authService = ref.read(authenticationControllerProvider.notifier);
+    final authDetails = ref.watch(authenticationControllerProvider);
     final isOtpFilled = useState(false);
     final countdown = useState(100);
     final isCounting = useState(true);
@@ -460,6 +514,8 @@ class OtpVerificationStep extends HookConsumerWidget {
     }, [isCounting.value]); // Only restart timer when "Resend Code" is tapped
 
     final theme = Theme.of(context);
+    var box = Hive.box('data');
+    final String email = box.get('email');
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -494,9 +550,9 @@ class OtpVerificationStep extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "Enter the 6-digit code we just sent to johndoe@gmail.com",
-                style: TextStyle(
+              Text(
+                "Enter the 6-digit code we just sent to $email",
+                style: const TextStyle(
                   fontSize: 14,
                 ),
               ),
@@ -570,10 +626,26 @@ class OtpVerificationStep extends HookConsumerWidget {
 
               // Verify Button
               FullButton(
+                isLoading: isLoading,
                 text: "Verify",
                 width: double.infinity,
                 height: 48,
-                onPressed: onNext,
+                onPressed: () async {
+                  final result = await authService.emailConfirm(
+                    email,
+                    otpController.text.trim(),
+                    'SIGNUP',
+                  );
+
+                  if (result == true) {
+                    onNext();
+                  } else if (result == false) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Failed to  confirm account"),
+                      backgroundColor: Colors.red,
+                    ));
+                  }
+                },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,
               ),
@@ -597,6 +669,9 @@ class UserDetailsStep extends HookConsumerWidget {
     final phoneController = useTextEditingController();
     final selectedCountry = useState("Nigeria");
     final theme = Theme.of(context);
+    final authService = ref.read(authenticationControllerProvider.notifier);
+    var box = Hive.box('data');
+    String? deviceId = box.get('device_id');
     return Column(
       children: [
         Container(
@@ -739,10 +814,41 @@ class UserDetailsStep extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               FullButton(
+                isLoading: ref
+                    .watch(authenticationControllerProvider)
+                    .signUp
+                    .isLoading,
                 text: "Sign Up",
                 width: double.infinity,
                 height: 48,
-                onPressed: onFinish,
+                onPressed: () async {
+                  var box = Hive.box('data');
+                  final String email = box.get('email');
+                  final String password = box.get('password');
+                  final String referral = box.get('referral');
+                  final String storedToken = box.get('fcm_token');
+                  final result = await authService.signUp(
+                    SignUpPayload(
+                      email: email,
+                      password: password,
+                      referral: referral,
+                      firstname: firstNameController.text.trim(),
+                      lastname: lastNameController.text.trim(),
+                      country: 'NG',
+                      phone: phoneController.text.trim(),
+                      device: deviceId,
+                      fcmToken: storedToken,
+                    ),
+                  );
+                  if (result == true) {
+                    onFinish;
+                  } else if (result == false) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Failed to  register account"),
+                      backgroundColor: Colors.red,
+                    ));
+                  }
+                },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,
               ),

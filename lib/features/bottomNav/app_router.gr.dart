@@ -10,15 +10,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i48;
 import 'package:flutter/material.dart' as _i49;
-import 'package:mdiho/features/authentication/forgot_password/presentation/forgot_password.dart'
+import 'package:mdiho/features/authentication/presentation/forgot_password/presentation/forgot_password.dart'
     as _i21;
-import 'package:mdiho/features/authentication/login/presentation/login_screen.dart'
+import 'package:mdiho/features/authentication/presentation/login/presentation/login_screen.dart'
     as _i26;
-import 'package:mdiho/features/authentication/pin_creation/presentation/confirm_pin.dart'
+import 'package:mdiho/features/authentication/presentation/pin_creation/presentation/confirm_pin.dart'
     as _i12;
-import 'package:mdiho/features/authentication/pin_creation/presentation/create_pin.dart'
+import 'package:mdiho/features/authentication/presentation/pin_creation/presentation/create_pin.dart'
     as _i13;
-import 'package:mdiho/features/authentication/registration/presentation/registration_screen.dart'
+import 'package:mdiho/features/authentication/presentation/registration/presentation/registration_screen.dart'
     as _i35;
 import 'package:mdiho/features/bank_network/presentation/bank_network_screen.dart'
     as _i2;

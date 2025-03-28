@@ -6,8 +6,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/authentication/login/presentation/login_screen.dart';
-import 'package:mdiho/features/authentication/registration/presentation/registration_screen.dart';
+import 'package:mdiho/features/authentication/presentation/login/presentation/login_screen.dart';
+import 'package:mdiho/features/authentication/presentation/registration/presentation/registration_screen.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';

@@ -205,7 +205,9 @@ class CableBillScreen extends HookConsumerWidget {
                           Text(
                             subPlan.value,
                             style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: ''),
                           ),
                           const Icon(
                             Icons.arrow_forward_ios,
@@ -321,7 +323,10 @@ class ProviderBottomSheet extends HookConsumerWidget {
                       ),
                       title: Text(
                         provider["name"]!,
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontFamily: '',
+                        ),
                       ),
                       onTap: () {
                         selectedProvider.value = provider["name"]!;
@@ -406,7 +411,7 @@ class SubPlanBottomSheet extends HookConsumerWidget {
                   title: Center(
                     child: Text(
                       plan,
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16, fontFamily: ''),
                       textAlign: TextAlign.center, // Ensures text is centered
                     ),
                   ),

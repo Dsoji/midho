@@ -22,8 +22,10 @@ class BankInfoCard extends HookConsumerWidget {
     this.iconTap,
     this.onTap,
     this.showStrength = true,
+    this.isAddBank = false,
   });
 
+  final bool isAddBank;
   final String image;
   final String name;
   final Color color;
@@ -115,32 +117,33 @@ class BankInfoCard extends HookConsumerWidget {
                       ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      actNumber,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : const Color(0xFF707070),
+                if (isAddBank == false)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        actNumber,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : const Color(0xFF707070),
+                        ),
                       ),
-                    ),
-                    const Gap(12),
-                    Text(
-                      actName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : AppColors.greyColor.shade500,
+                      const Gap(12),
+                      Text(
+                        actName,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.greyColor.shade500,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
             const Spacer(),
