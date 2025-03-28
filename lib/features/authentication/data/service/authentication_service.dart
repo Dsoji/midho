@@ -17,6 +17,10 @@ final authenticationServiceProvider = Provider<AuthenticationService>((ref) {
   );
 });
 
+var box = Hive.box('data');
+String? deviceId = box.get('device_id');
+String storedToken = box.get('fcm_token');
+
 class AuthenticationService {
   final IApiClient apiClient;
   final ApiRequestHelper apiRequestHelper;
@@ -30,10 +34,6 @@ class AuthenticationService {
     required String email,
     required String password,
   }) async {
-    var box = Hive.box('data');
-    String? deviceId = box.get('device_id');
-    String storedToken = box.get('fcm_token');
-
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post(
         'user/auth/signin',
@@ -46,9 +46,13 @@ class AuthenticationService {
       ),
       parser: (data) {
         print(data);
+        final token = data['accessToken'];
+        var box = Hive.box('data');
+        box.put('accessToken', token);
         return UserModel.fromMap(data);
       },
       showErrorToast: true,
+      showSuccessToast: true,
     );
   }
 
@@ -101,6 +105,29 @@ class AuthenticationService {
           "email": email,
           "code": code,
           "endpoint": endpoint,
+        },
+      ),
+      parser: (data) {
+        print(data);
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> forgotPassword({
+    required String email,
+    required String code,
+    required String password,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/auth/resetPassword',
+        data: {
+          "email": email,
+          "code": code, // reset code gotten by calling emailVerification
+          "password": password, // the new password
+          "device": deviceId,
         },
       ),
       parser: (data) {

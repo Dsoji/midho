@@ -147,4 +147,33 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
       },
     );
   }
+
+  Future<bool> forgotPassword(
+    String email,
+    String code,
+    String password,
+  ) async {
+    state = state.copyWith(forgotPassword: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.forgotPassword(
+      email: email,
+      code: code,
+      password: password,
+    );
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          forgotPassword: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          forgotPassword: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
 }

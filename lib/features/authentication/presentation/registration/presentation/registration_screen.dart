@@ -394,12 +394,6 @@ class EmailPasswordStep extends HookConsumerWidget {
 
                   if (result == true) {
                     onNext(); // Correctly invoke the function
-                  } else if (result == false) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Email verification failed.'),
-                      ),
-                    );
                   }
                 },
                 textColor: Colors.white,
@@ -490,7 +484,6 @@ class OtpVerificationStep extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final otpController = useTextEditingController();
     final authService = ref.read(authenticationControllerProvider.notifier);
-    final authDetails = ref.watch(authenticationControllerProvider);
     final isOtpFilled = useState(false);
     final countdown = useState(100);
     final isCounting = useState(true);
@@ -639,11 +632,6 @@ class OtpVerificationStep extends HookConsumerWidget {
 
                   if (result == true) {
                     onNext();
-                  } else if (result == false) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Failed to  confirm account"),
-                      backgroundColor: Colors.red,
-                    ));
                   }
                 },
                 textColor: Colors.white,
@@ -842,11 +830,6 @@ class UserDetailsStep extends HookConsumerWidget {
                   );
                   if (result == true) {
                     onFinish;
-                  } else if (result == false) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Failed to  register account"),
-                      backgroundColor: Colors.red,
-                    ));
                   }
                 },
                 textColor: Colors.white,

@@ -166,16 +166,6 @@ class LoginScreen extends HookConsumerWidget {
                       );
                       if (result == true) {
                         context.router.replace(const NaviBarRoute());
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "Login failed. Please check your credentials.",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
                       }
                       //
                     },

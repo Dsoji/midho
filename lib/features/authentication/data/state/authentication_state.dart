@@ -20,6 +20,7 @@ class AuthenticationState {
   final AsyncValue<SignUpPayload> signUpPayload;
   final AsyncValue<String> emailVerification;
   final AsyncValue<String> emailConfirmation;
+  final AsyncValue<String> forgotPassword;
 
   const AuthenticationState({
     required this.login,
@@ -28,6 +29,7 @@ class AuthenticationState {
     required this.signUpPayload,
     required this.emailVerification,
     required this.emailConfirmation,
+    required this.forgotPassword,
   });
 
   factory AuthenticationState.initial() {
@@ -38,6 +40,7 @@ class AuthenticationState {
       signUpPayload: AsyncValue.data(SignUpPayload()),
       emailVerification: const AsyncValue.data(''),
       emailConfirmation: const AsyncValue.data(''),
+      forgotPassword: const AsyncValue.data(''),
     );
   }
 
@@ -48,6 +51,7 @@ class AuthenticationState {
     AuthenticationStatus? status,
     AsyncValue<String>? emailVerification,
     AsyncValue<String>? emailConfirmation,
+    AsyncValue<String>? forgotPassword,
   }) {
     return AuthenticationState(
       login: login ?? this.login,
@@ -56,6 +60,7 @@ class AuthenticationState {
       signUpPayload: signUpPayload ?? this.signUpPayload,
       emailVerification: emailVerification ?? this.emailVerification,
       emailConfirmation: emailConfirmation ?? this.emailConfirmation,
+      forgotPassword: forgotPassword ?? this.forgotPassword,
     );
   }
 

@@ -5,15 +5,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/common/utils/locator.dart';
 import 'package:mdiho/features/bottomNav/app_router.dart';
 import 'package:mdiho/firebase_options.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 import 'common/app_theme.dart';
 import 'common/toast/taost_service.dart';
 import 'common/toast/toast_warpper.dart';
+import 'common/utils/dimesnsion.dart';
 import 'features/bottomNav/route_observer.dart';
 
 final _logger = Logger();
@@ -27,7 +31,7 @@ void main() async {
 
   await _getAndSaveDeviceId();
   await getFCMToken();
-
+  setUpLocator();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -38,23 +42,53 @@ void main() async {
 class MyApp extends HookConsumerWidget {
   MyApp({super.key});
   final appRouter = AppRouter();
+  final toastKey = GlobalKey<ToastWrapperState>(); // ✅ Move this here
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final toastKey = GlobalKey<ToastWrapperState>();
-
     final themeNotifier = ref.watch(themeNotifierProvider);
-    ToastService().initialize(toastKey);
+    ToastService().initialize(toastKey); // ✅ Initialize once
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      themeMode: themeNotifier.themeMode,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      routerDelegate: appRouter.delegate(
-        navigatorObservers: () => [AppRouterObserver()],
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.light,
       ),
-      routeInformationParser: appRouter.defaultRouteParser(),
-      routeInformationProvider: appRouter.routeInfoProvider(),
+    );
+
+    final mediaQuery = MediaQuery.of(context);
+    final scale =
+        mediaQuery.textScaler.clamp(minScaleFactor: 0.8, maxScaleFactor: 1.2);
+    Animate.restartOnHotReload = true;
+
+    return OverlaySupport.global(
+      child: MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: mediaQuery.copyWith(textScaler: scale),
+          child: child!,
+        ),
+        debugShowCheckedModeBanner: false,
+        themeMode: themeNotifier.themeMode,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        home: ToastWrapper(
+          key: toastKey, // ✅ Attach key here
+          child: Builder(builder: (context) {
+            final media = MediaQuery.of(context);
+            Dims.setSize(media);
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(),
+              child: Router(
+                routerDelegate: appRouter.delegate(
+                  navigatorObservers: () => [AppRouterObserver()],
+                ),
+                routeInformationParser: appRouter.defaultRouteParser(),
+                routeInformationProvider: appRouter.routeInfoProvider(),
+                backButtonDispatcher: RootBackButtonDispatcher(),
+              ),
+            );
+          }),
+        ),
+      ),
     );
   }
 }

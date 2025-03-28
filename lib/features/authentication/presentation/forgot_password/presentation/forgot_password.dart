@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/step_progress_indicator.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -11,11 +12,14 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
-import '../../pin_creation/presentation/create_pin.dart';
+import '../../../data/controller/authentication_controller.dart';
+import '../../login/presentation/login_screen.dart';
 
 final pageControllerProvider = Provider<PageController>((ref) {
   return PageController();
 });
+
+var box = Hive.box('data');
 
 final registrationProvider =
     StateNotifierProvider<RegistrationNotifier, RegistrationState>(
@@ -97,50 +101,71 @@ class ForgotPasswordScreen extends HookConsumerWidget {
     final pageIndex = useState(0);
 
     void goBack() {
-      if (pageIndex.value > 0) {
+      if (pageIndex.value == 2) {
+        // If on page 2, always go back to page 0
+        pageController.animateToPage(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else if (pageIndex.value > 0) {
+        // Otherwise, go to the previous page normally
         pageController.previousPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: StepProgressIndicator(
-          currentStep: pageIndex.value + 1,
-          totalSteps: 3,
-          onBack: pageIndex.value > 0 ? goBack : null,
+    return PopScope(
+      canPop: pageIndex.value == 0, // Prevents popping when not on first page
+      onPopInvoked: (didPop) {
+        if (!didPop && pageIndex.value > 0) {
+          goBack();
+        } else if (!didPop && pageIndex.value > 0) {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: StepProgressIndicator(
+            currentStep: pageIndex.value + 1,
+            totalSteps: 3,
+            onBack: pageIndex.value > 0 ? goBack : null,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              child: PageView(
-                controller: pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) => pageIndex.value = index,
-                children: [
-                  EmailPasswordStep(
-                      onNext: () => pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut)),
-                  OtpVerificationStep(
-                      onNext: () => pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut)),
-                  UserDetailsStep(onFinish: () {
-                    Navigator.push(
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  onPageChanged: (index) => pageIndex.value = index,
+                  children: [
+                    EmailPasswordStep(
+                        onNext: () => pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut)),
+                    OtpVerificationStep(
+                        onNext: () => pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut)),
+                    UserDetailsStep(onFinish: () {
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const CreatePinScreen()));
-                  }),
-                ],
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -159,6 +184,7 @@ class EmailPasswordStep extends HookConsumerWidget {
     final referralController = useTextEditingController();
     final obscurePassword = useState(true);
     final passwordStrength = useState("Weak");
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     bool isValidEmail(String email) {
       return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
@@ -240,10 +266,25 @@ class EmailPasswordStep extends HookConsumerWidget {
 
               // Continue Button
               FullButton(
+                isLoading: ref
+                    .watch(authenticationControllerProvider)
+                    .emailVerification
+                    .isLoading,
                 text: "Continue",
                 width: double.infinity,
                 height: 48,
-                onPressed: onNext,
+                onPressed: () async {
+                  final result = await authService.emailVerify(
+                    emailController.text.trim(),
+                    referralController.text.trim(),
+                    'RESETPASSWORD',
+                  );
+                  if (result == true) {
+                    await box.put('email', emailController.text.trim());
+
+                    onNext(); // Correctly invoke the function
+                  }
+                },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,
               ),
@@ -278,6 +319,7 @@ class OtpVerificationStep extends HookConsumerWidget {
     final isOtpFilled = useState(false);
     final countdown = useState(100);
     final isCounting = useState(true);
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     useEffect(() {
       Timer? timer;
@@ -411,7 +453,11 @@ class OtpVerificationStep extends HookConsumerWidget {
                 text: "Verify",
                 width: double.infinity,
                 height: 48,
-                onPressed: onNext,
+                onPressed: () async {
+                  await box.put('otp', otpController.text.trim());
+
+                  onNext();
+                },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,
               ),
@@ -436,6 +482,7 @@ class UserDetailsStep extends HookConsumerWidget {
     final selectedCountry = useState("Nigeria");
     final passwordController = useTextEditingController();
     final theme = Theme.of(context);
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     return Column(
       children: [
@@ -506,10 +553,25 @@ class UserDetailsStep extends HookConsumerWidget {
               const SizedBox(height: 20),
 
               FullButton(
+                isLoading: ref
+                    .watch(authenticationControllerProvider)
+                    .forgotPassword
+                    .isLoading,
                 text: "Continue",
                 width: double.infinity,
                 height: 48,
-                onPressed: onFinish,
+                onPressed: () async {
+                  final String email = box.get('email');
+                  final String code = box.get('otp');
+                  final result = await authService.forgotPassword(
+                    email,
+                    code,
+                    passwordController.text.trim(),
+                  );
+                  if (result == true) {
+                    onFinish();
+                  }
+                },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,
               ),

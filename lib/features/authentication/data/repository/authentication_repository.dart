@@ -126,4 +126,33 @@ class AuthenticationRepository {
       return Error(failure);
     }
   }
+
+  Future<Result<FailureHandler, String>> forgotPassword({
+    required String email,
+    required String code,
+    required String password,
+  }) async {
+    try {
+      final data = await authService.forgotPassword(
+        email: email,
+        code: code,
+        password: password,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to rest password',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to rest password'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
 }

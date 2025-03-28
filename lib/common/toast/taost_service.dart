@@ -22,6 +22,7 @@ class ToastService {
       debugPrint('ToastService not initialized');
       return;
     }
+
     _wrapperKey?.currentState?.showToast(type, message: message);
   }
 
