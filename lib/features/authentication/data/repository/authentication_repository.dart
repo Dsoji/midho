@@ -282,4 +282,33 @@ class AuthenticationRepository {
       return Error(failure);
     }
   }
+
+  Future<Result<FailureHandler, String>> updatePin({
+    required String email,
+    required String pin,
+    required String code,
+  }) async {
+    try {
+      final data = await authService.changePin(
+        email: email,
+        pin: pin,
+        code: code,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change password',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change password'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
 }

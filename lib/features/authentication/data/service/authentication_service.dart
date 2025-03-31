@@ -67,6 +67,10 @@ class AuthenticationService {
         data: payload,
       ),
       parser: (data) {
+        print(data);
+        final token = data['token'];
+        var box = Hive.box('data');
+        box.put('accessToken', token);
         return UserModel.fromMap(data);
       },
       showErrorToast: true,
@@ -234,6 +238,31 @@ class AuthenticationService {
         data: {
           "pastword": oldPassword, // the previous password
           "password": password,
+        },
+      ),
+      parser: (data) => BaseModel.toRawString(data),
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> changePin({
+    required String email,
+    required String code,
+    required String pin,
+  }) async {
+    final String accessToken = await box.get('accessToken');
+    return await apiRequestHelper.handleApiRequest<String>(
+      () => apiClient.post(
+        'user/auth/resetPin',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "email": email,
+          "code": code, // reset code gotten by calling emailVerification
+          "pin": pin, // the new pin
+          "device": deviceId
         },
       ),
       parser: (data) => BaseModel.toRawString(data),

@@ -4,14 +4,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../common/res/app_colors.dart';
-import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
+import '../../../../bottomNav/app_router.gr.dart';
 import '../../../data/controller/authentication_controller.dart';
 import '../../../data/model/payload/profile_payload.dart';
-import '../../login/presentation/login_screen.dart';
 
 class PinState {
   final String pin;
@@ -42,6 +42,8 @@ class PinNotifier extends StateNotifier<PinState> {
 final pinProvider = StateNotifierProvider<PinNotifier, PinState>(
   (ref) => PinNotifier(),
 );
+
+final logger = Logger();
 
 @RoutePage()
 class ConfirmPinScreen extends HookConsumerWidget {
@@ -176,35 +178,30 @@ class ConfirmPinScreen extends HookConsumerWidget {
 
                 // Next Button
                 FullButton(
+                  isLoading: ref
+                      .watch(authenticationControllerProvider)
+                      .forgotPassword
+                      .isLoading,
                   text: "Next",
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
-                    if (pinController.text == pin) {
-                      authService.updateProfileDetails(ProfilePayload(
-                        pin: pin,
-                      ));
+                    logger.d('clicked');
+                    authService.updateProfileDetails(ProfilePayload(
+                      pin: pin,
+                    ));
 
-                      final profileDetails = ref
-                          .watch(authenticationControllerProvider)
-                          .profilePayload
-                          .valueOrNull;
+                    final profileDetails = ref
+                        .watch(authenticationControllerProvider)
+                        .profilePayload
+                        .valueOrNull;
 
-                      final result =
-                          await authService.updateProfile(profileDetails!);
-                      if (result == true) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
-                      }
-                    } else {
-                      ToastService().showToast(
-                        NotificationType.info,
-                        message: 'Pin does not match',
-                      );
+                    logger.d("hete is profile details : $profileDetails");
+
+                    final result =
+                        await authService.updateProfile(profileDetails!);
+                    if (result == true && context.mounted) {
+                      context.router.replace(const NaviBarRoute());
                     }
                   },
                   textColor: Colors.white,

@@ -306,4 +306,33 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
       },
     );
   }
+
+  Future<bool> changePin(
+    String email,
+    String code,
+    String pin,
+  ) async {
+    state = state.copyWith(resetPin: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.updatePin(
+      email: email,
+      pin: pin,
+      code: code,
+    );
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          resetPin: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          resetPin: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
 }

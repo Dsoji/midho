@@ -46,5 +46,8 @@ final profileRoutes = AutoRoute(
     AutoRoute(
       page: LoginRoute.page,
     ),
+    AutoRoute(
+      page: RegistrationRoute.page,
+    ),
   ],
 );

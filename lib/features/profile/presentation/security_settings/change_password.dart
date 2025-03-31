@@ -93,7 +93,7 @@ class ChangePasswordScreen extends HookConsumerWidget {
                   FullButton(
                     isLoading: ref
                         .watch(authenticationControllerProvider)
-                        .forgotPassword
+                        .resetPin
                         .isLoading,
                     text: "Save Changes",
                     width: double.infinity,

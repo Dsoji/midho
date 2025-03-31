@@ -85,13 +85,13 @@ class CustomColors extends ThemeExtension<CustomColors> {
 }
 
 class ThemeNotifier extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.light;
+  ThemeMode _themeMode = ThemeMode.dark;
   final Box _box = Hive.box('data');
 
   ThemeNotifier() {
-    _themeMode = _box.get('themeMode', defaultValue: 'light') == 'dark'
-        ? ThemeMode.dark
-        : ThemeMode.light;
+    _themeMode = _box.get('themeMode', defaultValue: 'dark') == 'light'
+        ? ThemeMode.light
+        : ThemeMode.dark;
   }
 
   ThemeMode get themeMode => _themeMode;

@@ -6,8 +6,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
 class PinState {
   final String pin;
@@ -45,6 +47,22 @@ class ChangePinScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(authenticationControllerProvider.notifier).emailVerify(
+              userInfo?.email ?? '',
+              null,
+              'RESETPIN',
+            );
+      });
+      return null;
+    }, []);
+
+    final authService = ref.read(authenticationControllerProvider.notifier);
+
     final theme = Theme.of(context);
     final otpController = useTextEditingController();
     final newPinController = useTextEditingController();
@@ -58,7 +76,7 @@ class ChangePinScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: const CustomAppBar(
-        title: "Personal Information",
+        title: "Reset Transaction PIN",
         showBackButton: true,
         showTitle: true,
         showAction: false,
@@ -69,7 +87,7 @@ class ChangePinScreen extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Update your name, or phone number. Keep your details up-to-date to avoid issues.",
+              "Set a new PIN for secure transactions.",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -98,9 +116,9 @@ class ChangePinScreen extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Enter the 6-digit code we texted to Johndoe@gmail.com",
-                    style: TextStyle(
+                  Text(
+                    "Enter the 6-digit code we texted to ${userInfo?.email ?? '...@gmail.com'}",
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
@@ -199,7 +217,7 @@ class ChangePinScreen extends HookConsumerWidget {
                         child: PinCodeTextField(
                           appContext: context,
                           length: 4,
-                          controller: newPinController,
+                          controller: confirmPinController,
                           obscureText: pinState.isPinHidden,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
@@ -341,11 +359,39 @@ class ChangePinScreen extends HookConsumerWidget {
                   const Gap(24),
                   // Verify Button
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .resetPin
+                        .isLoading,
                     text: "Verify & Reset",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      if (otpController.text.isNotEmpty &&
+                          newPinController.text.isNotEmpty &&
+                          confirmPinController.text.isNotEmpty) {
+                        if (newPinController.text ==
+                            confirmPinController.text) {
+                          final result = await authService.changePin(
+                            userInfo?.email ?? '',
+                            otpController.text.trim(),
+                            newPinController.text.trim(),
+                          );
+                          if (result == true) {
+                            Navigator.pop(context);
+                          }
+                        } else {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'New PIN and Confirm PIN do not match',
+                          );
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Please fill in all fields',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

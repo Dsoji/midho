@@ -27,6 +27,7 @@ class AuthenticationState {
   final AsyncValue<UserProfileModel> userDetails;
   final AsyncValue<String> userName;
   final AsyncValue<String> emailChange;
+  final AsyncValue<String> resetPin;
 
   const AuthenticationState({
     required this.login,
@@ -40,6 +41,7 @@ class AuthenticationState {
     required this.userDetails,
     required this.userName,
     required this.emailChange,
+    required this.resetPin,
   });
 
   factory AuthenticationState.initial() {
@@ -55,6 +57,7 @@ class AuthenticationState {
       userDetails: AsyncValue.data(UserProfileModel()),
       userName: const AsyncValue.data(''),
       emailChange: const AsyncValue.data(''),
+      resetPin: const AsyncValue.data(''),
     );
   }
 
@@ -70,6 +73,7 @@ class AuthenticationState {
     AsyncValue<UserProfileModel>? userDetails,
     AsyncValue<String>? userName,
     AsyncValue<String>? emailChange,
+    AsyncValue<String>? resetPin,
   }) {
     return AuthenticationState(
       login: login ?? this.login,
@@ -83,6 +87,7 @@ class AuthenticationState {
       userDetails: userDetails ?? this.userDetails,
       userName: userName ?? this.userName,
       emailChange: emailChange ?? this.emailChange,
+      resetPin: resetPin ?? this.resetPin,
     );
   }
 
