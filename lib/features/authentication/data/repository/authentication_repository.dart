@@ -2,6 +2,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
+import '../../../profile/data/Model/response/user_profile_model.dart';
+import '../model/payload/profile_payload.dart';
 import '../model/payload/sign_up_payload.dart';
 import '../model/response/user_model/user_model.dart';
 import '../service/authentication_service.dart';
@@ -71,7 +73,7 @@ class AuthenticationRepository {
 
   Future<Result<FailureHandler, String>> emailVerify({
     required String email,
-    required String referral,
+    required String? referral,
     required String endpoint,
   }) async {
     try {
@@ -148,6 +150,131 @@ class AuthenticationRepository {
                 message: 'Failed to rest password',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to rest password'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updateProfile({
+    ProfilePayload? payload,
+  }) async {
+    try {
+      final data = await authService.updateProfile(payload: payload);
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to update profile',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to update profile'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, UserProfileModel>> fetchProfileDetails({
+    ProfilePayload? payload,
+  }) async {
+    try {
+      final data = await authService.fetchUserInfo();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? UserProfileModel());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to update profile',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to update profile'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updateUsername({
+    required String name,
+  }) async {
+    try {
+      final data = await authService.changeUsername(
+        username: name,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change username',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change username'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updateEmail({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final data = await authService.changeEmail(
+        email: email,
+        code: code,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change email',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change email'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updatePswrd({
+    required String password,
+    required String oldPassword,
+  }) async {
+    try {
+      final data = await authService.changePswrd(
+        password: password,
+        oldPassword: oldPassword,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change password',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change password'),
               ),
         );
       }

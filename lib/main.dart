@@ -83,7 +83,6 @@ class MyApp extends HookConsumerWidget {
                 ),
                 routeInformationParser: appRouter.defaultRouteParser(),
                 routeInformationProvider: appRouter.routeInfoProvider(),
-                backButtonDispatcher: RootBackButtonDispatcher(),
               ),
             );
           }),

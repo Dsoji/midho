@@ -10,6 +10,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../bottomNav/app_router.gr.dart';
 import '../../profile/presentation/security_settings/change_pin_screen.dart';
 
 class PinState {
@@ -172,7 +173,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                     text: "Next",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () => showWithdrawalSuccessDialog(context),
+                    onPressed: () => showWithdrawSuccessDialog(context),
                     doublePressed: () => showWithdrawalFailedDialog(context),
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
@@ -241,18 +242,19 @@ class TransactionPinScreen extends HookConsumerWidget {
     );
   }
 
-  void showWithdrawalSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => WithdrawalSuccessDialogScreen(
-        isHome: isHome,
-      ),
-    );
+  void showWithdrawSuccessDialog(BuildContext context) {
+    showWithdrawalSuccessDialog(
+        context: context,
+        isHome: true,
+        onSecondaryAction: () {
+          context.router
+              .popUntil((route) => route.settings.name == HomeRoute.name);
+        });
   }
 
   void showWithdrawalFailedDialog(BuildContext context) {
     showDialog(
-      context: context,
+      context: AutoRouter.of(context).navigatorKey.currentContext!,
       builder: (context) => const WithdrawalFailedDialog(),
     );
   }

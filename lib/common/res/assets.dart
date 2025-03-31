@@ -72,6 +72,9 @@ class SvgAssets {
   static const _base = BasePaths.baseSvgPath;
 
   static const onboardSvg = '$_base/onboardbg.svg';
+  static const failure = '$_base/failure.svg';
+  static const verify = '$_base/verify.svg';
+  static const info = '$_base/info.svg';
 }
 
 class GifAssets {

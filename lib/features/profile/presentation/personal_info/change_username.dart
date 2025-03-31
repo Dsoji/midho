@@ -6,9 +6,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
 @RoutePage()
 class ChangeUsernameScreen extends HookConsumerWidget {
@@ -18,8 +20,8 @@ class ChangeUsernameScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final usernameController = useTextEditingController();
-    final emailController = useTextEditingController();
     final newnameController = useTextEditingController();
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -83,11 +85,33 @@ class ChangeUsernameScreen extends HookConsumerWidget {
                   const SizedBox(height: 20),
                   // Continue Button
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .userName
+                        .isLoading,
                     text: "Save Changes",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      Navigator.of(context).pop();
+                    onPressed: () async {
+                      if (newnameController.text.trim() ==
+                          usernameController.text.trim()) {
+                        final result = await authService.updateUsername(
+                          newnameController.text.trim(),
+                        );
+                        if (result == true) {
+                          await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .fetchProfile()
+                              .then((_) {
+                            Navigator.pop(context);
+                          });
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Names do not match, check and try again.',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

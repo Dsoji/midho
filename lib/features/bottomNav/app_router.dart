@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mdiho/features/crypto/crypto_route.dart';
 import 'package:mdiho/features/gift_card/gift_card_route.dart';
 import 'package:mdiho/features/profile/profile_route.dart';
+import 'package:mdiho/features/splash/splash_route.dart';
 import 'package:mdiho/features/transaction/transaction_route.dart';
 
 import '../home/home_routes.dart';
@@ -16,9 +17,20 @@ class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
         AutoRoute(
-          page: OnboardingRoute.page,
+          page: SplashRoute.page,
           initial: true,
         ),
+        AutoRoute(
+          page: OnboardingRoute.page,
+        ),
+        // CustomRoute(
+        //   page: WithdrawalSuccessDialogRoute.page,
+        //   transitionsBuilder: TransitionsBuilder.fadeTransition,
+        //   durationInMilliseconds: 300,
+        //   opaque: false, // Allows transparency effect
+        //   barrierDismissible: true,
+        //   barrierColor: Colors.transparent, // Tap outside to close
+        // ),
         AutoRoute(
           page: MdihoShellRoute.page,
           children: [
@@ -33,6 +45,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(
           page: NaviBarRoute.page,
           children: [
+            splashScreenRoute,
             homeRoutes,
             giftCardRoutes,
             cryptoRoutes,

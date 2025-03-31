@@ -166,9 +166,13 @@ class CreatePinScreen extends HookConsumerWidget {
                   height: 48,
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ConfirmPinScreen()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConfirmPinScreen(
+                          pin: pinController.text,
+                        ),
+                      ),
+                    );
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,

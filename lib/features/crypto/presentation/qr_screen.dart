@@ -13,6 +13,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../bottomNav/app_router.gr.dart';
 
 const String walletAddress = "0z890085...2e2a80Ea5";
 
@@ -284,9 +285,14 @@ class QrCryptoScreen extends HookConsumerWidget {
 
   // Function to show the dialog
   void showUploadProofDialog(BuildContext context) {
-    showDialog(
+    showCryptoDialog(
       context: context,
-      builder: (context) => const UploadProofDialog(),
+      onSecondaryAction: () {
+        context.router.replaceAll([
+          const CryptoRoute(),
+        ]);
+        Navigator.pop(context);
+      },
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/profile/presentation/security_settings/change_password.dart';
 import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -167,90 +166,93 @@ class EmailVerifyScreen extends HookConsumerWidget {
     );
   }
 
-  void showEmailUpdateDialog(BuildContext context) {
-    final theme = Theme.of(context);
+//   void showEmailUpdateDialog(
+//     BuildContext context,
+//     VoidCallback ontap,
+//   ) {
+//     final theme = Theme.of(context);
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: theme.brightness == Brightness.dark
-              ? AppColors.secondaryColor.shade500
-              : AppColors.whiteColor.shade100,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Email Update Successful",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "Your email has been successfully updated to newemail@example.com.",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 15),
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           backgroundColor: theme.brightness == Brightness.dark
+//               ? AppColors.secondaryColor.shade500
+//               : AppColors.whiteColor.shade100,
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(12),
+//           ),
+//           content: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               const Text(
+//                 "Email Update Successful",
+//                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//                 textAlign: TextAlign.center,
+//               ),
+//               const SizedBox(height: 10),
+//               const Text(
+//                 "Your email has been successfully updated to newemail@example.com.",
+//                 textAlign: TextAlign.center,
+//                 style: TextStyle(fontSize: 14),
+//               ),
+//               const SizedBox(height: 15),
 
-              // Info Box
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : const Color(0xFFEFFBF2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.info_outline,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        "Use your new email to log in next time.",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
+//               // Info Box
+//               Container(
+//                 padding: const EdgeInsets.all(10),
+//                 decoration: BoxDecoration(
+//                   color: theme.brightness == Brightness.dark
+//                       ? AppColors.secondaryColor.shade400
+//                       : const Color(0xFFEFFBF2),
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//                 child: Row(
+//                   children: [
+//                     const Icon(
+//                       Icons.info_outline,
+//                     ),
+//                     const SizedBox(width: 8),
+//                     Expanded(
+//                       child: Text(
+//                         "Use your new email to log in next time.",
+//                         style: TextStyle(
+//                           fontSize: 14,
+//                           color: theme.brightness == Brightness.dark
+//                               ? Colors.white
+//                               : Colors.black,
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               const SizedBox(height: 20),
 
-              // Return to Profile Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor.shade500,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  onPressed: () {
-                    context.router.replaceAll([const ProfileRoute()]);
+//               // Return to Profile Button
+//               SizedBox(
+//                 width: double.infinity,
+//                 child: ElevatedButton(
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: AppColors.primaryColor.shade500,
+//                     foregroundColor: Colors.white,
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     padding: const EdgeInsets.symmetric(vertical: 12),
+//                   ),
+//                   onPressed: () {
+//                     ontap();
 
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Return to Profile"),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+//                     Navigator.pop(context);
+//                   },
+//                   child: const Text("Return to Profile"),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
 }

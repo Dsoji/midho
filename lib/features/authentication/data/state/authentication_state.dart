@@ -1,5 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 
+import '../../../profile/data/Model/response/user_profile_model.dart';
 import '../model/payload/sign_up_payload.dart';
 import '../model/response/user_model/user_model.dart';
 
@@ -21,6 +23,10 @@ class AuthenticationState {
   final AsyncValue<String> emailVerification;
   final AsyncValue<String> emailConfirmation;
   final AsyncValue<String> forgotPassword;
+  final AsyncValue<ProfilePayload> profilePayload;
+  final AsyncValue<UserProfileModel> userDetails;
+  final AsyncValue<String> userName;
+  final AsyncValue<String> emailChange;
 
   const AuthenticationState({
     required this.login,
@@ -30,6 +36,10 @@ class AuthenticationState {
     required this.emailVerification,
     required this.emailConfirmation,
     required this.forgotPassword,
+    required this.profilePayload,
+    required this.userDetails,
+    required this.userName,
+    required this.emailChange,
   });
 
   factory AuthenticationState.initial() {
@@ -41,6 +51,10 @@ class AuthenticationState {
       emailVerification: const AsyncValue.data(''),
       emailConfirmation: const AsyncValue.data(''),
       forgotPassword: const AsyncValue.data(''),
+      profilePayload: AsyncValue.data(ProfilePayload()),
+      userDetails: AsyncValue.data(UserProfileModel()),
+      userName: const AsyncValue.data(''),
+      emailChange: const AsyncValue.data(''),
     );
   }
 
@@ -48,10 +62,14 @@ class AuthenticationState {
     AsyncValue<UserModel>? login,
     AsyncValue<UserModel>? signUp,
     AsyncValue<SignUpPayload>? signUpPayload,
+    AsyncValue<ProfilePayload>? profilePayload,
     AuthenticationStatus? status,
     AsyncValue<String>? emailVerification,
     AsyncValue<String>? emailConfirmation,
     AsyncValue<String>? forgotPassword,
+    AsyncValue<UserProfileModel>? userDetails,
+    AsyncValue<String>? userName,
+    AsyncValue<String>? emailChange,
   }) {
     return AuthenticationState(
       login: login ?? this.login,
@@ -61,6 +79,10 @@ class AuthenticationState {
       emailVerification: emailVerification ?? this.emailVerification,
       emailConfirmation: emailConfirmation ?? this.emailConfirmation,
       forgotPassword: forgotPassword ?? this.forgotPassword,
+      profilePayload: profilePayload ?? this.profilePayload,
+      userDetails: userDetails ?? this.userDetails,
+      userName: userName ?? this.userName,
+      emailChange: emailChange ?? this.emailChange,
     );
   }
 

@@ -23,18 +23,19 @@ extension NotificationTypeColor on NotificationType {
   ToastColors get color {
     switch (this) {
       case NotificationType.info:
-        return ToastColors(primary: infoPrimary, secondary: infoSecondary);
+        return ToastColors(primary: Colors.black, secondary: Colors.black);
       case NotificationType.error:
         return ToastColors(
-          primary: AppColors.errorColors,
+          primary: Colors.white,
           secondary: AppColors.errorColors,
         );
       case NotificationType.warning:
-        return ToastColors(
-            primary: AppColors.infoColor, secondary: AppColors.infoColor);
+        return ToastColors(primary: Colors.white, secondary: Colors.white);
       case NotificationType.success:
         return ToastColors(
-            primary: AppColors.successColor, secondary: AppColors.successColor);
+          primary: Colors.white,
+          secondary: AppColors.errorColors,
+        );
     }
   }
 }
@@ -65,7 +66,7 @@ extension ToastStyleExtention on ToastStyle {
     switch (this) {
       case ToastStyle.style1:
         return BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF34C759),
           boxShadow: [
             BoxShadow(
               color: AppColors.greyColor.shade900,
@@ -79,10 +80,10 @@ extension ToastStyleExtention on ToastStyle {
         );
       case ToastStyle.style2:
         return BoxDecoration(
-          color: toastColors.primary,
+          color: const Color(0xfffffcc00),
           boxShadow: [
             BoxShadow(
-              color: AppColors.secondaryColor.shade200,
+              color: AppColors.greyColor.shade200,
               spreadRadius: -8,
               blurRadius: 20,
               offset: const Offset(0, 16),
@@ -93,10 +94,10 @@ extension ToastStyleExtention on ToastStyle {
         );
       case ToastStyle.style3:
         return BoxDecoration(
-          color: toastColors.secondary,
+          color: const Color(0xFFFF3B30),
           boxShadow: [
             BoxShadow(
-              color: AppColors.secondaryColor.shade200,
+              color: AppColors.greyColor.shade200,
               spreadRadius: -8,
               blurRadius: 20,
               offset: const Offset(0, 16),

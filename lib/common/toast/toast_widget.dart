@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gap/gap.dart';
+import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/toast/styles.dart';
 import 'package:mdiho/common/toast/type.dart';
 
@@ -46,6 +49,17 @@ class ToastWidgetState extends State<ToastWidget>
         _isDragging = false;
         _positionX = 0.0;
       });
+    }
+  }
+
+  String _getToastIcon() {
+    switch (widget.style) {
+      case ToastStyle.style1:
+        return SvgAssets.verify;
+      case ToastStyle.style2:
+        return SvgAssets.info;
+      case ToastStyle.style3:
+        return SvgAssets.failure;
     }
   }
 
@@ -126,30 +140,27 @@ class ToastWidgetState extends State<ToastWidget>
               decoration: widget.style.decoration(widget.type.color),
               child: Row(
                 children: [
+                  GestureDetector(
+                    onTap: widget.onCloce,
+                    child: SvgPicture.asset(
+                      _getToastIcon(),
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
+                  const Gap(8),
                   Expanded(
                     child: Text(
                       // overflow: TextOverflow.ellipsis,
                       widget.message,
                       style: TextStyle(
                         color: widget.style == ToastStyle.style1 ||
-                                widget.style == ToastStyle.style3
+                                widget.style == ToastStyle.style2
                             ? black
                             : Colors.white,
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: widget.onCloce,
-                    child: Icon(
-                      weight: 0.2,
-                      size: 24,
-                      Icons.close,
-                      color: widget.style == ToastStyle.style1 ||
-                              widget.style == ToastStyle.style3
-                          ? widget.type.color.primary
-                          : Colors.white,
-                    ),
-                  )
                 ],
               ),
             ),

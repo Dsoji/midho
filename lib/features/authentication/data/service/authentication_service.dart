@@ -5,6 +5,8 @@ import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
 import '../../../../common/utils/utils.dart';
+import '../../../profile/data/Model/response/user_profile_model.dart';
+import '../model/payload/profile_payload.dart';
 import '../model/payload/sign_up_payload.dart';
 import '../model/response/user_model/user_model.dart';
 
@@ -46,9 +48,10 @@ class AuthenticationService {
       ),
       parser: (data) {
         print(data);
-        final token = data['accessToken'];
+        final token = data['token'];
         var box = Hive.box('data');
         box.put('accessToken', token);
+
         return UserModel.fromMap(data);
       },
       showErrorToast: true,
@@ -72,7 +75,7 @@ class AuthenticationService {
 
   Future<ResultValue<String>> emailVerification({
     required String email,
-    required String referral,
+    required String? referral,
     required String endpoint,
   }) async {
     return apiRequestHelper.handleApiRequest(
@@ -134,6 +137,106 @@ class AuthenticationService {
         print(data);
         return BaseModel.toRawString(data);
       },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> updateProfile({
+    ProfilePayload? payload,
+  }) async {
+    final String accessToken = await box.get('accessToken');
+
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/profile/updateProfile',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: payload,
+      ),
+      parser: (data) {
+        print(data);
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<UserProfileModel>> fetchUserInfo() async {
+    final String accessToken = await box.get('accessToken');
+    return await apiRequestHelper.handleApiRequest<UserProfileModel>(
+      () => apiClient.get(
+        'user/profile',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) => UserProfileModel.fromMap(data),
+      showErrorToast: true,
+      // showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> changeUsername({required String username}) async {
+    final String accessToken = await box.get('accessToken');
+    return await apiRequestHelper.handleApiRequest<String>(
+      () => apiClient.post(
+        'user/profile/changeUsername',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "username": username,
+        },
+      ),
+      parser: (data) => BaseModel.toRawString(data),
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> changeEmail({
+    required String email,
+    required String code,
+  }) async {
+    final String accessToken = await box.get('accessToken');
+    return await apiRequestHelper.handleApiRequest<String>(
+      () => apiClient.post(
+        'user/profile/changeEmail',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "email": email,
+          "code": code,
+          "device": deviceId,
+        },
+      ),
+      parser: (data) => BaseModel.toRawString(data),
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> changePswrd({
+    required String password,
+    required String oldPassword,
+  }) async {
+    final String accessToken = await box.get('accessToken');
+    return await apiRequestHelper.handleApiRequest<String>(
+      () => apiClient.post(
+        'user/auth/changePassword',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "pastword": oldPassword, // the previous password
+          "password": password,
+        },
+      ),
+      parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
       showSuccessToast: true,
     );

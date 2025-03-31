@@ -1,11 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
 import '../../home/presentation/home_screen.dart';
 import 'widget/profile_option.dart';
 
@@ -15,7 +18,10 @@ class ProfileScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final theme = Theme.of(context);
+    var box = Hive.box('data'); // Replace 'data' with your box name
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -64,7 +70,7 @@ class ProfileScreen extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "John Doe",
+                            "${userInfo?.firstname} ${userInfo?.lastname}",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -73,9 +79,10 @@ class ProfileScreen extends HookConsumerWidget {
                                   : Colors.black,
                             ),
                           ),
-                          const Text(
-                            "john.doe@example.com",
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                          Text(
+                            "${userInfo?.email}",
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 14),
                           ),
                         ],
                       ),
@@ -106,7 +113,11 @@ class ProfileScreen extends HookConsumerWidget {
                   IconsaxPlusLinear.logout,
                   "Sign Out",
                   context,
-                  () {},
+                  () async {
+                    await box.clear().then((_) {
+                      context.router.replaceAll([const LoginRoute()]);
+                    });
+                  },
                   isDestructive: true,
                 ),
               ),

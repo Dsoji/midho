@@ -35,7 +35,7 @@ import 'package:mdiho/features/crypto/presentation/qr_screen.dart' as _i33;
 import 'package:mdiho/features/crypto/presentation/sell_crypto_screen.dart'
     as _i37;
 import 'package:mdiho/features/crypto/presentation/widget/standalone_transaction_details.dart'
-    as _i38;
+    as _i39;
 import 'package:mdiho/features/gift_card/presentation/card_details_proof.dart'
     as _i7;
 import 'package:mdiho/features/gift_card/presentation/enter_card_details_screen.dart'
@@ -68,7 +68,7 @@ import 'package:mdiho/features/profile/presentation/security_settings/change_pas
 import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart'
     as _i10;
 import 'package:mdiho/features/profile/presentation/security_settings/email.dart'
-    as _i44;
+    as _i45;
 import 'package:mdiho/features/profile/presentation/security_settings/email_verify.dart'
     as _i18;
 import 'package:mdiho/features/profile/presentation/security_settings/security_settings.dart'
@@ -76,29 +76,28 @@ import 'package:mdiho/features/profile/presentation/security_settings/security_s
 import 'package:mdiho/features/referral_screen/presentation/referall_screen.dart'
     as _i34;
 import 'package:mdiho/features/referral_screen/presentation/withdrawal/withdraw_balance_screen.dart'
-    as _i46;
+    as _i47;
+import 'package:mdiho/features/splash/splash_page.dart' as _i38;
 import 'package:mdiho/features/suggestion_box/presentation/suggestion_screen.dart'
-    as _i39;
+    as _i40;
 import 'package:mdiho/features/support_faq/presentation/faq_screen.dart'
     as _i20;
 import 'package:mdiho/features/support_faq/presentation/support_faq_screen.dart'
-    as _i40;
-import 'package:mdiho/features/transaction/presentation/transaction_details.dart'
     as _i41;
-import 'package:mdiho/features/transaction/presentation/transaction_history.dart'
+import 'package:mdiho/features/transaction/presentation/transaction_details.dart'
     as _i42;
-import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart' as _i43;
-import 'package:mdiho/features/withdrawal/presentation/widget/success_dialogue.dart'
-    as _i47;
+import 'package:mdiho/features/transaction/presentation/transaction_history.dart'
+    as _i43;
+import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart' as _i44;
 import 'package:mdiho/features/withdrawal/presentation/withdraw_funds_screen.dart'
-    as _i45;
+    as _i46;
 
 /// generated route for
 /// [_i1.AddNewBankScreen]
 class AddNewBankRoute extends _i48.PageRouteInfo<AddNewBankRouteArgs> {
   AddNewBankRoute({
     _i49.Key? key,
-    bool isverif = false,
+    bool? isverif = false,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           AddNewBankRoute.name,
@@ -132,7 +131,7 @@ class AddNewBankRouteArgs {
 
   final _i49.Key? key;
 
-  final bool isverif;
+  final bool? isverif;
 
   @override
   String toString() {
@@ -360,10 +359,17 @@ class ChangeUsernameRoute extends _i48.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i12.ConfirmPinScreen]
-class ConfirmPinRoute extends _i48.PageRouteInfo<void> {
-  const ConfirmPinRoute({List<_i48.PageRouteInfo>? children})
-      : super(
+class ConfirmPinRoute extends _i48.PageRouteInfo<ConfirmPinRouteArgs> {
+  ConfirmPinRoute({
+    _i49.Key? key,
+    required String pin,
+    List<_i48.PageRouteInfo>? children,
+  }) : super(
           ConfirmPinRoute.name,
+          args: ConfirmPinRouteArgs(
+            key: key,
+            pin: pin,
+          ),
           initialChildren: children,
         );
 
@@ -372,9 +378,29 @@ class ConfirmPinRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i12.ConfirmPinScreen();
+      final args = data.argsAs<ConfirmPinRouteArgs>();
+      return _i12.ConfirmPinScreen(
+        key: args.key,
+        pin: args.pin,
+      );
     },
   );
+}
+
+class ConfirmPinRouteArgs {
+  const ConfirmPinRouteArgs({
+    this.key,
+    required this.pin,
+  });
+
+  final _i49.Key? key;
+
+  final String pin;
+
+  @override
+  String toString() {
+    return 'ConfirmPinRouteArgs{key: $key, pin: $pin}';
+  }
 }
 
 /// generated route for
@@ -455,10 +481,18 @@ class ElectricityBillRoute extends _i48.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i17.EmailVerificationScreen]
-class EmailVerificationRoute extends _i48.PageRouteInfo<void> {
-  const EmailVerificationRoute({List<_i48.PageRouteInfo>? children})
-      : super(
+class EmailVerificationRoute
+    extends _i48.PageRouteInfo<EmailVerificationRouteArgs> {
+  EmailVerificationRoute({
+    _i49.Key? key,
+    required String email,
+    List<_i48.PageRouteInfo>? children,
+  }) : super(
           EmailVerificationRoute.name,
+          args: EmailVerificationRouteArgs(
+            key: key,
+            email: email,
+          ),
           initialChildren: children,
         );
 
@@ -467,9 +501,29 @@ class EmailVerificationRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i17.EmailVerificationScreen();
+      final args = data.argsAs<EmailVerificationRouteArgs>();
+      return _i17.EmailVerificationScreen(
+        key: args.key,
+        email: args.email,
+      );
     },
   );
+}
+
+class EmailVerificationRouteArgs {
+  const EmailVerificationRouteArgs({
+    this.key,
+    required this.email,
+  });
+
+  final _i49.Key? key;
+
+  final String email;
+
+  @override
+  String toString() {
+    return 'EmailVerificationRouteArgs{key: $key, email: $email}';
+  }
 }
 
 /// generated route for
@@ -1069,7 +1123,45 @@ class SellCryptoRouteArgs {
 }
 
 /// generated route for
-/// [_i38.StandAloneTransactionDetailsScreen]
+/// [_i38.SplashScreen]
+class SplashRoute extends _i48.PageRouteInfo<void> {
+  const SplashRoute({List<_i48.PageRouteInfo>? children})
+      : super(
+          SplashRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SplashRoute';
+
+  static _i48.PageInfo page = _i48.PageInfo(
+    name,
+    builder: (data) {
+      return const _i38.SplashScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [_i15.SplashShellScreen]
+class SplashShellRoute extends _i48.PageRouteInfo<void> {
+  const SplashShellRoute({List<_i48.PageRouteInfo>? children})
+      : super(
+          SplashShellRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SplashShellRoute';
+
+  static _i48.PageInfo page = _i48.PageInfo(
+    name,
+    builder: (data) {
+      return const _i15.SplashShellScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [_i39.StandAloneTransactionDetailsScreen]
 class StandAloneTransactionDetailsRoute
     extends _i48.PageRouteInfo<StandAloneTransactionDetailsRouteArgs> {
   StandAloneTransactionDetailsRoute({
@@ -1093,7 +1185,7 @@ class StandAloneTransactionDetailsRoute
     name,
     builder: (data) {
       final args = data.argsAs<StandAloneTransactionDetailsRouteArgs>();
-      return _i38.StandAloneTransactionDetailsScreen(
+      return _i39.StandAloneTransactionDetailsScreen(
         key: args.key,
         type: args.type,
         status: args.status,
@@ -1122,7 +1214,7 @@ class StandAloneTransactionDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i39.SuggestionScreen]
+/// [_i40.SuggestionScreen]
 class SuggestionRoute extends _i48.PageRouteInfo<void> {
   const SuggestionRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -1135,13 +1227,13 @@ class SuggestionRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i39.SuggestionScreen();
+      return const _i40.SuggestionScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i40.SupportFaqScreen]
+/// [_i41.SupportFaqScreen]
 class SupportFaqRoute extends _i48.PageRouteInfo<void> {
   const SupportFaqRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -1154,13 +1246,13 @@ class SupportFaqRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i40.SupportFaqScreen();
+      return const _i41.SupportFaqScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i41.TransactionDetailsScreen]
+/// [_i42.TransactionDetailsScreen]
 class TransactionDetailsRoute
     extends _i48.PageRouteInfo<TransactionDetailsRouteArgs> {
   TransactionDetailsRoute({
@@ -1186,7 +1278,7 @@ class TransactionDetailsRoute
     name,
     builder: (data) {
       final args = data.argsAs<TransactionDetailsRouteArgs>();
-      return _i41.TransactionDetailsScreen(
+      return _i42.TransactionDetailsScreen(
         key: args.key,
         type: args.type,
         status: args.status,
@@ -1219,7 +1311,7 @@ class TransactionDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i42.TransactionHistoryScreen]
+/// [_i43.TransactionHistoryScreen]
 class TransactionHistoryRoute extends _i48.PageRouteInfo<void> {
   const TransactionHistoryRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -1232,13 +1324,13 @@ class TransactionHistoryRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i42.TransactionHistoryScreen();
+      return const _i43.TransactionHistoryScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i43.TransactionPinScreen]
+/// [_i44.TransactionPinScreen]
 class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
   TransactionPinRoute({
     _i49.Key? key,
@@ -1259,7 +1351,7 @@ class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<TransactionPinRouteArgs>();
-      return _i43.TransactionPinScreen(
+      return _i44.TransactionPinScreen(
         key: args.key,
         isHome: args.isHome,
       );
@@ -1303,7 +1395,7 @@ class TransactionShellRoute extends _i48.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i44.VerifyEmailScreen]
+/// [_i45.VerifyEmailScreen]
 class VerifyEmailRoute extends _i48.PageRouteInfo<VerifyEmailRouteArgs> {
   VerifyEmailRoute({
     _i49.Key? key,
@@ -1324,7 +1416,7 @@ class VerifyEmailRoute extends _i48.PageRouteInfo<VerifyEmailRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<VerifyEmailRouteArgs>();
-      return _i44.VerifyEmailScreen(
+      return _i45.VerifyEmailScreen(
         key: args.key,
         type: args.type,
       );
@@ -1349,7 +1441,7 @@ class VerifyEmailRouteArgs {
 }
 
 /// generated route for
-/// [_i45.WithdrawFundsScreen]
+/// [_i46.WithdrawFundsScreen]
 class WithdrawFundsRoute extends _i48.PageRouteInfo<void> {
   const WithdrawFundsRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -1362,13 +1454,13 @@ class WithdrawFundsRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i45.WithdrawFundsScreen();
+      return const _i46.WithdrawFundsScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i46.WithdrawReferallScreen]
+/// [_i47.WithdrawReferallScreen]
 class WithdrawReferallRoute extends _i48.PageRouteInfo<void> {
   const WithdrawReferallRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -1381,55 +1473,7 @@ class WithdrawReferallRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i46.WithdrawReferallScreen();
+      return const _i47.WithdrawReferallScreen();
     },
   );
-}
-
-/// generated route for
-/// [_i47.WithdrawalSuccessDialogScreen]
-class WithdrawalSuccessDialogRoute
-    extends _i48.PageRouteInfo<WithdrawalSuccessDialogRouteArgs> {
-  WithdrawalSuccessDialogRoute({
-    _i49.Key? key,
-    bool? isHome,
-    List<_i48.PageRouteInfo>? children,
-  }) : super(
-          WithdrawalSuccessDialogRoute.name,
-          args: WithdrawalSuccessDialogRouteArgs(
-            key: key,
-            isHome: isHome,
-          ),
-          initialChildren: children,
-        );
-
-  static const String name = 'WithdrawalSuccessDialogRoute';
-
-  static _i48.PageInfo page = _i48.PageInfo(
-    name,
-    builder: (data) {
-      final args = data.argsAs<WithdrawalSuccessDialogRouteArgs>(
-          orElse: () => const WithdrawalSuccessDialogRouteArgs());
-      return _i47.WithdrawalSuccessDialogScreen(
-        key: args.key,
-        isHome: args.isHome,
-      );
-    },
-  );
-}
-
-class WithdrawalSuccessDialogRouteArgs {
-  const WithdrawalSuccessDialogRouteArgs({
-    this.key,
-    this.isHome,
-  });
-
-  final _i49.Key? key;
-
-  final bool? isHome;
-
-  @override
-  String toString() {
-    return 'WithdrawalSuccessDialogRouteArgs{key: $key, isHome: $isHome}';
-  }
 }

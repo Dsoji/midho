@@ -4,14 +4,16 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/presentation/login/presentation/login_screen.dart';
-import 'package:mdiho/features/authentication/presentation/registration/presentation/registration_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../authentication/presentation/registration/presentation/registration_screen.dart';
 
 @RoutePage()
 class OnboardingScreen extends HookConsumerWidget {
@@ -23,6 +25,20 @@ class OnboardingScreen extends HookConsumerWidget {
     final currentPage = useState(0);
 
     // Get the current theme mode
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        PermissionStatus notificationPermission =
+            await Permission.notification.request();
+
+        if (notificationPermission.isDenied) {
+          // Handle denied permission (show dialog, snackbar, etc.)
+        } else if (notificationPermission.isPermanentlyDenied) {
+          // Show settings prompt
+          openAppSettings();
+        }
+      });
+      return null;
+    }, []);
 
     final pages = [
       const OnboardingPage(
@@ -67,79 +83,109 @@ class OnboardingScreen extends HookConsumerWidget {
       return () => timer.cancel(); // Cleanup when widget unmounts
     }, []);
 
-    return Scaffold(
-      body: Column(
-        children: [
-          const Gap(100),
-          Expanded(
-            child: PageView.builder(
-              controller: pageController,
-              itemCount: pages.length,
-              onPageChanged: (index) => currentPage.value = index,
-              itemBuilder: (context, index) => pages[index],
+    int backPressCounter = 0;
+    DateTime? lastBackPressTime;
+    return PopScope(
+      canPop: false, // Prevent default back navigation
+      onPopInvoked: (didPop) async {
+        DateTime now = DateTime.now();
+
+        // Reset counter if last press was more than 2 seconds ago
+        if (lastBackPressTime == null ||
+            now.difference(lastBackPressTime!) > const Duration(seconds: 2)) {
+          backPressCounter = 0;
+        }
+
+        lastBackPressTime = now;
+        backPressCounter++;
+
+        if (backPressCounter < 2) {
+          Fluttertoast.showToast(
+            msg: "Swipe back again to exit",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black54,
+            textColor: Colors.white,
+            fontSize: 14.0,
+          );
+        } else {
+          Navigator.of(context).pop(); // Allow exit on second back swipe
+        }
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            const Gap(100),
+            Expanded(
+              child: PageView.builder(
+                controller: pageController,
+                itemCount: pages.length,
+                onPageChanged: (index) => currentPage.value = index,
+                itemBuilder: (context, index) => pages[index],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                pages.length,
-                (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                  width: currentPage.value == index ? 28.0 : 11.0,
-                  height: 8.0,
-                  decoration: BoxDecoration(
-                    color: currentPage.value == index
-                        ? AppColors.primaryColor.shade500
-                        : Colors.grey,
-                    borderRadius: BorderRadius.circular(4.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  pages.length,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                    width: currentPage.value == index ? 28.0 : 11.0,
+                    height: 8.0,
+                    decoration: BoxDecoration(
+                      color: currentPage.value == index
+                          ? AppColors.primaryColor.shade500
+                          : Colors.grey,
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const Gap(50),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child: Column(
-              children: [
-                FullButton(
-                  text: "Get Started",
-                  width: double.infinity,
-                  height: 48,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen(),
-                      ),
-                    );
-                  },
-                  textColor: Colors.white,
-                  color: AppColors.primaryColor.shade500,
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Sign In",
-                    style: TextStyle(),
+            const Gap(50),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Column(
+                children: [
+                  FullButton(
+                    text: "Get Started",
+                    width: double.infinity,
+                    height: 48,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegistrationScreen(),
+                        ),
+                      );
+                    },
+                    textColor: Colors.white,
+                    color: AppColors.primaryColor.shade500,
                   ),
-                ),
-                const Gap(24),
-              ],
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Sign In",
+                      style: TextStyle(),
+                    ),
+                  ),
+                  const Gap(24),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

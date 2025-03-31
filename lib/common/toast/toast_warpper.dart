@@ -49,6 +49,22 @@ class ToastWrapperState extends State<ToastWrapper> {
     super.dispose();
   }
 
+  ToastStyle _getStyleForType(NotificationType type) {
+    switch (type) {
+      case NotificationType.success:
+        return ToastStyle.style1;
+      case NotificationType.error:
+        return ToastStyle.style3;
+      case NotificationType.warning:
+        return ToastStyle.style3;
+      case NotificationType.info:
+        return ToastStyle.style2;
+
+      default:
+        return ToastStyle.style1;
+    }
+  }
+
   // Remove the overlay entry if it exists.
   void _removeOverlay() {
     _overlayEntry?.remove();
@@ -142,7 +158,7 @@ class ToastWrapperState extends State<ToastWrapper> {
               }
             },
             child: ToastWidget(
-              style: _style,
+              style: _getStyleForType(type),
               type: type,
               message: message, // Pass the message here
               onCloce: () => _deleteToast(actualIndex),

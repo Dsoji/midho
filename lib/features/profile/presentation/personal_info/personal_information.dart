@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -13,6 +14,8 @@ import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../authentication/data/model/payload/profile_payload.dart';
 
 @RoutePage()
 class PersonalInfoScreen extends HookConsumerWidget {
@@ -27,6 +30,10 @@ class PersonalInfoScreen extends HookConsumerWidget {
     final phoneController = useTextEditingController();
     final selectedCountry = useState("Nigeria");
     final emailController = useTextEditingController();
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final authService = ref.read(authenticationControllerProvider.notifier);
+    var box = Hive.box('data'); // Replace 'data' with your box name
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -73,6 +80,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
                       child: CustomTextField(
                         controller: emailController,
                         label: "Email",
+                        hintText: '${userInfo?.email}',
                         prefixIcon: Icons.email_outlined, // Optional
                         keyboardType: TextInputType.emailAddress,
                         suffixIcon: Icon(
@@ -96,7 +104,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
                       child: CustomTextField(
                         controller: userNameController,
                         label: "User Name",
-                        hintText: "eg. John",
+                        hintText: "@${userInfo?.username}",
                         suffixIcon: Icon(
                           IconsaxPlusLinear.edit_2,
                           size: 16,
@@ -110,7 +118,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
                   CustomTextField(
                     controller: firstNameController,
                     label: "First Name",
-                    hintText: "eg. John",
+                    hintText: "${userInfo?.firstname}",
                   ),
                   const SizedBox(height: 15),
 
@@ -118,7 +126,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
                   CustomTextField(
                     controller: lastNameController,
                     label: "Last Name",
-                    hintText: "eg. Doe",
+                    hintText: "${userInfo?.lastname}",
                   ),
                   const SizedBox(height: 15),
 
@@ -156,11 +164,41 @@ class PersonalInfoScreen extends HookConsumerWidget {
                   const SizedBox(height: 20),
 
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .forgotPassword
+                        .isLoading,
                     text: "Save Changes",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      authService.updateProfileDetails(
+                        ProfilePayload(
+                          firstname: firstNameController.text.trim().isEmpty
+                              ? null
+                              : firstNameController.text.trim(),
+                          lastname: lastNameController.text.trim().isEmpty
+                              ? null
+                              : lastNameController.text.trim(),
+                          phone: phoneController.text.trim().isEmpty
+                              ? null
+                              : phoneController.text.trim(),
+                        ),
+                      );
+                      final profileDetails = ref
+                          .watch(authenticationControllerProvider)
+                          .profilePayload
+                          .valueOrNull;
+                      final result =
+                          await authService.updateProfile(profileDetails!);
+                      if (result == true) {
+                        await ref
+                            .read(authenticationControllerProvider.notifier)
+                            .fetchProfile()
+                            .then((_) {
+                          Navigator.pop(context);
+                        });
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

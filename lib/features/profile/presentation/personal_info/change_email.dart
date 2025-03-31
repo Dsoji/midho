@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/common/toast/toast.dart';
 import 'package:mdiho/features/profile/presentation/personal_info/email_verification.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
@@ -10,6 +11,7 @@ import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
 @RoutePage()
 class ChangeEmailScreen extends HookConsumerWidget {
@@ -19,6 +21,7 @@ class ChangeEmailScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final emailController = useTextEditingController();
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -78,16 +81,36 @@ class ChangeEmailScreen extends HookConsumerWidget {
                   const SizedBox(height: 20),
                   // Continue Button
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .emailVerification
+                        .isLoading,
                     text: "Update Email",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const EmailVerificationScreen(),
-                        ),
-                      );
+                    onPressed: () async {
+                      if (emailController.text.isNotEmpty) {
+                        final result = await authService.emailVerify(
+                          emailController.text.trim(),
+                          null,
+                          'CHANGEEMAIL',
+                        );
+                        if (result == true) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EmailVerificationScreen(
+                                email: emailController.text.trim(),
+                              ),
+                            ),
+                          );
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Please fill all fields',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

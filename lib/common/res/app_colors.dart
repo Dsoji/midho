@@ -14,8 +14,8 @@ class AppColors {
   // static Color greyOrangeColor = const Color(0xFFF08F5D);
   static Color scaffoldColorLight = const Color.fromRGBO(247, 247, 247, 1);
   static Color errorColors = const Color.fromRGBO(255, 0, 0, 1);
-  static Color infoColor = const Color.fromRGBO(0, 0, 255, 1);
-  static Color successColor = const Color.fromRGBO(0, 255, 0, 1);
+  static Color infoColor = const Color.fromARGB(255, 219, 245, 71);
+  static Color successColor = const Color.fromARGB(255, 20, 161, 20);
   static MaterialColor primaryColor = const MaterialColor(
     0xFFF55825,
     <int, Color>{

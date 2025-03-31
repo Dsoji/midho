@@ -92,6 +92,7 @@ class CustomTextField extends HookWidget {
                         )
                       : null),
               hintText: hintText ?? "Enter $label",
+              hintStyle: const TextStyle(color: Colors.grey),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius ?? 12),
                 borderSide: BorderSide(

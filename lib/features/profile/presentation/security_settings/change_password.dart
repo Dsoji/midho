@@ -6,9 +6,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
 @RoutePage()
 class ChangePasswordScreen extends HookConsumerWidget {
@@ -20,6 +22,7 @@ class ChangePasswordScreen extends HookConsumerWidget {
     final pswrdController = useTextEditingController();
     final newPswrdController = useTextEditingController();
     final confirmPswrdController = useTextEditingController();
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -88,11 +91,29 @@ class ChangePasswordScreen extends HookConsumerWidget {
                   ),
                   const Gap(25),
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .forgotPassword
+                        .isLoading,
                     text: "Save Changes",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      if (confirmPswrdController.text.trim() ==
+                          newPswrdController.text.trim()) {
+                        final result = await authService.changePassword(
+                          newPswrdController.text.trim(),
+                          pswrdController.text.trim(),
+                        );
+                        if (result == true) {
+                          Navigator.pop(context);
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Passwords do not match.',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

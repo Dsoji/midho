@@ -6,13 +6,15 @@ import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
 @RoutePage()
 class EmailVerificationScreen extends HookConsumerWidget {
-  const EmailVerificationScreen({super.key});
-
+  const EmailVerificationScreen({super.key, required this.email});
+  final String email;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -20,6 +22,8 @@ class EmailVerificationScreen extends HookConsumerWidget {
     final isOtpFilled = useState(false);
     final countdown = useState(100);
     final isCounting = useState(true);
+    final authService = ref.read(authenticationControllerProvider.notifier);
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Email Verification",
@@ -132,11 +136,41 @@ class EmailVerificationScreen extends HookConsumerWidget {
 
                   // Verify Button
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .emailChange
+                        .isLoading,
                     text: "Verify Email",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      showEmailUpdateDialog(context);
+                    onPressed: () async {
+                      if (otpController.text.isNotEmpty) {
+                        final result = await authService.updateEmail(
+                          email,
+                          otpController.text.trim(),
+                        );
+                        if (result == true) {
+                          await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .fetchProfile()
+                              .then((_) {
+                            showEmailUpdateDialog(
+                              context,
+                              () {
+                                context.router
+                                    .replaceAll([const ProfileRoute()]);
+
+                                Navigator.pop(context);
+                              },
+                            );
+                          });
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Please fill all fields',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
@@ -150,7 +184,10 @@ class EmailVerificationScreen extends HookConsumerWidget {
     );
   }
 
-  void showEmailUpdateDialog(BuildContext context) {
+  void showEmailUpdateDialog(
+    BuildContext context,
+    VoidCallback onTap,
+  ) {
     final theme = Theme.of(context);
 
     showDialog(
@@ -223,8 +260,7 @@ class EmailVerificationScreen extends HookConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   onPressed: () {
-                    context.router.replaceAll([const ProfileRoute()]);
-
+                    onTap();
                     Navigator.pop(context);
                   },
                   child: const Text("Return to Profile"),

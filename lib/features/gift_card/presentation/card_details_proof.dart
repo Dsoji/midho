@@ -270,7 +270,14 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
-                      showTradeSubmittedDialog(context, img);
+                      showTradeSubmittedDialog(
+                        context,
+                        img,
+                        () {
+                          context.router.replaceAll([const GiftCardRoute()]);
+                          Navigator.pop(context);
+                        },
+                      );
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
@@ -287,7 +294,11 @@ class CardDetailsProofScreen extends HookConsumerWidget {
     );
   }
 
-  void showTradeSubmittedDialog(BuildContext context, final String img) {
+  void showTradeSubmittedDialog(
+    BuildContext context,
+    final String img,
+    final VoidCallback onTap,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -371,7 +382,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                 // Sell More Gift Cards (Text Button)
                 TextButton(
                   onPressed: () {
-                    context.router.replaceAll([const GiftCardRoute()]);
+                    onTap();
                     Navigator.pop(context);
                   },
                   child: Text(

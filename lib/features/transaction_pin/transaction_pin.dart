@@ -185,12 +185,20 @@ class TransactionPinScreen extends HookConsumerWidget {
           backgroundColor: Colors.white,
         );
       } else if (selectedType == null) {
-        showDialog(
+        showWithdrawalSuccessDialog(
           context: context,
-          builder: (context) => const WithdrawalSuccessDialogScreen(
-            isHome: null,
-          ),
+          onSecondaryAction: () {
+            context.router.root.replaceAll([const ProfileRoute()]);
+            Navigator.of(context).pop;
+          },
         );
+
+        // showDialog(
+        //   context: context,
+        //   builder: (context) => const WithdrawalSuccessDialogScreen(
+        //     isHome: null,
+        //   ),
+        // );
       }
     }
 

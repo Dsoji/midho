@@ -11,7 +11,7 @@ import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
-import '../../transactio_pin/transaction_pin.dart';
+import '../../transaction_pin/transaction_pin.dart';
 
 @RoutePage()
 class ElectricityBillScreen extends HookConsumerWidget {

@@ -7,7 +7,10 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
+import '../../../data/controller/authentication_controller.dart';
+import '../../../data/model/payload/profile_payload.dart';
 import '../../login/presentation/login_screen.dart';
 
 class PinState {
@@ -44,14 +47,16 @@ final pinProvider = StateNotifierProvider<PinNotifier, PinState>(
 class ConfirmPinScreen extends HookConsumerWidget {
   const ConfirmPinScreen({
     super.key,
+    required this.pin,
   });
-
+  final String pin;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinController = useTextEditingController();
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
+    final authService = ref.read(authenticationControllerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -174,11 +179,33 @@ class ConfirmPinScreen extends HookConsumerWidget {
                   text: "Next",
                   width: double.infinity,
                   height: 48,
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginScreen()));
+                  onPressed: () async {
+                    if (pinController.text == pin) {
+                      authService.updateProfileDetails(ProfilePayload(
+                        pin: pin,
+                      ));
+
+                      final profileDetails = ref
+                          .watch(authenticationControllerProvider)
+                          .profilePayload
+                          .valueOrNull;
+
+                      final result =
+                          await authService.updateProfile(profileDetails!);
+                      if (result == true) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
+                      }
+                    } else {
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Pin does not match',
+                      );
+                    }
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,
