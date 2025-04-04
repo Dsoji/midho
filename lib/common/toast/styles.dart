@@ -69,7 +69,7 @@ extension ToastStyleExtention on ToastStyle {
           color: const Color(0xFF34C759),
           boxShadow: [
             BoxShadow(
-              color: AppColors.greyColor.shade900,
+              color: Colors.black.withOpacity(0.1),
               spreadRadius: -4,
               blurRadius: 16,
               offset: const Offset(12, 4),
@@ -83,7 +83,7 @@ extension ToastStyleExtention on ToastStyle {
           color: const Color(0xfffffcc00),
           boxShadow: [
             BoxShadow(
-              color: AppColors.greyColor.shade200,
+              color: Colors.black.withOpacity(0.1),
               spreadRadius: -8,
               blurRadius: 20,
               offset: const Offset(0, 16),
@@ -97,14 +97,13 @@ extension ToastStyleExtention on ToastStyle {
           color: const Color(0xFFFF3B30),
           boxShadow: [
             BoxShadow(
-              color: AppColors.greyColor.shade200,
+              color: Colors.black.withOpacity(0.1),
               spreadRadius: -8,
               blurRadius: 20,
               offset: const Offset(0, 16),
             ),
           ],
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: toastColors.primary),
         );
     }
   }

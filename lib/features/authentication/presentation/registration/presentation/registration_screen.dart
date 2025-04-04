@@ -17,6 +17,7 @@ import 'package:mdiho/features/authentication/presentation/registration/presenta
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
 import '../../../data/model/payload/sign_up_payload.dart';
@@ -375,6 +376,14 @@ class EmailPasswordStep extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
+                    if (emailController.text.trim().isEmpty ||
+                        passwordController.text.trim().isEmpty) {
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Fill all necessary fields.',
+                      );
+                      return;
+                    }
                     var box = Hive.box('data');
                     box.put('email', emailController.text.trim());
                     box.put('password', passwordController.text.trim());
@@ -627,6 +636,14 @@ class OtpVerificationStep extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
+                    if (otpController.text.trim().isEmpty ||
+                        otpController.text.trim().length < 6) {
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Please input a valid OTP.',
+                      );
+                      return;
+                    }
                     final result = await authService.emailConfirm(
                       email,
                       otpController.text.trim(),
@@ -815,6 +832,15 @@ class UserDetailsStep extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
+                    if (firstNameController.text.trim().isEmpty ||
+                        lastNameController.text.trim().isEmpty ||
+                        phoneController.text.trim().isEmpty) {
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Fill all necessary fields.',
+                      );
+                      return;
+                    }
                     var box = Hive.box('data');
                     final String email = box.get('email');
                     final String password = box.get('password');
