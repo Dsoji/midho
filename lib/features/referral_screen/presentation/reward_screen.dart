@@ -44,14 +44,12 @@ class RewardScreen extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Gap(12),
-                    RewardsList(),
-                  ],
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Gap(12),
+                  RewardsList(),
+                ],
               ),
             ),
           ],
@@ -123,7 +121,8 @@ class RewardsList extends StatelessWidget {
                         const TextSpan(text: "Reward of "),
                         TextSpan(
                           text: reward.amount.formatAsNaira(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontFamily: ''),
                         ),
                       ],
                     ),

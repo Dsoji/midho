@@ -37,6 +37,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
     final profileService = ref.read(profileControllerProvider.notifier);
 
     var box = Hive.box('data'); // Replace 'data' with your box name
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -47,170 +48,178 @@ class PersonalInfoScreen extends HookConsumerWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Update your name, or phone number. Keep your details up-to-date to avoid issues.",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const Gap(10),
-            Container(
-              decoration: ShapeDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
-                    : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Update your name, or phone number. Keep your details up-to-date to avoid issues.",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      context.router.push(const ChangeEmailRoute());
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const ChangeEmailScreen()));
-                    },
-                    child: AbsorbPointer(
-                      child: CustomTextField(
-                        controller: emailController,
-                        label: "Email",
-                        hintText: '${userInfo?.email}',
-                        prefixIcon: Icons.email_outlined, // Optional
-                        keyboardType: TextInputType.emailAddress,
-                        suffixIcon: Icon(
+              const Gap(10),
+              Container(
+                decoration: ShapeDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade600
+                      : AppColors.whiteColor.shade100,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomTextField(
+                      readOnly: true,
+                      controller: emailController,
+                      label: "Email",
+                      hintText: '${userInfo?.email}',
+                      prefixIcon: Icons.email_outlined, // Optional
+                      keyboardType: TextInputType.emailAddress,
+                      suffixIcon: InkWell(
+                        onTap: () {
+                          context.router.push(const ChangeEmailRoute());
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => const ChangeEmailScreen()));
+                        },
+                        child: Icon(
                           IconsaxPlusLinear.edit_2,
                           size: 16,
                           color: AppColors.primaryColor.shade600,
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const ChangeUsernameScreen()));
-                    },
-                    child: AbsorbPointer(
-                      child: CustomTextField(
-                        controller: userNameController,
-                        label: "User Name",
-                        hintText: "@${userInfo?.username}",
-                        suffixIcon: Icon(
+                    const SizedBox(height: 15),
+                    CustomTextField(
+                      controller: userNameController,
+                      label: "User Name",
+                      hintText: "@${userInfo?.username}",
+                      readOnly: true,
+                      suffixIcon: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ChangeUsernameScreen(
+                                        userame: '${userInfo?.username}',
+                                      )));
+                        },
+                        child: Icon(
                           IconsaxPlusLinear.edit_2,
                           size: 16,
                           color: AppColors.primaryColor.shade600,
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  // First Name Field
-                  CustomTextField(
-                    controller: firstNameController,
-                    label: "First Name",
-                    hintText: "${userInfo?.firstname}",
-                  ),
-                  const SizedBox(height: 15),
-
-                  // Last Name Field
-                  CustomTextField(
-                    controller: lastNameController,
-                    label: "Last Name",
-                    hintText: "${userInfo?.lastname}",
-                  ),
-                  const SizedBox(height: 15),
-
-                  // Phone Number Field with Country Code
-                  Text(
-                    "Phone",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : AppColors.greyColor.shade700,
+                    const SizedBox(height: 15),
+                    // First Name Field
+                    CustomTextField(
+                      controller: firstNameController,
+                      label: "First Name",
+                      hintText: "${userInfo?.firstname}",
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  IntlPhoneField(
-                    controller: phoneController,
-                    decoration: InputDecoration(
-                      labelText: "Enter phone number",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                    ),
-                    initialCountryCode: "NG",
-                    onChanged: (phone) {
-                      selectedCountry.value = phone.countryCode;
-                    },
-                    disableLengthCheck: true,
-                  ),
-                  const SizedBox(height: 20),
-                  InfoWidget(
-                      theme: theme,
-                      text:
-                          'Ensure your contact details are accurate for transaction and security alerts.'),
-                  // Terms and Conditions
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 15),
 
-                  FullButton(
-                    isLoading: ref
-                        .watch(profileControllerProvider)
-                        .forgotPassword
-                        .isLoading,
-                    text: "Save Changes",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () async {
-                      authService.updateProfileDetails(
-                        ProfilePayload(
-                          firstname: firstNameController.text.trim().isEmpty
-                              ? null
-                              : firstNameController.text.trim(),
-                          lastname: lastNameController.text.trim().isEmpty
-                              ? null
-                              : lastNameController.text.trim(),
-                          phone: phoneController.text.trim().isEmpty
-                              ? null
-                              : phoneController.text.trim(),
-                        ),
-                      );
-                      final profileDetails = ref
-                          .watch(authenticationControllerProvider)
-                          .profilePayload
-                          .valueOrNull;
-                      final result =
-                          await profileService.updateProfile(profileDetails!);
-                      if (result == true) {
-                        await ref
-                            .read(authenticationControllerProvider.notifier)
-                            .fetchProfile()
-                            .then((_) {
-                          Navigator.pop(context);
-                        });
-                      }
-                    },
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                ],
+                    // Last Name Field
+                    CustomTextField(
+                      controller: lastNameController,
+                      label: "Last Name",
+                      hintText: "${userInfo?.lastname}",
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Phone Number Field with Country Code
+                    Text(
+                      "Phone",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    IntlPhoneField(
+                      controller: phoneController,
+                      decoration: InputDecoration(
+                          hintText: "${userInfo?.phone}",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              width: 0.5,
+                              color: theme.brightness == Brightness.light
+                                  ? AppColors.greyColor.shade50
+                                  : AppColors.secondaryColor.shade400,
+                            ),
+                          )),
+                      initialCountryCode: "NG",
+                      onChanged: (phone) {
+                        selectedCountry.value = phone.countryCode;
+                      },
+                      disableLengthCheck: true,
+                    ),
+                    const SizedBox(height: 20),
+                    InfoWidget(
+                        theme: theme,
+                        text:
+                            'Ensure your contact details are accurate for transaction and security alerts.'),
+                    // Terms and Conditions
+                    const SizedBox(height: 20),
+
+                    FullButton(
+                      isLoading: ref
+                          .watch(profileControllerProvider)
+                          .forgotPassword
+                          .isLoading,
+                      text: "Save Changes",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () async {
+                        authService.updateProfileDetails(
+                          ProfilePayload(
+                            firstname: firstNameController.text.trim().isEmpty
+                                ? null
+                                : firstNameController.text.trim(),
+                            lastname: lastNameController.text.trim().isEmpty
+                                ? null
+                                : lastNameController.text.trim(),
+                            phone: phoneController.text.trim().isEmpty
+                                ? null
+                                : phoneController.text.trim(),
+                          ),
+                        );
+                        final profileDetails = ref
+                            .watch(authenticationControllerProvider)
+                            .profilePayload
+                            .valueOrNull;
+                        final result =
+                            await profileService.updateProfile(profileDetails!);
+                        if (result == true) {
+                          await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .fetchProfile()
+                              .then((_) {
+                            Navigator.pop(context);
+                          });
+                        }
+                      },
+                      textColor: Colors.white,
+                      color: AppColors.primaryColor.shade500,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Gap(150),
-          ],
+              const Gap(150),
+            ],
+          ),
         ),
       ),
     );

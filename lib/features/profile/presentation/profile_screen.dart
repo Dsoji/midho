@@ -101,7 +101,7 @@ class ProfileScreen extends HookConsumerWidget {
 
               // Sign Out Section in a Separate Container
               Container(
-                height: 48,
+                height: 54,
                 padding: const EdgeInsets.only(bottom: 4),
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark

@@ -14,6 +14,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
 
 @RoutePage()
@@ -23,8 +24,11 @@ class ReferallScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     bool isBalanceVisible = true;
     final theme = Theme.of(context);
-    return const Scaffold(
-      appBar: CustomAppBar(
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+
+    return Scaffold(
+      appBar: const CustomAppBar(
         title: "Invite & Earn",
         showBackButton: true,
         showTitle: true,
@@ -32,10 +36,10 @@ class ReferallScreen extends HookConsumerWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Earn rewards by inviting friends to M-Diho!",
@@ -45,15 +49,17 @@ class ReferallScreen extends HookConsumerWidget {
                 ),
               ),
             ),
-            Gap(16),
-            ReferralBalanceCard(
+            const Gap(16),
+            const ReferralBalanceCard(
               balance: 50000,
             ),
-            Gap(16),
-            ReferralCodeCard(referralCode: "DESIGNFATHER"),
-            Gap(16),
-            RewardEmptyStateCard(referralCode: "DESIGNFATHER"),
-            Gap(150),
+            const Gap(16),
+            ReferralCodeCard(
+                referralCode: userInfo?.username ?? "DESIGNFATHER"),
+            const Gap(16),
+            RewardEmptyStateCard(
+                referralCode: userInfo?.username ?? "DESIGNFATHER"),
+            const Gap(150),
           ],
         ),
       ),
@@ -147,6 +153,7 @@ class RewardEmptyStateCard extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
+                            fontFamily: '',
                           ),
                         ),
                       ],
@@ -420,7 +427,7 @@ class ReferralBalanceCard extends HookConsumerWidget {
           const SizedBox(height: 12),
 
           // Lifetime Earnings & Total Referrals
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(
@@ -429,21 +436,24 @@ class ReferralBalanceCard extends HookConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Lifetime Earnings",
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        "₦120,000.00",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        "120000".formatAsNaira(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: '',
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-              Expanded(
+              const Expanded(
                 child: SizedBox(
                   width: 150,
                   child: Column(

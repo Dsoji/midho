@@ -18,6 +18,7 @@ class CustomTextField extends HookWidget {
   final double? borderRadius;
   final int? maxLines;
   final int? maxLength;
+  final bool readOnly;
 
   const CustomTextField({
     super.key,
@@ -35,6 +36,7 @@ class CustomTextField extends HookWidget {
     this.keyboardType = TextInputType.text,
     this.fillColor,
     this.borderRadius,
+    this.readOnly = false,
   });
 
   @override
@@ -63,6 +65,7 @@ class CustomTextField extends HookWidget {
             keyboardType: keyboardType,
             maxLines: maxLines,
             maxLength: maxLength,
+            readOnly: readOnly,
             decoration: InputDecoration(
               prefixIcon: prefixIcon != null
                   ? Icon(

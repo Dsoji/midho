@@ -359,10 +359,17 @@ class ChangePinRoute extends _i48.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i12.ChangeUsernameScreen]
-class ChangeUsernameRoute extends _i48.PageRouteInfo<void> {
-  const ChangeUsernameRoute({List<_i48.PageRouteInfo>? children})
-      : super(
+class ChangeUsernameRoute extends _i48.PageRouteInfo<ChangeUsernameRouteArgs> {
+  ChangeUsernameRoute({
+    _i49.Key? key,
+    required String userame,
+    List<_i48.PageRouteInfo>? children,
+  }) : super(
           ChangeUsernameRoute.name,
+          args: ChangeUsernameRouteArgs(
+            key: key,
+            userame: userame,
+          ),
           initialChildren: children,
         );
 
@@ -371,9 +378,29 @@ class ChangeUsernameRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i12.ChangeUsernameScreen();
+      final args = data.argsAs<ChangeUsernameRouteArgs>();
+      return _i12.ChangeUsernameScreen(
+        key: args.key,
+        userame: args.userame,
+      );
     },
   );
+}
+
+class ChangeUsernameRouteArgs {
+  const ChangeUsernameRouteArgs({
+    this.key,
+    required this.userame,
+  });
+
+  final _i49.Key? key;
+
+  final String userame;
+
+  @override
+  String toString() {
+    return 'ChangeUsernameRouteArgs{key: $key, userame: $userame}';
+  }
 }
 
 /// generated route for

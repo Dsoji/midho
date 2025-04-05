@@ -45,19 +45,17 @@ class MyReferallScreen extends HookConsumerWidget {
                 ),
               ),
               padding: const EdgeInsets.all(24),
-              child: Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InfoWidget(
-                      theme: theme,
-                      text:
-                          'Only users who sign up using your code will appear here.',
-                    ),
-                    const Gap(24),
-                    ReferallList(),
-                  ],
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InfoWidget(
+                    theme: theme,
+                    text:
+                        'Only users who sign up using your code will appear here.',
+                  ),
+                  const Gap(24),
+                  ReferallList(),
+                ],
               ),
             ),
           ],
