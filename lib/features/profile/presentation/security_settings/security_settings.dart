@@ -10,6 +10,9 @@ import 'package:mdiho/features/profile/presentation/security_settings/change_pin
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../authentication/data/model/payload/profile_payload.dart';
+import '../../data/controller/profile_controller.dart';
 
 @RoutePage()
 class SecurtiySettingsScreen extends HookConsumerWidget {
@@ -19,8 +22,11 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final twoFactorEnabled = useState(true);
-    final biometricEnabled = useState(false);
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final biometricEnabled = useState(userInfo?.biometrics ?? false);
     final localAuth = LocalAuthentication();
+    final profileService = ref.read(profileControllerProvider.notifier);
 
     Future<void> authenticateAndToggle(bool value) async {
       bool canAuthenticate = await localAuth.canCheckBiometrics ||
@@ -33,6 +39,15 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
             localizedReason: "Enable biometric authentication",
             options: const AuthenticationOptions(biometricOnly: true),
           );
+
+          final result = await profileService.updateProfile(ProfilePayload(
+            biometric: value,
+          ));
+          if (result == true) {
+            await ref
+                .read(authenticationControllerProvider.notifier)
+                .fetchProfile();
+          }
         } catch (e) {
           debugPrint("Biometric authentication failed: $e");
         }

@@ -174,7 +174,7 @@ class ProfileeService {
         return FaqResponse.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      // showSuccessToast: true,
     );
   }
 

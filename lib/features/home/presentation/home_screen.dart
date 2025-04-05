@@ -9,6 +9,7 @@ import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/notification/notification_screen.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
+import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
@@ -34,6 +35,11 @@ class HomeScreen extends HookConsumerWidget {
     DateTime? lastBackPressTime;
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    if (userInfo?.theme == 'LIGHT') {
+      ref.read(themeNotifierProvider).toggleTheme(ThemeMode.light);
+    } else if (userInfo?.theme == 'DARK') {
+      ref.read(themeNotifierProvider).toggleTheme(ThemeMode.dark);
+    }
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) async {

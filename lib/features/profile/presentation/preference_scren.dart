@@ -5,11 +5,14 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/res/assets.dart';
+import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
 import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
 
 @RoutePage()
 class PreferenceScreen extends HookConsumerWidget {
@@ -18,12 +21,19 @@ class PreferenceScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final twoFactorEnabled = useState(true);
-    final biometricEnabled = useState(true);
+
     final selectedIndex = useState(0);
     final themeNotifier =
         ref.watch(themeNotifierProvider); // ✅ Watch ThemeNotifier
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final authService = ref.read(authenticationControllerProvider.notifier);
+    final profileService = ref.read(profileControllerProvider.notifier);
 
+    final pushEnabled = useState(userInfo?.pushAlert);
+    final emailEnabled = useState(userInfo?.emailAlert);
+    final themeAlert = useState('');
+    print(pushEnabled.value);
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Preferences & Notifications",
@@ -60,7 +70,7 @@ class PreferenceScreen extends HookConsumerWidget {
                     icon: IconsaxPlusLinear.notification_status,
                     title: "Push Notifications",
                     trailing: Switch(
-                      value: twoFactorEnabled.value,
+                      value: pushEnabled.value ?? false,
                       activeTrackColor:
                           Colors.green.shade700, // Green track when ON
                       inactiveTrackColor:
@@ -74,7 +84,7 @@ class PreferenceScreen extends HookConsumerWidget {
                         },
                       ),
                       onChanged: (value) {
-                        twoFactorEnabled.value = value;
+                        pushEnabled.value = value;
                       },
                     ),
                     context: context,
@@ -83,7 +93,7 @@ class PreferenceScreen extends HookConsumerWidget {
                     icon: IconsaxPlusLinear.notification_bing,
                     title: "Email Alerts",
                     trailing: Switch(
-                      value: biometricEnabled.value,
+                      value: emailEnabled.value ?? false,
                       activeTrackColor:
                           Colors.green.shade700, // Green track when ON
                       inactiveTrackColor:
@@ -97,7 +107,7 @@ class PreferenceScreen extends HookConsumerWidget {
                         },
                       ),
                       onChanged: (value) {
-                        biometricEnabled.value = value;
+                        emailEnabled.value = value;
                       },
                     ),
                     context: context,
@@ -133,6 +143,7 @@ class PreferenceScreen extends HookConsumerWidget {
                       ref
                           .read(themeNotifierProvider)
                           .toggleTheme(ThemeMode.light);
+                      themeAlert.value = 'LIGHT';
                     },
                     child: Container(
                       height: 118,
@@ -177,6 +188,7 @@ class PreferenceScreen extends HookConsumerWidget {
                       ref
                           .read(themeNotifierProvider)
                           .toggleTheme(ThemeMode.dark);
+                      themeAlert.value = 'DARK';
                     },
                     child: Container(
                       height: 118,
@@ -221,11 +233,26 @@ class PreferenceScreen extends HookConsumerWidget {
             ),
             const Gap(16),
             FullButton(
+              isLoading:
+                  ref.watch(profileControllerProvider).forgotPassword.isLoading,
               text: "Save Changes",
               width: double.infinity,
               height: 48,
-              onPressed: () {
-                Navigator.pop(context);
+              onPressed: () async {
+                final result =
+                    await profileService.updateProfile(ProfilePayload(
+                  emailAlert: emailEnabled.value,
+                  pushAlert: pushEnabled.value,
+                  theme: themeAlert.value,
+                ));
+                if (result == true) {
+                  await ref
+                      .read(authenticationControllerProvider.notifier)
+                      .fetchProfile()
+                      .then((_) {
+                    Navigator.pop(context);
+                  });
+                }
               },
               textColor: Colors.white,
               color: AppColors.primaryColor.shade500,
