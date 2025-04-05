@@ -23,18 +23,10 @@ class AppRouter extends RootStackRouter {
         AutoRoute(
           page: OnboardingRoute.page,
         ),
-        // CustomRoute(
-        //   page: WithdrawalSuccessDialogRoute.page,
-        //   transitionsBuilder: TransitionsBuilder.fadeTransition,
-        //   durationInMilliseconds: 300,
-        //   opaque: false, // Allows transparency effect
-        //   barrierDismissible: true,
-        //   barrierColor: Colors.transparent, // Tap outside to close
-        // ),
         AutoRoute(
           page: MdihoShellRoute.page,
           children: [
-            AutoRoute(path: '', page: LoginRoute.page),
+            AutoRoute(page: LoginRoute.page),
             AutoRoute(page: RegistrationRoute.page),
             AutoRoute(page: ConfirmPinRoute.page),
             AutoRoute(page: ForgotPasswordRoute.page),
@@ -42,6 +34,7 @@ class AppRouter extends RootStackRouter {
             // AutoRoute(page: InterestRoute.page),
           ],
         ),
+        AutoRoute(page: LoginRoute.page),
         AutoRoute(
           page: NaviBarRoute.page,
           children: [

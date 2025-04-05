@@ -1,0 +1,223 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/common/utils/multiple_results.dart';
+import 'package:mdiho/common/utils/utils.dart';
+import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
+import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
+
+import '../../../authentication/data/model/payload/profile_payload.dart';
+import '../Model/response/user_profile_model/user_profile_model.dart';
+import '../service/profile_service.dart';
+
+final profileRepositoryProvider = Provider((ref) {
+  final authenticationService = ref.watch(profileServiceProvider);
+  return ProfileRepository(
+    authenticationService,
+  );
+});
+
+class ProfileRepository {
+  ProfileRepository(
+    this.authService,
+  );
+
+  final ProfileeService authService;
+
+  Future<Result<FailureHandler, String>> updateProfile({
+    ProfilePayload? payload,
+  }) async {
+    try {
+      final data = await authService.updateProfile(payload: payload);
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to update profile',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to update profile'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, UserProfileModel>> fetchProfileDetails({
+    ProfilePayload? payload,
+  }) async {
+    try {
+      final data = await authService.fetchUserInfo();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? UserProfileModel());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to update profile',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to update profile'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updateUsername({
+    required String name,
+  }) async {
+    try {
+      final data = await authService.changeUsername(
+        username: name,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change username',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change username'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updateEmail({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final data = await authService.changeEmail(
+        email: email,
+        code: code,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change email',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change email'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updatePswrd({
+    required String password,
+    required String oldPassword,
+  }) async {
+    try {
+      final data = await authService.changePswrd(
+        password: password,
+        oldPassword: oldPassword,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change password',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change password'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> updatePin({
+    required String email,
+    required String pin,
+    required String code,
+  }) async {
+    try {
+      final data = await authService.changePin(
+        email: email,
+        pin: pin,
+        code: code,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to change password',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to change password'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, FaqResponse>> fetchFaq() async {
+    try {
+      final data = await authService.fetchFaq();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? FaqResponse());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch your faq ',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch your faq '),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> postFeedBack(
+      {required SuggestionPayload payload}) async {
+    try {
+      final data = await authService.postFeedBack(
+        payload: payload,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to post feedback',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to post feedback'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+}

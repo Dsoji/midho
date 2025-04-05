@@ -6,6 +6,11 @@ class MdihoShellScreen extends AutoRouter {
 }
 
 @RoutePage()
+class AuthShellScreen extends AutoRouter {
+  const AuthShellScreen({super.key});
+}
+
+@RoutePage()
 class SplashShellScreen extends AutoRouter {
   const SplashShellScreen({super.key});
 }

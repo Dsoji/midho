@@ -115,7 +115,7 @@ class ProfileScreen extends HookConsumerWidget {
                   context,
                   () async {
                     await box.clear().then((_) {
-                      context.router.replaceAll([const LoginRoute()]);
+                      context.router.replaceAll([const OnboardingRoute()]);
                     });
                   },
                   isDestructive: true,

@@ -15,29 +15,29 @@ import 'package:mdiho/features/authentication/presentation/forgot_password/prese
 import 'package:mdiho/features/authentication/presentation/login/presentation/login_screen.dart'
     as _i26;
 import 'package:mdiho/features/authentication/presentation/pin_creation/presentation/confirm_pin.dart'
-    as _i12;
-import 'package:mdiho/features/authentication/presentation/pin_creation/presentation/create_pin.dart'
     as _i13;
+import 'package:mdiho/features/authentication/presentation/pin_creation/presentation/create_pin.dart'
+    as _i14;
 import 'package:mdiho/features/authentication/presentation/registration/presentation/registration_screen.dart'
     as _i35;
 import 'package:mdiho/features/bank_network/presentation/bank_network_screen.dart'
-    as _i2;
-import 'package:mdiho/features/bills/presentation/betting_screen.dart' as _i3;
-import 'package:mdiho/features/bills/presentation/buy_airtime.dart' as _i4;
-import 'package:mdiho/features/bills/presentation/buy_data.dart' as _i5;
-import 'package:mdiho/features/bills/presentation/cable_bill.dart' as _i6;
+    as _i3;
+import 'package:mdiho/features/bills/presentation/betting_screen.dart' as _i4;
+import 'package:mdiho/features/bills/presentation/buy_airtime.dart' as _i5;
+import 'package:mdiho/features/bills/presentation/buy_data.dart' as _i6;
+import 'package:mdiho/features/bills/presentation/cable_bill.dart' as _i7;
 import 'package:mdiho/features/bills/presentation/electricity_bill.dart'
     as _i16;
-import 'package:mdiho/features/bottomNav/mdiho_shell_screen.dart' as _i15;
+import 'package:mdiho/features/bottomNav/mdiho_shell_screen.dart' as _i2;
 import 'package:mdiho/features/bottomNav/screen/navbar.dart' as _i27;
-import 'package:mdiho/features/crypto/presentation/crypto_screen.dart' as _i14;
+import 'package:mdiho/features/crypto/presentation/crypto_screen.dart' as _i15;
 import 'package:mdiho/features/crypto/presentation/qr_screen.dart' as _i33;
 import 'package:mdiho/features/crypto/presentation/sell_crypto_screen.dart'
     as _i37;
 import 'package:mdiho/features/crypto/presentation/widget/standalone_transaction_details.dart'
     as _i39;
 import 'package:mdiho/features/gift_card/presentation/card_details_proof.dart'
-    as _i7;
+    as _i8;
 import 'package:mdiho/features/gift_card/presentation/enter_card_details_screen.dart'
     as _i19;
 import 'package:mdiho/features/gift_card/presentation/gift_card_screen.dart'
@@ -52,9 +52,9 @@ import 'package:mdiho/features/profile/presentation/bank/add_bank.dart' as _i1;
 import 'package:mdiho/features/profile/presentation/bank/bank_list.dart'
     as _i25;
 import 'package:mdiho/features/profile/presentation/personal_info/change_email.dart'
-    as _i8;
+    as _i9;
 import 'package:mdiho/features/profile/presentation/personal_info/change_username.dart'
-    as _i11;
+    as _i12;
 import 'package:mdiho/features/profile/presentation/personal_info/email_verification.dart'
     as _i17;
 import 'package:mdiho/features/profile/presentation/personal_info/personal_information.dart'
@@ -64,9 +64,9 @@ import 'package:mdiho/features/profile/presentation/preference_scren.dart'
 import 'package:mdiho/features/profile/presentation/profile_screen.dart'
     as _i32;
 import 'package:mdiho/features/profile/presentation/security_settings/change_password.dart'
-    as _i9;
-import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart'
     as _i10;
+import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart'
+    as _i11;
 import 'package:mdiho/features/profile/presentation/security_settings/email.dart'
     as _i45;
 import 'package:mdiho/features/profile/presentation/security_settings/email_verify.dart'
@@ -88,7 +88,7 @@ import 'package:mdiho/features/transaction/presentation/transaction_details.dart
     as _i42;
 import 'package:mdiho/features/transaction/presentation/transaction_history.dart'
     as _i43;
-import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart' as _i44;
+import 'package:mdiho/features/transaction_pin/transaction_pin.dart' as _i44;
 import 'package:mdiho/features/withdrawal/presentation/withdraw_funds_screen.dart'
     as _i46;
 
@@ -140,7 +140,26 @@ class AddNewBankRouteArgs {
 }
 
 /// generated route for
-/// [_i2.BankNetworkScreen]
+/// [_i2.AuthShellScreen]
+class AuthShellRoute extends _i48.PageRouteInfo<void> {
+  const AuthShellRoute({List<_i48.PageRouteInfo>? children})
+      : super(
+          AuthShellRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'AuthShellRoute';
+
+  static _i48.PageInfo page = _i48.PageInfo(
+    name,
+    builder: (data) {
+      return const _i2.AuthShellScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [_i3.BankNetworkScreen]
 class BankNetworkRoute extends _i48.PageRouteInfo<void> {
   const BankNetworkRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -153,13 +172,13 @@ class BankNetworkRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i2.BankNetworkScreen();
+      return const _i3.BankNetworkScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i3.BettingScreen]
+/// [_i4.BettingScreen]
 class BettingRoute extends _i48.PageRouteInfo<void> {
   const BettingRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -172,13 +191,13 @@ class BettingRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i3.BettingScreen();
+      return const _i4.BettingScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i4.BuyAirtimeScreen]
+/// [_i5.BuyAirtimeScreen]
 class BuyAirtimeRoute extends _i48.PageRouteInfo<void> {
   const BuyAirtimeRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -191,13 +210,13 @@ class BuyAirtimeRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i4.BuyAirtimeScreen();
+      return const _i5.BuyAirtimeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i5.BuyDataScreen]
+/// [_i6.BuyDataScreen]
 class BuyDataRoute extends _i48.PageRouteInfo<void> {
   const BuyDataRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -210,13 +229,13 @@ class BuyDataRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i5.BuyDataScreen();
+      return const _i6.BuyDataScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i6.CableBillScreen]
+/// [_i7.CableBillScreen]
 class CableBillRoute extends _i48.PageRouteInfo<void> {
   const CableBillRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -229,13 +248,13 @@ class CableBillRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i6.CableBillScreen();
+      return const _i7.CableBillScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i7.CardDetailsProofScreen]
+/// [_i8.CardDetailsProofScreen]
 class CardDetailsProofRoute
     extends _i48.PageRouteInfo<CardDetailsProofRouteArgs> {
   CardDetailsProofRoute({
@@ -257,7 +276,7 @@ class CardDetailsProofRoute
     name,
     builder: (data) {
       final args = data.argsAs<CardDetailsProofRouteArgs>();
-      return _i7.CardDetailsProofScreen(
+      return _i8.CardDetailsProofScreen(
         key: args.key,
         img: args.img,
       );
@@ -282,7 +301,7 @@ class CardDetailsProofRouteArgs {
 }
 
 /// generated route for
-/// [_i8.ChangeEmailScreen]
+/// [_i9.ChangeEmailScreen]
 class ChangeEmailRoute extends _i48.PageRouteInfo<void> {
   const ChangeEmailRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -295,13 +314,13 @@ class ChangeEmailRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i8.ChangeEmailScreen();
+      return const _i9.ChangeEmailScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i9.ChangePasswordScreen]
+/// [_i10.ChangePasswordScreen]
 class ChangePasswordRoute extends _i48.PageRouteInfo<void> {
   const ChangePasswordRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -314,13 +333,13 @@ class ChangePasswordRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i9.ChangePasswordScreen();
+      return const _i10.ChangePasswordScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i10.ChangePinScreen]
+/// [_i11.ChangePinScreen]
 class ChangePinRoute extends _i48.PageRouteInfo<void> {
   const ChangePinRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -333,13 +352,13 @@ class ChangePinRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i10.ChangePinScreen();
+      return const _i11.ChangePinScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i11.ChangeUsernameScreen]
+/// [_i12.ChangeUsernameScreen]
 class ChangeUsernameRoute extends _i48.PageRouteInfo<void> {
   const ChangeUsernameRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -352,13 +371,13 @@ class ChangeUsernameRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i11.ChangeUsernameScreen();
+      return const _i12.ChangeUsernameScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i12.ConfirmPinScreen]
+/// [_i13.ConfirmPinScreen]
 class ConfirmPinRoute extends _i48.PageRouteInfo<ConfirmPinRouteArgs> {
   ConfirmPinRoute({
     _i49.Key? key,
@@ -379,7 +398,7 @@ class ConfirmPinRoute extends _i48.PageRouteInfo<ConfirmPinRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<ConfirmPinRouteArgs>();
-      return _i12.ConfirmPinScreen(
+      return _i13.ConfirmPinScreen(
         key: args.key,
         pin: args.pin,
       );
@@ -404,7 +423,7 @@ class ConfirmPinRouteArgs {
 }
 
 /// generated route for
-/// [_i13.CreatePinScreen]
+/// [_i14.CreatePinScreen]
 class CreatePinRoute extends _i48.PageRouteInfo<void> {
   const CreatePinRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -417,13 +436,13 @@ class CreatePinRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i13.CreatePinScreen();
+      return const _i14.CreatePinScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i14.CryptoScreen]
+/// [_i15.CryptoScreen]
 class CryptoRoute extends _i48.PageRouteInfo<void> {
   const CryptoRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -436,13 +455,13 @@ class CryptoRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i14.CryptoScreen();
+      return const _i15.CryptoScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i15.CryptoShellScreen]
+/// [_i2.CryptoShellScreen]
 class CryptoShellRoute extends _i48.PageRouteInfo<void> {
   const CryptoShellRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -455,7 +474,7 @@ class CryptoShellRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i15.CryptoShellScreen();
+      return const _i2.CryptoShellScreen();
     },
   );
 }
@@ -677,7 +696,7 @@ class GiftCardRoute extends _i48.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i15.GiftCardShellScreen]
+/// [_i2.GiftCardShellScreen]
 class GiftCardShellRoute extends _i48.PageRouteInfo<void> {
   const GiftCardShellRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -690,7 +709,7 @@ class GiftCardShellRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i15.GiftCardShellScreen();
+      return const _i2.GiftCardShellScreen();
     },
   );
 }
@@ -774,7 +793,7 @@ class HomeRoute extends _i48.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i15.HomeShellScreen]
+/// [_i2.HomeShellScreen]
 class HomeShellRoute extends _i48.PageRouteInfo<void> {
   const HomeShellRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -787,7 +806,7 @@ class HomeShellRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i15.HomeShellScreen();
+      return const _i2.HomeShellScreen();
     },
   );
 }
@@ -831,7 +850,7 @@ class LoginRoute extends _i48.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i15.MdihoShellScreen]
+/// [_i2.MdihoShellScreen]
 class MdihoShellRoute extends _i48.PageRouteInfo<void> {
   const MdihoShellRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -844,7 +863,7 @@ class MdihoShellRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i15.MdihoShellScreen();
+      return const _i2.MdihoShellScreen();
     },
   );
 }
@@ -964,7 +983,7 @@ class ProfileRoute extends _i48.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i15.ProfileShellScreen]
+/// [_i2.ProfileShellScreen]
 class ProfileShellRoute extends _i48.PageRouteInfo<void> {
   const ProfileShellRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -977,7 +996,7 @@ class ProfileShellRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i15.ProfileShellScreen();
+      return const _i2.ProfileShellScreen();
     },
   );
 }
@@ -1142,7 +1161,7 @@ class SplashRoute extends _i48.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i15.SplashShellScreen]
+/// [_i2.SplashShellScreen]
 class SplashShellRoute extends _i48.PageRouteInfo<void> {
   const SplashShellRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -1155,7 +1174,7 @@ class SplashShellRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i15.SplashShellScreen();
+      return const _i2.SplashShellScreen();
     },
   );
 }
@@ -1334,13 +1353,15 @@ class TransactionHistoryRoute extends _i48.PageRouteInfo<void> {
 class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
   TransactionPinRoute({
     _i49.Key? key,
-    required bool isHome,
+    required String info,
+    String? selectedType,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           TransactionPinRoute.name,
           args: TransactionPinRouteArgs(
             key: key,
-            isHome: isHome,
+            info: info,
+            selectedType: selectedType,
           ),
           initialChildren: children,
         );
@@ -1353,7 +1374,8 @@ class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
       final args = data.argsAs<TransactionPinRouteArgs>();
       return _i44.TransactionPinScreen(
         key: args.key,
-        isHome: args.isHome,
+        info: args.info,
+        selectedType: args.selectedType,
       );
     },
   );
@@ -1362,21 +1384,24 @@ class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
 class TransactionPinRouteArgs {
   const TransactionPinRouteArgs({
     this.key,
-    required this.isHome,
+    required this.info,
+    this.selectedType,
   });
 
   final _i49.Key? key;
 
-  final bool isHome;
+  final String info;
+
+  final String? selectedType;
 
   @override
   String toString() {
-    return 'TransactionPinRouteArgs{key: $key, isHome: $isHome}';
+    return 'TransactionPinRouteArgs{key: $key, info: $info, selectedType: $selectedType}';
   }
 }
 
 /// generated route for
-/// [_i15.TransactionShellScreen]
+/// [_i2.TransactionShellScreen]
 class TransactionShellRoute extends _i48.PageRouteInfo<void> {
   const TransactionShellRoute({List<_i48.PageRouteInfo>? children})
       : super(
@@ -1389,7 +1414,7 @@ class TransactionShellRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i15.TransactionShellScreen();
+      return const _i2.TransactionShellScreen();
     },
   );
 }

@@ -9,6 +9,7 @@ import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
 
 import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/toast/toast.dart';
+import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
 import '../../../../bottomNav/app_router.gr.dart';
@@ -54,6 +55,7 @@ class LoginScreen extends HookConsumerWidget {
     }
 
     final theme = Theme.of(context);
+    final formKey = GlobalKey<FormState>();
 
     return PopScope(
       canPop: false, // Prevent default back navigation
@@ -73,156 +75,160 @@ class LoginScreen extends HookConsumerWidget {
           automaticallyImplyLeading: false,
         ),
         body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                decoration: ShapeDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
-                      : AppColors.whiteColor.shade100,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  shadows: [
-                    BoxShadow(
-                      color:
-                          Colors.black.withOpacity(0.1), // Light shadow color
-                      blurRadius: 8, // Soft shadow effect
-                      spreadRadius: 1, // Spread of the shadow
-                      offset: const Offset(0, 2), // Moves shadow slightly down
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                  decoration: ShapeDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : AppColors.whiteColor.shade100,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Welcome back boss!",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                    shadows: [
+                      BoxShadow(
+                        color:
+                            Colors.black.withOpacity(0.1), // Light shadow color
+                        blurRadius: 8, // Soft shadow effect
+                        spreadRadius: 1, // Spread of the shadow
+                        offset:
+                            const Offset(0, 2), // Moves shadow slightly down
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      "Sign in to M-Diho",
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Email Field
-                    CustomTextField(
-                      controller: emailController,
-                      label: "Email",
-                      prefixIcon: Icons.email_outlined, // Optional
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) =>
-                          isValidEmail(value!) ? null : "Enter a valid email",
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    // Password Field
-                    CustomTextField(
-                      controller: passwordController,
-                      label: "Password",
-                      prefixIcon: Icons.lock_outline, // Optional
-                      isPassword: true,
-                    ),
-                    const Gap(8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ForgotPasswordScreen()));
-                        },
-                        child: Text(
-                          "Forgot Password",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primaryColor,
-                          ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Welcome back boss!",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    const Gap(28),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Sign in to M-Diho",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 20),
 
-                    // Continue Button
-                    FullButton(
-                      isLoading: ref
-                          .watch(authenticationControllerProvider)
-                          .login
-                          .isLoading,
-                      text: "Continue",
-                      width: double.infinity,
-                      height: 48,
-                      onPressed: () async {
-                        if (emailController.text.trim().isEmpty ||
-                            passwordController.text.trim().isEmpty) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Fill all fields.',
-                          );
-                          return;
-                        }
-                        final result = await authentication.signIn(
-                          emailController.text.trim(),
-                          passwordController.text.trim(),
-                        );
-                        if (result == true) {
-                          context.router.replace(const NaviBarRoute());
-                        }
-                      },
-                      textColor: Colors.white,
-                      color: AppColors.primaryColor.shade500,
-                    ),
+                      // Email Field
+                      CustomTextField(
+                        controller: emailController,
+                        label: "Email",
+                        prefixIcon: Icons.email_outlined, // Optional
+                        keyboardType: TextInputType.emailAddress,
+                        validator: Validators.emailValidator,
+                      ),
 
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 15),
 
-                    // Already have an account?
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegistrationScreen(),
-                          ),
-                        );
-                      },
-                      child: Center(
-                        child: RichText(
-                          text: TextSpan(
-                            text: "Don't Have An Account? ",
+                      // Password Field
+                      CustomTextField(
+                        controller: passwordController,
+                        label: "Password",
+                        prefixIcon: Icons.lock_outline, // Optional
+                        isPassword: true,
+                        validator: Validators.passwordValidator,
+                      ),
+                      const Gap(8),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordScreen()));
+                          },
+                          child: Text(
+                            "Forgot Password",
                             style: TextStyle(
                               fontSize: 14,
-                              color: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : AppColors.greyColor.shade700,
+                              color: AppColors.primaryColor,
                             ),
-                            children: [
-                              TextSpan(
-                                text: "Sign Up",
-                                style: TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const Gap(28),
+
+                      // Continue Button
+                      FullButton(
+                        isLoading: ref
+                            .watch(authenticationControllerProvider)
+                            .login
+                            .isLoading,
+                        text: "Continue",
+                        width: double.infinity,
+                        height: 48,
+                        onPressed: () async {
+                          if (!formKey.currentState!.validate()) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message:
+                                  'Fill all necessary fields appropriately..',
+                            );
+                            return;
+                          }
+                          final result = await authentication.signIn(
+                            emailController.text.trim(),
+                            passwordController.text.trim(),
+                          );
+                          if (result == true) {
+                            context.router.replace(const NaviBarRoute());
+                          }
+                        },
+                        textColor: Colors.white,
+                        color: AppColors.primaryColor.shade500,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Already have an account?
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegistrationScreen(),
+                            ),
+                          );
+                        },
+                        child: Center(
+                          child: RichText(
+                            text: TextSpan(
+                              text: "Don't Have An Account? ",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.greyColor.shade700,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "Sign Up",
+                                  style: TextStyle(
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

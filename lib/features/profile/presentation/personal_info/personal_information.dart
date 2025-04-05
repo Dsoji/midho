@@ -16,6 +16,7 @@ import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../authentication/data/model/payload/profile_payload.dart';
+import '../../data/controller/profile_controller.dart';
 
 @RoutePage()
 class PersonalInfoScreen extends HookConsumerWidget {
@@ -33,6 +34,8 @@ class PersonalInfoScreen extends HookConsumerWidget {
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final authService = ref.read(authenticationControllerProvider.notifier);
+    final profileService = ref.read(profileControllerProvider.notifier);
+
     var box = Hive.box('data'); // Replace 'data' with your box name
 
     return Scaffold(
@@ -165,7 +168,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
 
                   FullButton(
                     isLoading: ref
-                        .watch(authenticationControllerProvider)
+                        .watch(profileControllerProvider)
                         .forgotPassword
                         .isLoading,
                     text: "Save Changes",
@@ -190,7 +193,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
                           .profilePayload
                           .valueOrNull;
                       final result =
-                          await authService.updateProfile(profileDetails!);
+                          await profileService.updateProfile(profileDetails!);
                       if (result == true) {
                         await ref
                             .read(authenticationControllerProvider.notifier)

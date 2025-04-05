@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
@@ -21,7 +22,7 @@ class ChangeUsernameScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final usernameController = useTextEditingController();
     final newnameController = useTextEditingController();
-    final authService = ref.read(authenticationControllerProvider.notifier);
+    final authService = ref.read(profileControllerProvider.notifier);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -100,7 +101,7 @@ class ChangeUsernameScreen extends HookConsumerWidget {
                         );
                         if (result == true) {
                           await ref
-                              .read(authenticationControllerProvider.notifier)
+                              .read(profileControllerProvider.notifier)
                               .fetchProfile()
                               .then((_) {
                             Navigator.pop(context);

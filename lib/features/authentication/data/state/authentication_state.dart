@@ -1,7 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 
-import '../../../profile/data/Model/response/user_profile_model.dart';
+import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
 import '../model/payload/sign_up_payload.dart';
 import '../model/response/user_model/user_model.dart';
 

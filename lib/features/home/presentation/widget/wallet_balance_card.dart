@@ -7,6 +7,8 @@ import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
+import '../../../authentication/data/controller/authentication_controller.dart';
+
 // StateNotifier for Balance Visibility
 class BalanceVisibilityNotifier extends StateNotifier<bool> {
   BalanceVisibilityNotifier() : super(true);
@@ -34,6 +36,8 @@ class WalletBalanceCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -64,7 +68,7 @@ class WalletBalanceCard extends HookConsumerWidget {
             children: [
               Text(
                 isBalanceVisible
-                    ? balance.toStringAsFixed(2).formatAsNaira()
+                    ? '${userInfo?.wallet?.mainBalance ?? 0}'.formatAsNaira()
                     : "••••••••",
                 style: const TextStyle(
                   color: Colors.white,

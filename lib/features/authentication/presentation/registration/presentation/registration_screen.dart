@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:mdiho/common/utils/validator.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 import 'package:mdiho/features/authentication/presentation/login/presentation/login_screen.dart';
@@ -230,6 +231,8 @@ class EmailPasswordStep extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formKey = GlobalKey<FormState>();
+
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final referralController = useTextEditingController();
@@ -237,217 +240,175 @@ class EmailPasswordStep extends HookConsumerWidget {
     final passwordStrength = useState("Weak");
     final authService = ref.read(authenticationControllerProvider.notifier);
 
-    bool isValidEmail(String email) {
-      return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-          .hasMatch(email);
-    }
-
-    bool isPasswordStrong(String password) {
-      return password.length >= 8 &&
-          RegExp(r'[A-Z]').hasMatch(password) &&
-          RegExp(r'[0-9]').hasMatch(password) &&
-          RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
-    }
-
-    void validatePassword(String password) {
-      if (password.length < 8) {
-        passwordStrength.value = "Weak";
-      } else if (!RegExp(r'[A-Z]').hasMatch(password)) {
-        passwordStrength.value = "Medium";
-      } else if (!RegExp(r'[0-9]').hasMatch(password)) {
-        passwordStrength.value = "Strong";
-      } else {
-        passwordStrength.value = "Very Strong";
-      }
-    }
-
-    List<Map<String, dynamic>> passwordCriteria = [
-      {
-        "regex": (String password) => password.length >= 8,
-        "label": "8 characters long",
-      },
-      {
-        "regex": (String password) => RegExp(r'[A-Z]').hasMatch(password),
-        "label": "Uppercase",
-      },
-      {
-        "regex": (String password) => RegExp(r'[0-9]').hasMatch(password),
-        "label": "Number",
-      },
-      {
-        "regex": (String password) =>
-            RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password),
-        "label": "Special character",
-      },
-    ];
-
     final theme = Theme.of(context);
     return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            decoration: ShapeDecoration(
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade600
-                  : AppColors.whiteColor.shade100,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              decoration: ShapeDecoration(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade600
+                    : AppColors.whiteColor.shade100,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1), // Light shadow color
+                    blurRadius: 8, // Soft shadow effect
+                    spreadRadius: 1, // Spread of the shadow
+                    offset: const Offset(0, 2), // Moves shadow slightly down
+                  ),
+                ],
               ),
-              shadows: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1), // Light shadow color
-                  blurRadius: 8, // Soft shadow effect
-                  spreadRadius: 1, // Spread of the shadow
-                  offset: const Offset(0, 2), // Moves shadow slightly down
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Let's Set Up Your Account",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Let's Set Up Your Account",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Provide the following details to set up your account",
-                  style: TextStyle(
-                    fontSize: 14,
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Provide the following details to set up your account",
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // Email Field
-                CustomTextField(
-                  controller: emailController,
-                  label: "Email",
-                  prefixIcon: Icons.email_outlined, // Optional
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) =>
-                      isValidEmail(value!) ? null : "Enter a valid email",
-                ),
+                  // Email Field
+                  CustomTextField(
+                    controller: emailController,
+                    label: "Email",
+                    prefixIcon: Icons.email_outlined, // Optional
+                    keyboardType: TextInputType.emailAddress,
+                    validator: Validators.emailValidator,
+                  ),
 
-                const SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
-                // Password Field
-                CustomTextField(
-                  controller: passwordController,
-                  label: "Password",
-                  prefixIcon: IconsaxPlusLinear.lock, // Optional
-                  isPassword: true,
-                ),
+                  // Password Field
+                  CustomTextField(
+                    controller: passwordController,
+                    label: "Password",
+                    prefixIcon: IconsaxPlusLinear.lock, // Optional
+                    isPassword: true,
+                    validator: Validators.passwordValidator,
+                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // Referral Code (Optional)
-                CustomTextField(
-                  controller: referralController,
-                  label: "Referral Code (Optional)",
-                  hintText: "Enter referral code",
-                  suffixIcon: PasteButton(
-                    onTap: () async {
-                      ClipboardData? data =
-                          await Clipboard.getData('text/plain');
-                      if (data != null) {
-                        referralController.text = data.text!;
+                  // Referral Code (Optional)
+                  CustomTextField(
+                    controller: referralController,
+                    label: "Referral Code (Optional)",
+                    hintText: "Enter referral code",
+                    suffixIcon: PasteButton(
+                      onTap: () async {
+                        ClipboardData? data =
+                            await Clipboard.getData('text/plain');
+                        if (data != null) {
+                          referralController.text = data.text!;
+                        }
+                      },
+                    ),
+                    onSuffixTap: () {
+                      referralController.text =
+                          "REF123"; // Simulate pasting a code
+                    },
+                    prefixIcon: Icons.people_outline,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Continue Button
+                  FullButton(
+                    isLoading: isLoading,
+                    text: "Continue",
+                    width: double.infinity,
+                    height: 48,
+                    onPressed: () async {
+                      if (!formKey.currentState!.validate()) {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Fill all necessary fields appropriately.',
+                        );
+                        return;
+                      }
+                      var box = Hive.box('data');
+                      box.put('email', emailController.text.trim());
+                      box.put('password', passwordController.text.trim());
+                      box.put('referral', referralController.text.trim());
+                      authService.updateSignUpDetails(
+                        SignUpPayload(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                          referral: referralController.text.trim(),
+                        ),
+                      );
+
+                      final result = await authService.emailVerify(
+                        emailController.text.trim(),
+                        referralController.text.trim(),
+                        'SIGNUP',
+                      );
+
+                      if (result == true) {
+                        onNext(); // Correctly invoke the function
                       }
                     },
+                    textColor: Colors.white,
+                    color: AppColors.primaryColor.shade500,
                   ),
-                  onSuffixTap: () {
-                    referralController.text =
-                        "REF123"; // Simulate pasting a code
-                  },
-                  prefixIcon: Icons.people_outline,
-                ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // Continue Button
-                FullButton(
-                  isLoading: isLoading,
-                  text: "Continue",
-                  width: double.infinity,
-                  height: 48,
-                  onPressed: () async {
-                    if (emailController.text.trim().isEmpty ||
-                        passwordController.text.trim().isEmpty) {
-                      ToastService().showToast(
-                        NotificationType.info,
-                        message: 'Fill all necessary fields.',
-                      );
-                      return;
-                    }
-                    var box = Hive.box('data');
-                    box.put('email', emailController.text.trim());
-                    box.put('password', passwordController.text.trim());
-                    box.put('referral', referralController.text.trim());
-                    authService.updateSignUpDetails(
-                      SignUpPayload(
-                        email: emailController.text.trim(),
-                        password: passwordController.text.trim(),
-                        referral: referralController.text.trim(),
-                      ),
-                    );
-
-                    final result = await authService.emailVerify(
-                      emailController.text.trim(),
-                      referralController.text.trim(),
-                      'SIGNUP',
-                    );
-
-                    if (result == true) {
-                      onNext(); // Correctly invoke the function
-                    }
-                  },
-                  textColor: Colors.white,
-                  color: AppColors.primaryColor.shade500,
-                ),
-
-                const SizedBox(height: 20),
-
-                // Already have an account?
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                  child: Center(
-                    child: RichText(
-                      text: TextSpan(
-                        text: "Already Have An Account? ",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : AppColors.greyColor.shade700,
+                  // Already have an account?
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
                         ),
-                        children: [
-                          TextSpan(
-                            text: "Log In",
-                            style: TextStyle(
-                                color: AppColors.primaryColor,
-                                fontWeight: FontWeight.bold),
+                      );
+                    },
+                    child: Center(
+                      child: RichText(
+                        text: TextSpan(
+                          text: "Already Have An Account? ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : AppColors.greyColor.shade700,
                           ),
-                        ],
+                          children: [
+                            TextSpan(
+                              text: "Log In",
+                              style: TextStyle(
+                                  color: AppColors.primaryColor,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -681,208 +642,230 @@ class UserDetailsStep extends HookConsumerWidget {
     final authService = ref.read(authenticationControllerProvider.notifier);
     var box = Hive.box('data');
     String? deviceId = box.get('device_id');
+    final formKey = GlobalKey<FormState>();
+
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            decoration: ShapeDecoration(
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade600
-                  : AppColors.whiteColor.shade100,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              decoration: ShapeDecoration(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade600
+                    : AppColors.whiteColor.shade100,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1), // Light shadow color
+                    blurRadius: 8, // Soft shadow effect
+                    spreadRadius: 1, // Spread of the shadow
+                    offset: const Offset(0, 2), // Moves shadow slightly down
+                  ),
+                ],
               ),
-              shadows: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1), // Light shadow color
-                  blurRadius: 8, // Soft shadow effect
-                  spreadRadius: 1, // Spread of the shadow
-                  offset: const Offset(0, 2), // Moves shadow slightly down
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Let's Set Up Your Account",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Let's Set Up Your Account",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Provide the following details to set up your account",
-                  style: TextStyle(
-                    fontSize: 14,
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Provide the following details to set up your account",
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // First Name Field
-                CustomTextField(
-                  controller: firstNameController,
-                  label: "First Name",
-                  hintText: "eg. John",
-                ),
-                const SizedBox(height: 15),
+                  // First Name Field
+                  CustomTextField(
+                    controller: firstNameController,
+                    label: "First Name",
+                    hintText: "eg. John",
+                    validator: (value) =>
+                        Validators.requiredField(value, "first Name"),
+                  ),
+                  const SizedBox(height: 15),
 
-                // Last Name Field
-                CustomTextField(
-                  controller: lastNameController,
-                  label: "Last Name",
-                  hintText: "eg. Doe",
-                ),
-                const SizedBox(height: 15),
+                  // Last Name Field
+                  CustomTextField(
+                    controller: lastNameController,
+                    label: "Last Name",
+                    hintText: "eg. Doe",
+                    validator: (value) => Validators.requiredField(
+                        value, "last Name"), // ✅ CORRECT
+                  ),
+                  const SizedBox(height: 15),
 
-                // Country Dropdown
-                Text("Select Country",
+                  // Country Dropdown
+                  Text("Select Country",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade700,
+                      )),
+                  const SizedBox(height: 8),
+                  const CustomDropdown(),
+
+                  const SizedBox(height: 15),
+
+                  // Phone Number Field with Country Code
+                  Text(
+                    "Phone",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: theme.brightness == Brightness.dark
                           ? Colors.white
                           : AppColors.greyColor.shade700,
-                    )),
-                const SizedBox(height: 8),
-                const CustomDropdown(),
-
-                const SizedBox(height: 15),
-
-                // Phone Number Field with Country Code
-                Text(
-                  "Phone",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : AppColors.greyColor.shade700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                IntlPhoneField(
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                    labelText: "Enter phone number",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  initialCountryCode: "NG",
-                  onChanged: (phone) {
-                    selectedCountry.value = phone.countryCode;
-                  },
-                  disableLengthCheck: true,
-                ),
-                const SizedBox(height: 20),
-
-                // Terms and Conditions
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: "By pressing Sign up securely, you agree to our ",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : AppColors.greyColor.shade700,
-                      height: 16.8 / 12,
                     ),
-                    children: [
-                      TextSpan(
-                        text: "Terms & Conditions",
-                        style: TextStyle(
-                          color: AppColors.primaryColor.shade500,
-                          height: 16.8 / 12,
-                        ),
-                      ),
-                      const TextSpan(text: " and "),
-                      TextSpan(
-                        text: "Privacy Policy",
-                        style: TextStyle(
-                          color: AppColors.primaryColor.shade500,
-                          height: 16.8 / 12,
-                        ),
-                      ),
-                      TextSpan(
-                        text:
-                            ". Digital-only support available 24/7 via the in-app chat. Your data will be securely encrypted with TLS 🔒",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : AppColors.greyColor.shade700,
-                          height: 16.8 / 12,
-                        ),
-                      ),
-                    ],
                   ),
-                ),
-                const SizedBox(height: 20),
+                  const SizedBox(height: 8),
+                  IntlPhoneField(
+                    controller: phoneController,
+                    decoration: InputDecoration(
+                      labelText: "Enter phone number",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    initialCountryCode: "NG",
+                    onChanged: (phone) {
+                      selectedCountry.value = phone.countryCode;
+                    },
+                    disableLengthCheck: true,
+                    validator: (phone) {
+                      return Validators.requiredField(
+                          phone?.number, "Phone number");
+                    },
+                  ),
+                  const SizedBox(height: 20),
 
-                FullButton(
-                  isLoading: ref
-                      .watch(authenticationControllerProvider)
-                      .signUp
-                      .isLoading,
-                  text: "Sign Up",
-                  width: double.infinity,
-                  height: 48,
-                  onPressed: () async {
-                    if (firstNameController.text.trim().isEmpty ||
-                        lastNameController.text.trim().isEmpty ||
-                        phoneController.text.trim().isEmpty) {
-                      ToastService().showToast(
-                        NotificationType.info,
-                        message: 'Fill all necessary fields.',
-                      );
-                      return;
-                    }
-                    var box = Hive.box('data');
-                    final String email = box.get('email');
-                    final String password = box.get('password');
-                    final String referral = box.get('referral');
-                    final String storedToken = box.get('fcm_token');
-                    authService.updateProfileDetails(ProfilePayload(
-                      firstname: firstNameController.text.trim(),
-                      lastname: lastNameController.text.trim(),
-                      phone: phoneController.text.trim(),
-                    ));
-                    final result = await authService.signUp(
-                      SignUpPayload(
-                        email: email,
-                        password: password,
-                        referral: referral,
+                  // Terms and Conditions
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: "By pressing Sign up securely, you agree to our ",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade700,
+                        height: 16.8 / 12,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: "Terms & Conditions",
+                          style: TextStyle(
+                            color: AppColors.primaryColor.shade500,
+                            height: 16.8 / 12,
+                          ),
+                        ),
+                        const TextSpan(text: " and "),
+                        TextSpan(
+                          text: "Privacy Policy",
+                          style: TextStyle(
+                            color: AppColors.primaryColor.shade500,
+                            height: 16.8 / 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ". Digital-only support available 24/7 via the in-app chat. Your data will be securely encrypted with TLS 🔒",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : AppColors.greyColor.shade700,
+                            height: 16.8 / 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .signUp
+                        .isLoading,
+                    text: "Sign Up",
+                    width: double.infinity,
+                    height: 48,
+                    onPressed: () async {
+                      if (!formKey.currentState!.validate()) {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Fill all necessary fields appropriately.',
+                        );
+                        return;
+                      }
+                      var box = Hive.box('data');
+                      final String email = box.get('email');
+                      final String password = box.get('password');
+                      final String referral = box.get('referral');
+                      final String storedToken = box.get('fcm_token');
+                      authService.updateProfileDetails(ProfilePayload(
                         firstname: firstNameController.text.trim(),
                         lastname: lastNameController.text.trim(),
-                        country: 'NG',
                         phone: phoneController.text.trim(),
-                        device: deviceId,
-                        fcmToken: storedToken,
-                      ),
-                    );
-                    if (result == true) {
-                      final localAuth = LocalAuthentication();
-                      final canAuthenticate =
-                          await localAuth.canCheckBiometrics ||
-                              await localAuth.isDeviceSupported();
+                      ));
+                      final result = await authService.signUp(
+                        SignUpPayload(
+                          email: email,
+                          password: password,
+                          referral: referral,
+                          firstname: firstNameController.text.trim(),
+                          lastname: lastNameController.text.trim(),
+                          country: 'NG',
+                          phone: phoneController.text.trim(),
+                          device: deviceId,
+                          fcmToken: storedToken,
+                        ),
+                      );
+                      if (result == true) {
+                        final localAuth = LocalAuthentication();
+                        final canAuthenticate =
+                            await localAuth.canCheckBiometrics ||
+                                await localAuth.isDeviceSupported();
 
-                      if (canAuthenticate) {
-                        try {
-                          final authenticated = await localAuth.authenticate(
-                            localizedReason:
-                                "Authenticate to complete registration",
-                            options: const AuthenticationOptions(
-                                biometricOnly: true),
-                          );
+                        if (canAuthenticate) {
+                          try {
+                            final authenticated = await localAuth.authenticate(
+                              localizedReason:
+                                  "Authenticate to complete registration",
+                              options: const AuthenticationOptions(
+                                  biometricOnly: true),
+                            );
 
-                          var box = Hive.box('data');
-                          box.put('biometric_auth', authenticated);
+                            var box = Hive.box('data');
+                            box.put('biometric_auth', authenticated);
 
-                          if (authenticated) {
+                            if (authenticated) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CreatePinScreen()),
+                              );
+                            }
+                          } catch (e) {
+                            debugPrint("Biometric authentication failed: $e");
+                            var box = Hive.box('data');
+                            box.put('biometric_auth', false);
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -890,8 +873,9 @@ class UserDetailsStep extends HookConsumerWidget {
                                       const CreatePinScreen()),
                             );
                           }
-                        } catch (e) {
-                          debugPrint("Biometric authentication failed: $e");
+                        } else {
+                          debugPrint(
+                              "Biometric authentication is not available on this device.");
                           var box = Hive.box('data');
                           box.put('biometric_auth', false);
 
@@ -901,27 +885,16 @@ class UserDetailsStep extends HookConsumerWidget {
                                 builder: (context) => const CreatePinScreen()),
                           );
                         }
-                      } else {
-                        debugPrint(
-                            "Biometric authentication is not available on this device.");
-                        var box = Hive.box('data');
-                        box.put('biometric_auth', false);
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const CreatePinScreen()),
-                        );
                       }
-                    }
-                  },
-                  textColor: Colors.white,
-                  color: AppColors.primaryColor.shade500,
-                ),
-              ],
+                    },
+                    textColor: Colors.white,
+                    color: AppColors.primaryColor.shade500,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

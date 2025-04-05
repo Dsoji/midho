@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'wallet.dart';
+
 class UserProfileModel {
   String? id;
   String? email;
@@ -15,6 +17,7 @@ class UserProfileModel {
   String? username;
   DateTime? createdAt;
   DateTime? updatedAt;
+  Wallet? wallet;
 
   UserProfileModel({
     this.id,
@@ -31,11 +34,12 @@ class UserProfileModel {
     this.username,
     this.createdAt,
     this.updatedAt,
+    this.wallet,
   });
 
   @override
   String toString() {
-    return 'UserProfileModel(id: $id, email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, country: $country, locked: $locked, pushAlert: $pushAlert, emailAlert: $emailAlert, theme: $theme, biometrics: $biometrics, username: $username, createdAt: $createdAt, updatedAt: $updatedAt, id: $id)';
+    return 'UserProfileModel(id: $id, email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, country: $country, locked: $locked, pushAlert: $pushAlert, emailAlert: $emailAlert, theme: $theme, biometrics: $biometrics, username: $username, createdAt: $createdAt, updatedAt: $updatedAt, id: $id, wallet: $wallet)';
   }
 
   factory UserProfileModel.fromMap(Map<String, dynamic> data) {
@@ -58,6 +62,9 @@ class UserProfileModel {
       updatedAt: data['updatedAt'] == null
           ? null
           : DateTime.parse(data['updatedAt'] as String),
+      wallet: data['wallet'] == null
+          ? null
+          : Wallet.fromMap(data['wallet'] as Map<String, dynamic>),
     );
   }
 
@@ -77,6 +84,7 @@ class UserProfileModel {
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         'id': id,
+        'wallet': wallet?.toMap(),
       };
 
   /// `dart:convert`
@@ -106,6 +114,7 @@ class UserProfileModel {
     String? username,
     DateTime? createdAt,
     DateTime? updatedAt,
+    Wallet? wallet,
   }) {
     return UserProfileModel(
       id: id ?? this.id,
@@ -122,6 +131,7 @@ class UserProfileModel {
       username: username ?? this.username,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      wallet: wallet ?? this.wallet,
     );
   }
 }

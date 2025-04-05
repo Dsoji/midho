@@ -10,6 +10,8 @@ import 'package:mdiho/features/authentication/presentation/registration/presenta
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/toast/toast.dart';
+import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
 import '../../../data/controller/authentication_controller.dart';
@@ -123,7 +125,12 @@ class ForgotPasswordScreen extends HookConsumerWidget {
         if (!didPop && pageIndex.value > 0) {
           goBack();
         } else if (!didPop && pageIndex.value > 0) {
-          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            ),
+          );
         }
       },
       child: Scaffold(
@@ -191,108 +198,93 @@ class EmailPasswordStep extends HookConsumerWidget {
           .hasMatch(email);
     }
 
-    bool isPasswordStrong(String password) {
-      return password.length >= 8 &&
-          RegExp(r'[A-Z]').hasMatch(password) &&
-          RegExp(r'[0-9]').hasMatch(password) &&
-          RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
-    }
-
-    void validatePassword(String password) {
-      if (password.length < 8) {
-        passwordStrength.value = "Weak";
-      } else if (!RegExp(r'[A-Z]').hasMatch(password)) {
-        passwordStrength.value = "Medium";
-      } else if (!RegExp(r'[0-9]').hasMatch(password)) {
-        passwordStrength.value = "Strong";
-      } else {
-        passwordStrength.value = "Very Strong";
-      }
-    }
+    final formKey = GlobalKey<FormState>();
 
     final theme = Theme.of(context);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-          decoration: ShapeDecoration(
-            color: theme.brightness == Brightness.dark
-                ? AppColors.secondaryColor.shade500
-                : AppColors.whiteColor.shade100,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+    return Form(
+      key: formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            decoration: ShapeDecoration(
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : AppColors.whiteColor.shade100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              shadows: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1), // Light shadow color
+                  blurRadius: 8, // Soft shadow effect
+                  spreadRadius: 1, // Spread of the shadow
+                  offset: const Offset(0, 2), // Moves shadow slightly down
+                ),
+              ],
             ),
-            shadows: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1), // Light shadow color
-                blurRadius: 8, // Soft shadow effect
-                spreadRadius: 1, // Spread of the shadow
-                offset: const Offset(0, 2), // Moves shadow slightly down
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Enter your mail to reset Password",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Enter your mail to reset Password",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "We would send a six digit verification code to your email",
-                style: TextStyle(
-                  fontSize: 14,
+                const SizedBox(height: 8),
+                const Text(
+                  "We would send a six digit verification code to your email",
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Email Field
-              CustomTextField(
-                controller: emailController,
-                label: "Email",
-                prefixIcon: Icons.email_outlined, // Optional
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                    isValidEmail(value!) ? null : "Enter a valid email",
-              ),
+                // Email Field
+                CustomTextField(
+                  controller: emailController,
+                  label: "Email",
+                  prefixIcon: Icons.email_outlined, // Optional
+                  keyboardType: TextInputType.emailAddress,
+                  validator: Validators.emailValidator,
+                ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Continue Button
-              FullButton(
-                isLoading: ref
-                    .watch(authenticationControllerProvider)
-                    .emailVerification
-                    .isLoading,
-                text: "Continue",
-                width: double.infinity,
-                height: 48,
-                onPressed: () async {
-                  final result = await authService.emailVerify(
-                    emailController.text.trim(),
-                    referralController.text.trim(),
-                    'RESETPASSWORD',
-                  );
-                  if (result == true) {
-                    await box.put('email', emailController.text.trim());
+                // Continue Button
+                FullButton(
+                  isLoading: ref
+                      .watch(authenticationControllerProvider)
+                      .emailVerification
+                      .isLoading,
+                  text: "Continue",
+                  width: double.infinity,
+                  height: 48,
+                  onPressed: () async {
+                    final result = await authService.emailVerify(
+                      emailController.text.trim(),
+                      referralController.text.trim(),
+                      'RESETPASSWORD',
+                    );
+                    if (result == true) {
+                      await box.put('email', emailController.text.trim());
 
-                    onNext(); // Correctly invoke the function
-                  }
-                },
-                textColor: Colors.white,
-                color: AppColors.primaryColor.shade500,
-              ),
-              const Gap(20),
-            ],
+                      onNext(); // Correctly invoke the function
+                    }
+                  },
+                  textColor: Colors.white,
+                  color: AppColors.primaryColor.shade500,
+                ),
+                const Gap(20),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -454,6 +446,13 @@ class OtpVerificationStep extends HookConsumerWidget {
                 width: double.infinity,
                 height: 48,
                 onPressed: () async {
+                  if (otpController.text.trim().length != 6) {
+                    ToastService().showToast(
+                      NotificationType.info,
+                      message: 'Please enter a complete OTP.',
+                    );
+                    return;
+                  }
                   await box.put('otp', otpController.text.trim());
 
                   onNext();
@@ -483,102 +482,113 @@ class UserDetailsStep extends HookConsumerWidget {
     final passwordController = useTextEditingController();
     final theme = Theme.of(context);
     final authService = ref.read(authenticationControllerProvider.notifier);
+    final formKey = GlobalKey<FormState>();
 
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-          decoration: ShapeDecoration(
-            color: theme.brightness == Brightness.dark
-                ? AppColors.secondaryColor.shade500
-                : AppColors.whiteColor.shade100,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            shadows: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1), // Light shadow color
-                blurRadius: 8, // Soft shadow effect
-                spreadRadius: 1, // Spread of the shadow
-                offset: const Offset(0, 2), // Moves shadow slightly down
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            decoration: ShapeDecoration(
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade500
+                  : AppColors.whiteColor.shade100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ],
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Reset Password",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+              shadows: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1), // Light shadow color
+                  blurRadius: 8, // Soft shadow effect
+                  spreadRadius: 1, // Spread of the shadow
+                  offset: const Offset(0, 2), // Moves shadow slightly down
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Enter your new password below",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 20),
+              ],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Reset Password",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Enter your new password below",
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
 
-              // First Name Field
-              CustomTextField(
-                controller: passwordController,
-                label: "Password",
-                prefixIcon: Icons.lock_outline, // Optional
-                isPassword: true,
-              ),
-              const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildCriteriaIcon(
-                      passwordController.text.length >= 8, "8 characters long"),
-                  _buildCriteriaIcon(
-                      RegExp(r'[A-Z]').hasMatch(passwordController.text),
-                      "Uppercase"),
-                  _buildCriteriaIcon(
-                      RegExp(r'[0-9]').hasMatch(passwordController.text),
-                      "Number"),
-                ],
-              ),
-              const Gap(4),
-              _buildCriteriaIcon(
-                  RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                      .hasMatch(passwordController.text),
-                  "Special character"),
+                // First Name Field
+                CustomTextField(
+                  controller: passwordController,
+                  label: "Password",
+                  prefixIcon: Icons.lock_outline, // Optional
+                  isPassword: true,
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildCriteriaIcon(passwordController.text.length >= 8,
+                        "8 characters long"),
+                    _buildCriteriaIcon(
+                        RegExp(r'[A-Z]').hasMatch(passwordController.text),
+                        "Uppercase"),
+                    _buildCriteriaIcon(
+                        RegExp(r'[0-9]').hasMatch(passwordController.text),
+                        "Number"),
+                  ],
+                ),
+                const Gap(4),
+                _buildCriteriaIcon(
+                    RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                        .hasMatch(passwordController.text),
+                    "Special character"),
 
-              // Last Name Field
-              const SizedBox(height: 20),
+                // Last Name Field
+                const SizedBox(height: 20),
 
-              FullButton(
-                isLoading: ref
-                    .watch(authenticationControllerProvider)
-                    .forgotPassword
-                    .isLoading,
-                text: "Continue",
-                width: double.infinity,
-                height: 48,
-                onPressed: () async {
-                  final String email = box.get('email');
-                  final String code = box.get('otp');
-                  final result = await authService.forgotPassword(
-                    email,
-                    code,
-                    passwordController.text.trim(),
-                  );
-                  if (result == true) {
-                    onFinish();
-                  }
-                },
-                textColor: Colors.white,
-                color: AppColors.primaryColor.shade500,
-              ),
-            ],
+                FullButton(
+                  isLoading: ref
+                      .watch(authenticationControllerProvider)
+                      .forgotPassword
+                      .isLoading,
+                  text: "Continue",
+                  width: double.infinity,
+                  height: 48,
+                  onPressed: () async {
+                    if (!formKey.currentState!.validate()) {
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Fill all necessary fields appropriately.',
+                      );
+                      return;
+                    }
+                    final String email = box.get('email');
+                    final String code = box.get('otp');
+                    final result = await authService.forgotPassword(
+                      email,
+                      code,
+                      passwordController.text.trim(),
+                    );
+                    if (result == true) {
+                      onFinish();
+                    }
+                  },
+                  textColor: Colors.white,
+                  color: AppColors.primaryColor.shade500,
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

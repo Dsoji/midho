@@ -8,9 +8,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
+import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/toast/toast.dart';
+import '../../../common/utils/validator.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_textfield.dart';
 
@@ -24,6 +28,7 @@ class SuggestionScreen extends HookConsumerWidget {
     final suggestionController = useTextEditingController();
     final imageFiles = useState<List<File>>([]);
     final picker = ImagePicker();
+    final profileService = ref.read(profileControllerProvider.notifier);
 
     Future<void> pickImage() async {
       if (imageFiles.value.length >= 2) return; // Enforce max limit of 3
@@ -43,6 +48,8 @@ class SuggestionScreen extends HookConsumerWidget {
       imageFiles.value = updatedList;
     }
 
+    final formKey = GlobalKey<FormState>();
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Suggestion Box",
@@ -50,196 +57,231 @@ class SuggestionScreen extends HookConsumerWidget {
         showTitle: false,
         showAction: false,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "We Value Your Feedback",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const Gap(4),
-            const Text(
-              "Help us improve M-Diho by sharing your suggestions.",
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const Gap(16),
-            Container(
-              decoration: ShapeDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+      body: Form(
+        key: formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "We Value Your Feedback",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomTextField(
-                    controller: titleController,
-                    label: "Title (Optional)",
-                    keyboardType: TextInputType.emailAddress,
+              const Gap(4),
+              const Text(
+                "Help us improve M-Diho by sharing your suggestions.",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const Gap(16),
+              Container(
+                decoration: ShapeDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : AppColors.whiteColor.shade100,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  const Gap(12),
-                  CustomTextField(
-                    controller: suggestionController,
-                    label: "Describe Your Suggestion",
-                    hintText: 'Explain your idea in detail...',
-                    keyboardType: TextInputType.emailAddress,
-                    maxLines: 3,
-                  ),
-                  const Gap(12),
-                  Text(' Attach File (Optional)',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : AppColors.greyColor.shade700,
-                      )),
-                  const Gap(4),
-                  GestureDetector(
-                    onTap: imageFiles.value.length < 3 ? pickImage : null,
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomTextField(
+                      controller: titleController,
+                      label: "Title ",
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) => Validators.minMaxValidator(
+                          value, "suggestion title",
+                          min: 3, max: 100),
+                    ),
+                    const Gap(12),
+                    CustomTextField(
+                      controller: suggestionController,
+                      label: "Describe Your Suggestion",
+                      hintText: 'Explain your idea in detail...',
+                      keyboardType: TextInputType.emailAddress,
+                      maxLines: 3,
+                      validator: (value) => Validators.minMaxValidator(
+                          value, "suggestion",
+                          min: 10, max: 1000),
+                      // ✅ CORRECT
+                    ),
+                    const Gap(12),
+                    Text(' Attach File (Optional)',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                           color: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade400
-                              : AppColors.greyColor.shade200,
+                              ? Colors.white
+                              : AppColors.greyColor.shade700,
+                        )),
+                    const Gap(4),
+                    GestureDetector(
+                      onTap: imageFiles.value.length < 3 ? pickImage : null,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.secondaryColor.shade400
+                                : AppColors.greyColor.shade200,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.transparent
+                              : AppColors.whiteColor.shade50,
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
-                            : AppColors.whiteColor.shade50,
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (imageFiles.value.isEmpty) ...[
-                            SizedBox(
-                              height: 98,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    IconsaxPlusLinear.image,
-                                    size: 24,
-                                    color: theme.brightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Flexible(
-                                    child: Text(
-                                      "Upload screenshots or additional documents \nto support your suggestion",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color:
-                                            theme.brightness == Brightness.dark
-                                                ? Colors.white
-                                                : Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ] else ...[
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: List.generate(
-                                imageFiles.value.length,
-                                (index) => Stack(
-                                  alignment: Alignment.topRight,
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (imageFiles.value.isEmpty) ...[
+                              SizedBox(
+                                height: 98,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.file(
-                                        imageFiles.value[index],
-                                        height: 150,
-                                        width: 100,
-                                        fit: BoxFit.cover,
-                                      ),
+                                    Icon(
+                                      IconsaxPlusLinear.image,
+                                      size: 24,
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
-                                    GestureDetector(
-                                      onTap: () => removeImage(index),
-                                      child: const CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: Colors.red,
-                                        child: Icon(Icons.close,
-                                            color: Colors.white, size: 16),
+                                    const SizedBox(height: 8),
+                                    Flexible(
+                                      child: Text(
+                                        "Upload screenshots or additional documents \nto support your suggestion",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: theme.brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
-                            if (imageFiles.value.length < 2) ...[
-                              GestureDetector(
-                                onTap: pickImage,
-                                child: Container(
-                                  height: 150,
-                                  width: 100,
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 8),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 16),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: theme.brightness == Brightness.dark
-                                          ? Colors.white
-                                          : AppColors.greyColor.shade100,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.transparent,
-                                  ),
-                                  child: const Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                              )
+                            ] else ...[
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: List.generate(
+                                  imageFiles.value.length,
+                                  (index) => Stack(
+                                    alignment: Alignment.topRight,
                                     children: [
-                                      Icon(IconsaxPlusLinear.add_circle,
-                                          size: 20),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.file(
+                                          imageFiles.value[index],
+                                          height: 150,
+                                          width: 100,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => removeImage(index),
+                                        child: const CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Colors.red,
+                                          child: Icon(Icons.close,
+                                              color: Colors.white, size: 16),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ),
+                              if (imageFiles.value.length < 2) ...[
+                                GestureDetector(
+                                  onTap: pickImage,
+                                  child: Container(
+                                    height: 150,
+                                    width: 100,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color:
+                                            theme.brightness == Brightness.dark
+                                                ? Colors.white
+                                                : AppColors.greyColor.shade100,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.transparent,
+                                    ),
+                                    child: const Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(IconsaxPlusLinear.add_circle,
+                                            size: 20),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ]
                             ]
-                          ]
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const Gap(12),
-                  InfoWidget(
-                      theme: theme,
-                      text:
-                          'Be as detailed as possible. The more information you provide, the better we can evaluate your idea.'),
-                  const Gap(24),
-                  FullButton(
-                    text: 'Submit Suggestion',
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () {},
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  )
-                ],
+                    const Gap(12),
+                    InfoWidget(
+                        theme: theme,
+                        text:
+                            'Be as detailed as possible. The more information you provide, the better we can evaluate your idea.'),
+                    const Gap(24),
+                    FullButton(
+                      isLoading: ref
+                          .watch(profileControllerProvider)
+                          .feedBack
+                          .isLoading,
+                      text: 'Submit Suggestion',
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Ensure fields are fileed appropriately.',
+                          );
+                          return;
+                        }
+
+                        final result = await profileService.postFeedBack(
+                          SuggestionPayload(
+                            title: titleController.text.trim(),
+                            content: suggestionController.text.trim(),
+                            files: const [],
+                          ),
+                        );
+                        if (result == true) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      textColor: Colors.white,
+                      color: AppColors.primaryColor.shade500,
+                    )
+                  ],
+                ),
               ),
-            ),
-            const Gap(150),
-          ],
+              const Gap(150),
+            ],
+          ),
         ),
       ),
     );

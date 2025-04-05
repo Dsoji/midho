@@ -108,7 +108,8 @@ class ChangeEmailScreen extends HookConsumerWidget {
                       } else {
                         ToastService().showToast(
                           NotificationType.info,
-                          message: 'Please fill all fields',
+                          message:
+                              'Please Fill all necessary fields appropriately.',
                         );
                       }
                     },

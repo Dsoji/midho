@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/notification/notification_screen.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
@@ -23,6 +24,7 @@ class HomeScreen extends HookConsumerWidget {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(authenticationControllerProvider.notifier).fetchProfile();
+        ref.read(profileControllerProvider.notifier).getFaq();
       });
       return null;
     }, []);
@@ -87,7 +89,7 @@ class HomeScreen extends HookConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome ${userInfo?.firstname} 👋',
+                  'Welcome ${userInfo?.firstname ?? ''} 👋',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -117,22 +119,30 @@ class HomeScreen extends HookConsumerWidget {
             const Gap(24),
           ],
         ),
-        body: const SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            children: [
-              Gap(16),
-              WalletBalanceCard(
-                balance: 9500000,
-              ),
-              Gap(16),
-              QuickActionsGrid(),
-              Gap(16),
-              TransactionCard(),
-              Gap(
-                100,
-              )
-            ],
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              ref
+                  .read(authenticationControllerProvider.notifier)
+                  .fetchProfile();
+              return Future.delayed(const Duration(seconds: 1));
+            },
+            child: const Column(
+              children: [
+                Gap(16),
+                WalletBalanceCard(
+                  balance: 9500000,
+                ),
+                Gap(16),
+                QuickActionsGrid(),
+                Gap(16),
+                TransactionCard(),
+                Gap(
+                  100,
+                )
+              ],
+            ),
           ),
         ),
       ),

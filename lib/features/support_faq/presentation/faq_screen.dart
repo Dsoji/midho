@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_textfield.dart';
+
+final logger = Logger();
 
 @RoutePage()
 class FaqScreen extends HookConsumerWidget {
@@ -16,6 +20,12 @@ class FaqScreen extends HookConsumerWidget {
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
 
+    final faqList = ref
+        .watch(profileControllerProvider)
+        .faq
+        .valueOrNull
+        ?.data; // ✅ Should be success.data    logger.d("FAQ List: $faqList");
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Frequently Asked Questions (FAQ)",
@@ -23,47 +33,58 @@ class FaqScreen extends HookConsumerWidget {
         showTitle: true,
         showAction: false,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomTextField(
-              controller: searchController,
-              hintText: 'Search Provider',
-              isPassword: false,
-              suffixIcon: const Icon(Icons.search),
-              fillColor: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade500
-                  : Colors.white,
-              borderRadius: 12,
-            ),
-            const Gap(16),
-            const FAQItem(
-              title: "Why is my withdrawal delayed?",
-              content:
-                  "Withdrawals are usually processed instantly, but bank network issues can cause delays. If your withdrawal is still pending after 10 minutes, contact support.",
-            ),
-            const FAQItem(
-              title: "How do I sell a gift card?",
-              content: "",
-            ),
-            const FAQItem(
-              title: "What happens if my crypto trade is not approved?",
-              content:
-                  "If your trade is rejected, you will receive a notification with the reason. Common reasons include incorrect transaction details or network confirmation failures.",
-            ),
-            const FAQItem(
-              title: "How do I reset my transaction PIN?",
-              content:
-                  "Go to Profile > Security > Reset PIN. Enter your current PIN and set a new one. If you forgot your PIN, select ‘Forgot PIN’ and follow the instructions.",
-            ),
-            const FAQItem(
-              title: "Why is my bank not available for withdrawal?",
-              content:
-                  "Some banks experience network downtimes that may prevent withdrawals. If your bank is unavailable, try again later or use a different bank.",
-            ),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(profileControllerProvider.notifier).getFaq();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTextField(
+                controller: searchController,
+                hintText: 'Search Provider',
+                isPassword: false,
+                suffixIcon: const Icon(Icons.search),
+                fillColor: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade500
+                    : Colors.white,
+                borderRadius: 12,
+              ),
+              const Gap(16),
+              Expanded(
+                child: faqList != null && faqList.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: faqList.length,
+                        itemBuilder: (context, index) {
+                          final item = faqList[index];
+                          return FAQItem(
+                            title: item.question ?? "No Title",
+                            content: item.answer ?? "No Answer",
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.info_outline,
+                                color: Colors.grey, size: 48),
+                            const SizedBox(height: 8),
+                            Text(
+                              "No FAQs available at the moment.",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -92,9 +113,13 @@ class FAQItem extends StatelessWidget {
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent, // Removes the border
+          dividerColor: Colors.transparent,
+          splashFactory: NoSplash.splashFactory, // 🔥 This disables the ripple
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
         ),
         child: ExpansionTile(
+          enableFeedback: false,
           title: Text(
             title,
             style: const TextStyle(

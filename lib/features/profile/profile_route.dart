@@ -43,11 +43,5 @@ final profileRoutes = AutoRoute(
     AutoRoute(
       page: SupportFaqRoute.page,
     ),
-    AutoRoute(
-      page: LoginRoute.page,
-    ),
-    AutoRoute(
-      page: RegistrationRoute.page,
-    ),
   ],
 );
