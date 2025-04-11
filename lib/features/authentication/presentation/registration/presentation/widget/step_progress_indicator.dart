@@ -31,14 +31,14 @@ class StepProgressIndicator extends StatelessWidget {
         ),
         child: Row(
           children: [
-            if (currentStep > 1) // Show back button only on step 2 and 3
-              GestureDetector(
-                onTap: onBack,
-                child: const Icon(
-                  IconsaxPlusLinear.arrow_left_1,
-                  size: 20,
-                ),
+            // Show back button only on step 2 and 3
+            InkWell(
+              onTap: onBack,
+              child: const Icon(
+                IconsaxPlusLinear.arrow_left_1,
+                size: 20,
               ),
+            ),
             const Gap(33),
             Expanded(
               child: Stack(

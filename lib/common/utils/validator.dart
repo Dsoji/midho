@@ -14,12 +14,7 @@ class Validators {
     if (value == null || value.isEmpty) {
       return "Password is required";
     }
-    if (value.length < 6) {
-      return "Password must be at least 6 characters";
-    }
-    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-      return "Password must contain at least one special character";
-    }
+
     return null;
   }
 

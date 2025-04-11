@@ -57,96 +57,92 @@ class CustomTextField extends HookWidget {
                     : AppColors.greyColor.shade700,
               )),
         const SizedBox(height: 8),
-        SizedBox(
-          height: maxLines == 1 ? 52 : null,
-          child: TextFormField(
-            controller: controller,
-            obscureText: obscureText.value,
-            keyboardType: keyboardType,
-            maxLines: maxLines,
-            maxLength: maxLength,
-            readOnly: readOnly,
-            decoration: InputDecoration(
-              prefixIcon: prefixIcon != null
-                  ? Icon(
-                      prefixIcon,
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText.value,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          maxLength: maxLength,
+          readOnly: readOnly,
+          decoration: InputDecoration(
+            prefixIcon: prefixIcon != null
+                ? Icon(
+                    prefixIcon,
+                    color: Colors.grey,
+                    size: 21,
+                  )
+                : null,
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      obscureText.value
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       color: Colors.grey,
-                      size: 21,
-                    )
-                  : null,
-              suffixIcon: isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        obscureText.value
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      onPressed: () => obscureText.value = !obscureText.value,
-                    )
-                  : (suffixIcon != null
-                      ? GestureDetector(
-                          onTap: onSuffixTap, // Allow suffix tap action
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: suffixIcon,
-                          ),
-                        )
-                      : null),
-              hintText: hintText ?? "Enter $label",
-              hintStyle: const TextStyle(color: Colors.grey),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 12),
-                borderSide: BorderSide(
-                  width: 0.5,
-                  color: theme.brightness == Brightness.light
-                      ? AppColors.greyColor.shade50
-                      : AppColors.secondaryColor.shade400,
-                ),
+                      size: 20,
+                    ),
+                    onPressed: () => obscureText.value = !obscureText.value,
+                  )
+                : (suffixIcon != null
+                    ? GestureDetector(
+                        onTap: onSuffixTap, // Allow suffix tap action
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: suffixIcon,
+                        ),
+                      )
+                    : null),
+            hintText: hintText ?? "Enter $label",
+            hintStyle: const TextStyle(color: Colors.grey),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(borderRadius ?? 12),
+              borderSide: BorderSide(
+                width: 0.5,
+                color: Colors.red.shade100,
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 12),
-                borderSide: BorderSide(
-                  width: 0.5,
-                  color: theme.brightness == Brightness.light
-                      ? AppColors.greyColor.shade50
-                      : AppColors.secondaryColor.shade400,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 12),
-                borderSide: BorderSide(
-                  width: 0.5,
-                  color: theme.brightness == Brightness.light
-                      ? AppColors.greyColor.shade50
-                      : AppColors.secondaryColor.shade400,
-                ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 12),
-                borderSide: BorderSide(
-                  width: 0.5,
-                  color: theme.brightness == Brightness.light
-                      ? AppColors.greyColor.shade50
-                      : AppColors.secondaryColor.shade400,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius ?? 12),
-                borderSide: BorderSide(
-                  width: 0.5,
-                  color: theme.brightness == Brightness.light
-                      ? AppColors.greyColor.shade50
-                      : AppColors.secondaryColor.shade400,
-                ),
-              ),
-              filled: true,
-              fillColor: fillColor ?? Colors.transparent,
-              counterText: "", // Hides maxLength counter
             ),
-            validator: validator,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(borderRadius ?? 12),
+              borderSide: BorderSide(
+                width: 0.5,
+                color: theme.brightness == Brightness.light
+                    ? AppColors.greyColor.shade50
+                    : AppColors.secondaryColor.shade400,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(borderRadius ?? 12),
+              borderSide: BorderSide(
+                width: 0.5,
+                color: theme.brightness == Brightness.light
+                    ? AppColors.greyColor.shade50
+                    : AppColors.secondaryColor.shade400,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(borderRadius ?? 12),
+              borderSide: BorderSide(
+                width: 0.5,
+                color: theme.brightness == Brightness.light
+                    ? AppColors.greyColor.shade50
+                    : AppColors.secondaryColor.shade400,
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(borderRadius ?? 12),
+              borderSide: BorderSide(
+                width: 0.5,
+                color: theme.brightness == Brightness.light
+                    ? AppColors.greyColor.shade50
+                    : AppColors.secondaryColor.shade400,
+              ),
+            ),
+            filled: true,
+            fillColor: fillColor ?? Colors.transparent,
+            counterText: "", // Hides maxLength counter
+            isDense: true, // Makes the input field more compact
           ),
+          validator: validator,
         ),
       ],
     );

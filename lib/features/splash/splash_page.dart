@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
 
 import '../../common/res/app_colors.dart';
 
@@ -37,8 +40,11 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 3));
 
     if (token == null) {
-      context.router.push(
-        const OnboardingRoute(),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const OnboardingScreen(),
+        ),
       );
     } else {
       context.router.push(
@@ -61,13 +67,26 @@ class _SplashScreenState extends State<SplashScreen> {
         decoration: BoxDecoration(
           color: AppColors.primaryColor,
         ),
-        // child: Center(
-        //   child: Image.asset(
-        //     GifAssets.splashLogo,
-        //     // width: 300,
-        //     // height: 200,
-        //   ),
-        // ),
+        child: Stack(
+          children: [
+            Center(
+              child: SvgPicture.asset(
+                SvgAssets.mdiho,
+                width: 140,
+                height: 140,
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: SvgPicture.asset(
+                SvgAssets.mdihobckgrnd,
+                width: double.infinity,
+                height: 400,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

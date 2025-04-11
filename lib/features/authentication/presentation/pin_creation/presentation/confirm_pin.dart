@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../bottomNav/app_router.gr.dart';
 import '../../../data/controller/authentication_controller.dart';
@@ -186,22 +187,30 @@ class ConfirmPinScreen extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
-                    logger.d('clicked');
-                    authService.updateProfileDetails(ProfilePayload(
-                      pin: pin,
-                    ));
+                    if (pin == pinController.text) {
+                      logger.d('clicked');
+                      authService.updateProfileDetails(ProfilePayload(
+                        pin: pin,
+                      ));
 
-                    final profileDetails = ref
-                        .watch(authenticationControllerProvider)
-                        .profilePayload
-                        .valueOrNull;
+                      final profileDetails = ref
+                          .watch(authenticationControllerProvider)
+                          .profilePayload
+                          .valueOrNull;
 
-                    logger.d("hete is profile details : $profileDetails");
+                      logger.d("hete is profile details : $profileDetails");
 
-                    final result =
-                        await authService.updateProfile(profileDetails!);
-                    if (result == true && context.mounted) {
-                      context.router.replace(const NaviBarRoute());
+                      final result =
+                          await authService.updateProfile(profileDetails!);
+                      if (result == true && context.mounted) {
+                        context.router.replace(const NaviBarRoute());
+                      }
+                    } else {
+                      Navigator.pop(context);
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Pin does not match. Try again',
+                      );
                     }
                   },
                   textColor: Colors.white,

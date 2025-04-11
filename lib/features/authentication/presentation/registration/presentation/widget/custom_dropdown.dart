@@ -5,22 +5,32 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import '../../../../../../common/res/app_colors.dart';
 
 class CustomDropdown extends HookWidget {
-  const CustomDropdown({super.key});
+  final ValueChanged<String?> onChanged; // Callback to notify changes
+
+  const CustomDropdown({
+    super.key,
+    required this.onChanged, // Required parameter
+  });
 
   @override
   Widget build(BuildContext context) {
-    final selectedCountry = useState<String?>(null);
     final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField2<String>(
-          value: selectedCountry.value,
+          value: null,
           isExpanded: true,
           decoration: InputDecoration(
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey.shade400),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                width: 0.1,
+                color: theme.brightness == Brightness.light
+                    ? AppColors.greyColor.shade50
+                    : AppColors.secondaryColor.shade400,
+              ),
             ),
             filled: true,
             fillColor: Colors.transparent,
@@ -44,7 +54,9 @@ class CustomDropdown extends HookWidget {
             ),
             elevation: 3, // Adds a floating effect
           ),
-          onChanged: (value) => selectedCountry.value = value!,
+          onChanged: (value) {
+            onChanged(value!); // Notify parent widget of the change
+          },
           items: ["Nigeria"]
               .map((country) => DropdownMenuItem(
                     value: country,

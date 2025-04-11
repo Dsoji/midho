@@ -25,17 +25,20 @@ class PersonalInfoScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final firstNameController = useTextEditingController();
-    final userNameController = useTextEditingController();
-    final lastNameController = useTextEditingController();
-    final phoneController = useTextEditingController();
+
     final selectedCountry = useState("Nigeria");
     final emailController = useTextEditingController();
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final authService = ref.read(authenticationControllerProvider.notifier);
     final profileService = ref.read(profileControllerProvider.notifier);
-
+    final firstNameController =
+        useTextEditingController(text: userInfo?.firstname);
+    final userNameController =
+        useTextEditingController(text: userInfo?.username);
+    final lastNameController =
+        useTextEditingController(text: userInfo?.lastname);
+    final phoneController = useTextEditingController(text: userInfo?.phone);
     var box = Hive.box('data'); // Replace 'data' with your box name
     final formKey = GlobalKey<FormState>();
 

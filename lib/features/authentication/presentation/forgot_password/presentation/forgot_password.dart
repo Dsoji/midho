@@ -564,10 +564,6 @@ class UserDetailsStep extends HookConsumerWidget {
                   height: 48,
                   onPressed: () async {
                     if (!formKey.currentState!.validate()) {
-                      ToastService().showToast(
-                        NotificationType.info,
-                        message: 'Fill all necessary fields appropriately.',
-                      );
                       return;
                     }
                     final String email = box.get('email');

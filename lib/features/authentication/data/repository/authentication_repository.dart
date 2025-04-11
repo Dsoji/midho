@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
+import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../model/payload/profile_payload.dart';
 import '../model/payload/sign_up_payload.dart';
 import '../model/response/user_model/user_model.dart';
@@ -304,6 +305,29 @@ class AuthenticationRepository {
                 message: 'Failed to change password',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to change password'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, UploadResponse>> uploadImage(
+      dynamic payload) async {
+    print(payload);
+    try {
+      final data = await authService.updateImage(payload);
+
+      if (data.isSuccess) {
+        return Success(data.value ?? UploadResponse());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to update image',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to update image'),
               ),
         );
       }

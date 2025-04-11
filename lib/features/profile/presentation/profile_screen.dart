@@ -70,7 +70,7 @@ class ProfileScreen extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${userInfo?.firstname} ${userInfo?.lastname}",
+                            "${userInfo?.firstname ?? ''} ${userInfo?.lastname ?? ''}",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class ProfileScreen extends HookConsumerWidget {
                             ),
                           ),
                           Text(
-                            "${userInfo?.email}",
+                            userInfo?.email ?? '',
                             style: const TextStyle(
                                 color: Colors.grey, fontSize: 14),
                           ),
@@ -114,7 +114,7 @@ class ProfileScreen extends HookConsumerWidget {
                   "Sign Out",
                   context,
                   () async {
-                    await box.clear().then((_) {
+                    await box.delete('accessToken').then((_) {
                       context.router.replaceAll([const OnboardingRoute()]);
                     });
                   },

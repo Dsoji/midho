@@ -20,7 +20,7 @@ class ProfilePayload extends MapView<String, dynamic> {
           'phone': phone,
           'emailAlert': emailAlert,
           'pushAlert': pushAlert,
-          'biometric': biometric,
+          'biometrics': biometric,
           'theme': theme,
         });
 }

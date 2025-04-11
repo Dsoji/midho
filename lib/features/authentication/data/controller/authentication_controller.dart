@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 import 'package:mdiho/features/authentication/data/model/payload/sign_up_payload.dart';
 import 'package:mdiho/features/authentication/data/model/response/user_model/user_model.dart';
 
+import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../repository/authentication_repository.dart';
 import '../state/authentication_state.dart';
 
@@ -330,6 +335,44 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
       (success) {
         state = state.copyWith(
           resetPin: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> uploadMultipleFiles(List<File> files) async {
+    state = state.copyWith(imageUpload: const AsyncValue.loading());
+
+    final formData = FormData();
+
+    for (var file in files) {
+      final fileName = file.path.split('/').last;
+
+      formData.files.add(
+        MapEntry(
+          "file", // 👈 This must match what the backend expects
+          await MultipartFile.fromFile(
+            file.path,
+            filename: fileName,
+            contentType: MediaType('image', fileName.split('.').last),
+          ),
+        ),
+      );
+    }
+
+    final result = await _authenticationRepository.uploadImage(formData);
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          imageUpload: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          imageUpload: AsyncValue.data(success ?? UploadResponse()),
         );
         return true;
       },

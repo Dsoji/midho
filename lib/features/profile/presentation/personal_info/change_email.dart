@@ -96,11 +96,6 @@ class ChangeEmailScreen extends HookConsumerWidget {
                       height: 48,
                       onPressed: () async {
                         if (!formKey.currentState!.validate()) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message:
-                                'Fill all necessary fields appropriately..',
-                          );
                           return;
                         }
                         if (emailController.text.isNotEmpty) {
@@ -122,8 +117,7 @@ class ChangeEmailScreen extends HookConsumerWidget {
                         } else {
                           ToastService().showToast(
                             NotificationType.info,
-                            message:
-                                'Please Fill all necessary fields appropriately.',
+                            message: 'Please Fill all necessary fields.',
                           );
                         }
                       },

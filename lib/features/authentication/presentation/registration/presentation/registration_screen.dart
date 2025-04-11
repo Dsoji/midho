@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/common/utils/validator.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
@@ -122,6 +123,8 @@ class RegistrationScreen extends HookConsumerWidget {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
+      } else if (pageIndex.value == 0) {
+        Navigator.pop(context);
       }
     }
 
@@ -176,7 +179,7 @@ class RegistrationScreen extends HookConsumerWidget {
           title: StepProgressIndicator(
             currentStep: pageIndex.value + 1,
             totalSteps: 3,
-            onBack: pageIndex.value > 0 ? goBack : null,
+            onBack: goBack,
           ),
         ),
         body: SafeArea(
@@ -338,10 +341,6 @@ class EmailPasswordStep extends HookConsumerWidget {
                     height: 48,
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message: 'Fill all necessary fields appropriately.',
-                        );
                         return;
                       }
                       var box = Hive.box('data');
@@ -627,6 +626,8 @@ class OtpVerificationStep extends HookConsumerWidget {
   }
 }
 
+final logger = Logger();
+
 class UserDetailsStep extends HookConsumerWidget {
   final VoidCallback onFinish;
 
@@ -643,6 +644,8 @@ class UserDetailsStep extends HookConsumerWidget {
     var box = Hive.box('data');
     String? deviceId = box.get('device_id');
     final formKey = GlobalKey<FormState>();
+    final country = useState('');
+    String formattedPhoneNumber = '';
 
     return SingleChildScrollView(
       child: Form(
@@ -693,7 +696,7 @@ class UserDetailsStep extends HookConsumerWidget {
                     label: "First Name",
                     hintText: "eg. John",
                     validator: (value) =>
-                        Validators.requiredField(value, "first Name"),
+                        Validators.requiredField(value, "First name"),
                   ),
                   const SizedBox(height: 15),
 
@@ -703,7 +706,7 @@ class UserDetailsStep extends HookConsumerWidget {
                     label: "Last Name",
                     hintText: "eg. Doe",
                     validator: (value) => Validators.requiredField(
-                        value, "last Name"), // ✅ CORRECT
+                        value, "Last name"), // ✅ CORRECT
                   ),
                   const SizedBox(height: 15),
 
@@ -717,7 +720,12 @@ class UserDetailsStep extends HookConsumerWidget {
                             : AppColors.greyColor.shade700,
                       )),
                   const SizedBox(height: 8),
-                  const CustomDropdown(),
+                  CustomDropdown(
+                    onChanged: (value) {
+                      country.value = value!;
+                      print(country.value);
+                    },
+                  ),
 
                   const SizedBox(height: 15),
 
@@ -738,16 +746,51 @@ class UserDetailsStep extends HookConsumerWidget {
                     decoration: InputDecoration(
                       labelText: "Enter phone number",
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          width: 0.5,
+                          color: theme.brightness == Brightness.light
+                              ? AppColors.greyColor.shade50
+                              : AppColors.secondaryColor.shade400,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          width: 0.5,
+                          color: Colors.red.shade100,
+                        ),
+                      ),
                     ),
                     initialCountryCode: "NG",
                     onChanged: (phone) {
                       selectedCountry.value = phone.countryCode;
+
+                      // Keep the phone number as entered by the user in the controller
+                      String enteredPhone = phone.number;
+
+                      // If the phone number starts with '0', replace it with the country code
+                      if (enteredPhone.startsWith('0')) {
+                        enteredPhone =
+                            enteredPhone.replaceFirst('0', phone.countryCode);
+                      } else {
+                        // If the number doesn't start with '0', prepend the country code
+                        enteredPhone = phone.countryCode + enteredPhone;
+                      }
+
+                      // Store the final formatted phone number without affecting the text field
+                      formattedPhoneNumber = enteredPhone;
                     },
                     disableLengthCheck: true,
                     validator: (phone) {
-                      return Validators.requiredField(
-                          phone?.number, "Phone number");
+                      if (phone == null || phone.number.isEmpty) {
+                        return 'Phone number is required'; // Custom validation message
+                      }
+                      // Optionally check if the country code and phone number are valid
+                      if (phone.number.length < 10) {
+                        return 'Please enter a valid phone number';
+                      }
+                      return null; // If phone is valid, return null
                     },
                   ),
                   const SizedBox(height: 20),
@@ -806,54 +849,99 @@ class UserDetailsStep extends HookConsumerWidget {
                     height: 48,
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message: 'Fill all necessary fields appropriately.',
-                        );
                         return;
                       }
-                      var box = Hive.box('data');
-                      final String email = box.get('email');
-                      final String password = box.get('password');
-                      final String referral = box.get('referral');
-                      final String storedToken = box.get('fcm_token');
-                      authService.updateProfileDetails(ProfilePayload(
-                        firstname: firstNameController.text.trim(),
-                        lastname: lastNameController.text.trim(),
-                        phone: phoneController.text.trim(),
-                      ));
-                      final result = await authService.signUp(
-                        SignUpPayload(
-                          email: email,
-                          password: password,
-                          referral: referral,
-                          firstname: firstNameController.text.trim(),
-                          lastname: lastNameController.text.trim(),
-                          country: 'NG',
-                          phone: phoneController.text.trim(),
-                          device: deviceId,
-                          fcmToken: storedToken,
-                        ),
-                      );
-                      if (result == true) {
-                        final localAuth = LocalAuthentication();
-                        final canAuthenticate =
-                            await localAuth.canCheckBiometrics ||
-                                await localAuth.isDeviceSupported();
+                      if (country.value != '') {
+                        if (phoneController.text.isNotEmpty) {
+                          var box = Hive.box('data');
+                          final String email = box.get('email');
+                          final String password = box.get('password');
+                          final String referral = box.get('referral');
+                          final String storedToken = box.get('fcm_token');
+                          logger.d(email);
+                          logger.d(password);
+                          logger.d(referral);
+                          logger.d(storedToken);
+                          authService.updateProfileDetails(ProfilePayload(
+                            firstname: firstNameController.text.trim(),
+                            lastname: lastNameController.text.trim(),
+                            phone: phoneController.text.trim(),
+                          ));
+                          final result = await authService.signUp(
+                            SignUpPayload(
+                              email: email,
+                              password: password,
+                              referral: referral,
+                              firstname: firstNameController.text.trim(),
+                              lastname: lastNameController.text.trim(),
+                              country: 'NG',
+                              phone: formattedPhoneNumber,
+                              device: deviceId,
+                              fcmToken: storedToken,
+                            ),
+                          );
+                          if (result == true) {
+                            final localAuth = LocalAuthentication();
+                            final canAuthenticate =
+                                await localAuth.canCheckBiometrics ||
+                                    await localAuth.isDeviceSupported();
 
-                        if (canAuthenticate) {
-                          try {
-                            final authenticated = await localAuth.authenticate(
-                              localizedReason:
-                                  "Authenticate to complete registration",
-                              options: const AuthenticationOptions(
-                                  biometricOnly: true),
-                            );
+                            if (canAuthenticate) {
+                              final availableBiometrics =
+                                  await localAuth.getAvailableBiometrics();
+                              if (availableBiometrics.isNotEmpty) {
+                                try {
+                                  final authenticated =
+                                      await localAuth.authenticate(
+                                    localizedReason:
+                                        "Authenticate to complete registration",
+                                    options: const AuthenticationOptions(
+                                        biometricOnly: true),
+                                  );
 
-                            var box = Hive.box('data');
-                            box.put('biometric_auth', authenticated);
+                                  var box = Hive.box('data');
+                                  box.put('biometric_auth', authenticated);
 
-                            if (authenticated) {
+                                  if (authenticated) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CreatePinScreen()),
+                                    );
+                                  }
+                                } catch (e) {
+                                  debugPrint(
+                                      "Biometric authentication failed: $e");
+                                  var box = Hive.box('data');
+                                  box.put('biometric_auth', false);
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CreatePinScreen()),
+                                  );
+                                }
+                              } else {
+                                debugPrint(
+                                    "Biometric authentication is not available on this device.");
+                                var box = Hive.box('data');
+                                box.put('biometric_auth', false);
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CreatePinScreen()),
+                                );
+                              }
+                            } else {
+                              debugPrint(
+                                  "Biometric authentication is not available on this device.");
+                              var box = Hive.box('data');
+                              box.put('biometric_auth', false);
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -861,30 +949,18 @@ class UserDetailsStep extends HookConsumerWidget {
                                         const CreatePinScreen()),
                               );
                             }
-                          } catch (e) {
-                            debugPrint("Biometric authentication failed: $e");
-                            var box = Hive.box('data');
-                            box.put('biometric_auth', false);
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CreatePinScreen()),
-                            );
                           }
                         } else {
-                          debugPrint(
-                              "Biometric authentication is not available on this device.");
-                          var box = Hive.box('data');
-                          box.put('biometric_auth', false);
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CreatePinScreen()),
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Fill all fields',
                           );
                         }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Select a country',
+                        );
                       }
                     },
                     textColor: Colors.white,

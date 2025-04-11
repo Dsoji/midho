@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/features/authentication/presentation/forgot_password/presentation/forgot_password.dart';
 import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
 
 import '../../../../../common/res/app_colors.dart';
-import '../../../../../common/toast/toast.dart';
 import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
@@ -26,33 +26,8 @@ class LoginScreen extends HookConsumerWidget {
     final authentication = ref.read(authenticationControllerProvider.notifier);
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
-    final referralController = useTextEditingController();
-    final obscurePassword = useState(true);
+
     final passwordStrength = useState("Weak");
-
-    bool isValidEmail(String email) {
-      return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-          .hasMatch(email);
-    }
-
-    bool isPasswordStrong(String password) {
-      return password.length >= 8 &&
-          RegExp(r'[A-Z]').hasMatch(password) &&
-          RegExp(r'[0-9]').hasMatch(password) &&
-          RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
-    }
-
-    void validatePassword(String password) {
-      if (password.length < 8) {
-        passwordStrength.value = "Weak";
-      } else if (!RegExp(r'[A-Z]').hasMatch(password)) {
-        passwordStrength.value = "Medium";
-      } else if (!RegExp(r'[0-9]').hasMatch(password)) {
-        passwordStrength.value = "Strong";
-      } else {
-        passwordStrength.value = "Very Strong";
-      }
-    }
 
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();
@@ -73,6 +48,15 @@ class LoginScreen extends HookConsumerWidget {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           automaticallyImplyLeading: false,
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              IconsaxPlusLinear.arrow_left_1,
+              size: 20,
+            ),
+          ),
         ),
         body: SingleChildScrollView(
           child: Form(
@@ -134,7 +118,7 @@ class LoginScreen extends HookConsumerWidget {
                       CustomTextField(
                         controller: passwordController,
                         label: "Password",
-                        prefixIcon: Icons.lock_outline, // Optional
+                        prefixIcon: IconsaxPlusLinear.lock, // Optional
                         isPassword: true,
                         validator: Validators.passwordValidator,
                       ),
@@ -171,11 +155,6 @@ class LoginScreen extends HookConsumerWidget {
                         height: 48,
                         onPressed: () async {
                           if (!formKey.currentState!.validate()) {
-                            ToastService().showToast(
-                              NotificationType.info,
-                              message:
-                                  'Fill all necessary fields appropriately..',
-                            );
                             return;
                           }
                           final result = await authentication.signIn(

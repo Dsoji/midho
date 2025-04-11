@@ -1,15 +1,18 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
 
 import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
+import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../model/payload/profile_payload.dart';
 import '../model/payload/sign_up_payload.dart';
 import '../model/response/user_model/user_model.dart';
 
+final logger = Logger();
 final authenticationServiceProvider = Provider<AuthenticationService>((ref) {
   final dioApiClient = ref.watch(dioApiClientProvider);
   final apiRequestHelper = ref.watch(apiRequestHelperProvider);
@@ -22,6 +25,7 @@ final authenticationServiceProvider = Provider<AuthenticationService>((ref) {
 var box = Hive.box('data');
 String? deviceId = box.get('device_id');
 String storedToken = box.get('fcm_token');
+String? accessToken = box.get('accessToken');
 
 class AuthenticationService {
   final IApiClient apiClient;
@@ -251,7 +255,6 @@ class AuthenticationService {
     required String code,
     required String pin,
   }) async {
-    final String accessToken = await box.get('accessToken');
     return await apiRequestHelper.handleApiRequest<String>(
       () => apiClient.post(
         'user/auth/resetPin',
@@ -268,6 +271,23 @@ class AuthenticationService {
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
       showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<UploadResponse>> updateImage(dynamic data) async {
+    return await apiRequestHelper.handleApiRequest<UploadResponse>(
+      () => apiClient.post(
+        'mediaUpload',
+        data: data,
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        logger.d(data);
+        return UploadResponse.fromMap(data);
+      },
+      showErrorToast: true,
     );
   }
 }

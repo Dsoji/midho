@@ -7,7 +7,6 @@ import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../../common/toast/toast.dart';
 import '../../../../common/utils/validator.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
@@ -108,10 +107,6 @@ class ChangeUsernameScreen extends HookConsumerWidget {
                       height: 48,
                       onPressed: () async {
                         if (!formKey.currentState!.validate()) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Fill all necessary fields appropriately.',
-                          );
                           return;
                         }
 

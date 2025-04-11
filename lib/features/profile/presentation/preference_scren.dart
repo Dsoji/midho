@@ -22,17 +22,18 @@ class PreferenceScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final selectedIndex = useState(0);
     final themeNotifier =
         ref.watch(themeNotifierProvider); // ✅ Watch ThemeNotifier
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final authService = ref.read(authenticationControllerProvider.notifier);
     final profileService = ref.read(profileControllerProvider.notifier);
-
+    final selectedIndex =
+        useState(theme.brightness == Brightness.light ? 0 : 1);
     final pushEnabled = useState(userInfo?.pushAlert);
     final emailEnabled = useState(userInfo?.emailAlert);
-    final themeAlert = useState('');
+    final themeAlert =
+        useState(theme.brightness == Brightness.light ? 'LIGHT' : 'DARK');
     print(pushEnabled.value);
     return Scaffold(
       appBar: const CustomAppBar(
