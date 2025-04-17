@@ -177,10 +177,12 @@ class ActionButton extends StatelessWidget {
             action.label,
             style: TextStyle(
               fontSize: 10,
+              fontWeight: FontWeight.w400,
+              height: 1.4, // line-height (140%)
+              letterSpacing: -0.2,
               color: theme.brightness == Brightness.dark
                   ? Colors.white
                   : Colors.black,
-              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           ),

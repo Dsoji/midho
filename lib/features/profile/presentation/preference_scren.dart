@@ -8,8 +8,8 @@ import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
-import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
+import '../../../common/theme_notifier.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
@@ -22,18 +22,24 @@ class PreferenceScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final themeNotifier =
-        ref.watch(themeNotifierProvider); // ✅ Watch ThemeNotifier
+    final themeNotifier = ref.watch(themeProvider); // ✅ Watch ThemeNotifier
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final authService = ref.read(authenticationControllerProvider.notifier);
     final profileService = ref.read(profileControllerProvider.notifier);
     final selectedIndex =
         useState(theme.brightness == Brightness.light ? 0 : 1);
-    final pushEnabled = useState(userInfo?.pushAlert);
-    final emailEnabled = useState(userInfo?.emailAlert);
+    final pushEnabled = useState(userInfo?.pushAlert ?? false);
+    final emailEnabled = useState(userInfo?.emailAlert ?? false);
     final themeAlert =
         useState(theme.brightness == Brightness.light ? 'LIGHT' : 'DARK');
+
+    useEffect(() {
+      // Set the selected index and theme alert when themeMode changes.
+      selectedIndex.value = themeNotifier == ThemeMode.light ? 0 : 1;
+      themeAlert.value = themeNotifier == ThemeMode.light ? 'LIGHT' : 'DARK';
+      return null;
+    }, [themeNotifier]);
     print(pushEnabled.value);
     return Scaffold(
       appBar: const CustomAppBar(
@@ -140,11 +146,12 @@ class PreferenceScreen extends HookConsumerWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      // Update the selectedIndex and toggle the theme using Riverpod.
                       selectedIndex.value = 0;
-                      ref
-                          .read(themeNotifierProvider)
-                          .toggleTheme(ThemeMode.light);
-                      themeAlert.value = 'LIGHT';
+                      ref.read(themeProvider.notifier).setLightTheme();
+
+                      themeAlert.value =
+                          'LIGHT'; // Optional, if you want to track the theme mode
                     },
                     child: Container(
                       height: 118,
@@ -185,11 +192,12 @@ class PreferenceScreen extends HookConsumerWidget {
                   const Gap(26),
                   GestureDetector(
                     onTap: () {
+                      // Update the selectedIndex and toggle the theme using Riverpod.
                       selectedIndex.value = 1;
-                      ref
-                          .read(themeNotifierProvider)
-                          .toggleTheme(ThemeMode.dark);
-                      themeAlert.value = 'DARK';
+                      ref.read(themeProvider.notifier).setDarkTheme();
+
+                      themeAlert.value =
+                          'DARK'; // Optional, if you want to track the theme mode
                     },
                     child: Container(
                       height: 118,

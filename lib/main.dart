@@ -9,6 +9,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/common/theme_notifier.dart';
 import 'package:mdiho/common/utils/locator.dart';
 import 'package:mdiho/features/bottomNav/app_router.dart';
 import 'package:mdiho/firebase_options.dart';
@@ -46,7 +47,7 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.watch(themeNotifierProvider);
+    final themeNotifier = ref.watch(themeProvider);
     ToastService().initialize(toastKey); // ✅ Initialize once
 
     SystemChrome.setSystemUIOverlayStyle(
@@ -67,7 +68,7 @@ class MyApp extends HookConsumerWidget {
           child: child!,
         ),
         debugShowCheckedModeBanner: false,
-        themeMode: themeNotifier.themeMode,
+        themeMode: themeNotifier,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         home: ToastWrapper(

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'res/app_colors.dart';
 
@@ -83,27 +81,3 @@ class CustomColors extends ThemeExtension<CustomColors> {
     );
   }
 }
-
-class ThemeNotifier extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.dark;
-  final Box _box = Hive.box('data');
-
-  ThemeNotifier() {
-    _themeMode = _box.get('themeMode', defaultValue: 'dark') == 'light'
-        ? ThemeMode.light
-        : ThemeMode.dark;
-  }
-
-  ThemeMode get themeMode => _themeMode;
-
-  void toggleTheme(ThemeMode mode) {
-    _themeMode = mode;
-    _box.put('themeMode', mode == ThemeMode.dark ? 'dark' : 'light');
-    notifyListeners();
-  }
-}
-
-// Create a provider for ThemeNotifier
-final themeNotifierProvider = ChangeNotifierProvider<ThemeNotifier>((ref) {
-  return ThemeNotifier();
-});

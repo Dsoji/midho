@@ -5,11 +5,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/notification/notification_screen.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
-import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
@@ -25,6 +25,7 @@ class HomeScreen extends HookConsumerWidget {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(authenticationControllerProvider.notifier).fetchProfile();
+        ref.read(giftCardControllerProvider.notifier).getGiftCards();
         ref.read(profileControllerProvider.notifier).getFaq();
       });
       return null;
@@ -35,11 +36,11 @@ class HomeScreen extends HookConsumerWidget {
     DateTime? lastBackPressTime;
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
-    if (userInfo?.theme == 'LIGHT') {
-      ref.read(themeNotifierProvider).toggleTheme(ThemeMode.light);
-    } else if (userInfo?.theme == 'DARK') {
-      ref.read(themeNotifierProvider).toggleTheme(ThemeMode.dark);
-    }
+    // if (userInfo?.theme == 'LIGHT') {
+    //   ref.read(themeProvider.notifier).setLightTheme();
+    // } else if (userInfo?.theme == 'DARK') {
+    //   ref.read(themeProvider.notifier).setDarkTheme();
+    // }
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) async {
