@@ -1,9 +1,9 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../model/response/user_model/user_model.dart';
+import '../model/response/gift_card_model/gift_card_model.dart';
 
 class GiftCardState {
-  final AsyncValue<UserModel> giftCards;
+  final AsyncValue<GiftCardModel> giftCards;
 
   const GiftCardState({
     required this.giftCards,
@@ -11,12 +11,12 @@ class GiftCardState {
 
   factory GiftCardState.initial() {
     return GiftCardState(
-      giftCards: AsyncValue.data(UserModel()),
+      giftCards: AsyncValue.data(GiftCardModel()),
     );
   }
 
   GiftCardState copyWith({
-    AsyncValue<UserModel>? giftCards,
+    AsyncValue<GiftCardModel>? giftCards,
   }) {
     return GiftCardState(
       giftCards: giftCards ?? this.giftCards,

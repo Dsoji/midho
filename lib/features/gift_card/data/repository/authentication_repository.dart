@@ -2,7 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
-import '../model/response/user_model/user_model.dart';
+import '../model/response/gift_card_model/gift_card_model.dart';
 import '../service/gift_card_service.dart';
 
 final giftCardRepositoryProvider = Provider((ref) {
@@ -19,12 +19,12 @@ class GiftCardRepository {
 
   final GiftCardService giftService;
 
-  Future<Result<FailureHandler, UserModel>> getGiftCardCategories() async {
+  Future<Result<FailureHandler, GiftCardModel>> getGiftCardCategories() async {
     try {
       final data = await giftService.getCategories();
 
       if (data.isSuccess) {
-        return Success(data.value ?? UserModel());
+        return Success(data.value ?? GiftCardModel());
       } else {
         return Error(
           data.error ??

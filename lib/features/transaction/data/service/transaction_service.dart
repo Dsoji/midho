@@ -1,17 +1,17 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
 import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
-import '../model/response/gift_card_model/gift_card_model.dart';
 
 final logger = Logger();
-final giftCardServiceProvider = Provider<GiftCardService>((ref) {
+final transactionServiceProvider = Provider<TransactionService>((ref) {
   final dioApiClient = ref.watch(dioApiClientProvider);
   final apiRequestHelper = ref.watch(apiRequestHelperProvider);
-  return GiftCardService(
+  return TransactionService(
     apiClient: dioApiClient,
     apiRequestHelper: apiRequestHelper,
   );
@@ -22,16 +22,16 @@ String? deviceId = box.get('device_id');
 String storedToken = box.get('fcm_token');
 String? accessToken = box.get('accessToken');
 
-class GiftCardService {
+class TransactionService {
   final IApiClient apiClient;
   final ApiRequestHelper apiRequestHelper;
 
-  GiftCardService({
+  TransactionService({
     required this.apiClient,
     required this.apiRequestHelper,
   });
 
-  Future<ResultValue<GiftCardModel>> getCategories() async {
+  Future<ResultValue<TransactionHistory>> getTransactions() async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.get(
         'categories',
@@ -47,7 +47,7 @@ class GiftCardService {
         var box = Hive.box('data');
         box.put('accessToken', token);
 
-        return GiftCardModel.fromMap(data);
+        return TransactionHistory.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: true,

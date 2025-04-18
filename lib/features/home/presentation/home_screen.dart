@@ -9,6 +9,7 @@ import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.da
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/notification/notification_screen.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
+import 'package:mdiho/features/transaction/data/controller/gift_card_controller.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
@@ -27,6 +28,7 @@ class HomeScreen extends HookConsumerWidget {
         ref.read(authenticationControllerProvider.notifier).fetchProfile();
         ref.read(giftCardControllerProvider.notifier).getGiftCards();
         ref.read(profileControllerProvider.notifier).getFaq();
+        ref.read(transactionControllerProvider.notifier).getTransactions();
       });
       return null;
     }, []);

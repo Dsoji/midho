@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
-import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../data/model/response/gift_card_model/datum.dart';
 
 @RoutePage()
 class GiftCardScreen extends HookConsumerWidget {
@@ -17,6 +17,8 @@ class GiftCardScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
+    final giftCards =
+        ref.watch(giftCardControllerProvider).giftCards.valueOrNull?.data;
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -75,56 +77,59 @@ class GiftCard {
   GiftCard({required this.image, required this.name, required this.desc});
 }
 
-class GiftCardGrid extends HookWidget {
+class GiftCardGrid extends HookConsumerWidget {
   const GiftCardGrid({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    // Define the list inside the widget using useState
-    final giftCards = useState<List<GiftCard>>([
-      GiftCard(
-          image: PlaceholderAssets.steam, name: 'STEAM', desc: 'Gift Card'),
-      GiftCard(
-          image: PlaceholderAssets.amazon, name: 'Amazon', desc: 'Gift Card'),
-      GiftCard(
-          image: PlaceholderAssets.apple, name: 'iTunes', desc: 'Gift Card'),
-      GiftCard(
-          image: PlaceholderAssets.google,
-          name: 'Google Play',
-          desc: 'Gift Card'),
-      GiftCard(
-          image: PlaceholderAssets.walmart, name: 'Walmart', desc: 'Gift Card'),
-      GiftCard(image: PlaceholderAssets.visa, name: 'Visa', desc: 'Gift Card'),
-    ]);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final giftCards =
+        ref.watch(giftCardControllerProvider).giftCards.valueOrNull?.data;
+    print(giftCards);
 
-    return GridView.builder(
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // 2 columns
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1,
-      ),
-      itemCount: giftCards.value.length,
-      itemBuilder: (context, index) {
-        final card = giftCards.value[index];
-        return GestureDetector(
-          onTap: () {
-            context.router.push(
-              EnterCardDetailsRoute(
-                giftCard: giftCards.value[index],
-              ),
-            );
-          },
-          child: GiftCardItem(giftCard: card),
-        );
-      },
-    );
+    return giftCards != null && giftCards.isNotEmpty
+        ? GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1,
+            ),
+            itemCount: giftCards.length,
+            itemBuilder: (context, index) {
+              final card = giftCards[index];
+              return GestureDetector(
+                onTap: () {
+                  // context.router.push(
+                  //   EnterCardDetailsRoute(giftCard: card),
+                  // );
+                },
+                child: GiftCardItem(giftCard: card),
+              );
+            },
+          )
+        : Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Gap(52),
+                const Icon(Icons.info_outline, color: Colors.grey, size: 48),
+                const SizedBox(height: 8),
+                Text(
+                  "No gift cards available at the moment.",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 }
 
 class GiftCardItem extends StatelessWidget {
-  final GiftCard giftCard;
+  final Datum giftCard;
 
   const GiftCardItem({super.key, required this.giftCard});
 
@@ -150,21 +155,21 @@ class GiftCardItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                giftCard.image,
+              Image.network(
+                giftCard.icon ?? 'assets/default_icon.png',
                 height: 28,
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 10),
               Text(
-                giftCard.name,
+                giftCard.name ?? '',
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 5),
               Text(
-                giftCard.desc,
+                'Gift Card',
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                 textAlign: TextAlign.center,
               ),

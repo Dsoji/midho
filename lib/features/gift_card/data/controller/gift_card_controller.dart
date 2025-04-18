@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/gift_card/data/model/response/gift_card_model/gift_card_model.dart';
 
 import '../repository/authentication_repository.dart';
 import '../state/gift_card_state.dart';
@@ -39,10 +40,9 @@ class GiftCardController extends StateNotifier<GiftCardState> {
         return false;
       },
       (success) {
-        // state = state.copyWith(
-        //   login: AsyncValue.data(result.getSuccess() ?? UserModel()),
-        //   status: AuthenticationStatus.loginSuccessful,
-        // );
+        state = state.copyWith(
+          giftCards: AsyncValue.data(result.getSuccess() ?? GiftCardModel()),
+        );
         return true;
       },
     );
