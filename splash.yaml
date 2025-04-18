@@ -1,0 +1,8 @@
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+
+  color: "#F55825"
+  image: "assets/placeholders/mdiho_logo.png"
+  branding: "assets/placeholders/m_diho.png"

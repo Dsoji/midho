@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
@@ -32,7 +33,9 @@ class HomeScreen extends HookConsumerWidget {
       });
       return null;
     }, []);
-
+    var box = Hive.box('data'); // No need to reopen it
+    final token = box.get('accessToken');
+    print('here is token:::::::::::::::::::::::::::::::::: $token');
     final theme = Theme.of(context);
     int backPressCounter = 0;
     DateTime? lastBackPressTime;
@@ -128,16 +131,14 @@ class HomeScreen extends HookConsumerWidget {
             const Gap(24),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              ref
-                  .read(authenticationControllerProvider.notifier)
-                  .fetchProfile();
-              return Future.delayed(const Duration(seconds: 1));
-            },
-            child: const Column(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.read(authenticationControllerProvider.notifier).fetchProfile();
+            return Future.delayed(const Duration(seconds: 1));
+          },
+          child: const SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Column(
               children: [
                 Gap(16),
                 WalletBalanceCard(

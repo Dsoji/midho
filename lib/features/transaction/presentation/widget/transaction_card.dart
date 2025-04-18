@@ -2,26 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
-import 'package:mdiho/features/transaction/presentation/transaction_details.dart';
+import 'package:mdiho/common/utils/date_utils.dart';
+import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../transaction_details.dart';
 
 class TransactionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String date;
-  final double amount;
-  final String status;
-  final Color statusColor;
+  final TransactionData transactions;
 
   const TransactionCard({
     super.key,
-    required this.icon,
-    required this.title,
-    required this.date,
-    required this.amount,
-    required this.status,
-    required this.statusColor,
+    required this.transactions,
   });
 
   @override
@@ -34,8 +26,9 @@ class TransactionCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => TransactionDetailsScreen(
-              status: status,
-              type: title,
+              transaction: transactions,
+              status: transactions.status ?? 'Unknown',
+              type: transactions.type ?? '',
             ),
           ),
         );
@@ -63,7 +56,12 @@ class TransactionCard extends StatelessWidget {
                       backgroundColor: theme.brightness == Brightness.dark
                           ? AppColors.secondaryColor.shade700
                           : AppColors.whiteColor.shade500,
-                      child: Icon(icon, size: 18),
+                      child: Icon(
+                          (transactions.type == 'GIFTCARDSALE' ||
+                                  transactions.type == 'CRYPTOSALE')
+                              ? IconsaxPlusLinear.arrow_down_1
+                              : IconsaxPlusLinear.arrow_up,
+                          size: 18),
                     ),
                     Positioned(
                       bottom: 0,
@@ -87,7 +85,7 @@ class TransactionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      transactions.type ?? 'Unknown',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -98,7 +96,7 @@ class TransactionCard extends StatelessWidget {
                     ),
                     const Gap(4),
                     Text(
-                      date,
+                      transactions.createdAt!.getFormattedDate(),
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
@@ -114,7 +112,7 @@ class TransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "$amount".formatAsNaira(),
+                  "${transactions.amount}".formatAsNaira(),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -126,10 +124,16 @@ class TransactionCard extends StatelessWidget {
                 ),
                 const Gap(4),
                 Text(
-                  status,
+                  transactions.status ?? 'Unknown',
                   style: TextStyle(
                     fontSize: 12,
-                    color: statusColor,
+                    color: transactions.status!.toLowerCase() == 'pending'
+                        ? Colors.orange
+                        : transactions.status == 'completed'
+                            ? Colors.green
+                            : transactions.status == 'failed'
+                                ? Colors.red
+                                : Colors.grey,
                     fontWeight: FontWeight.w400,
                   ),
                 ),

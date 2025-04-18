@@ -42,11 +42,6 @@ class GiftCardService {
         },
       ),
       parser: (data) {
-        print(data);
-        final token = data['token'];
-        var box = Hive.box('data');
-        box.put('accessToken', token);
-
         return GiftCardModel.fromMap(data);
       },
       showErrorToast: true,

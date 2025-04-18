@@ -21,9 +21,9 @@ import '../../../common/widgets/custom_textfield.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../data/response/upload_response/upload_response.dart';
 
-@RoutePage()
 final logger = Logger();
 
+@RoutePage()
 class SuggestionScreen extends HookConsumerWidget {
   const SuggestionScreen({super.key});
   @override

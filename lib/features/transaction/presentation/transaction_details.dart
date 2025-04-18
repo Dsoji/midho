@@ -6,7 +6,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
+import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:screenshot/screenshot.dart';
 
 import '../../../common/mixin/share_mixin.dart';
@@ -15,6 +17,7 @@ import '../../../common/widgets/custom_app_bar.dart';
 
 @RoutePage()
 class TransactionDetailsScreen extends HookWidget with ShareMixin {
+  final TransactionData transaction;
   final String type;
   final String status;
   final bool? showAppBar;
@@ -24,12 +27,13 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     required this.type,
     required this.status,
     this.showAppBar = true,
+    required this.transaction,
   });
 
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> transactionDetails =
-        _getTransactionDetails(type, status);
+        _getTransactionDetails(type, status, transaction);
     final screenshotController = useMemoized(() => ScreenshotController());
     final isProcessing = useState(false);
 
@@ -85,30 +89,30 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                     onPressed: isProcessing.value == true
                         ? () {}
                         : () async {
-                            if (status != 'Failed') {
-                              isProcessing.value = true;
-                              await screenshotController
-                                  .captureFromWidget(
-                                    MediaQuery(
-                                      data: MediaQueryData.fromView(
-                                          WidgetsBinding.instance.window),
-                                      child: InheritedTheme.captureAll(
-                                        context,
-                                        TransactionDetailsScreen(
-                                          type: type,
-                                          status: status,
-                                          showAppBar: false,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .then(processAndSaveImage)
-                                  .catchError((onError) {
-                                // Handle error
-                                debugPrint('Screenshot error: $onError');
-                              });
-                              isProcessing.value = false;
-                            }
+                            // if (status != 'Failed') {
+                            //   isProcessing.value = true;
+                            //   await screenshotController
+                            //       .captureFromWidget(
+                            //         MediaQuery(
+                            //           data: MediaQueryData.fromView(
+                            //               WidgetsBinding.instance.window),
+                            //           child: InheritedTheme.captureAll(
+                            //             context,
+                            //             TransactionDetailsScreen(
+                            //               type: type,
+                            //               status: status,
+                            //               showAppBar: false,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       )
+                            //       .then(processAndSaveImage)
+                            //       .catchError((onError) {
+                            //     // Handle error
+                            //     debugPrint('Screenshot error: $onError');
+                            //   });
+                            //   isProcessing.value = false;
+                            // }
                           },
                     textColor: AppColors.whiteColor,
                     color: theme.brightness == Brightness.dark
@@ -258,44 +262,50 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     }
   }
 
-  Map<String, dynamic> _getTransactionDetails(String type, String status) {
+  Map<String, dynamic> _getTransactionDetails(
+    String type,
+    String status,
+    TransactionData transaction,
+  ) {
     Map<String, dynamic> details = {};
 
-    switch (type) {
-      case "Crypto Sale":
+    switch (transaction.type) {
+      case "CRYPTOSALE":
         details = {
-          "transactionId": "#TRX123456",
-          "dateTime": "Jan 15, 2025, 10:30 AM",
-          "amount": "500,000.00",
-          "fee": "5,000.00",
+          "transactionId": transaction.id,
+          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+          "amount": transaction.amount,
+          "fee": transaction.fee,
           "breakdown": {
-            "Crypto Sold": "Bitcoin (BTC)",
-            "Rate": "₦25,000,000/BTC",
-            "Amount Sold": "0.02 BTC",
+            "Crypto Sold":
+                "${transaction.asset?.name ?? ''} (${transaction.asset?.symbol ?? ''})",
+            "Rate":
+                "₦${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
+            "Amount Sold": "0.02 ${transaction.asset?.symbol ?? ''}",
             "Total Received": "500000",
           }
         };
         break;
-      case "Gift Card Purchase":
-        if (status == "Completed") {
+      case "GIFTCARDSALE":
+        if (transaction.status == "Completed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
-            "amount": "37,500.00",
-            "fee": "500.00",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": transaction.amount,
+            "fee": transaction.fee,
             "breakdown": {
-              "Gift Card Sold": "STEAM 50-500",
+              "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate": "₦750/USD",
               "Amount Sold": "\$50",
               "Total Received": "37,000.00",
             }
           };
-        } else if (status == "Failed") {
+        } else if (transaction.status == "Failed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
-            "amount": "37,500.00",
-            "fee": "500.00",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": transaction.amount,
+            "fee": transaction.fee,
             "breakdown": {
               "Gift Card Sold": "STEAM 10-200",
               "Rate": "₦750/USD",
@@ -306,38 +316,38 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           };
         } else {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
-            "amount": "37,500.00",
-            "fee": "500.00",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": transaction.amount,
+            "fee": transaction.fee,
             "breakdown": {
-              "Gift Card Sold": "STEAM 50-500",
-              "Rate": "₦750/USD",
-              "Amount Sold": "\$50",
+              "Gift Card Sold": transaction.asset?.name ?? '',
+              "Rate": "₦${transaction.rate}/${transaction.baseCurrency}",
+              "Amount Sold": "\$${transaction.amount}",
               "Total Received": "37000",
             }
           };
         }
         break;
       case "Bill Payment":
-        if (status == "Completed") {
+        if (transaction.status == "Completed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": "500.00",
+            "fee": transaction.fee,
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
               "Total Charged": "10500",
             }
           };
-        } else if (status == "Failed") {
+        } else if (transaction.status == "Failed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": "500.00",
+            "fee": transaction.fee,
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -348,10 +358,10 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           };
         } else {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": "500.00",
+            "fee": transaction.fee,
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -362,8 +372,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         break;
       case "Withdrawal":
         details = {
-          "transactionId": "#TRX123456",
-          "dateTime": "Jan 15, 2025, 10:30 AM",
+          "transactionId": transaction.id,
+          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
           "amount": "100,000.00",
           "fee": "1,000.00",
           "breakdown": {
@@ -406,34 +416,34 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
       onPressed: isProcessing.value == true
           ? () {}
           : () async {
-              isProcessing.value = true;
-              await screenshotController
-                  .captureFromWidget(
-                MediaQuery(
-                  data: MediaQueryData.fromView(WidgetsBinding.instance.window),
-                  child: InheritedTheme.captureAll(
-                    context,
-                    TransactionDetailsScreen(
-                      type: type,
-                      status: status,
-                      showAppBar: false,
-                    ),
-                  ),
-                ),
-              )
-                  .then((image) {
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    backgroundColor: Colors.white,
-                    content: Image.memory(image),
-                  ),
-                );
-              }).catchError((onError) {
-                // Handle error
-                debugPrint('Screenshot error: $onError');
-              });
-              isProcessing.value = false;
+              // isProcessing.value = true;
+              // await screenshotController
+              //     .captureFromWidget(
+              //   MediaQuery(
+              //     data: MediaQueryData.fromView(WidgetsBinding.instance.window),
+              //     child: InheritedTheme.captureAll(
+              //       context,
+              //       TransactionDetailsScreen(
+              //         type: type,
+              //         status: status,
+              //         showAppBar: false,
+              //       ),
+              //     ),
+              //   ),
+              // )
+              //     .then((image) {
+              //   showDialog(
+              //     context: context,
+              //     builder: (_) => AlertDialog(
+              //       backgroundColor: Colors.white,
+              //       content: Image.memory(image),
+              //     ),
+              //   );
+              // }).catchError((onError) {
+              //   // Handle error
+              //   debugPrint('Screenshot error: $onError');
+              // });
+              // isProcessing.value = false;
             },
       style: OutlinedButton.styleFrom(
         backgroundColor: theme.brightness == Brightness.dark

@@ -84,11 +84,13 @@ import 'package:mdiho/features/support_faq/presentation/faq_screen.dart'
     as _i20;
 import 'package:mdiho/features/support_faq/presentation/support_faq_screen.dart'
     as _i41;
+import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart'
+    as _i50;
 import 'package:mdiho/features/transaction/presentation/transaction_details.dart'
     as _i42;
 import 'package:mdiho/features/transaction/presentation/transaction_history.dart'
     as _i43;
-import 'package:mdiho/features/transaction_pin/transaction_pin.dart' as _i44;
+import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart' as _i44;
 import 'package:mdiho/features/withdrawal/presentation/withdraw_funds_screen.dart'
     as _i46;
 
@@ -1306,6 +1308,7 @@ class TransactionDetailsRoute
     required String type,
     required String status,
     bool? showAppBar = true,
+    required _i50.TransactionData transaction,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           TransactionDetailsRoute.name,
@@ -1314,6 +1317,7 @@ class TransactionDetailsRoute
             type: type,
             status: status,
             showAppBar: showAppBar,
+            transaction: transaction,
           ),
           initialChildren: children,
         );
@@ -1329,6 +1333,7 @@ class TransactionDetailsRoute
         type: args.type,
         status: args.status,
         showAppBar: args.showAppBar,
+        transaction: args.transaction,
       );
     },
   );
@@ -1340,6 +1345,7 @@ class TransactionDetailsRouteArgs {
     required this.type,
     required this.status,
     this.showAppBar = true,
+    required this.transaction,
   });
 
   final _i49.Key? key;
@@ -1350,9 +1356,11 @@ class TransactionDetailsRouteArgs {
 
   final bool? showAppBar;
 
+  final _i50.TransactionData transaction;
+
   @override
   String toString() {
-    return 'TransactionDetailsRouteArgs{key: $key, type: $type, status: $status, showAppBar: $showAppBar}';
+    return 'TransactionDetailsRouteArgs{key: $key, type: $type, status: $status, showAppBar: $showAppBar, transaction: $transaction}';
   }
 }
 
@@ -1380,15 +1388,13 @@ class TransactionHistoryRoute extends _i48.PageRouteInfo<void> {
 class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
   TransactionPinRoute({
     _i49.Key? key,
-    required String info,
-    String? selectedType,
+    required bool isHome,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           TransactionPinRoute.name,
           args: TransactionPinRouteArgs(
             key: key,
-            info: info,
-            selectedType: selectedType,
+            isHome: isHome,
           ),
           initialChildren: children,
         );
@@ -1401,8 +1407,7 @@ class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
       final args = data.argsAs<TransactionPinRouteArgs>();
       return _i44.TransactionPinScreen(
         key: args.key,
-        info: args.info,
-        selectedType: args.selectedType,
+        isHome: args.isHome,
       );
     },
   );
@@ -1411,19 +1416,16 @@ class TransactionPinRoute extends _i48.PageRouteInfo<TransactionPinRouteArgs> {
 class TransactionPinRouteArgs {
   const TransactionPinRouteArgs({
     this.key,
-    required this.info,
-    this.selectedType,
+    required this.isHome,
   });
 
   final _i49.Key? key;
 
-  final String info;
-
-  final String? selectedType;
+  final bool isHome;
 
   @override
   String toString() {
-    return 'TransactionPinRouteArgs{key: $key, info: $info, selectedType: $selectedType}';
+    return 'TransactionPinRouteArgs{key: $key, isHome: $isHome}';
   }
 }
 

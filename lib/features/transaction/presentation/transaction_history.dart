@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/transaction/data/controller/gift_card_controller.dart';
 import 'package:mdiho/features/transaction/presentation/widget/transaction_card.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -17,40 +17,8 @@ class TransactionHistoryScreen extends HookConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final transactions = [
-      {
-        "icon": IconsaxPlusLinear.arrow_down_1,
-        "title": "Crypto Sale",
-        "date": "Jan 15, 2025",
-        "amount": 500000.00,
-        "status": "Completed",
-        "statusColor": Colors.green,
-      },
-      {
-        "icon": IconsaxPlusLinear.arrow_up,
-        "title": "Gift Card Purchase",
-        "date": "Jan 10, 2025",
-        "amount": 120000.00,
-        "status": "Pending",
-        "statusColor": Colors.orange,
-      },
-      {
-        "icon": IconsaxPlusLinear.arrow_down_1,
-        "title": "Bill Payment",
-        "date": "Jan 5, 2025",
-        "amount": 30000.00,
-        "status": "Failed",
-        "statusColor": Colors.red,
-      },
-      {
-        "icon": IconsaxPlusLinear.arrow_down_1,
-        "title": "Withdrawal",
-        "date": "Jan 15, 2025",
-        "amount": 500000.00,
-        "status": "Completed",
-        "statusColor": Colors.green,
-      },
-    ];
+    final transactions =
+        ref.watch(transactionControllerProvider).transactions.valueOrNull?.data;
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -62,6 +30,7 @@ class TransactionHistoryScreen extends HookConsumerWidget {
           tabsRouter.setActiveIndex(0);
         }
       },
+
       child: Scaffold(
         appBar: CustomAppBar(
           title: "Transaction History",
@@ -73,17 +42,12 @@ class TransactionHistoryScreen extends HookConsumerWidget {
         ),
         body: ListView.separated(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          itemCount: transactions.length,
+          itemCount: transactions!.length,
           separatorBuilder: (context, index) => const Gap(8),
           itemBuilder: (context, index) {
             final transaction = transactions[index];
             return TransactionCard(
-              icon: transaction["icon"] as IconData,
-              title: transaction["title"] as String,
-              date: transaction["date"] as String,
-              amount: transaction["amount"] as double,
-              status: transaction["status"] as String,
-              statusColor: transaction["statusColor"] as Color,
+              transactions: transaction,
             );
           },
         ),

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'asset.dart';
 import 'origination.dart';
 
-class Datum {
+class TransactionData {
   String? id;
   String? user;
   String? type;
@@ -13,7 +13,7 @@ class Datum {
   int? fee;
   int? rate;
   int? amount;
-  List<String>? files;
+  List<dynamic>? files;
   List<dynamic>? proofs;
   bool? ecode;
   String? code;
@@ -25,7 +25,7 @@ class Datum {
   DateTime? updatedAt;
   int? v;
 
-  Datum({
+  TransactionData({
     this.id,
     this.user,
     this.type,
@@ -50,10 +50,10 @@ class Datum {
 
   @override
   String toString() {
-    return 'Datum(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)';
+    return 'TransactionData(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)';
   }
 
-  factory Datum.fromMap(Map<String, dynamic> data) => Datum(
+  factory TransactionData.fromMap(Map<String, dynamic> data) => TransactionData(
         id: data['_id'] as String?,
         user: data['user'] as String?,
         type: data['type'] as String?,
@@ -63,7 +63,7 @@ class Datum {
         fee: data['fee'] as int?,
         rate: data['rate'] as int?,
         amount: data['amount'] as int?,
-        files: data['files'] as List<String>?,
+        files: data['files'] as List<dynamic>?,
         proofs: data['proofs'] as List<dynamic>?,
         ecode: data['ecode'] as bool?,
         code: data['code'] as String?,
@@ -109,17 +109,17 @@ class Datum {
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [Datum].
-  factory Datum.fromJson(String data) {
-    return Datum.fromMap(json.decode(data) as Map<String, dynamic>);
+  /// Parses the string and returns the resulting Json object as [TransactionData].
+  factory TransactionData.fromJson(String data) {
+    return TransactionData.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [Datum] to a JSON string.
+  /// Converts [TransactionData] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  Datum copyWith({
+  TransactionData copyWith({
     String? id,
     String? user,
     String? type,
@@ -129,7 +129,7 @@ class Datum {
     int? fee,
     int? rate,
     int? amount,
-    List<String>? files,
+    List<dynamic>? files,
     List<dynamic>? proofs,
     bool? ecode,
     String? code,
@@ -141,7 +141,7 @@ class Datum {
     DateTime? updatedAt,
     int? v,
   }) {
-    return Datum(
+    return TransactionData(
       id: id ?? this.id,
       user: user ?? this.user,
       type: type ?? this.type,

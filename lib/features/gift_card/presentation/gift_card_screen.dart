@@ -17,8 +17,6 @@ class GiftCardScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
-    final giftCards =
-        ref.watch(giftCardControllerProvider).giftCards.valueOrNull?.data;
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {

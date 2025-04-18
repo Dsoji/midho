@@ -34,7 +34,10 @@ class TransactionService {
   Future<ResultValue<TransactionHistory>> getTransactions() async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.get(
-        'categories',
+        'user/tx/txs',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
         queryParameters: {
           'paginate': false,
           'page': 1,
@@ -42,11 +45,6 @@ class TransactionService {
         },
       ),
       parser: (data) {
-        print(data);
-        final token = data['token'];
-        var box = Hive.box('data');
-        box.put('accessToken', token);
-
         return TransactionHistory.fromMap(data);
       },
       showErrorToast: true,
