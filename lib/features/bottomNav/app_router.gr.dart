@@ -36,6 +36,8 @@ import 'package:mdiho/features/crypto/presentation/sell_crypto_screen.dart'
     as _i37;
 import 'package:mdiho/features/crypto/presentation/widget/standalone_transaction_details.dart'
     as _i39;
+import 'package:mdiho/features/gift_card/data/model/response/gift_card_model/datum.dart'
+    as _i50;
 import 'package:mdiho/features/gift_card/presentation/card_details_proof.dart'
     as _i8;
 import 'package:mdiho/features/gift_card/presentation/enter_card_details_screen.dart'
@@ -84,8 +86,10 @@ import 'package:mdiho/features/support_faq/presentation/faq_screen.dart'
     as _i20;
 import 'package:mdiho/features/support_faq/presentation/support_faq_screen.dart'
     as _i41;
+import 'package:mdiho/features/transaction/data/model/response/rates_model/datum.dart'
+    as _i51;
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart'
-    as _i50;
+    as _i52;
 import 'package:mdiho/features/transaction/presentation/transaction_details.dart'
     as _i42;
 import 'package:mdiho/features/transaction/presentation/transaction_history.dart'
@@ -261,13 +265,15 @@ class CardDetailsProofRoute
     extends _i48.PageRouteInfo<CardDetailsProofRouteArgs> {
   CardDetailsProofRoute({
     _i49.Key? key,
-    required String img,
+    required _i50.GiftCardData giftCard,
+    required int amount,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           CardDetailsProofRoute.name,
           args: CardDetailsProofRouteArgs(
             key: key,
-            img: img,
+            giftCard: giftCard,
+            amount: amount,
           ),
           initialChildren: children,
         );
@@ -280,7 +286,8 @@ class CardDetailsProofRoute
       final args = data.argsAs<CardDetailsProofRouteArgs>();
       return _i8.CardDetailsProofScreen(
         key: args.key,
-        img: args.img,
+        giftCard: args.giftCard,
+        amount: args.amount,
       );
     },
   );
@@ -289,16 +296,19 @@ class CardDetailsProofRoute
 class CardDetailsProofRouteArgs {
   const CardDetailsProofRouteArgs({
     this.key,
-    required this.img,
+    required this.giftCard,
+    required this.amount,
   });
 
   final _i49.Key? key;
 
-  final String img;
+  final _i50.GiftCardData giftCard;
+
+  final int amount;
 
   @override
   String toString() {
-    return 'CardDetailsProofRouteArgs{key: $key, img: $img}';
+    return 'CardDetailsProofRouteArgs{key: $key, giftCard: $giftCard, amount: $amount}';
   }
 }
 
@@ -626,7 +636,7 @@ class EnterCardDetailsRoute
     extends _i48.PageRouteInfo<EnterCardDetailsRouteArgs> {
   EnterCardDetailsRoute({
     _i49.Key? key,
-    required _i22.GiftCard giftCard,
+    required _i50.GiftCardData giftCard,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           EnterCardDetailsRoute.name,
@@ -659,7 +669,7 @@ class EnterCardDetailsRouteArgs {
 
   final _i49.Key? key;
 
-  final _i22.GiftCard giftCard;
+  final _i50.GiftCardData giftCard;
 
   @override
   String toString() {
@@ -1032,10 +1042,19 @@ class ProfileShellRoute extends _i48.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i33.QrCryptoScreen]
-class QrCryptoRoute extends _i48.PageRouteInfo<void> {
-  const QrCryptoRoute({List<_i48.PageRouteInfo>? children})
-      : super(
+class QrCryptoRoute extends _i48.PageRouteInfo<QrCryptoRouteArgs> {
+  QrCryptoRoute({
+    _i49.Key? key,
+    required String amount,
+    required _i51.RateData crypto,
+    List<_i48.PageRouteInfo>? children,
+  }) : super(
           QrCryptoRoute.name,
+          args: QrCryptoRouteArgs(
+            key: key,
+            amount: amount,
+            crypto: crypto,
+          ),
           initialChildren: children,
         );
 
@@ -1044,9 +1063,33 @@ class QrCryptoRoute extends _i48.PageRouteInfo<void> {
   static _i48.PageInfo page = _i48.PageInfo(
     name,
     builder: (data) {
-      return const _i33.QrCryptoScreen();
+      final args = data.argsAs<QrCryptoRouteArgs>();
+      return _i33.QrCryptoScreen(
+        key: args.key,
+        amount: args.amount,
+        crypto: args.crypto,
+      );
     },
   );
+}
+
+class QrCryptoRouteArgs {
+  const QrCryptoRouteArgs({
+    this.key,
+    required this.amount,
+    required this.crypto,
+  });
+
+  final _i49.Key? key;
+
+  final String amount;
+
+  final _i51.RateData crypto;
+
+  @override
+  String toString() {
+    return 'QrCryptoRouteArgs{key: $key, amount: $amount, crypto: $crypto}';
+  }
 }
 
 /// generated route for
@@ -1111,19 +1154,13 @@ class SecurtiySettingsRoute extends _i48.PageRouteInfo<void> {
 class SellCryptoRoute extends _i48.PageRouteInfo<SellCryptoRouteArgs> {
   SellCryptoRoute({
     _i49.Key? key,
-    required String name,
-    required String symbol,
-    required String rate,
-    required String img,
+    required _i51.RateData rates,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           SellCryptoRoute.name,
           args: SellCryptoRouteArgs(
             key: key,
-            name: name,
-            symbol: symbol,
-            rate: rate,
-            img: img,
+            rates: rates,
           ),
           initialChildren: children,
         );
@@ -1136,10 +1173,7 @@ class SellCryptoRoute extends _i48.PageRouteInfo<SellCryptoRouteArgs> {
       final args = data.argsAs<SellCryptoRouteArgs>();
       return _i37.SellCryptoScreen(
         key: args.key,
-        name: args.name,
-        symbol: args.symbol,
-        rate: args.rate,
-        img: args.img,
+        rates: args.rates,
       );
     },
   );
@@ -1148,25 +1182,16 @@ class SellCryptoRoute extends _i48.PageRouteInfo<SellCryptoRouteArgs> {
 class SellCryptoRouteArgs {
   const SellCryptoRouteArgs({
     this.key,
-    required this.name,
-    required this.symbol,
-    required this.rate,
-    required this.img,
+    required this.rates,
   });
 
   final _i49.Key? key;
 
-  final String name;
-
-  final String symbol;
-
-  final String rate;
-
-  final String img;
+  final _i51.RateData rates;
 
   @override
   String toString() {
-    return 'SellCryptoRouteArgs{key: $key, name: $name, symbol: $symbol, rate: $rate, img: $img}';
+    return 'SellCryptoRouteArgs{key: $key, rates: $rates}';
   }
 }
 
@@ -1308,7 +1333,7 @@ class TransactionDetailsRoute
     required String type,
     required String status,
     bool? showAppBar = true,
-    required _i50.TransactionData transaction,
+    required _i52.TransactionData transaction,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           TransactionDetailsRoute.name,
@@ -1356,7 +1381,7 @@ class TransactionDetailsRouteArgs {
 
   final bool? showAppBar;
 
-  final _i50.TransactionData transaction;
+  final _i52.TransactionData transaction;
 
   @override
   String toString() {

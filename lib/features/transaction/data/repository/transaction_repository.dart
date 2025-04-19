@@ -1,8 +1,10 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/transaction/data/model/response/currencies_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
+import '../model/response/rates_model/rates_model.dart';
 import '../service/transaction_service.dart';
 
 final transactionRepositoryProvider = Provider((ref) {
@@ -32,6 +34,120 @@ class TransactionRepository {
                 message: 'Failed to fetch categories',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to fetch categories'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, RatesModel>> getRates() async {
+    try {
+      final data = await transactionService.getRates();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? RatesModel());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch rates',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch rates'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, CurrenciesModel>> getCurrency() async {
+    try {
+      final data = await transactionService.getCurrencies();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? CurrenciesModel());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch currencies',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch currencies'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> sellCrypto({
+    String? id,
+    String? name,
+    int? amount,
+    String? comment,
+    List<String>? files,
+  }) async {
+    try {
+      final data = await transactionService.sellCrypto(
+        id: id,
+        name: name,
+        amount: amount,
+        comment: comment,
+        files: files,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to carry out transaction',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to carry out transaction'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> sellGiftCards({
+    String? id,
+    String? name,
+    int? amount,
+    String? comment,
+    List<String>? files,
+    bool? ecode,
+    String? code,
+    String? pin,
+  }) async {
+    try {
+      final data = await transactionService.sellGiftCards(
+        id: id,
+        name: name,
+        amount: amount,
+        comment: comment,
+        files: files,
+        ecode: ecode,
+        code: code,
+        pin: pin,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to carry out transaction',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to carry out transaction'),
               ),
         );
       }

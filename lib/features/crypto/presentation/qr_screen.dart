@@ -7,6 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/crypto/presentation/widget/upload_dialog.dart';
+import 'package:mdiho/features/transaction/data/model/response/rates_model/datum.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -15,19 +16,24 @@ import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../bottomNav/app_router.gr.dart';
 
-const String walletAddress = "0z890085...2e2a80Ea5";
-
 @RoutePage()
 class QrCryptoScreen extends HookConsumerWidget {
   const QrCryptoScreen({
     super.key,
+    required this.amount,
+    required this.crypto,
   });
+  final String amount;
+  final RateData crypto;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final duration = useState(const Duration(minutes: 15));
-
+    String walletAddress = "${crypto.address}";
+    String shortenedWalletAddress = walletAddress.length > 16
+        ? '${walletAddress.substring(0, 15)}...${walletAddress.substring(walletAddress.length - 8)}'
+        : walletAddress;
     useEffect(() {
       final timer = Timer.periodic(const Duration(seconds: 1), (t) {
         if (duration.value.inSeconds > 0) {
@@ -160,7 +166,8 @@ class QrCryptoScreen extends HookConsumerWidget {
                       ),
                     ),
                     const Gap(24),
-                    _waaletAddressCard(context),
+                    _waaletAddressCard(
+                        context, walletAddress, shortenedWalletAddress),
                     const Gap(24),
                     InfoWidget(
                       theme: theme,
@@ -179,7 +186,8 @@ class QrCryptoScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () {
-                        showUploadProofDialog(context);
+                        showUploadProofDialog(
+                            context, int.parse(amount), crypto, ref);
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,
@@ -194,11 +202,12 @@ class QrCryptoScreen extends HookConsumerWidget {
         ));
   }
 
-  Widget _waaletAddressCard(BuildContext context) {
+  Widget _waaletAddressCard(
+      BuildContext context, String walletAddress, String address) {
     final copied = useState(false);
 
     void copyToClipboard() {
-      Clipboard.setData(const ClipboardData(text: walletAddress));
+      Clipboard.setData(ClipboardData(text: walletAddress));
       copied.value = true;
       Future.delayed(const Duration(seconds: 2), () {
         copied.value = false;
@@ -236,7 +245,7 @@ class QrCryptoScreen extends HookConsumerWidget {
                 ),
                 const Gap(4),
                 Text(
-                  walletAddress,
+                  address,
                   style: TextStyle(
                     color: theme.brightness == Brightness.dark
                         ? Colors.white
@@ -284,8 +293,15 @@ class QrCryptoScreen extends HookConsumerWidget {
   }
 
   // Function to show the dialog
-  void showUploadProofDialog(BuildContext context) {
+  void showUploadProofDialog(
+    BuildContext context,
+    int amount,
+    RateData crypto,
+    WidgetRef ref,
+  ) {
     showCryptoDialog(
+      amount: amount,
+      crypto: crypto,
       context: context,
       onSecondaryAction: () {
         context.router.replaceAll([
@@ -293,6 +309,7 @@ class QrCryptoScreen extends HookConsumerWidget {
         ]);
         Navigator.pop(context);
       },
+      ref: ref,
     );
   }
 }

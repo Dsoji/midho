@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
-import 'package:mdiho/features/transaction/data/controller/gift_card_controller.dart';
+import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:mdiho/features/transaction/presentation/widget/transaction_card.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -40,17 +40,43 @@ class TransactionHistoryScreen extends HookConsumerWidget {
           centerTitle: true,
           onActionPressed: () => showFilterBottomSheet(context),
         ),
-        body: ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          itemCount: transactions!.length,
-          separatorBuilder: (context, index) => const Gap(8),
-          itemBuilder: (context, index) {
-            final transaction = transactions[index];
-            return TransactionCard(
-              transactions: transaction,
-            );
-          },
-        ),
+        body: RefreshIndicator(
+            onRefresh: () async {
+              ref
+                  .read(transactionControllerProvider.notifier)
+                  .getTransactions();
+              return Future.delayed(const Duration(seconds: 1));
+            },
+            child: transactions!.isNotEmpty
+                ? ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    itemCount: transactions.length,
+                    separatorBuilder: (context, index) => const Gap(8),
+                    itemBuilder: (context, index) {
+                      final transaction = transactions[index];
+                      return TransactionCard(
+                        transactions: transaction,
+                      );
+                    },
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Gap(52),
+                        const Icon(Icons.info_outline,
+                            color: Colors.grey, size: 48),
+                        const SizedBox(height: 8),
+                        Text(
+                          "No transactions available.",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
       ),
     );
   }

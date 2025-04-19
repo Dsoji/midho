@@ -27,7 +27,7 @@ class LoginScreen extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
 
-    final passwordStrength = useState("Weak");
+    useState("Weak");
 
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();

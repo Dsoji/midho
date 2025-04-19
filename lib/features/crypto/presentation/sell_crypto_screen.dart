@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -6,30 +7,29 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../transaction/data/model/response/rates_model/datum.dart';
 
 @RoutePage()
 class SellCryptoScreen extends HookConsumerWidget {
   const SellCryptoScreen({
     super.key,
-    required this.name,
-    required this.symbol,
-    required this.rate,
-    required this.img,
+    required this.rates,
   });
-  final String name;
-  final String symbol;
-  final String rate;
-  final String img;
+
+  final RateData rates;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final usdController = useTextEditingController();
     final ngnController = useTextEditingController();
 
-    const conversionRate = 1400.0;
+    final double conversionRate = rates.rate ?? 0;
 
     void convertUSDToNGN(String value) {
       if (value.isEmpty) {
@@ -94,15 +94,36 @@ class SellCryptoScreen extends HookConsumerWidget {
                           Row(
                             children: [
                               CircleAvatar(
-                                backgroundColor: Colors.orange.shade100,
-                                backgroundImage: AssetImage(img),
+                                radius: 24,
+                                backgroundColor: Colors.transparent,
+                                child: CachedNetworkImage(
+                                  imageUrl: rates.icon ?? '',
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: CircleAvatar(
+                                      radius: 24,
+                                      backgroundColor: Colors.grey[300],
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const CircleAvatar(
+                                    radius: 24,
+                                    backgroundColor: Colors.grey,
+                                    child: Icon(
+                                      Icons.error,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    name,
+                                    rates.name ?? '',
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -112,7 +133,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                                     ),
                                   ),
                                   Text(
-                                    symbol,
+                                    rates.symbol ?? '',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: theme.brightness == Brightness.dark
@@ -125,7 +146,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                             ],
                           ),
                           Text(
-                            rate,
+                            '${rates.rate ?? ''}/1 USD',
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 14,
@@ -206,8 +227,18 @@ class SellCryptoScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () {
+                        if (usdController.text.isEmpty) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Input your amount.',
+                          );
+                          return;
+                        }
                         context.router.push(
-                          const QrCryptoRoute(),
+                          QrCryptoRoute(
+                            amount: usdController.text.trim(),
+                            crypto: rates,
+                          ),
                         );
                       },
                       textColor: Colors.white,
@@ -264,7 +295,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    ' Minimum ~ \$10',
+                    ' Minimum ~ \$${rates.moq}',
                     style: TextStyle(
                       fontSize: 10,
                       color: theme.brightness == Brightness.dark

@@ -1,19 +1,24 @@
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
-import 'gift_card_screen.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
+import '../data/model/response/gift_card_model/datum.dart';
 
 @RoutePage()
 class EnterCardDetailsScreen extends HookConsumerWidget {
@@ -21,10 +26,17 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     super.key,
     required this.giftCard,
   });
-  final GiftCard giftCard;
+  final GiftCardData giftCard;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final rates =
+        ref.watch(transactionControllerProvider).rates.valueOrNull?.data;
+    final itemRates = rates!
+        .where((rate) =>
+            rate.name?.toLowerCase().contains(giftCard.name!.toLowerCase()) ==
+            true)
+        .toList();
 
     final selectedPlan = useState<String>("USD");
     final selectedCategory = useState<String>("Select Sub-Category");
@@ -127,7 +139,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              giftCard.name.toUpperCase(),
+                              giftCard.name ?? '',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -138,7 +150,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              giftCard.desc,
+                              'Gift Card',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey.shade600,
@@ -148,11 +160,27 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         ),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            giftCard.image,
-                            height: 32,
-                            width: 32,
+                          child: CachedNetworkImage(
+                            imageUrl: giftCard.icon ?? '',
+                            height: 28,
                             fit: BoxFit.contain,
+                            placeholder: (context, url) => Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 28,
+                                width: 28,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/default_icon.png',
+                              height: 28,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ],
@@ -340,7 +368,10 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                                 selectedPlan.value == "USD" ? "\$ " : "₦",
                                 true,
                                 context,
-                                selectedPlan.value == "USD" ? "\$" : "₦"),
+                                selectedPlan.value == "USD" ? "\$" : "₦",
+                                itemRates.isNotEmpty
+                                    ? itemRates.first.moq?.toString() ?? 'N/A'
+                                    : 'N/A'),
                             const Gap(4),
                             _buildCurrencyField(
                                 "You Will Receive",
@@ -353,7 +384,10 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                                 selectedPlan.value == "USD" ? "₦ " : "\$ ",
                                 false,
                                 context,
-                                selectedPlan.value == "USD" ? "\$" : "₦"),
+                                selectedPlan.value == "USD" ? "\$" : "₦",
+                                itemRates.isNotEmpty
+                                    ? itemRates.first.moq?.toString() ?? 'N/A'
+                                    : 'N/A'),
                           ],
                         ),
                         Positioned(
@@ -394,12 +428,26 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                   ),
                   const Gap(16),
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .imageUpload
+                        .isLoading,
                     text: "Next",
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
+                      if (usdController.text.isEmpty) {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Input your amount.',
+                        );
+                        return;
+                      }
                       context.router.push(
-                        CardDetailsProofRoute(img: giftCard.image),
+                        CardDetailsProofRoute(
+                          giftCard: giftCard,
+                          amount: int.tryParse(usdController.text.trim()) ?? 0,
+                        ),
                       );
                     },
                     textColor: Colors.white,
@@ -424,7 +472,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       String currencySign,
       final bool isTop,
       BuildContext context,
-      String sign) {
+      String sign,
+      String rate) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -460,7 +509,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         : Border.all(color: Colors.grey.shade300),
                   ),
                   child: Text(
-                    ' Minimum ~ \$50',
+                    ' Minimum ~ \$$rate ',
                     style: TextStyle(
                       fontSize: 10,
                       color: theme.brightness == Brightness.dark
@@ -550,17 +599,25 @@ class ProviderBottomSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Map<String, String>> providers = [
-      {
-        "name": "NGN",
-        "logo": PlaceholderAssets.ng,
-      },
-      {
-        "name": "USD",
-        "logo": PlaceholderAssets.us,
-      },
-    ];
     final searchController = useTextEditingController();
+    final currencies =
+        ref.watch(transactionControllerProvider).currency.valueOrNull?.data ??
+            [];
+
+    final filteredCurrencies = useState<List<dynamic>>(currencies);
+
+    // Listen to search changes and filter the list
+    useEffect(() {
+      void listener() {
+        final query = searchController.text.toLowerCase();
+        filteredCurrencies.value = currencies
+            .where((currency) => currency.toLowerCase().contains(query))
+            .toList();
+      }
+
+      searchController.addListener(listener);
+      return () => searchController.removeListener(listener);
+    }, [currencies]);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -595,34 +652,30 @@ class ProviderBottomSheet extends HookConsumerWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListView.separated(
-                  itemCount: providers.length,
-                  shrinkWrap: true,
-                  separatorBuilder: (context, index) =>
-                      Divider(color: Colors.grey.shade100),
-                  itemBuilder: (context, index) {
-                    final provider = providers[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage(provider["logo"]!),
-                        backgroundColor: Colors.transparent,
-                      ),
-                      title: Text(
-                        provider["name"]!,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      onTap: () {
-                        selectedProvider.value = provider["name"]!;
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
+            child: filteredCurrencies.value.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text("No match found."),
+                  )
+                : ListView.separated(
+                    itemCount: filteredCurrencies.value.length,
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) =>
+                        Divider(color: Colors.grey.shade100),
+                    itemBuilder: (context, index) {
+                      final provider = filteredCurrencies.value[index];
+                      return ListTile(
+                        title: Text(
+                          provider,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        onTap: () {
+                          selectedProvider.value = provider;
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
           ),
           const Gap(150),
         ],

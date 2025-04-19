@@ -2,24 +2,33 @@ import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../bottomNav/app_router.gr.dart';
+import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
+import '../../../transaction/data/controller/transaction_controller.dart';
+import '../../../transaction/data/model/response/rates_model/datum.dart';
 
 void showCryptoDialog({
   required BuildContext context,
+  required WidgetRef ref,
   required VoidCallback onSecondaryAction,
+  required int amount,
+  required RateData crypto,
 }) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
+      List<File> imageFiles = [];
       return StatefulBuilder(
         builder: (context, setState) {
-          List<File> imageFiles = [];
           final picker = ImagePicker();
 
           Future<void> pickImage() async {
@@ -43,6 +52,8 @@ void showCryptoDialog({
           }
 
           final theme = Theme.of(context);
+          final transactionService =
+              ref.read(transactionControllerProvider.notifier);
 
           return Dialog(
             backgroundColor: theme.brightness == Brightness.dark
@@ -188,13 +199,48 @@ void showCryptoDialog({
                   ),
                   const SizedBox(height: 16),
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .imageUpload
+                        .isLoading,
                     text: 'Submit Proof',
                     width: double.infinity,
                     height: 48,
-                    onPressed: () => showTransactionDialog(
-                      context,
-                      onSecondaryAction,
-                    ),
+                    onPressed: () async {
+                      if (imageFiles.isNotEmpty) {
+                        final result = await ref
+                            .read(authenticationControllerProvider.notifier)
+                            .uploadMultipleFiles(
+                              imageFiles,
+                            );
+                        if (result == true) {
+                          final uploadedFiles = ref
+                              .read(authenticationControllerProvider)
+                              .imageUpload
+                              .valueOrNull;
+                          List<String> paths =
+                              getPathsFromUploadResponse(uploadedFiles);
+                          final result = await transactionService.sellCrypto(
+                            id: crypto.id ?? '',
+                            name: crypto.name ?? '',
+                            amount: amount,
+                            files: paths,
+                            comment: 'Just a comment',
+                          );
+                          if (result == true) {
+                            showTransactionDialog(
+                              context,
+                              onSecondaryAction,
+                            );
+                          }
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'You need to upload proof of transaction',
+                        );
+                      }
+                    },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
                   ),
@@ -206,6 +252,10 @@ void showCryptoDialog({
       );
     },
   );
+}
+
+List<String> getPathsFromUploadResponse(UploadResponse? uploadResponse) {
+  return uploadResponse?.files?.map((file) => file.path ?? '').toList() ?? [];
 }
 
 void showTransactionDialog(

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'datum.dart';
 
 class GiftCardModel {
-  List<Datum>? data;
+  List<GiftCardData>? data;
 
   GiftCardModel({this.data});
 
@@ -12,7 +12,7 @@ class GiftCardModel {
 
   factory GiftCardModel.fromMap(Map<String, dynamic> data) => GiftCardModel(
         data: (data['data'] as List<dynamic>?)
-            ?.map((e) => Datum.fromMap(e as Map<String, dynamic>))
+            ?.map((e) => GiftCardData.fromMap(e as Map<String, dynamic>))
             .toList(),
       );
 
@@ -33,7 +33,7 @@ class GiftCardModel {
   String toJson() => json.encode(toMap());
 
   GiftCardModel copyWith({
-    List<Datum>? data,
+    List<GiftCardData>? data,
   }) {
     return GiftCardModel(
       data: data ?? this.data,

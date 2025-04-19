@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/notification/notification_screen.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
-import 'package:mdiho/features/transaction/data/controller/gift_card_controller.dart';
+import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
+import '../../../common/theme_notifier.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bottomNav/app_router.gr.dart';
 import 'widget/quick_action_grid.dart';
@@ -30,22 +30,34 @@ class HomeScreen extends HookConsumerWidget {
         ref.read(giftCardControllerProvider.notifier).getGiftCards();
         ref.read(profileControllerProvider.notifier).getFaq();
         ref.read(transactionControllerProvider.notifier).getTransactions();
+        ref.read(transactionControllerProvider.notifier).getCurrencies();
+        ref.read(transactionControllerProvider.notifier).getRates();
       });
       return null;
     }, []);
-    var box = Hive.box('data'); // No need to reopen it
-    final token = box.get('accessToken');
-    print('here is token:::::::::::::::::::::::::::::::::: $token');
-    final theme = Theme.of(context);
+
     int backPressCounter = 0;
     DateTime? lastBackPressTime;
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
-    // if (userInfo?.theme == 'LIGHT') {
-    //   ref.read(themeProvider.notifier).setLightTheme();
-    // } else if (userInfo?.theme == 'DARK') {
-    //   ref.read(themeProvider.notifier).setDarkTheme();
-    // }
+
+// Automatically sync theme once userInfo is available
+    useEffect(() {
+      if (userInfo?.theme != null) {
+        Future.microtask(() {
+          final userTheme = userInfo!.theme!.toLowerCase().trim();
+          final themeNotifier = ref.read(themeProvider.notifier);
+
+          if (userTheme == 'light') {
+            themeNotifier.setLightTheme();
+          } else if (userTheme == 'dark') {
+            themeNotifier.setDarkTheme();
+          }
+        });
+      }
+      return null;
+    }, [userInfo?.theme]);
+
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) async {

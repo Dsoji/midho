@@ -187,16 +187,10 @@ class EmailPasswordStep extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final emailController = useTextEditingController();
-    final passwordController = useTextEditingController();
     final referralController = useTextEditingController();
-    final obscurePassword = useState(true);
-    final passwordStrength = useState("Weak");
+    useState(true);
+    useState("Weak");
     final authService = ref.read(authenticationControllerProvider.notifier);
-
-    bool isValidEmail(String email) {
-      return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-          .hasMatch(email);
-    }
 
     final formKey = GlobalKey<FormState>();
 
@@ -287,17 +281,6 @@ class EmailPasswordStep extends HookConsumerWidget {
       ),
     );
   }
-
-  Widget _buildCriteriaIcon(bool isMet, String label) {
-    return Row(
-      children: [
-        Icon(isMet ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: isMet ? Colors.green : Colors.grey, size: 18),
-        const SizedBox(width: 5),
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-      ],
-    );
-  }
 }
 
 class OtpVerificationStep extends HookConsumerWidget {
@@ -311,7 +294,7 @@ class OtpVerificationStep extends HookConsumerWidget {
     final isOtpFilled = useState(false);
     final countdown = useState(100);
     final isCounting = useState(true);
-    final authService = ref.read(authenticationControllerProvider.notifier);
+    ref.read(authenticationControllerProvider.notifier);
 
     useEffect(() {
       Timer? timer;
@@ -475,10 +458,7 @@ class UserDetailsStep extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final firstNameController = useTextEditingController();
-    final lastNameController = useTextEditingController();
-    final phoneController = useTextEditingController();
-    final selectedCountry = useState("Nigeria");
+    useState("Nigeria");
     final passwordController = useTextEditingController();
     final theme = Theme.of(context);
     final authService = ref.read(authenticationControllerProvider.notifier);

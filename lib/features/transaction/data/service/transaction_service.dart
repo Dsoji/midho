@@ -1,11 +1,14 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/features/transaction/data/model/response/currencies_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
 import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
+import '../../../../common/utils/utils.dart';
+import '../model/response/rates_model/rates_model.dart';
 
 final logger = Logger();
 final transactionServiceProvider = Provider<TransactionService>((ref) {
@@ -46,6 +49,111 @@ class TransactionService {
       ),
       parser: (data) {
         return TransactionHistory.fromMap(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<RatesModel>> getRates() async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.get(
+        'rates',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        queryParameters: {
+          'paginate': false,
+          'page': 1,
+          'limit': 500,
+        },
+      ),
+      parser: (data) {
+        return RatesModel.fromMap(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<CurrenciesModel>> getCurrencies() async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.get(
+        'currencies',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return CurrenciesModel.fromMap(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> sellCrypto({
+    String? id,
+    String? name,
+    int? amount,
+    String? comment,
+    List<String>? files,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/tx/sellCrypto',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "asset": {
+            "id": id,
+            "name": name,
+          },
+          "amount": amount,
+          "files": files,
+          "comment": comment
+        },
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> sellGiftCards({
+    String? id,
+    String? name,
+    int? amount,
+    String? comment,
+    List<String>? files,
+    bool? ecode,
+    String? code,
+    String? pin,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/tx/sellCrypto',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "asset": {
+            "id": id,
+            "name": name,
+          },
+          "amount": amount,
+          "files": files,
+          "ecode": ecode,
+          "code": code, // required only when ecode is true
+          "pin": pin, // required only when ecode is true
+          "comment": comment
+        },
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
       },
       showErrorToast: true,
       showSuccessToast: true,

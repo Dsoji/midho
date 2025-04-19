@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Datum {
+class GiftCardData {
   String? id;
   String? icon;
   String? name;
@@ -9,7 +9,7 @@ class Datum {
   DateTime? updatedAt;
   int? v;
 
-  Datum({
+  GiftCardData({
     this.id,
     this.icon,
     this.name,
@@ -24,7 +24,7 @@ class Datum {
     return 'Datum(id: $id, icon: $icon, name: $name, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)';
   }
 
-  factory Datum.fromMap(Map<String, dynamic> data) => Datum(
+  factory GiftCardData.fromMap(Map<String, dynamic> data) => GiftCardData(
         id: data['_id'] as String?,
         icon: data['icon'] as String?,
         name: data['name'] as String?,
@@ -51,8 +51,8 @@ class Datum {
   /// `dart:convert`
   ///
   /// Parses the string and returns the resulting Json object as [Datum].
-  factory Datum.fromJson(String data) {
-    return Datum.fromMap(json.decode(data) as Map<String, dynamic>);
+  factory GiftCardData.fromJson(String data) {
+    return GiftCardData.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
@@ -60,7 +60,7 @@ class Datum {
   /// Converts [Datum] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  Datum copyWith({
+  GiftCardData copyWith({
     String? id,
     String? icon,
     String? name,
@@ -69,7 +69,7 @@ class Datum {
     DateTime? updatedAt,
     int? v,
   }) {
-    return Datum(
+    return GiftCardData(
       id: id ?? this.id,
       icon: icon ?? this.icon,
       name: name ?? this.name,

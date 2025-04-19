@@ -26,7 +26,7 @@ class BettingScreen extends HookConsumerWidget {
         useTextEditingController(); // Controller for amount input field
 
     final selectedPlan = useState<String>("Sporty Bet");
-    final subPlan = useState<String>("DSTV Compact - ₦8,000/Month");
+    useState<String>("DSTV Compact - ₦8,000/Month");
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
@@ -193,7 +193,6 @@ class BettingScreen extends HookConsumerWidget {
                       itemCount: amounts.length,
                       itemBuilder: (context, index) {
                         final amount = amounts[index];
-                        final isSelected = selectedAmount.value == amount;
 
                         return InkWell(
                           onTap: () => updateSelection(amount),

@@ -27,8 +27,8 @@ class EmailPasswordStep extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final referralController = useTextEditingController();
-    final obscurePassword = useState(true);
-    final passwordStrength = useState("Weak");
+    useState(true);
+    useState("Weak");
     final authService = ref.read(authenticationControllerProvider.notifier);
 
     final theme = Theme.of(context);
