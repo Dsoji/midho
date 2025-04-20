@@ -18,6 +18,7 @@ class StepProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double progress = currentStep / totalSteps;
+    final theme = Theme.of(context);
 
     return Container(
       color: Theme.of(context).appBarTheme.backgroundColor,
@@ -30,6 +31,7 @@ class StepProgressIndicator extends StatelessWidget {
           bottom: 12,
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Show back button only on step 2 and 3
             InkWell(
@@ -39,27 +41,54 @@ class StepProgressIndicator extends StatelessWidget {
                 size: 20,
               ),
             ),
-            const Gap(33),
-            Expanded(
-              child: Stack(
-                alignment: Alignment.centerLeft,
+            const Gap(12),
+            SizedBox(
+              width: 234,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // First Container (Step 1)
                   Container(
-                    height: 12,
+                    height: 6,
+                    width: 74, // Adjust width as needed
                     decoration: BoxDecoration(
-                      color: Colors.grey[200], // Background
-                      borderRadius: BorderRadius.circular(5),
+                      color: currentStep >= 1
+                          ? AppColors.primaryColor.shade500 // Filled color
+                          : theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : Colors.grey[300], // Unfilled color
+                      borderRadius: BorderRadius.circular(
+                          40), // Rectangular shape with rounded corners
                     ),
                   ),
-                  FractionallySizedBox(
-                    widthFactor: progress,
-                    child: Container(
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color:
-                            AppColors.primaryColor.shade500, // Progress color
-                        borderRadius: BorderRadius.circular(5),
-                      ),
+                  const Gap(6),
+                  // Second Container (Step 2)
+                  Container(
+                    height: 6,
+                    width: 74, // Adjust width as needed
+                    decoration: BoxDecoration(
+                      color: currentStep >= 2
+                          ? AppColors.primaryColor.shade500 // Filled color
+                          : theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : Colors.grey[300], // Unfilled color
+                      borderRadius: BorderRadius.circular(
+                          40), // Rectangular shape with rounded corners
+                    ),
+                  ),
+                  const Gap(6),
+                  // Third Container (Step 3)
+                  Container(
+                    height: 6,
+                    width: 74, // Adjust width as needed
+                    decoration: BoxDecoration(
+                      color: currentStep >= 3
+                          ? AppColors.primaryColor.shade500 // Filled color
+                          : theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : Colors.grey[300], // Unfilled color
+                      borderRadius: BorderRadius.circular(
+                          40), // Rectangular shape with rounded corners
                     ),
                   ),
                 ],
@@ -69,9 +98,12 @@ class StepProgressIndicator extends StatelessWidget {
             RichText(
               text: TextSpan(
                 text: "$currentStep",
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 children: [
                   TextSpan(
@@ -83,7 +115,7 @@ class StepProgressIndicator extends StatelessWidget {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

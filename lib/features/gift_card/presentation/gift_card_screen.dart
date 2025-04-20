@@ -5,10 +5,10 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
-import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../bottomNav/app_router.gr.dart';
 
 @RoutePage()
 class GiftCardScreen extends HookConsumerWidget {
@@ -53,7 +53,7 @@ class GiftCardScreen extends HookConsumerWidget {
                 controller: searchController,
                 hintText: "Search Gift Card",
                 fillColor: theme.brightness == Brightness.dark
-                    ? Colors.transparent
+                    ? AppColors.darkBorder
                     : Colors.white,
                 suffixIcon: const Icon(Icons.search),
               ),
@@ -80,6 +80,8 @@ class GiftCardGrid extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     // Define the list inside the widget using useState
     final giftCards = useState<List<GiftCard>>([
       GiftCard(
@@ -87,7 +89,11 @@ class GiftCardGrid extends HookWidget {
       GiftCard(
           image: PlaceholderAssets.amazon, name: 'Amazon', desc: 'Gift Card'),
       GiftCard(
-          image: PlaceholderAssets.apple, name: 'iTunes', desc: 'Gift Card'),
+          image: theme.brightness == Brightness.dark
+              ? PlaceholderAssets.appleWhite
+              : PlaceholderAssets.apple,
+          name: 'iTunes',
+          desc: 'Gift Card'),
       GiftCard(
           image: PlaceholderAssets.google,
           name: 'Google Play',
@@ -97,28 +103,39 @@ class GiftCardGrid extends HookWidget {
       GiftCard(image: PlaceholderAssets.visa, name: 'Visa', desc: 'Gift Card'),
     ]);
 
-    return GridView.builder(
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // 2 columns
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1,
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: theme.brightness == Brightness.dark
+            ? AppColors.darkBorder
+            : Colors.white,
+        borderRadius: BorderRadius.circular(18),
       ),
-      itemCount: giftCards.value.length,
-      itemBuilder: (context, index) {
-        final card = giftCards.value[index];
-        return GestureDetector(
-          onTap: () {
-            context.router.push(
-              EnterCardDetailsRoute(
-                giftCard: giftCards.value[index],
-              ),
-            );
-          },
-          child: GiftCardItem(giftCard: card),
-        );
-      },
+      child: GridView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero, // prevent inner GridView padding
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          childAspectRatio: 1.6,
+        ),
+        itemCount: giftCards.value.length,
+        itemBuilder: (context, index) {
+          final card = giftCards.value[index];
+          return GestureDetector(
+            onTap: () {
+              context.router.push(
+                EnterCardDetailsRoute(
+                  giftCard: giftCards.value[index],
+                ),
+              );
+            },
+            child: GiftCardItem(giftCard: card),
+          );
+        },
+      ),
     );
   }
 }
@@ -133,7 +150,7 @@ class GiftCardItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return SizedBox(
-      width: 116, // Fixed width
+      width: 175, // Fixed width
       height: 112, // Fixed height
       child: Container(
         decoration: ShapeDecoration(
@@ -146,27 +163,38 @@ class GiftCardItem extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    giftCard.image,
+                    height: 28,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    giftCard.name,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    giftCard.desc,
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              const Spacer(),
               Image.asset(
-                giftCard.image,
-                height: 28,
+                PlaceholderAssets.union,
+                height: 42,
                 fit: BoxFit.contain,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                giftCard.name,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 5),
-              Text(
-                giftCard.desc,
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                textAlign: TextAlign.center,
               ),
             ],
           ),

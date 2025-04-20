@@ -50,7 +50,7 @@ class CustomTextField extends HookWidget {
         if (label != null && label!.isNotEmpty)
           Text(label!,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: theme.brightness == Brightness.dark
                     ? Colors.white

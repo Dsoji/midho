@@ -62,10 +62,10 @@ class SellCryptoScreen extends HookConsumerWidget {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
@@ -83,9 +83,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: theme.brightness == Brightness.dark
-                            ? AppColors.secondaryColor.shade700
-                            : AppColors.whiteColor.shade500,
+                        color: const Color(0x14F8A036),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -137,7 +135,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 6),
                     SizedBox(
                       child: Stack(
                         children: [
@@ -170,7 +168,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                               right: 0,
                               left: 0,
                               child: CircleAvatar(
-                                radius: 24, // Adjust size as needed
+                                radius: 22, // Adjust size as needed
                                 backgroundColor: Colors
                                     .transparent, // Transparent background
                                 child: Container(
@@ -178,13 +176,14 @@ class SellCryptoScreen extends HookConsumerWidget {
                                       8), // Space around the icon
                                   decoration: BoxDecoration(
                                     color: theme.brightness == Brightness.dark
-                                        ? AppColors.secondaryColor.shade400
-                                        : AppColors.primaryColor.shade50,
+                                        ? AppColors.primaryColor.shade500
+                                        : const Color(0xFFE6ECFC),
                                     shape: BoxShape.circle, // Makes it circular
                                     // Grey border
                                   ),
                                   child: Icon(
                                     Icons.arrow_downward,
+                                    size: 12,
                                     color: theme.brightness == Brightness.dark
                                         ? Colors.white
                                         : AppColors.primaryColor.shade500,

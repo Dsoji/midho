@@ -1,14 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/common/res/assets.dart';
-import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
-
-import '../../common/res/app_colors.dart';
 
 final _logger = Logger();
 
@@ -38,52 +34,57 @@ class _SplashScreenState extends State<SplashScreen> {
     _logger.d("FCM Token: $fcmtoken");
 
     await Future.delayed(const Duration(seconds: 3));
-
-    if (token == null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const OnboardingScreen(),
-        ),
-      );
-    } else {
-      context.router.push(
-        const NaviBarRoute(),
-      );
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const OnboardingScreen(),
+      ),
+    );
+    // if (token == null) {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => const OnboardingScreen(),
+    //     ),
+    //   );
+    // } else {
+    //   context.router.push(
+    //     const NaviBarRoute(),
+    //   );
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: AppColors.primaryColor,
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
+    final theme = Theme.of(context);
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor,
-        ),
-        child: Stack(
+      backgroundColor:
+          theme.brightness == Brightness.dark ? Colors.black : Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Center(
-              child: SvgPicture.asset(
-                SvgAssets.mdiho,
-                width: 140,
-                height: 140,
+              child: Image.asset(
+                ImageAssets.logo,
+                width: 62,
+                height: 62,
               ),
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              child: SvgPicture.asset(
-                SvgAssets.mdihobckgrnd,
-                width: double.infinity,
-                height: 400,
+            const Gap(25),
+            Text(
+              'Swift Swap',
+              style: TextStyle(
+                fontSize: 35,
+                fontWeight: FontWeight.w600,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

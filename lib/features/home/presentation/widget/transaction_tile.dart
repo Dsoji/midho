@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
-import 'package:mdiho/common/widgets/custom_buttons.dart';
 
 import '../../../../common/res/app_colors.dart';
 
@@ -14,34 +13,60 @@ class TransactionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final tabsRouter = AutoTabsRouter.of(context);
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
-            : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: theme.brightness == Brightness.dark
-              ? AppColors.secondaryColor.shade400
-              : Colors.white,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "Transactions",
+              style: TextStyle(
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.secondaryColor.shade400,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () {
+                final tabsRouter = AutoTabsRouter.of(
+                  context,
+                );
+
+                tabsRouter.setActiveIndex(2);
+              },
+              child: Text(
+                "View All",
+                style: TextStyle(
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : AppColors.primaryColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Transactions",
-            style: TextStyle(
+        const Gap(16),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor.shade600
+                : const Color(0xFFF6F8FE),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              width: 4,
               color: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : AppColors.secondaryColor.shade400,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+                  ? AppColors.darkBorder
+                  : Colors.white,
             ),
           ),
-          const Gap(16),
-          Row(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -125,25 +150,8 @@ class TransactionCard extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(16),
-          FullButton(
-            text: "View All Activity",
-            width: double.infinity,
-            height: 48,
-            onPressed: () {
-              tabsRouter.setActiveIndex(3);
-            },
-            textColor: theme.brightness == Brightness.dark
-                ? Colors.white
-                : AppColors.secondaryColor.shade300,
-            color: theme.brightness == Brightness.dark
-                ? AppColors.secondaryColor.shade700
-                : const Color(0xFFF9F9FB),
-            fontSize: 13,
-          ),
-          const Gap(12),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
-import 'package:mdiho/features/transaction/presentation/transaction_details.dart';
 
 import '../../../../common/res/app_colors.dart';
 
@@ -30,24 +29,22 @@ class TransactionCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TransactionDetailsScreen(
-              status: status,
-              type: title,
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => TransactionDetailsScreen(
+        //       status: status,
+        //       type: title,
+        //     ),
+        //   ),
+        // );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        margin: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: theme.brightness == Brightness.dark
-              ? AppColors.secondaryColor.shade500
+              ? AppColors.darkBorder
               : Colors.white,
-          borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

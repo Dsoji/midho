@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/features/profile/presentation/bank/bank_list.dart';
-import 'package:mdiho/features/profile/presentation/personal_info/personal_information.dart';
-import 'package:mdiho/features/profile/presentation/preference_scren.dart';
-import 'package:mdiho/features/profile/presentation/security_settings/security_settings.dart';
-import 'package:mdiho/features/suggestion_box/presentation/suggestion_screen.dart';
-import 'package:mdiho/features/support_faq/presentation/support_faq_screen.dart';
 
 import '../../../../common/res/app_colors.dart';
 
@@ -19,9 +13,8 @@ class ProfileOption extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade500
+            ? AppColors.darkBorder
             : Colors.white,
-        borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
         // Disable inner scrolling
@@ -31,10 +24,10 @@ class ProfileOption extends StatelessWidget {
             "Personal Information",
             context,
             () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PersonalInfoScreen()));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const PersonalInfoScreen()));
             },
           ),
           Divider(
@@ -46,10 +39,10 @@ class ProfileOption extends StatelessWidget {
             "Security Settings",
             context,
             () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SecurtiySettingsScreen()));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const SecurtiySettingsScreen()));
             },
           ),
           Divider(
@@ -61,10 +54,10 @@ class ProfileOption extends StatelessWidget {
             "Linked Bank Accounts",
             context,
             () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const LinkedBanksScreen()));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const LinkedBanksScreen()));
             },
           ),
           Divider(
@@ -76,10 +69,10 @@ class ProfileOption extends StatelessWidget {
             "Preferences & Notifications",
             context,
             () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PreferenceScreen()));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const PreferenceScreen()));
             },
           ),
           Divider(
@@ -91,10 +84,10 @@ class ProfileOption extends StatelessWidget {
             "Suggestion Box",
             context,
             () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SuggestionScreen()));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const SuggestionScreen()));
             },
           ),
           Divider(
@@ -106,10 +99,10 @@ class ProfileOption extends StatelessWidget {
             "Support and FAQ",
             context,
             () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SupportFaqScreen()));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const SupportFaqScreen()));
             },
           ),
         ],

@@ -6,16 +6,14 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
-import 'package:mdiho/features/notification/notification_screen.dart';
-import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
 import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
-import '../../../common/res/assets.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
-import '../../bottomNav/app_router.gr.dart';
 import 'widget/quick_action_grid.dart';
+import 'widget/summary_card.dart';
 import 'widget/wallet_balance_card.dart';
+import 'widget/welcome_header.dart';
 
 @RoutePage()
 class HomeScreen extends HookConsumerWidget {
@@ -24,8 +22,8 @@ class HomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(authenticationControllerProvider.notifier).fetchProfile();
-        ref.read(profileControllerProvider.notifier).getFaq();
+        // ref.read(authenticationControllerProvider.notifier).fetchProfile();
+        // ref.read(profileControllerProvider.notifier).getFaq();
       });
       return null;
     }, []);
@@ -68,86 +66,34 @@ class HomeScreen extends HookConsumerWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 24.0),
-            child: InkWell(
-              onTap: () {
-                final tabsRouter = AutoTabsRouter.of(
-                  context,
-                );
-
-                tabsRouter.setActiveIndex(4);
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref
+                    .read(authenticationControllerProvider.notifier)
+                    .fetchProfile();
+                return Future.delayed(const Duration(seconds: 1));
               },
-              child: const CircleAvatar(
-                radius: 19,
-                backgroundColor: Colors.grey,
-                backgroundImage: AssetImage(
-                  PlaceholderAssets.pfp,
-                ),
+              child: const Column(
+                children: [
+                  WelcomeHeader(),
+                  Gap(16),
+                  WalletBalanceCard(
+                    balance: 9500000,
+                  ),
+                  Gap(12),
+                  SummaryCards(),
+                  Gap(16),
+                  QuickActionsGrid(),
+                  Gap(16),
+                  TransactionCard(),
+                  Gap(
+                    50,
+                  )
+                ],
               ),
-            ),
-          ),
-          centerTitle: false,
-          title: SizedBox(
-            width: 141,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Welcome ${userInfo?.firstname ?? ''} 👋',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                const Text(
-                  'What are we doing today?',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                  ),
-                )
-              ],
-            ),
-          ),
-          actions: [
-            const ReferralButton(),
-            const Gap(8),
-            CustomIconContainer(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NotificationScreen()));
-              },
-            ),
-            const Gap(24),
-          ],
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              ref
-                  .read(authenticationControllerProvider.notifier)
-                  .fetchProfile();
-              return Future.delayed(const Duration(seconds: 1));
-            },
-            child: const Column(
-              children: [
-                Gap(16),
-                WalletBalanceCard(
-                  balance: 9500000,
-                ),
-                Gap(16),
-                QuickActionsGrid(),
-                Gap(16),
-                TransactionCard(),
-                Gap(
-                  100,
-                )
-              ],
             ),
           ),
         ),
@@ -165,7 +111,7 @@ class ReferralButton extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.router.push(const ReferallRoute());
+        // context.router.push(const ReferallRoute());
         // Navigator.push(
         //   context,
         //   MaterialPageRoute(
@@ -177,11 +123,13 @@ class ReferralButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: theme.brightness == Brightness.dark
-              ? Colors.transparent
+              ? AppColors.secondaryColor.shade400
               : const Color(0xFFF5FDFE), // Light background color
           borderRadius: BorderRadius.circular(30), // Rounded corners
           border: Border.all(
-            color: AppColors.tertiaryColor.shade500,
+            color: theme.brightness == Brightness.dark
+                ? Colors.transparent
+                : AppColors.customBlue,
             width: 0.5,
           ), // Light blue border
         ),
@@ -189,18 +137,30 @@ class ReferralButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              IconsaxPlusLinear.award, // Placeholder icon
-              color: AppColors.tertiaryColor.shade700,
+              IconsaxPlusBold.award, // Placeholder icon
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : AppColors.customBlue.shade700,
               size: 17,
             ),
             const SizedBox(width: 6),
             Text(
-              "referrals",
+              "Referrals",
               style: TextStyle(
-                fontSize: 14,
-                color: AppColors.tertiaryColor.shade700,
-                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.customBlue.shade700,
+                fontWeight: FontWeight.w500,
               ),
+            ),
+            const Gap(6),
+            Icon(
+              IconsaxPlusLinear.arrow_right_3, // Placeholder icon
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : AppColors.customBlue.shade700,
+              size: 17,
             ),
           ],
         ),

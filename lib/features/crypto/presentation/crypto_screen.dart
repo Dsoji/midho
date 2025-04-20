@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import 'widget/crypto_card_widget.dart';
@@ -32,6 +33,7 @@ class CryptoScreen extends HookConsumerWidget {
         'img': PlaceholderAssets.ltc
       },
     ];
+    final theme = Theme.of(context);
 
     return PopScope(
       canPop: false, // Prevent default back navigation
@@ -44,26 +46,39 @@ class CryptoScreen extends HookConsumerWidget {
           tabsRouter.setActiveIndex(0);
         }
       },
+
       child: Scaffold(
-        appBar: const CustomAppBar(
+        appBar: CustomAppBar(
           title: "Select Crypto To Sell",
           showBackButton: false,
           showTitle: true,
           showAction: false,
+          bckgrndColor: theme.brightness == Brightness.dark
+              ? const Color(0xFF151515)
+              : AppColors.whiteColor.shade100,
         ),
-        body: ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: cryptoData.length,
-          separatorBuilder: (context, index) => const Gap(8),
-          itemBuilder: (context, index) {
-            final data = cryptoData[index];
-            return CryptoCard(
-              img: data['img']!,
-              name: data['name']!,
-              symbol: data['symbol']!,
-              rate: data['rate']!,
-            );
-          },
+        body: Column(
+          children: [
+            const Gap(16),
+            Expanded(
+              child: ListView.separated(
+                itemCount: cryptoData.length,
+                separatorBuilder: (context, index) => const Divider(
+                  color: Colors.transparent,
+                  height: 1,
+                ),
+                itemBuilder: (context, index) {
+                  final data = cryptoData[index];
+                  return CryptoCard(
+                    img: data['img']!,
+                    name: data['name']!,
+                    symbol: data['symbol']!,
+                    rate: data['rate']!,
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

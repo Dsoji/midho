@@ -3,16 +3,15 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/authentication/presentation/login/presentation/login_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../authentication/presentation/login/presentation/login_screen.dart';
 import '../../authentication/presentation/registration/presentation/registration_screen.dart';
 
 @RoutePage()
@@ -23,7 +22,9 @@ class OnboardingScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageController = usePageController();
     final currentPage = useState(0);
-
+    final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final containerWidth = screenWidth * 0.8;
     // Get the current theme mode
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -41,26 +42,34 @@ class OnboardingScreen extends HookConsumerWidget {
     }, []);
 
     final pages = [
-      const OnboardingPage(
-        image: ImageAssets.onboard1,
+      OnboardingPage(
+        image: theme.brightness == Brightness.dark
+            ? ImageAssets.donboard1
+            : ImageAssets.onboard1,
         title: "Sell Your Crypto",
         description:
             "Convert your Bitcoin or other supported tokens to Naira in just a few taps. Enjoy the best rates and instant payments.",
       ),
-      const OnboardingPage(
-        image: ImageAssets.onboard2,
+      OnboardingPage(
+        image: theme.brightness == Brightness.dark
+            ? ImageAssets.donboard2
+            : ImageAssets.onboard2,
         title: "Trade Gift Cards for Cash",
         description:
             "Got unused gift cards? Trade them for Naira at competitive rates. Support for popular brands like Amazon, Steam, and more.",
       ),
-      const OnboardingPage(
-        image: ImageAssets.onboard3,
+      OnboardingPage(
+        image: theme.brightness == Brightness.dark
+            ? ImageAssets.donboard3
+            : ImageAssets.onboard3,
         title: "Pay Your Bills",
         description:
             "Top up airtime, pay for electricity, subscribe to data bundles, or renew your cable TV, all in a few taps.",
       ),
-      const OnboardingPage(
-        image: ImageAssets.onboard4,
+      OnboardingPage(
+        image: theme.brightness == Brightness.dark
+            ? ImageAssets.donboard4
+            : ImageAssets.onboard4,
         imgHeight: double.infinity,
         title: "Earn Rewards",
         description:
@@ -113,35 +122,55 @@ class OnboardingScreen extends HookConsumerWidget {
         }
       },
       child: Scaffold(
+        backgroundColor: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade600
+            : const Color(0xFFF7F7F7),
         body: Column(
           children: [
             const Gap(100),
-            Expanded(
-              child: PageView.builder(
-                controller: pageController,
-                itemCount: pages.length,
-                onPageChanged: (index) => currentPage.value = index,
-                itemBuilder: (context, index) => pages[index],
+            Container(
+              decoration: BoxDecoration(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade600
+                    : Colors.white, // Dynamic Background
+                borderRadius: BorderRadius.circular(20),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  pages.length,
-                  (index) => Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                    width: currentPage.value == index ? 28.0 : 11.0,
-                    height: 8.0,
-                    decoration: BoxDecoration(
-                      color: currentPage.value == index
-                          ? AppColors.primaryColor.shade500
-                          : Colors.grey,
-                      borderRadius: BorderRadius.circular(4.0),
+              width: containerWidth,
+              height: 500,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: PageView.builder(
+                      controller: pageController,
+                      itemCount: pages.length,
+                      onPageChanged: (index) => currentPage.value = index,
+                      itemBuilder: (context, index) => pages[index],
                     ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        pages.length,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          width: currentPage.value == index ? 28.0 : 11.0,
+                          height: 8.0,
+                          decoration: BoxDecoration(
+                            color: currentPage.value == index
+                                ? AppColors.primaryColor.shade500
+                                : theme.brightness == Brightness.dark
+                                    ? AppColors.whiteColor.shade800
+                                    : AppColors.whiteColor.shade600,
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const Gap(50),
@@ -166,8 +195,11 @@ class OnboardingScreen extends HookConsumerWidget {
                     color: AppColors.primaryColor.shade500,
                   ),
                   const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
+                  FullButton(
+                    text: "Sign In",
+                    width: double.infinity,
+                    height: 48,
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -175,10 +207,12 @@ class OnboardingScreen extends HookConsumerWidget {
                         ),
                       );
                     },
-                    child: const Text(
-                      "Sign In",
-                      style: TextStyle(),
-                    ),
+                    textColor: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade400
+                        : const Color(0xFFFAFAFA),
                   ),
                   const Gap(24),
                 ],
@@ -213,80 +247,48 @@ class OnboardingPage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final containerWidth = screenWidth * 0.8;
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Gap(44),
-            Container(
-              height: 360, // Adjusted for smaller screens
-              width: containerWidth,
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
-                    : const Color(0xFFFEEEE9), // Dynamic Background
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SvgPicture.asset(
-                    SvgAssets.onboardSvg,
-                    width: double.infinity,
-                    height: double.infinity,
-                    color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : AppColors.primaryColor,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Image.asset(
-                      image,
-                      height: imgHeight,
-                      width: containerWidth - 0.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(20),
-            ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
-                colors: theme.brightness == Brightness.dark
-                    ? [Colors.white70, Colors.white]
-                    : [
-                        const Color(0xFF672510),
-                        const Color(0xFFCD4A20)
-                      ], // Dark mode gradient
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ).createShader(bounds),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 300, // Adjusted for smaller screens
+            width: containerWidth,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  image,
                 ),
-                textAlign: TextAlign.center,
               ),
+              // Dynamic Background
+              borderRadius: BorderRadius.circular(20),
             ),
-            const Gap(10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                description,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.secondaryColor.shade100
-                        : AppColors.secondaryColor.shade200),
-                textAlign: TextAlign.center,
-              ),
+          ),
+          const Gap(12),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : AppColors.primaryColor,
             ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+          ),
+          const Gap(10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              description,
+              style: TextStyle(
+                  fontSize: 16,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade100
+                      : AppColors.secondaryColor.shade200),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
       ),
     );
   }

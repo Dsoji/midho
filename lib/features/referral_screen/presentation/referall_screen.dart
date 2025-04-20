@@ -42,7 +42,7 @@ class ReferallScreen extends HookConsumerWidget {
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Earn rewards by inviting friends to M-Diho!",
+                "Earn rewards by inviting friends to  Swift Swap!",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,

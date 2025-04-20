@@ -59,11 +59,11 @@ class QrCryptoScreen extends HookConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(4),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
@@ -78,102 +78,126 @@ class QrCryptoScreen extends HookConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade500
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 1,
                           ),
-                          children: const [
-                            TextSpan(
-                                text:
-                                    "To proceed with this transaction, send\n"),
-                            TextSpan(
-                              text: "0.01 BTC",
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            TextSpan(text: " to the wallet address below"),
-                          ],
-                        ),
+                        ],
                       ),
-                    ),
-                    const Gap(16),
-                    Center(
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          children: [
-                            const TextSpan(
-                                text: "Wallet address is valid for "),
-                            TextSpan(
-                              text: formatDuration(duration.value),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primaryColor.shade500,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                                children: const [
+                                  TextSpan(
+                                      text:
+                                          "To proceed with this transaction, send\n"),
+                                  TextSpan(
+                                    text: "0.01 BTC",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                  TextSpan(
+                                      text: " to the wallet address below"),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const Gap(16),
+                          Center(
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                children: [
+                                  const TextSpan(
+                                      text: "Wallet address is valid for "),
+                                  TextSpan(
+                                    text: formatDuration(duration.value),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primaryColor.shade500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const Gap(16),
+                          Center(
+                            child: Text(
+                              'Scan the QR code:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const Gap(16),
+                          Center(
+                            child: QrImageView(
+                              data: walletAddress,
+                              version: QrVersions.auto,
+                              size: 130.0,
+                              dataModuleStyle: QrDataModuleStyle(
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                                dataModuleShape: QrDataModuleShape.square,
+                              ),
+                              eyeStyle: QrEyeStyle(
+                                eyeShape: QrEyeShape.square,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
+                          const Gap(24),
+                          _waaletAddressCard(context),
+                        ],
                       ),
                     ),
-                    const Gap(16),
-                    Center(
-                      child: Text(
-                        'Scan the QR code:',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const Gap(16),
-                    Center(
-                      child: QrImageView(
-                        data: walletAddress,
-                        version: QrVersions.auto,
-                        size: 130.0,
-                        dataModuleStyle: QrDataModuleStyle(
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          dataModuleShape: QrDataModuleShape.square,
-                        ),
-                        eyeStyle: QrEyeStyle(
-                          eyeShape: QrEyeShape.square,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                    ),
-                    const Gap(24),
-                    _waaletAddressCard(context),
-                    const Gap(24),
+                    const Gap(8),
                     InfoWidget(
                       theme: theme,
                       text:
                           "Use the wallet address or QR code to send the specified amount of Bitcoin.",
                     ),
-                    const Gap(24),
+                    const Gap(8),
                     InfoWidget(
                       theme: theme,
                       text:
                           "Ensure the exact amount (0.01 BTC) is sent to avoid delays.",
                     ),
-                    const Gap(24),
+                    const Gap(8),
                     FullButton(
                       text: "I HAVE SENT 0.1 BTC",
                       width: double.infinity,
@@ -184,7 +208,6 @@ class QrCryptoScreen extends HookConsumerWidget {
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,
                     ),
-                    const Gap(24),
                   ],
                 ),
               ),
@@ -213,7 +236,7 @@ class QrCryptoScreen extends HookConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: theme.brightness == Brightness.dark
-              ? AppColors.secondaryColor.shade700
+              ? AppColors.darkBorder
               : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -260,7 +283,7 @@ class QrCryptoScreen extends HookConsumerWidget {
                   color: copied.value
                       ? Colors.green
                       : theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade500
+                          ? AppColors.secondaryColor.shade400
                           : Colors.white,
                   borderRadius: BorderRadius.circular(8),
                 ),

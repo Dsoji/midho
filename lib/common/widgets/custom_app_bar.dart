@@ -13,6 +13,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onActionPressed;
   final IconData actionIcon;
   final Color? actionColor;
+  final Color? bckgrndColor;
 
   const CustomAppBar({
     super.key,
@@ -24,7 +25,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackPressed,
     this.onActionPressed,
     this.actionIcon = Icons.filter_list,
-    this.actionColor, // Default action icon
+    this.actionColor,
+    this.bckgrndColor, // Default action icon
   });
 
   @override
@@ -33,8 +35,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: theme.brightness == Brightness.dark
-          ? AppColors.secondaryColor.shade500
-          : Colors.white,
+          ? const Color(0xFF151515)
+          : AppColors.whiteColor.shade100,
       centerTitle: centerTitle,
       leading: showBackButton
           ? IconButton(

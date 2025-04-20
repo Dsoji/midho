@@ -9,7 +9,7 @@ class AppTheme {
     fontFamily: 'Figtree',
     brightness: Brightness.light,
     primarySwatch: AppColors.primaryColor,
-    scaffoldBackgroundColor: AppColors.scaffoldColorLight,
+    scaffoldBackgroundColor: const Color(0xFFF7F7F7),
     textTheme: const TextTheme(
       displayLarge: TextStyle(color: Colors.black),
       displayMedium: TextStyle(color: Colors.black),
@@ -40,7 +40,7 @@ class AppTheme {
     fontFamily: 'Figtree',
     brightness: Brightness.dark,
     primarySwatch: AppColors.secondaryColor,
-    scaffoldBackgroundColor: AppColors.secondaryColor.shade700,
+    scaffoldBackgroundColor: AppColors.secondaryColor.shade600,
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.white),
       bodyMedium: TextStyle(color: Colors.white70),
@@ -85,20 +85,29 @@ class CustomColors extends ThemeExtension<CustomColors> {
 }
 
 class ThemeNotifier extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.dark;
+  ThemeMode _themeMode = ThemeMode.system;
   final Box _box = Hive.box('data');
 
   ThemeNotifier() {
-    _themeMode = _box.get('themeMode', defaultValue: 'dark') == 'light'
-        ? ThemeMode.light
-        : ThemeMode.dark;
+    final savedTheme = _box.get('themeMode', defaultValue: 'dark');
+    _themeMode = savedTheme == 'dark'
+        ? ThemeMode.dark
+        : savedTheme == 'light'
+            ? ThemeMode.light
+            : ThemeMode.system;
   }
 
   ThemeMode get themeMode => _themeMode;
 
   void toggleTheme(ThemeMode mode) {
     _themeMode = mode;
-    _box.put('themeMode', mode == ThemeMode.dark ? 'dark' : 'light');
+    _box.put(
+        'themeMode',
+        mode == ThemeMode.dark
+            ? 'dark'
+            : mode == ThemeMode.light
+                ? 'light'
+                : 'system');
     notifyListeners();
   }
 }

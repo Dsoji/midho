@@ -121,7 +121,7 @@ class EmailVerifyScreen extends HookConsumerWidget {
                                 // Restart countdown
                                 isCounting.value = true;
                               },
-                              child: Text(
+                              child: const Text(
                                 "Resend Code",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,

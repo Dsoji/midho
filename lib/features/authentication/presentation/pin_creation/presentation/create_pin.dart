@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/authentication/presentation/pin_creation/presentation/confirm_pin.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -53,27 +54,39 @@ class CreatePinScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF151515)
+            : AppColors.whiteColor.shade100,
         automaticallyImplyLeading: false,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            IconsaxPlusLinear.arrow_left_1,
+            size: 20,
+          ),
+        ),
       ),
       body: Column(
         children: [
+          const Gap(25),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            decoration: ShapeDecoration(
               color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade500
+                  ? const Color(0xFF151515)
                   : AppColors.whiteColor.shade100,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
+              shape: const RoundedRectangleBorder(),
+              shadows: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1), // Light shadow color
-                  blurRadius: 8, // Soft shadow effect
+                  blurRadius: 3, // Soft shadow effect
                   spreadRadius: 1, // Spread of the shadow
                   offset: const Offset(0, 2), // Moves shadow slightly down
                 ),
               ],
             ),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +145,7 @@ class CreatePinScreen extends HookConsumerWidget {
                         },
                       ),
                     ),
-                    const Gap(8),
+                    const Spacer(),
                     InkWell(
                       onTap: pinNotifier.toggleVisibility,
                       child: Container(

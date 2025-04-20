@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -18,9 +19,9 @@ class NaviBarScreen extends HookConsumerWidget {
     return AutoTabsRouter(
       routes: const [
         HomeRoute(),
-        GiftCardRoute(),
         CryptoRoute(),
         TransactionHistoryRoute(),
+        GiftCardRoute(),
         ProfileRoute(),
       ],
       builder: (context, child) {
@@ -52,7 +53,7 @@ class NaviBarScreen extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(0),
                 ),
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : Colors.white,
               ),
               child: Row(
@@ -61,16 +62,22 @@ class NaviBarScreen extends HookConsumerWidget {
                 children: List.generate(5, (index) {
                   final icons = [
                     [IconsaxPlusBold.home_2, IconsaxPlusLinear.home_2],
-                    [IconsaxPlusBold.gift, IconsaxPlusLinear.gift],
+                    [
+                      HugeIcons.strokeRoundedBitcoinTransaction,
+                      HugeIcons.strokeRoundedBitcoinTransaction
+                    ],
                     [IconsaxPlusBold.coin_1, IconsaxPlusLinear.coin_1],
-                    [IconsaxPlusBold.arrow_swap, IconsaxPlusLinear.arrow_swap],
-                    [IconsaxPlusBold.user, IconsaxPlusLinear.user],
+                    [
+                      HugeIcons.strokeRoundedGiftCard,
+                      HugeIcons.strokeRoundedGiftCard
+                    ],
+                    [HugeIcons.strokeRoundedUser, HugeIcons.strokeRoundedUser],
                   ];
                   final labels = [
                     'Home',
-                    'Gift Cards',
                     'Crypto',
                     'Transactions',
+                    'Gift Cards',
                     'Profile'
                   ];
 

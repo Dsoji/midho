@@ -100,7 +100,7 @@ void showWithdrawalSuccessDialog({
 
               // Info Banner
               InfoWidget(
-                text: "Thank you for using M-Diho!",
+                text: "Thank you for using  Swift Swap!",
                 theme: theme,
               ),
 

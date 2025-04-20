@@ -8,11 +8,9 @@ import 'package:logger/logger.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../common/res/app_colors.dart';
-import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
-import '../../../../bottomNav/app_router.gr.dart';
 import '../../../data/controller/authentication_controller.dart';
-import '../../../data/model/payload/profile_payload.dart';
+import '../../login/presentation/login_screen.dart';
 
 class PinState {
   final String pin;
@@ -63,36 +61,39 @@ class ConfirmPinScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF151515)
+            : AppColors.whiteColor.shade100,
+        automaticallyImplyLeading: false,
+        leading: InkWell(
           onTap: () {
             Navigator.pop(context);
           },
           child: const Icon(
             IconsaxPlusLinear.arrow_left_1,
-            color: Colors.black,
             size: 20,
           ),
         ),
       ),
       body: Column(
         children: [
+          const Gap(24),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            decoration: ShapeDecoration(
               color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade500
+                  ? const Color(0xFF151515)
                   : AppColors.whiteColor.shade100,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
+              shape: const RoundedRectangleBorder(),
+              shadows: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1), // Light shadow color
-                  blurRadius: 8, // Soft shadow effect
+                  blurRadius: 3, // Soft shadow effect
                   spreadRadius: 1, // Spread of the shadow
                   offset: const Offset(0, 2), // Moves shadow slightly down
                 ),
               ],
             ),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +150,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
                         },
                       ),
                     ),
-                    const Gap(8),
+                    const Spacer(),
                     // Visibility Toggle Button
                     InkWell(
                       onTap: pinNotifier.toggleVisibility,
@@ -187,31 +188,37 @@ class ConfirmPinScreen extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
-                    if (pin == pinController.text) {
-                      logger.d('clicked');
-                      authService.updateProfileDetails(ProfilePayload(
-                        pin: pin,
-                      ));
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                    );
+                    // if (pin == pinController.text) {
+                    //   logger.d('clicked');
+                    //   authService.updateProfileDetails(ProfilePayload(
+                    //     pin: pin,
+                    //   ));
 
-                      final profileDetails = ref
-                          .watch(authenticationControllerProvider)
-                          .profilePayload
-                          .valueOrNull;
+                    //   final profileDetails = ref
+                    //       .watch(authenticationControllerProvider)
+                    //       .profilePayload
+                    //       .valueOrNull;
 
-                      logger.d("hete is profile details : $profileDetails");
+                    //   logger.d("hete is profile details : $profileDetails");
 
-                      final result =
-                          await authService.updateProfile(profileDetails!);
-                      if (result == true && context.mounted) {
-                        context.router.replace(const NaviBarRoute());
-                      }
-                    } else {
-                      Navigator.pop(context);
-                      ToastService().showToast(
-                        NotificationType.info,
-                        message: 'Pin does not match. Try again',
-                      );
-                    }
+                    //   final result =
+                    //       await authService.updateProfile(profileDetails!);
+                    //   if (result == true && context.mounted) {
+                    //     context.router.replace(const NaviBarRoute());
+                    //   }
+                    // } else {
+                    //   Navigator.pop(context);
+                    //   ToastService().showToast(
+                    //     NotificationType.info,
+                    //     message: 'Pin does not match. Try again',
+                    //   );
+                    // }
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,

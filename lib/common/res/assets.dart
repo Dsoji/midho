@@ -41,6 +41,7 @@ class PlaceholderAssets {
   static const ltc = '$_base/ltc.png';
   static const amazon = '$_base/amazon.png';
   static const apple = '$_base/apple.png';
+  static const appleWhite = '$_base/apple_white.png';
   static const google = '$_base/google.png';
   static const steam = '$_base/steam.png';
   static const visa = '$_base/visa.png';
@@ -57,6 +58,7 @@ class PlaceholderAssets {
   static const whatsapp = '$_base/whatsapp.png';
   static const lightmode = '$_base/light_mode.png';
   static const darkmode = '$_base/dark_mode.png';
+  static const union = '$_base/union.png';
 }
 
 class ImageAssets {
@@ -66,6 +68,11 @@ class ImageAssets {
   static const onboard2 = '$_base/onboard_two.png';
   static const onboard3 = '$_base/onboard_three.png';
   static const onboard4 = '$_base/onboar_four.png';
+  static const donboard1 = '$_base/onboard1_dark.png';
+  static const donboard2 = '$_base/onboard2_dark.png';
+  static const donboard3 = '$_base/onboard3_dark.png';
+  static const donboard4 = '$_base/onboard4_dark.png';
+  static const logo = '$_base/logo.png';
 }
 
 class SvgAssets {
@@ -75,7 +82,7 @@ class SvgAssets {
   static const failure = '$_base/failure.svg';
   static const verify = '$_base/verify.svg';
   static const info = '$_base/info.svg';
-  static const mdiho = '$_base/mdiho.svg';
+  static const logo = '$_base/swiftSwap.svg';
   static const mdihobckgrnd = '$_base/mdiho_bkgrnd.svg';
 }
 

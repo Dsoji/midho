@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -11,7 +9,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/common/utils/locator.dart';
 import 'package:mdiho/features/bottomNav/app_router.dart';
-import 'package:mdiho/firebase_options.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import 'common/app_theme.dart';
@@ -24,13 +21,13 @@ final _logger = Logger();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Hive.initFlutter();
   await Hive.openBox('data');
 
   await _getAndSaveDeviceId();
-  await getFCMToken();
+  // await getFCMToken();
   setUpLocator();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -123,28 +120,28 @@ Future<void> _getAndSaveDeviceId() async {
   }
 }
 
-Future<void> getFCMToken() async {
-  String? fCMToken = await FirebaseMessaging.instance.getToken();
-  if (fCMToken != null) {
-    _logger.d("FCM Token: $fCMToken");
-    try {
-      await Hive.initFlutter();
-      var box = await Hive.openBox('data');
+// Future<void> getFCMToken() async {
+//   String? fCMToken = await FirebaseMessaging.instance.getToken();
+//   if (fCMToken != null) {
+//     _logger.d("FCM Token: $fCMToken");
+//     try {
+//       await Hive.initFlutter();
+//       var box = await Hive.openBox('data');
 
-      // Check if FCM token already exists
-      var storedToken = box.get('fcm_token');
-      if (storedToken == null) {
-        // Save the new FCM token if it doesn't exist
-        await box.put('fcm_token', fCMToken);
-        storedToken = fCMToken;
-        _logger.d("New FCM Token saved: $storedToken");
-      } else {
-        _logger.d("Existing FCM Token found: $storedToken");
-      }
-    } catch (e) {
-      _logger.e("Error saving or fetching FCM Token: $e");
-    }
-  } else {
-    _logger.e("Failed to retrieve FCM Token");
-  }
-}
+//       // Check if FCM token already exists
+//       var storedToken = box.get('fcm_token');
+//       if (storedToken == null) {
+//         // Save the new FCM token if it doesn't exist
+//         await box.put('fcm_token', fCMToken);
+//         storedToken = fCMToken;
+//         _logger.d("New FCM Token saved: $storedToken");
+//       } else {
+//         _logger.d("Existing FCM Token found: $storedToken");
+//       }
+//     } catch (e) {
+//       _logger.e("Error saving or fetching FCM Token: $e");
+//     }
+//   } else {
+//     _logger.e("Failed to retrieve FCM Token");
+//   }
+// }

@@ -64,32 +64,49 @@ class CardDetailsProofScreen extends HookConsumerWidget {
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Gap(16),
-                  const Text(
-                    'Enter Card Details',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: theme.brightness == Brightness.dark
+                          ? const Color.fromARGB(255, 46, 45, 45)
+                          : AppColors.whiteColor.shade500,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Enter Card Details',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                   const Gap(16),
                   CustomTextField(
+                    fillColor: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : AppColors.whiteColor.shade100,
                     controller: codeController,
                     label: "Code (optional)",
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const Gap(16),
                   CustomTextField(
+                    fillColor: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : AppColors.whiteColor.shade100,
                     controller: pinController,
                     label: "Pin",
                     keyboardType: TextInputType.emailAddress,
@@ -144,8 +161,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                   const Gap(16),
                   InfoWidget(
                     theme: theme,
-                    text:
-                        'Enter a valid 10-digit account number linked to your bank.',
+                    text: 'Ensure the codes are visible to avoid delays.',
                   ),
                   const Gap(16),
 
@@ -312,51 +328,66 @@ class CardDetailsProofScreen extends HookConsumerWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(4),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Icon
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.black12,
-                  backgroundImage: AssetImage(img),
-                ),
-                const SizedBox(height: 16),
-
-                // Title
-                Text(
-                  "Trade Submitted",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
                     color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
+                        ? AppColors.darkBorder
+                        : AppColors.whiteColor.shade500,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Icon
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.black12,
+                        backgroundImage: AssetImage(img),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Title
+                      Text(
+                        "Trade Submitted",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Description
+                      Text(
+                        "Your STEAM gift card trade for \$50 is now pending admin review.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black54),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Transaction ID
+                      const Text(
+                        "Transaction ID: #TRX123456",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+
+                      // View Details Button
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-
-                // Description
-                Text(
-                  "Your STEAM gift card trade for \$50 is now pending admin review.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black54),
-                ),
-                const SizedBox(height: 12),
-
-                // Transaction ID
-                const Text(
-                  "Transaction ID: #TRX123456",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
                 const SizedBox(height: 16),
-
-                // View Details Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

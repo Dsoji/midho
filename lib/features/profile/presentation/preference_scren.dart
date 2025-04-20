@@ -155,7 +155,7 @@ class PreferenceScreen extends HookConsumerWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: selectedIndex.value == 0
-                              ? BorderSide(
+                              ? const BorderSide(
                                   color: AppColors.primaryColor, width: 0.5)
                               : BorderSide.none,
                         ),
@@ -171,7 +171,7 @@ class PreferenceScreen extends HookConsumerWidget {
                             PlaceholderAssets.lightmode,
                           ),
                           const Gap(12),
-                          Text(
+                          const Text(
                             'Light Mode',
                             style: TextStyle(
                               fontSize: 12,
@@ -200,7 +200,7 @@ class PreferenceScreen extends HookConsumerWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: selectedIndex.value == 1
-                              ? BorderSide(
+                              ? const BorderSide(
                                   color: AppColors.primaryColor,
                                   width: 0.5,
                                 )

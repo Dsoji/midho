@@ -20,7 +20,7 @@ class InfoWidget extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: ShapeDecoration(
         color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade400
+            ? AppColors.secondaryColor.shade500
             : const Color(0xFFF6F6F9),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),

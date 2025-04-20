@@ -76,14 +76,14 @@ class SupportFaqScreen extends HookConsumerWidget {
                   ),
                   SupportTile(
                     title: "Email Support",
-                    subtitle: "support@m-diho.com",
+                    subtitle: "support@ Swift Swap.com",
                     trailing: const Icon(
                       IconsaxPlusLinear.sms,
                       size: 18,
                     ),
                     onTap: () async {
-                      final Uri emailUri =
-                          Uri(scheme: 'mailto', path: 'support@m-diho.com');
+                      final Uri emailUri = Uri(
+                          scheme: 'mailto', path: 'support@ Swift Swap.com');
                       if (await canLaunchUrl(emailUri)) {
                         await launchUrl(emailUri);
                       }

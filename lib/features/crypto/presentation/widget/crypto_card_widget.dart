@@ -34,9 +34,8 @@ class CryptoCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.brightness == Brightness.dark
-              ? AppColors.secondaryColor.shade500
+              ? AppColors.darkBorder
               : Colors.white,
-          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

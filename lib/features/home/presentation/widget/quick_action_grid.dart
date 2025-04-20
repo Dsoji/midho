@@ -2,19 +2,18 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../bank_network/presentation/bank_network_screen.dart';
 
 // Define Action Model
 class ActionItem {
   final IconData icon;
   final String label;
+  final Color color;
   final VoidCallback? onTap; // Accepts context for navigation
 
-  ActionItem(this.icon, this.label, {this.onTap});
+  ActionItem(this.icon, this.label, this.color, {this.onTap});
 }
 
 // Riverpod Provider for Quick Actions List
@@ -28,16 +27,12 @@ class QuickActionsGrid extends ConsumerWidget {
     final theme = Theme.of(context);
     final quickActionsProvider = Provider<List<ActionItem>>((ref) {
       return [
-        ActionItem(IconsaxPlusLinear.bitcoin_convert, "Sell Crypto", onTap: () {
-          final tabsRouter = AutoTabsRouter.of(
-            context,
-          );
-
-          tabsRouter.setActiveIndex(2);
-        }),
         ActionItem(
-          IconsaxPlusLinear.gift,
-          "Sell Gift Cards",
+          HugeIcons.strokeRoundedBitcoinTransaction,
+          "Sell Crypto",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFFF89F33)
+              : AppColors.primaryColor,
           onTap: () {
             final tabsRouter = AutoTabsRouter.of(
               context,
@@ -47,97 +42,106 @@ class QuickActionsGrid extends ConsumerWidget {
           },
         ),
         ActionItem(
-          IconsaxPlusLinear.mobile,
-          "Buy Airtime",
+          HugeIcons.strokeRoundedGiftCard,
+          "Sell Gift Cards",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFF00E18E)
+              : AppColors.primaryColor,
           onTap: () {
-            context.router.push(const BuyAirtimeRoute());
-          },
-        ),
-        ActionItem(
-          IconsaxPlusLinear.wifi_square,
-          "Buy Data",
-          onTap: () {
-            context.router.push(const BuyDataRoute());
-          },
-        ),
-        ActionItem(
-          Icons.sports_football_outlined,
-          "Betting",
-          onTap: () {
-            context.router.push(const BettingRoute());
-          },
-        ),
-        ActionItem(
-          IconsaxPlusLinear.lamp_charge,
-          "Buy Electricity",
-          onTap: () {
-            context.router.push(const ElectricityBillRoute());
-          },
-        ),
-        ActionItem(
-          Icons.monitor,
-          "Tv Cable",
-          onTap: () {
-            context.router.push(const CableBillRoute());
-          },
-        ),
-        ActionItem(
-          IconsaxPlusLinear.bank,
-          "Bank network",
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => const BankNetworkScreen()),
+            final tabsRouter = AutoTabsRouter.of(
+              context,
             );
+
+            tabsRouter.setActiveIndex(3);
+          },
+        ),
+        ActionItem(
+          HugeIcons.strokeRoundedSmartPhone01,
+          "Buy Airtime",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFF0087E1)
+              : AppColors.primaryColor,
+          onTap: () {
+            // context.router.push(const BuyAirtimeRoute());
+          },
+        ),
+        ActionItem(
+          HugeIcons.strokeRoundedTabletConnectedWifi,
+          "Buy Data",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFFAC42FC)
+              : AppColors.primaryColor,
+          onTap: () {
+            // context.router.push(const BuyDataRoute());
+          },
+        ),
+        ActionItem(
+          HugeIcons.strokeRoundedFootball,
+          "Betting",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFF00BFE1)
+              : AppColors.primaryColor,
+          onTap: () {
+            // context.router.push(const BettingRoute());
+          },
+        ),
+        ActionItem(
+          HugeIcons.strokeRoundedElectricPlugs,
+          "Buy Electricity",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFFCAE100)
+              : AppColors.primaryColor,
+          onTap: () {
+            // context.router.push(const ElectricityBillRoute());
+          },
+        ),
+        ActionItem(
+          HugeIcons.strokeRoundedTv01,
+          "Tv Cable",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFF8B9CF4)
+              : AppColors.primaryColor,
+          onTap: () {
+            // context.router.push(const CableBillRoute());
+          },
+        ),
+        ActionItem(
+          HugeIcons.strokeRoundedSatellite01,
+          "Bank network",
+          theme.brightness == Brightness.dark
+              ? const Color(0xFFE1AC00)
+              : AppColors.primaryColor,
+          onTap: () {
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //       builder: (context) => const BankNetworkScreen()),
+            // );
           },
         ),
       ];
     });
     final actions = ref.watch(quickActionsProvider);
     return Container(
-      padding: const EdgeInsets.all(16),
-      height: 270,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
+            ? AppColors.darkBorder
             : Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: theme.brightness == Brightness.dark
-              ? AppColors.secondaryColor.shade400
-              : Colors.white,
-        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Quick Actions",
-            style: TextStyle(
-              color: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : AppColors.secondaryColor.shade400,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const Gap(16),
-          Expanded(
-            child: GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: actions.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                crossAxisSpacing: 18,
-                mainAxisSpacing: 20,
-                childAspectRatio: 1,
-              ),
-              itemBuilder: (context, index) {
-                return ActionButton(actions[index]);
-              },
-            ),
-          ),
-        ],
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: actions.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          childAspectRatio: 1,
+        ),
+        itemBuilder: (context, index) {
+          return ActionButton(actions[index]);
+        },
       ),
     );
   }
@@ -154,37 +158,40 @@ class ActionButton extends StatelessWidget {
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: action.onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade600
-                  : const Color(0xFFFFFBFA),
-              border: Border.all(
+      child: Container(
+        width: 82,
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade600
+              : const Color(0xFFF6F8FE),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            HugeIcon(
+              icon: action.icon,
+              color: action.color,
+              size: 18,
+            ),
+            const Gap(10),
+            Text(
+              action.label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w400,
+                height: 1.4, // line-height (140%)
+                letterSpacing: -0.2,
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade400
-                    : const Color(0xFFFFFBFA),
+                    ? Colors.white
+                    : Colors.black,
               ),
+              textAlign: TextAlign.center,
             ),
-            child: Icon(action.icon,
-                color: AppColors.primaryColor.shade500, size: 15.5),
-          ),
-          const Gap(2),
-          Text(
-            action.label,
-            style: TextStyle(
-              fontSize: 10,
-              color: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -5,7 +5,6 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
-import 'package:mdiho/features/authentication/presentation/forgot_password/presentation/forgot_password.dart';
 import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
 
 import '../../../../../common/res/app_colors.dart';
@@ -47,6 +46,8 @@ class LoginScreen extends HookConsumerWidget {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           automaticallyImplyLeading: false,
           leading: InkWell(
             onTap: () {
@@ -65,20 +66,17 @@ class LoginScreen extends HookConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                  margin: const EdgeInsets.symmetric(vertical: 18),
                   decoration: ShapeDecoration(
                     color: theme.brightness == Brightness.dark
-                        ? AppColors.secondaryColor.shade500
+                        ? const Color(0xFF151515)
                         : AppColors.whiteColor.shade100,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    shape: const RoundedRectangleBorder(),
                     shadows: [
                       BoxShadow(
                         color:
                             Colors.black.withOpacity(0.1), // Light shadow color
-                        blurRadius: 8, // Soft shadow effect
+                        blurRadius: 3, // Soft shadow effect
                         spreadRadius: 1, // Spread of the shadow
                         offset:
                             const Offset(0, 2), // Moves shadow slightly down
@@ -98,7 +96,7 @@ class LoginScreen extends HookConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        "Sign in to M-Diho",
+                        "Sign in to  Swift Swap",
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 20),
@@ -127,17 +125,19 @@ class LoginScreen extends HookConsumerWidget {
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ForgotPasswordScreen()));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) =>
+                            //             const ForgotPasswordScreen()));
                           },
                           child: Text(
                             "Forgot Password",
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppColors.primaryColor,
+                              color: theme.brightness == Brightness.dark
+                                  ? AppColors.blueColor
+                                  : AppColors.primaryColor,
                             ),
                           ),
                         ),
@@ -154,16 +154,17 @@ class LoginScreen extends HookConsumerWidget {
                         width: double.infinity,
                         height: 48,
                         onPressed: () async {
-                          if (!formKey.currentState!.validate()) {
-                            return;
-                          }
-                          final result = await authentication.signIn(
-                            emailController.text.trim(),
-                            passwordController.text.trim(),
-                          );
-                          if (result == true) {
-                            context.router.replace(const NaviBarRoute());
-                          }
+                          context.router.replace(const NaviBarRoute());
+                          // if (!formKey.currentState!.validate()) {
+                          //   return;
+                          // }
+                          // final result = await authentication.signIn(
+                          //   emailController.text.trim(),
+                          //   passwordController.text.trim(),
+                          // );
+                          // if (result == true) {
+                          //   context.router.replace(const NaviBarRoute());
+                          // }
                         },
                         textColor: Colors.white,
                         color: AppColors.primaryColor.shade500,
@@ -195,7 +196,9 @@ class LoginScreen extends HookConsumerWidget {
                                 TextSpan(
                                   text: "Sign Up",
                                   style: TextStyle(
-                                      color: AppColors.primaryColor,
+                                      color: theme.brightness == Brightness.dark
+                                          ? AppColors.blueColor
+                                          : AppColors.primaryColor,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ],

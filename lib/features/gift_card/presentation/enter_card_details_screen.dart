@@ -97,14 +97,9 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : Colors.white,
-                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -113,10 +108,14 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: Colors.transparent,
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor.shade600
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppColors.whiteColor.shade600,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.transparent
+                            : AppColors.whiteColor.shade600,
                         width: 0.3,
                       ),
                     ),
@@ -177,14 +176,16 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade600
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.greyColor.shade50,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.transparent
+                              : AppColors.whiteColor.shade600,
                           width: 0.3,
-                        ), // Slightly darker border
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
-                            : Colors.white, // Ensures white background
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -243,7 +244,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         ),
                         indicatorDecoration: BoxDecoration(
                           color: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade500
+                              ? AppColors.darkBorder
                               : Colors.white,
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -293,14 +294,16 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade600
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.greyColor.shade50,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.transparent
+                              : AppColors.whiteColor.shade600,
                           width: 0.3,
-                        ), // Slightly darker border
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
-                            : Colors.white, // Ensures white background
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -362,7 +365,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                             right: 0,
                             left: 0,
                             child: CircleAvatar(
-                              radius: 24, // Adjust size as needed
+                              radius: 22, // Adjust size as needed
                               backgroundColor:
                                   Colors.transparent, // Transparent background
                               child: Container(
@@ -370,13 +373,14 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                                     8), // Space around the icon
                                 decoration: BoxDecoration(
                                   color: theme.brightness == Brightness.dark
-                                      ? AppColors.secondaryColor.shade400
-                                      : AppColors.primaryColor.shade50,
+                                      ? AppColors.primaryColor.shade500
+                                      : const Color(0xFFE6ECFC),
                                   shape: BoxShape.circle, // Makes it circular
                                   // Grey border
                                 ),
                                 child: Icon(
                                   Icons.arrow_downward,
+                                  size: 12,
                                   color: theme.brightness == Brightness.dark
                                       ? Colors.white
                                       : AppColors.primaryColor.shade500,
@@ -479,13 +483,6 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                 ),
               ] else ...[
                 const Spacer(),
-                Text(
-                  sign == '\$' ? 'Rate~ ₦750/USD' : "Rate~ \$0.0006/NGN",
-                  style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: ''),
-                ),
               ],
             ],
           ),
@@ -509,29 +506,25 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
               ),
               if (isTop == false)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 12), // Adds spacing inside the container
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   decoration: BoxDecoration(
                     color: theme.brightness == Brightness.dark
-                        ? AppColors.secondaryColor.shade500
-                        : Colors.white, // Background color
-                    borderRadius: BorderRadius.circular(16), // Rounded corners
-                    // Light grey border
+                        ? AppColors.darkBorder
+                        : Colors.white,
+                    border: Border.all(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.transparent
+                            : Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.white,
-                        backgroundImage: AssetImage(flagPath),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        currency,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  child: Text(
+                    sign == '\$' ? 'Rate~ ₦750/USD' : "Rate~ \$0.0006/NGN",
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: '',
+                    ),
                   ),
                 )
               else
@@ -637,15 +630,19 @@ class CounterWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final count = useState(1); // State variable
-
+    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent, // Keep original background
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.transparent, // Keep original background
-
-          border: Border.all(color: Colors.grey.shade300),
+          color: theme.brightness == Brightness.dark
+              ? AppColors.darkBorder
+              : Colors.white,
+          border: Border.all(
+              color: theme.brightness == Brightness.dark
+                  ? Colors.transparent
+                  : Colors.grey.shade300),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -671,7 +668,11 @@ class CounterWidget extends HookWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
                 border: Border.symmetric(
-                  vertical: BorderSide(color: Colors.grey.shade300),
+                  vertical: BorderSide(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.black
+                        : Colors.grey.shade300,
+                  ),
                 ),
               ),
               child: Text(

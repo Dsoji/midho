@@ -4,7 +4,6 @@ import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
@@ -41,27 +40,28 @@ class ProfileScreen extends HookConsumerWidget {
           showAction: false,
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Manage your personal information, security settings, and linked accounts all in one place.",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  "Manage your personal information, security settings, and linked accounts all in one place.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
-              const Gap(10),
 
               // User Info Card
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : Colors.white,
-                  borderRadius: BorderRadius.circular(18),
                 ),
                 child: Row(
                   children: [
@@ -70,7 +70,7 @@ class ProfileScreen extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${userInfo?.firstname ?? ''} ${userInfo?.lastname ?? ''}",
+                            "${userInfo?.firstname ?? 'John'} ${userInfo?.lastname ?? 'Doe'}",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class ProfileScreen extends HookConsumerWidget {
                             ),
                           ),
                           Text(
-                            userInfo?.email ?? '',
+                            userInfo?.email ?? 'john.doe@example.com ',
                             style: const TextStyle(
                                 color: Colors.grey, fontSize: 14),
                           ),
@@ -105,18 +105,17 @@ class ProfileScreen extends HookConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: buildProfileOption(
                   IconsaxPlusLinear.logout,
                   "Sign Out",
                   context,
                   () async {
-                    await box.delete('accessToken').then((_) {
-                      context.router.replaceAll([const OnboardingRoute()]);
-                    });
+                    // await box.delete('accessToken').then((_) {
+                    //   context.router.replaceAll([const OnboardingRoute()]);
+                    // });
                   },
                   isDestructive: true,
                 ),

@@ -79,7 +79,7 @@ class SuggestionScreen extends HookConsumerWidget {
               ),
               const Gap(4),
               const Text(
-                "Help us improve M-Diho by sharing your suggestions.",
+                "Help us improve  Swift Swap by sharing your suggestions.",
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w400,
