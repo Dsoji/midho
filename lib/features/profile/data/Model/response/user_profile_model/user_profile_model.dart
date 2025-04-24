@@ -1,22 +1,53 @@
 import 'dart:convert';
 
+import 'package:hive_flutter/hive_flutter.dart';
+
 import 'wallet.dart';
 
 class UserProfileModel {
+  @HiveField(0)
   String? id;
+
+  @HiveField(1)
   String? email;
+
+  @HiveField(2)
   String? firstname;
+
+  @HiveField(3)
   String? lastname;
+
+  @HiveField(4)
   String? phone;
+
+  @HiveField(5)
   String? country;
+
+  @HiveField(6)
   bool? locked;
+
+  @HiveField(7)
   bool? pushAlert;
+
+  @HiveField(8)
   bool? emailAlert;
+
+  @HiveField(9)
   String? theme;
+
+  @HiveField(10)
   bool? biometrics;
+
+  @HiveField(11)
   String? username;
+
+  @HiveField(12)
   DateTime? createdAt;
+
+  @HiveField(13)
   DateTime? updatedAt;
+
+  @HiveField(14)
   Wallet? wallet;
 
   UserProfileModel({

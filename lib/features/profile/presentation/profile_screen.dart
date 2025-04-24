@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
@@ -20,6 +21,7 @@ class ProfileScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final userDetails = ref.watch(authenticationControllerProvider).userDetails;
     final theme = Theme.of(context);
     var box = Hive.box('data'); // Replace 'data' with your box name
     return PopScope(
@@ -66,25 +68,61 @@ class ProfileScreen extends HookConsumerWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${userInfo?.firstname ?? ''} ${userInfo?.lastname ?? ''}",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
+                      child: userDetails.when(
+                        loading: () => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Shimmer.fromColors(
+                              baseColor: AppColors.primaryColor.shade50,
+                              highlightColor: AppColors.primaryColor.shade100,
+                              child: Container(
+                                height: 12,
+                                width: 120,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          Text(
-                            userInfo?.email ?? '',
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 14),
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            Shimmer.fromColors(
+                              baseColor: AppColors.primaryColor.shade50,
+                              highlightColor: AppColors.primaryColor.shade100,
+                              child: Container(
+                                height: 10,
+                                width: 160,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        error: (error, _) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Error loading profile",
+                                style: TextStyle(color: Colors.red)),
+                            Text(error.toString(),
+                                style: const TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                        data: (userInfo) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${userInfo.firstname ?? ''} ${userInfo.lastname ?? ''}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            Text(
+                              userInfo.email ?? '',
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 14),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const ReferralButton(),

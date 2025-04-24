@@ -5,10 +5,11 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
-import 'package:mdiho/features/transaction/presentation/widget/transaction_card.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../crypto/presentation/crypto_screen.dart';
+import 'widget/transaction_card.dart';
 
 @RoutePage()
 class TransactionHistoryScreen extends HookConsumerWidget {
@@ -17,8 +18,7 @@ class TransactionHistoryScreen extends HookConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final transactions =
-        ref.watch(transactionControllerProvider).transactions.valueOrNull?.data;
+    final state = ref.watch(transactionControllerProvider);
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -41,42 +41,73 @@ class TransactionHistoryScreen extends HookConsumerWidget {
           onActionPressed: () => showFilterBottomSheet(context),
         ),
         body: RefreshIndicator(
-            onRefresh: () async {
-              ref
-                  .read(transactionControllerProvider.notifier)
-                  .getTransactions();
-              return Future.delayed(const Duration(seconds: 1));
+          onRefresh: () async {
+            await ref
+                .read(transactionControllerProvider.notifier)
+                .getTransactions();
+          },
+          child: state.transactions.when(
+            loading: () => ListView.separated(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 16,
+              ),
+              itemCount: 6,
+              separatorBuilder: (_, __) => const Gap(8),
+              itemBuilder: (_, __) => const CryptoCardShimmer(),
+            ),
+            error: (error, _) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Gap(52),
+                  const Icon(Icons.warning_amber_rounded,
+                      size: 48, color: Colors.red),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Failed to load transactions.",
+                    style: TextStyle(fontSize: 16, color: Colors.red[600]),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    error.toString(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            data: (transactions) {
+              if (transactions.data == null || transactions.data!.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Gap(52),
+                      const Icon(Icons.info_outline,
+                          color: Colors.grey, size: 48),
+                      const SizedBox(height: 8),
+                      Text(
+                        "No transactions available.",
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                itemCount: transactions.data!.length,
+                separatorBuilder: (context, index) => const Gap(8),
+                itemBuilder: (context, index) {
+                  final transaction = transactions.data![index];
+                  return TransactionCard(transactions: transaction);
+                },
+              );
             },
-            child: transactions!.isNotEmpty
-                ? ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    itemCount: transactions.length,
-                    separatorBuilder: (context, index) => const Gap(8),
-                    itemBuilder: (context, index) {
-                      final transaction = transactions[index];
-                      return TransactionCard(
-                        transactions: transaction,
-                      );
-                    },
-                  )
-                : Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Gap(52),
-                        const Icon(Icons.info_outline,
-                            color: Colors.grey, size: 48),
-                        const SizedBox(height: 8),
-                        Text(
-                          "No transactions available.",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+          ),
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/notification/notification_screen.dart';
@@ -18,6 +19,8 @@ import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bottomNav/app_router.gr.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/wallet_balance_card.dart';
+
+final logger = Logger();
 
 @RoutePage()
 class HomeScreen extends HookConsumerWidget {
@@ -113,7 +116,7 @@ class HomeScreen extends HookConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome ${userInfo?.firstname ?? ''} 👋',
+                  'Welcome ${userInfo?.firstname ?? '...'} 👋',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
