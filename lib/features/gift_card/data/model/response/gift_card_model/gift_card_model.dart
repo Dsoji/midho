@@ -11,8 +11,10 @@ class GiftCardModel {
   String toString() => 'GiftCardModel(data: $data)';
 
   factory GiftCardModel.fromMap(Map<String, dynamic> data) => GiftCardModel(
-        data: (data['data'] as List<dynamic>?)
-            ?.map((e) => GiftCardData.fromMap(e as Map<String, dynamic>))
+        data: (data['data'] as List?)
+            ?.map((e) => GiftCardData.fromMap(
+                  Map<String, dynamic>.from(e as Map),
+                ))
             .toList(),
       );
 
