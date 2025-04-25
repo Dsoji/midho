@@ -1,4 +1,6 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/features/transaction/data/model/response/currencies_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/rates_model/rates_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
@@ -6,6 +8,7 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 import '../repository/transaction_repository.dart';
 import '../state/transaction_state.dart';
 
+final logger = Logger();
 final transactionControllerProvider =
     StateNotifierProvider<TransactionController, TransactionState>((ref) {
   final authenticationRepository = ref.watch(transactionRepositoryProvider);
@@ -52,7 +55,31 @@ class TransactionController extends StateNotifier<TransactionState> {
   }
 
   Future<bool> getRates() async {
-    state = state.copyWith(rates: const AsyncValue.loading());
+    final rates = Hive.box('data').get('rates');
+
+    if (rates != null && rates is Map) {
+      try {
+        // Manually build a properly typed Map<String, dynamic>
+        final Map<String, dynamic> fixedMap = {};
+        for (var entry in rates.entries) {
+          if (entry.key is String) {
+            fixedMap[entry.key] = entry.value;
+          } else {
+            fixedMap[entry.key.toString()] = entry.value;
+          }
+        }
+
+        final cachedRates = RatesModel.fromMap(fixedMap);
+        state = state.copyWith(rates: AsyncValue.data(cachedRates));
+        logger.d('✅ Loaded cached rate from normalized map.');
+      } catch (e, stack) {
+        logger.e('⛔ Failed to parse normalized rate: $e', stackTrace: stack);
+        state = state.copyWith(rates: const AsyncValue.loading());
+      }
+    } else {
+      logger.w('No cached rates found.');
+      state = state.copyWith(rates: const AsyncValue.loading());
+    }
 
     final result = await _authenticationRepository.getRates();
     return result.when(

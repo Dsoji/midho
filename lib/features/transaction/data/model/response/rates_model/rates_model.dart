@@ -13,8 +13,12 @@ class RatesModel {
   String toString() => 'RatesModel(data: $data, pagination: $pagination)';
 
   factory RatesModel.fromMap(Map<String, dynamic> data) => RatesModel(
-        data: (data['data'] as List<dynamic>?)
-            ?.map((e) => RateData.fromMap(e as Map<String, dynamic>))
+        data: (data['data'] as List?)
+            ?.map((e) => RateData.fromMap(
+                  Map<String, dynamic>.from(
+                    (e as Map),
+                  ),
+                ))
             .toList(),
         pagination: data['pagination'] == null
             ? null

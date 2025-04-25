@@ -1,3 +1,4 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/transaction/data/model/response/currencies_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
@@ -46,9 +47,23 @@ class TransactionRepository {
     try {
       final data = await transactionService.getRates();
 
-      if (data.isSuccess) {
-        return Success(data.value ?? RatesModel());
+      if (data.isSuccess && data.value != null) {
+        final rates = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put('rates', rates.toMap());
+
+        return Success(rates);
       } else {
+        var box = Hive.box('data');
+        final cachedRates = box.get('rates');
+
+        if (cachedRates != null && cachedRates is Map<String, dynamic>) {
+          final cachedRate = RatesModel.fromMap(cachedRates);
+          return Success(cachedRate);
+        }
+
         return Error(
           data.error ??
               FailureHandler(
@@ -59,6 +74,13 @@ class TransactionRepository {
         );
       }
     } on FailureHandler catch (failure) {
+      var box = Hive.box('data');
+      final cachedRates = box.get('rates');
+
+      if (cachedRates != null && cachedRates is Map<String, dynamic>) {
+        final cachedRate = RatesModel.fromMap(cachedRates);
+        return Success(cachedRate);
+      }
       return Error(failure);
     }
   }
