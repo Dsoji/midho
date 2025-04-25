@@ -1,16 +1,20 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 import 'package:mdiho/features/authentication/data/model/payload/sign_up_payload.dart';
 import 'package:mdiho/features/authentication/data/model/response/user_model/user_model.dart';
 
+import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
 import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../repository/authentication_repository.dart';
 import '../state/authentication_state.dart';
 
+final logger = Logger();
 final authenticationControllerProvider =
     StateNotifierProvider<AuthenticationController, AuthenticationState>((ref) {
   final authenticationRepository = ref.watch(authenticationRepositoryProvider);
@@ -213,8 +217,31 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
   }
 
   Future<bool> fetchProfile() async {
-    state = state.copyWith(userDetails: const AsyncValue.loading());
+    final raw = Hive.box('data').get('userProfile');
 
+    if (raw != null && raw is Map) {
+      try {
+        // Manually build a properly typed Map<String, dynamic>
+        final Map<String, dynamic> fixedMap = {};
+        for (var entry in raw.entries) {
+          if (entry.key is String) {
+            fixedMap[entry.key] = entry.value;
+          } else {
+            fixedMap[entry.key.toString()] = entry.value;
+          }
+        }
+
+        final cachedProfile = UserProfileModel.fromMap(fixedMap);
+        state = state.copyWith(userDetails: AsyncValue.data(cachedProfile));
+        logger.d('✅ Loaded cached profile from normalized map.');
+      } catch (e, stack) {
+        logger.e('⛔ Failed to parse normalized profile: $e', stackTrace: stack);
+        state = state.copyWith(userDetails: const AsyncValue.loading());
+      }
+    } else {
+      logger.w('No cached profile found.');
+      state = state.copyWith(userDetails: const AsyncValue.loading());
+    }
     final result = await _authenticationRepository.fetchProfileDetails();
 
     return result.when(

@@ -19,11 +19,11 @@ class ProfileScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userInfo =
-        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final userDetails = ref.watch(authenticationControllerProvider).userDetails;
     final theme = Theme.of(context);
     var box = Hive.box('data'); // Replace 'data' with your box name
+    final cached = box.get('userProfile');
+    print('Cached map: $cached');
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -69,30 +69,52 @@ class ProfileScreen extends HookConsumerWidget {
                   children: [
                     Expanded(
                       child: userDetails.when(
-                        loading: () => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Shimmer.fromColors(
-                              baseColor: AppColors.primaryColor.shade50,
-                              highlightColor: AppColors.primaryColor.shade100,
-                              child: Container(
-                                height: 12,
-                                width: 120,
-                                color: Colors.white,
+                        loading: () => userDetails.maybeWhen(
+                          data: (userInfo) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${userInfo.firstname ?? ''} ${userInfo.lastname ?? ''}",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Shimmer.fromColors(
-                              baseColor: AppColors.primaryColor.shade50,
-                              highlightColor: AppColors.primaryColor.shade100,
-                              child: Container(
-                                height: 10,
-                                width: 160,
-                                color: Colors.white,
+                              Text(
+                                userInfo.email ?? '',
+                                style: const TextStyle(
+                                    color: Colors.grey, fontSize: 14),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                          orElse: () => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Shimmer.fromColors(
+                                baseColor: AppColors.primaryColor.shade50,
+                                highlightColor: AppColors.primaryColor.shade100,
+                                child: Container(
+                                  height: 12,
+                                  width: 120,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Shimmer.fromColors(
+                                baseColor: AppColors.primaryColor.shade50,
+                                highlightColor: AppColors.primaryColor.shade100,
+                                child: Container(
+                                  height: 10,
+                                  width: 160,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         error: (error, _) => Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

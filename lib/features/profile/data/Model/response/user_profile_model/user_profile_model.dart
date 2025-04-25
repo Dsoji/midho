@@ -93,9 +93,15 @@ class UserProfileModel {
       updatedAt: data['updatedAt'] == null
           ? null
           : DateTime.parse(data['updatedAt'] as String),
-      wallet: data['wallet'] == null
-          ? null
-          : Wallet.fromMap(data['wallet'] as Map<String, dynamic>),
+      wallet: data['wallet'] is Map
+          ? Wallet.fromMap(
+              Map<String, dynamic>.fromEntries(
+                (data['wallet'] as Map).entries.map(
+                      (e) => MapEntry(e.key.toString(), e.value),
+                    ),
+              ),
+            )
+          : null,
     );
   }
 
