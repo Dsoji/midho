@@ -156,7 +156,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, String>> sellGiftCards({
+  Future<Result<FailureHandler, TransactionData>> sellGiftCards({
     String? id,
     String? name,
     int? amount,
@@ -179,7 +179,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? '');
+        return Success(data.value ?? TransactionData());
       } else {
         return Error(
           data.error ??

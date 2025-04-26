@@ -10,7 +10,7 @@ import '../model/response/transaction_history/datum.dart';
 class TransactionState {
   final AsyncValue<TransactionHistory> transactions;
   final AsyncValue<TransactionData> sellCrypto;
-  final AsyncValue<String> sellGiftCards;
+  final AsyncValue<TransactionData> sellGiftCards;
   final AsyncValue<RatesModel> rates;
   final AsyncValue<CurrenciesModel> currency;
   final AsyncValue<RewardsModel> rewards;
@@ -29,7 +29,7 @@ class TransactionState {
     return TransactionState(
       transactions: AsyncValue.data(TransactionHistory()),
       sellCrypto: AsyncValue.data(TransactionData()),
-      sellGiftCards: const AsyncData(''),
+      sellGiftCards: AsyncData(TransactionData()),
       rates: AsyncData(RatesModel()),
       currency: AsyncData(CurrenciesModel()),
       rewards: AsyncValue.data(RewardsModel()),
@@ -40,7 +40,7 @@ class TransactionState {
   TransactionState copyWith({
     AsyncValue<TransactionHistory>? transactions,
     AsyncValue<TransactionData>? sellCrypto,
-    AsyncValue<String>? sellGiftCards,
+    AsyncValue<TransactionData>? sellGiftCards,
     AsyncValue<RatesModel>? rates,
     AsyncValue<CurrenciesModel>? currency,
     AsyncValue<RewardsModel>? rewards,

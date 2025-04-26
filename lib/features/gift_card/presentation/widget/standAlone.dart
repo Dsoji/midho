@@ -15,12 +15,12 @@ import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../transaction/data/model/response/transaction_history/datum.dart';
 
 @RoutePage()
-class StandAloneTransactionDetailsScreen extends StatelessWidget {
+class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
   final String type;
   final String status;
   final TransactionData transaction;
 
-  const StandAloneTransactionDetailsScreen({
+  const GiftStandAloneTransactionDetailsScreen({
     super.key,
     required this.type,
     required this.status,
@@ -136,7 +136,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
 
                     tabsRouter.setActiveIndex(0);
                   } else if (type == 'GIFTCARDSALE') {
-                    context.router.replaceAll([const HomeRoute()]);
+                    context.router.replaceAll([const GiftCardRoute()]);
 
                     final tabsRouter = AutoTabsRouter.of(
                       context,

@@ -10,7 +10,6 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
-import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -29,9 +28,11 @@ class CardDetailsProofScreen extends HookConsumerWidget {
     super.key,
     required this.giftCard,
     required this.amount,
+    required this.rates,
   });
   final GiftCardData giftCard;
   final int amount;
+  final String? rates;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -299,7 +300,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                           List<String> paths =
                               getPathsFromUploadResponse(uploadedFiles);
                           final result = await transactionService.sellGiftCards(
-                              id: giftCard.id ?? '',
+                              id: rates ?? '',
                               name: giftCard.name ?? '',
                               amount: amount,
                               pin: pinController.text.trim().isEmpty
@@ -314,6 +315,10 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                   : true,
                               comment: 'Just a comment');
                           if (result == true) {
+                            final transaction = ref
+                                .watch(transactionControllerProvider)
+                                .sellGiftCards
+                                .valueOrNull;
                             showTradeSubmittedDialog(
                               context,
                               giftCard.icon ?? '',
@@ -322,6 +327,18 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                     .replaceAll([const GiftCardRoute()]);
                                 Navigator.pop(context);
                               },
+                              () {
+                                context.router.push(
+                                  GiftStandAloneTransactionDetailsRoute(
+                                    type: transaction?.type ?? '',
+                                    status: transaction?.status ?? '',
+                                    transaction: transaction!,
+                                  ),
+                                );
+                              },
+                              transaction?.id ?? '',
+                              giftCard.name ?? '',
+                              transaction?.amount.toString() ?? '',
                             );
                           }
                         }
@@ -355,6 +372,10 @@ class CardDetailsProofScreen extends HookConsumerWidget {
     BuildContext context,
     final String img,
     final VoidCallback onTap,
+    final VoidCallback onDone,
+    final String id,
+    final String giftcard,
+    final String amount,
   ) {
     showDialog(
       context: context,
@@ -415,7 +436,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
 
                 // Description
                 Text(
-                  "Your STEAM gift card trade for \$50 is now pending admin review.",
+                  "Your $giftcard gift card trade for \$$amount is now pending admin review.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 14,
@@ -426,9 +447,10 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                 const SizedBox(height: 12),
 
                 // Transaction ID
-                const Text(
-                  "Transaction ID: #TRX123456",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                Text(
+                  "Transaction ID: ${id.length > 12 ? '${id.substring(0, 12)}...' : id}",
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 16),
 
@@ -437,13 +459,8 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      context.router.push(
-                        StandAloneTransactionDetailsRoute(
-                          type: 'Gift Card Purchase',
-                          status: 'Pending',
-                          transaction: TransactionData(),
-                        ),
-                      );
+                      onDone();
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,

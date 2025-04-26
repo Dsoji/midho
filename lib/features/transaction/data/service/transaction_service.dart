@@ -7,7 +7,6 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
-import '../../../../common/utils/utils.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
 import '../../../referral_screen/data/model/response/rewards_model/rewards_model.dart';
 import '../model/response/rates_model/rates_model.dart';
@@ -148,7 +147,7 @@ class TransactionService {
     );
   }
 
-  Future<ResultValue<String>> sellGiftCards({
+  Future<ResultValue<TransactionData>> sellGiftCards({
     String? id,
     String? name,
     int? amount,
@@ -178,7 +177,7 @@ class TransactionService {
         },
       ),
       parser: (data) {
-        return BaseModel.toRawString(data);
+        return TransactionData.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: true,

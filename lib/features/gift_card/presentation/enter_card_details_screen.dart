@@ -18,6 +18,7 @@ import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
+import '../../transaction/data/model/response/rates_model/datum.dart';
 import '../data/model/response/gift_card_model/datum.dart';
 
 @RoutePage()
@@ -37,6 +38,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
             rate.name?.toLowerCase().contains(giftCard.name!.toLowerCase()) ==
             true)
         .toList();
+    final conversionRate = useState<num?>(null);
+    final rateId = useState<String?>(null);
 
     final selectedPlan = useState<String>("USD");
     final selectedCategory = useState<String>("Select Sub-Category");
@@ -56,10 +59,26 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       );
     }
 
+    useEffect(() {
+      if (rates.isNotEmpty) {
+        final matchedRate = rates.firstWhere(
+          (rate) =>
+              rate.name?.toLowerCase().contains(giftCard.name!.toLowerCase()) ==
+                  true &&
+              rate.baseCurrency == selectedPlan.value,
+          orElse: () {
+            return RateData(); // Return a default RateData object if no match is found
+          },
+        );
+
+        conversionRate.value = matchedRate.rate ??
+            0.0; // Replace with the correct property or default value
+        rateId.value = matchedRate.id;
+      }
+      return null;
+    }, [selectedPlan.value, rates]);
     final usdController = useTextEditingController();
     final ngnController = useTextEditingController();
-
-    const conversionRate = 1400.0;
 
     void convertUSDToNGN(String value) {
       if (value.isEmpty) {
@@ -67,7 +86,18 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         return;
       }
       final usd = double.tryParse(value) ?? 0;
-      ngnController.text = (usd * conversionRate).toStringAsFixed(2);
+      ngnController.text =
+          (usd * (conversionRate.value ?? 0)).toStringAsFixed(2);
+    }
+
+    void convertGPBToNGN(String value) {
+      if (value.isEmpty) {
+        ngnController.text = "";
+        return;
+      }
+      final usd = double.tryParse(value) ?? 0;
+      ngnController.text =
+          (usd * (conversionRate.value ?? 0)).toStringAsFixed(2);
     }
 
     void convertNGNToUSD(String value) {
@@ -76,7 +106,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         return;
       }
       final ngn = double.tryParse(value) ?? 0;
-      usdController.text = (ngn / conversionRate).toStringAsFixed(2);
+      usdController.text =
+          (ngn / (conversionRate.value ?? 1)).toStringAsFixed(2);
     }
 
     final tabController = useTabController(initialLength: 2);
@@ -447,6 +478,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         CardDetailsProofRoute(
                           giftCard: giftCard,
                           amount: int.tryParse(usdController.text.trim()) ?? 0,
+                          rates: rateId.value,
                         ),
                       );
                     },

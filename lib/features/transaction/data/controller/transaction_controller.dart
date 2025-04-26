@@ -202,7 +202,8 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          sellGiftCards: AsyncValue.data(result.getSuccess() ?? ''),
+          sellGiftCards:
+              AsyncValue.data(result.getSuccess() ?? TransactionData()),
         );
         return true;
       },

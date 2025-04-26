@@ -178,12 +178,11 @@ class QrCryptoScreen extends HookConsumerWidget {
                     const Gap(24),
                     InfoWidget(
                       theme: theme,
-                      text:
-                          "Ensure the exact amount (0.01 BTC) is sent to avoid delays.",
+                      text: "Ensure the exact amount is sent to avoid delays.",
                     ),
                     const Gap(24),
                     FullButton(
-                      text: "I HAVE SENT 0.1 BTC",
+                      text: "SENT",
                       width: double.infinity,
                       height: 48,
                       onPressed: () {
