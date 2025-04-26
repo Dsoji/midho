@@ -7,6 +7,7 @@ import 'package:mdiho/features/transaction/data/model/response/rates_model/rates
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
+import '../model/response/transaction_history/datum.dart';
 import '../repository/transaction_repository.dart';
 import '../state/transaction_state.dart';
 
@@ -162,7 +163,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          sellCrypto: AsyncValue.data(result.getSuccess() ?? ''),
+          sellCrypto: AsyncValue.data(result.getSuccess() ?? TransactionData()),
         );
         return true;
       },
@@ -179,7 +180,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     String? code,
     String? pin,
   }) async {
-    state = state.copyWith(sellCrypto: const AsyncValue.loading());
+    state = state.copyWith(sellGiftCards: const AsyncValue.loading());
 
     final result = await _authenticationRepository.sellGiftCards(
       id: id,
@@ -194,14 +195,14 @@ class TransactionController extends StateNotifier<TransactionState> {
     return result.when(
       (error) {
         state = state.copyWith(
-          sellCrypto:
+          sellGiftCards:
               AsyncValue.error(result.getError() ?? '', StackTrace.current),
         );
         return false;
       },
       (success) {
         state = state.copyWith(
-          sellCrypto: AsyncValue.data(result.getSuccess() ?? ''),
+          sellGiftCards: AsyncValue.data(result.getSuccess() ?? ''),
         );
         return true;
       },

@@ -11,6 +11,7 @@ import '../../../../common/utils/utils.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
 import '../../../referral_screen/data/model/response/rewards_model/rewards_model.dart';
 import '../model/response/rates_model/rates_model.dart';
+import '../model/response/transaction_history/datum.dart';
 
 final logger = Logger();
 final transactionServiceProvider = Provider<TransactionService>((ref) {
@@ -116,7 +117,7 @@ class TransactionService {
     );
   }
 
-  Future<ResultValue<String>> sellCrypto({
+  Future<ResultValue<TransactionData>> sellCrypto({
     String? id,
     String? name,
     int? amount,
@@ -140,7 +141,7 @@ class TransactionService {
         },
       ),
       parser: (data) {
-        return BaseModel.toRawString(data);
+        return TransactionData.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: true,
@@ -159,7 +160,7 @@ class TransactionService {
   }) async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post(
-        'user/tx/sellCrypto',
+        'user/tx/sellGiftCard',
         header: {
           'Authorization': 'Bearer $accessToken',
         },

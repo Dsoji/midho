@@ -1,17 +1,16 @@
 import 'dart:io';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/toast/toast.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
-import '../../../bottomNav/app_router.gr.dart';
 import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../../../transaction/data/controller/transaction_controller.dart';
 import '../../../transaction/data/model/response/rates_model/datum.dart';
@@ -20,6 +19,7 @@ void showCryptoDialog({
   required BuildContext context,
   required WidgetRef ref,
   required VoidCallback onSecondaryAction,
+  required VoidCallback onDone,
   required int amount,
   required RateData crypto,
 }) {
@@ -228,9 +228,14 @@ void showCryptoDialog({
                             comment: 'Just a comment',
                           );
                           if (result == true) {
+                            final transaction = ref
+                                .watch(transactionControllerProvider)
+                                .sellCrypto;
                             showTransactionDialog(
                               context,
                               onSecondaryAction,
+                              onDone,
+                              transaction.valueOrNull,
                             );
                           }
                         }
@@ -261,6 +266,8 @@ List<String> getPathsFromUploadResponse(UploadResponse? uploadResponse) {
 void showTransactionDialog(
   BuildContext context,
   VoidCallback onTap,
+  VoidCallback onDone,
+  TransactionData? transaction,
 ) {
   Navigator.pop(context);
   showDialog(
@@ -305,7 +312,7 @@ void showTransactionDialog(
               ),
               const SizedBox(height: 12),
               Text(
-                "Transaction ID: #TRX123456",
+                "Transaction ID: ${transaction?.id != null && transaction!.id!.length > 12 ? '${transaction.id?.substring(0, 12)}...' : transaction?.id ?? ''}",
                 style: TextStyle(
                   color: theme.brightness == Brightness.dark
                       ? Colors.white
@@ -324,10 +331,7 @@ void showTransactionDialog(
                   ),
                 ),
                 onPressed: () {
-                  context.router.replaceAll([
-                    StandAloneTransactionDetailsRoute(
-                        type: 'Crypto Sale', status: 'Pending'),
-                  ]);
+                  onDone();
 
                   Navigator.pop(context);
                 },

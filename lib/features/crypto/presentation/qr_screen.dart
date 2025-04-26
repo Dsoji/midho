@@ -15,6 +15,7 @@ import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../bottomNav/app_router.gr.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 
 @RoutePage()
 class QrCryptoScreen extends HookConsumerWidget {
@@ -303,6 +304,17 @@ class QrCryptoScreen extends HookConsumerWidget {
       amount: amount,
       crypto: crypto,
       context: context,
+      onDone: () {
+        final transaction =
+            ref.watch(transactionControllerProvider).sellCrypto.valueOrNull;
+        AutoRouter.of(context).replaceAll([
+          StandAloneTransactionDetailsRoute(
+            type: transaction?.type ?? '',
+            status: transaction?.status ?? '',
+            transaction: transaction!,
+          ),
+        ]);
+      },
       onSecondaryAction: () {
         context.router.replaceAll([
           const CryptoRoute(),

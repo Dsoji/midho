@@ -10,6 +10,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
+import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -438,7 +439,10 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                     onPressed: () {
                       context.router.push(
                         StandAloneTransactionDetailsRoute(
-                            type: 'Gift Card Purchase', status: 'Pending'),
+                          type: 'Gift Card Purchase',
+                          status: 'Pending',
+                          transaction: TransactionData(),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(

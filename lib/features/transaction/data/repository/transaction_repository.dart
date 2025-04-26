@@ -8,6 +8,7 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
 import '../model/response/rates_model/rates_model.dart';
+import '../model/response/transaction_history/datum.dart';
 import '../service/transaction_service.dart';
 
 final transactionRepositoryProvider = Provider((ref) {
@@ -122,7 +123,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, String>> sellCrypto({
+  Future<Result<FailureHandler, TransactionData>> sellCrypto({
     String? id,
     String? name,
     int? amount,
@@ -139,7 +140,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? '');
+        return Success(data.value ?? TransactionData());
       } else {
         return Error(
           data.error ??

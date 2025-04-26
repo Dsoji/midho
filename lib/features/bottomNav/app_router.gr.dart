@@ -1241,6 +1241,7 @@ class StandAloneTransactionDetailsRoute
     _i49.Key? key,
     required String type,
     required String status,
+    required _i52.TransactionData transaction,
     List<_i48.PageRouteInfo>? children,
   }) : super(
           StandAloneTransactionDetailsRoute.name,
@@ -1248,6 +1249,7 @@ class StandAloneTransactionDetailsRoute
             key: key,
             type: type,
             status: status,
+            transaction: transaction,
           ),
           initialChildren: children,
         );
@@ -1262,6 +1264,7 @@ class StandAloneTransactionDetailsRoute
         key: args.key,
         type: args.type,
         status: args.status,
+        transaction: args.transaction,
       );
     },
   );
@@ -1272,6 +1275,7 @@ class StandAloneTransactionDetailsRouteArgs {
     this.key,
     required this.type,
     required this.status,
+    required this.transaction,
   });
 
   final _i49.Key? key;
@@ -1280,9 +1284,11 @@ class StandAloneTransactionDetailsRouteArgs {
 
   final String status;
 
+  final _i52.TransactionData transaction;
+
   @override
   String toString() {
-    return 'StandAloneTransactionDetailsRouteArgs{key: $key, type: $type, status: $status}';
+    return 'StandAloneTransactionDetailsRouteArgs{key: $key, type: $type, status: $status, transaction: $transaction}';
   }
 }
 

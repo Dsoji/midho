@@ -5,10 +5,11 @@ import 'package:mdiho/features/transaction/data/model/response/rates_model/rates
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
 import '../model/response/currencies_model.dart';
+import '../model/response/transaction_history/datum.dart';
 
 class TransactionState {
   final AsyncValue<TransactionHistory> transactions;
-  final AsyncValue<String> sellCrypto;
+  final AsyncValue<TransactionData> sellCrypto;
   final AsyncValue<String> sellGiftCards;
   final AsyncValue<RatesModel> rates;
   final AsyncValue<CurrenciesModel> currency;
@@ -27,7 +28,7 @@ class TransactionState {
   factory TransactionState.initial() {
     return TransactionState(
       transactions: AsyncValue.data(TransactionHistory()),
-      sellCrypto: const AsyncValue.data(''),
+      sellCrypto: AsyncValue.data(TransactionData()),
       sellGiftCards: const AsyncData(''),
       rates: AsyncData(RatesModel()),
       currency: AsyncData(CurrenciesModel()),
@@ -38,7 +39,7 @@ class TransactionState {
 
   TransactionState copyWith({
     AsyncValue<TransactionHistory>? transactions,
-    AsyncValue<String>? sellCrypto,
+    AsyncValue<TransactionData>? sellCrypto,
     AsyncValue<String>? sellGiftCards,
     AsyncValue<RatesModel>? rates,
     AsyncValue<CurrenciesModel>? currency,
