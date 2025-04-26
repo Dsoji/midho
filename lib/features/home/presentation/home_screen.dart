@@ -27,17 +27,39 @@ class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tabsRouter = AutoTabsRouter.of(context);
+
+    void initializeHomeData(WidgetRef ref) {
+      ref.read(authenticationControllerProvider.notifier).fetchProfile();
+      ref.read(giftCardControllerProvider.notifier).getGiftCards();
+      ref.read(profileControllerProvider.notifier).getFaq();
+      ref.read(transactionControllerProvider.notifier).getTransactions();
+      ref.read(transactionControllerProvider.notifier).getCurrencies();
+      ref.read(transactionControllerProvider.notifier).getRates();
+    }
+
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(authenticationControllerProvider.notifier).fetchProfile();
-        ref.read(giftCardControllerProvider.notifier).getGiftCards();
-        ref.read(profileControllerProvider.notifier).getFaq();
-        ref.read(transactionControllerProvider.notifier).getTransactions();
-        ref.read(transactionControllerProvider.notifier).getCurrencies();
-        ref.read(transactionControllerProvider.notifier).getRates();
+        initializeHomeData(ref);
       });
       return null;
     }, []);
+
+    useEffect(() {
+      void listener() {
+        if (tabsRouter.activeIndex == 0) {
+          ref.read(authenticationControllerProvider.notifier).fetchProfile();
+        }
+      }
+
+      tabsRouter.addListener(listener);
+
+      listener();
+
+      return () {
+        tabsRouter.removeListener(listener);
+      };
+    }, [tabsRouter]);
 
     int backPressCounter = 0;
     DateTime? lastBackPressTime;
@@ -152,6 +174,8 @@ class HomeScreen extends HookConsumerWidget {
             return Future.delayed(const Duration(seconds: 1));
           },
           child: const SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(), // 🔥 Add this line!
+
             padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
               children: [

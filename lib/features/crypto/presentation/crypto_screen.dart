@@ -14,7 +14,7 @@ class CryptoScreen extends HookConsumerWidget {
   const CryptoScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(transactionControllerProvider);
+    final state = ref.watch(transactionControllerProvider).rates;
 
     return PopScope(
       canPop: false, // Prevent default back navigation
@@ -39,12 +39,29 @@ class CryptoScreen extends HookConsumerWidget {
             ref.read(transactionControllerProvider.notifier).getRates();
             return Future.delayed(const Duration(seconds: 1));
           },
-          child: state.rates.when(
-            loading: () => ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: 6,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (_, __) => const CryptoCardShimmer(),
+          child: state.when(
+            loading: () => state.maybeWhen(
+              data: (rates) {
+                final cryptoRates =
+                    rates.data!.where((rate) => rate.type == "CRYPTO").toList();
+                return ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: cryptoRates.length,
+                  separatorBuilder: (context, index) => const Gap(8),
+                  itemBuilder: (context, index) {
+                    final data = cryptoRates[index];
+                    return CryptoCard(rates: data);
+                  },
+                );
+              },
+              orElse: () {
+                return ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: 6,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (_, __) => const CryptoCardShimmer(),
+                );
+              },
             ),
             error: (error, _) => Center(
               child: Column(

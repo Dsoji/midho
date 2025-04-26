@@ -183,7 +183,7 @@ class AuthenticationService {
       ),
       parser: (data) => UserProfileModel.fromMap(data),
       showErrorToast: true,
-      // showSuccessToast: true,
+      showSuccessToast: true,
     );
   }
 

@@ -18,7 +18,7 @@ class TransactionHistoryScreen extends HookConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(transactionControllerProvider);
+    final state = ref.watch(transactionControllerProvider).transactions;
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -46,15 +46,30 @@ class TransactionHistoryScreen extends HookConsumerWidget {
                 .read(transactionControllerProvider.notifier)
                 .getTransactions();
           },
-          child: state.transactions.when(
-            loading: () => ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 16,
-              ),
-              itemCount: 6,
-              separatorBuilder: (_, __) => const Gap(8),
-              itemBuilder: (_, __) => const CryptoCardShimmer(),
+          child: state.when(
+            loading: () => state.maybeWhen(
+              data: (transactions) {
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  itemCount: transactions.data!.length,
+                  separatorBuilder: (context, index) => const Gap(8),
+                  itemBuilder: (context, index) {
+                    final transaction = transactions.data![index];
+                    return TransactionCard(transactions: transaction);
+                  },
+                );
+              },
+              orElse: () {
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 16,
+                  ),
+                  itemCount: 6,
+                  separatorBuilder: (_, __) => const Gap(8),
+                  itemBuilder: (_, __) => const CryptoCardShimmer(),
+                );
+              },
             ),
             error: (error, _) => Center(
               child: Column(

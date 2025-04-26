@@ -81,21 +81,53 @@ class GiftCardGrid extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(giftCardControllerProvider);
+    final state = ref.watch(giftCardControllerProvider).giftCards;
     final query = useListenable(searchController).text.toLowerCase();
 
-    return state.giftCards.when(
-      loading: () => GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1,
+    return state.when(
+      loading: () => state.maybeWhen(
+        data: (giftCards) {
+          final filteredCards = useMemoized(() {
+            if (query.isEmpty) return giftCards.data ?? [];
+            return (giftCards.data ?? [])
+                .where(
+                    (card) => card.name?.toLowerCase().contains(query) == true)
+                .toList();
+          }, [giftCards, query]);
+          //
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1,
+            ),
+            itemCount: filteredCards.length,
+            itemBuilder: (context, index) {
+              final card = filteredCards[index];
+              return GestureDetector(
+                onTap: () {
+                  context.router.push(EnterCardDetailsRoute(giftCard: card));
+                },
+                child: GiftCardItem(giftCard: card),
+              );
+            },
+          );
+        },
+        orElse: () => GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1,
+          ),
+          itemCount: 6,
+          itemBuilder: (_, __) => const GiftCardShimmerItem(),
         ),
-        itemCount: 6,
-        itemBuilder: (_, __) => const GiftCardShimmerItem(),
       ),
       error: (error, _) => Center(
         child: Column(
