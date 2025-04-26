@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
+import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/features/referral_screen/presentation/reward_screen.dart';
 import 'package:mdiho/features/referral_screen/presentation/withdrawal/withdraw_balance_screen.dart';
 import 'package:mdiho/features/referral_screen/presentation/your_referalls.dart';
@@ -15,6 +16,7 @@ import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
+import '../../crypto/presentation/crypto_screen.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
 import '../../transaction/data/controller/transaction_controller.dart';
 
@@ -54,8 +56,7 @@ class ReferallScreen extends HookConsumerWidget {
             ReferralCodeCard(
                 referralCode: userInfo?.username ?? "DESIGNFATHER"),
             const Gap(16),
-            RewardEmptyStateCard(
-                referralCode: userInfo?.username ?? "DESIGNFATHER"),
+            const RewardEmptyStateCard(),
             const Gap(150),
           ],
         ),
@@ -64,19 +65,14 @@ class ReferallScreen extends HookConsumerWidget {
   }
 }
 
-class RewardEmptyStateCard extends StatelessWidget {
-  final String referralCode;
-
-  const RewardEmptyStateCard({super.key, required this.referralCode});
-
-  void _shareReferralCode() {
-    Share.share(
-        "Use my referral code: $referralCode to sign up and earn rewards!");
-  }
+class RewardEmptyStateCard extends HookConsumerWidget {
+  const RewardEmptyStateCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final state = ref.watch(transactionControllerProvider).rewards;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -93,8 +89,9 @@ class RewardEmptyStateCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Header Row
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -108,68 +105,127 @@ class RewardEmptyStateCard extends StatelessWidget {
                       : const Color(0xFF565B8A),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.more_horiz),
-                onPressed: () {
-                  print("More options clicked");
-                },
-              ),
             ],
           ),
           const SizedBox(height: 12),
 
-          // Empty State Icon & Message
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+          // Rewards State
+          state.when(
+            loading: () => Column(
+              children: List.generate(
+                3,
+                (_) => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: CryptoCardShimmer(),
+                ),
+              ),
+            ),
+            error: (error, _) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade400
-                          : const Color(0xFFF9F9FB),
-                    ),
-                    child: Icon(Icons.arrow_downward,
-                        size: 12,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : const Color(0xFF2B2B2B)),
-                  ),
-                  const SizedBox(width: 8),
-                  RichText(
-                    text: TextSpan(
-                      style: DefaultTextStyle.of(context)
-                          .style
-                          .copyWith(fontSize: 16),
-                      children: [
-                        TextSpan(
-                          text: '1,000'.formatAsNaira(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            fontFamily: '',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const Icon(Icons.warning_amber_outlined,
+                      size: 48, color: Colors.red),
+                  const Gap(12),
+                  Text('Failed to load rewards.',
+                      style: TextStyle(color: Colors.red[600], fontSize: 16)),
+                  const Gap(6),
+                  Text(error.toString(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 12)),
                 ],
               ),
-              Text(
-                'Jan 15, 2025',
-                style: TextStyle(
-                    color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.grey.shade600,
-                    fontSize: 14),
-              ),
-            ],
+            ),
+            data: (data) {
+              final rewards = data.data;
+              if (rewards == null || rewards.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Gap(52),
+                      const Icon(Icons.info_outline,
+                          color: Colors.grey, size: 48),
+                      const SizedBox(height: 8),
+                      Text(
+                        "No rewards available.",
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return Column(
+                children: [
+                  ...rewards.take(3).expand((reward) => [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: theme.brightness == Brightness.dark
+                                        ? AppColors.secondaryColor.shade400
+                                        : const Color(0xFFF9F9FB),
+                                  ),
+                                  child: Icon(Icons.arrow_downward,
+                                      size: 12,
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : const Color(0xFF2B2B2B)),
+                                ),
+                                const SizedBox(width: 8),
+                                RichText(
+                                  text: TextSpan(
+                                    style: DefaultTextStyle.of(context)
+                                        .style
+                                        .copyWith(fontSize: 16),
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            '${reward.amount}'.formatAsNaira(),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                          fontFamily: '',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              '${reward.createdAt?.getFormattedDate()}',
+                              style: TextStyle(
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey.shade600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (reward != rewards.take(3).last)
+                          Divider(
+                            height: 1,
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.secondaryColor.shade500
+                                : Colors.grey.shade300,
+                          ),
+                      ]),
+                ],
+              );
+            },
           ),
+
           const SizedBox(height: 16),
 
+          // View All Rewards Button
           GestureDetector(
             onTap: () {
               Navigator.push(

@@ -34,10 +34,25 @@ class TransactionController extends StateNotifier<TransactionState> {
   final TransactionRepository _authenticationRepository;
   final Ref ref;
 
-  Future<bool> getTransactions() async {
+  Future<bool> getTransactions({
+    String? status,
+    String? type,
+    String? startDate,
+    String? endDate,
+    String sortKey = 'createdAt',
+    String sortOrder = 'DESC',
+  }) async {
     state = state.copyWith(transactions: const AsyncValue.loading());
 
-    final result = await _authenticationRepository.getTransactions();
+    final result = await _authenticationRepository.getTransactions(
+      status: status,
+      type: type,
+      startDate: startDate,
+      endDate: endDate,
+      sortKey: sortKey,
+      sortOrder: sortOrder,
+    );
+
     return result.when(
       (error) {
         state = state.copyWith(

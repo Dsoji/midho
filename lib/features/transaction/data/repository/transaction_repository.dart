@@ -24,9 +24,23 @@ class TransactionRepository {
 
   final TransactionService transactionService;
 
-  Future<Result<FailureHandler, TransactionHistory>> getTransactions() async {
+  Future<Result<FailureHandler, TransactionHistory>> getTransactions({
+    String? status,
+    String? type,
+    String? startDate,
+    String? endDate,
+    String sortKey = 'createdAt',
+    String sortOrder = 'DESC',
+  }) async {
     try {
-      final data = await transactionService.getTransactions();
+      final data = await transactionService.getTransactions(
+        status: status,
+        type: type,
+        startDate: startDate,
+        endDate: endDate,
+        sortKey: sortKey,
+        sortOrder: sortOrder,
+      );
 
       if (data.isSuccess) {
         return Success(data.value ?? TransactionHistory());
@@ -34,9 +48,9 @@ class TransactionRepository {
         return Error(
           data.error ??
               FailureHandler(
-                message: 'Failed to fetch categories',
+                message: 'Failed to fetch transactions',
                 stackTrace: StackTrace.current,
-                exception: Exception('Failed to fetch categories'),
+                exception: Exception('Failed to fetch transactions'),
               ),
         );
       }

@@ -129,9 +129,9 @@ class TransactionCard extends StatelessWidget {
                     fontSize: 12,
                     color: transactions.status!.toLowerCase() == 'pending'
                         ? Colors.orange
-                        : transactions.status == 'completed'
+                        : transactions.status!.toLowerCase() == 'completed'
                             ? Colors.green
-                            : transactions.status == 'failed'
+                            : transactions.status!.toLowerCase() == 'failed'
                                 ? Colors.red
                                 : Colors.grey,
                     fontWeight: FontWeight.w400,

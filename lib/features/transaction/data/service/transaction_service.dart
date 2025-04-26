@@ -36,22 +36,44 @@ class TransactionService {
     required this.apiRequestHelper,
   });
 
-  Future<ResultValue<TransactionHistory>> getTransactions() async {
+  Future<ResultValue<TransactionHistory>> getTransactions({
+    String? status,
+    String? type,
+    String? startDate,
+    String? endDate,
+    String sortKey = 'createdAt',
+    String sortOrder = 'DESC',
+  }) async {
+    final queryParameters = {
+      'paginate': false,
+      'page': 1,
+      'limit': 500,
+      'sortKey': sortKey,
+      'sortOrder': sortOrder,
+    };
+
+    if (status != null && status.isNotEmpty) {
+      queryParameters['status'] = status;
+    }
+    if (type != null && type.isNotEmpty) {
+      queryParameters['type'] = type;
+    }
+    if (startDate != null && startDate.isNotEmpty) {
+      queryParameters['startDate'] = startDate;
+    }
+    if (endDate != null && endDate.isNotEmpty) {
+      queryParameters['endDate'] = endDate;
+    }
+
     return apiRequestHelper.handleApiRequest(
       () => apiClient.get(
         'user/tx/txs',
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
-        queryParameters: {
-          'paginate': false,
-          'page': 1,
-          'limit': 500,
-        },
+        queryParameters: queryParameters,
       ),
-      parser: (data) {
-        return TransactionHistory.fromMap(data);
-      },
+      parser: (data) => TransactionHistory.fromMap(data),
       showErrorToast: true,
       showSuccessToast: true,
     );

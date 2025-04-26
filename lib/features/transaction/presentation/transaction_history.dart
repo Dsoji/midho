@@ -18,7 +18,7 @@ class TransactionHistoryScreen extends HookConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(transactionControllerProvider).transactions;
+    final state = ref.watch(transactionControllerProvider);
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -46,30 +46,15 @@ class TransactionHistoryScreen extends HookConsumerWidget {
                 .read(transactionControllerProvider.notifier)
                 .getTransactions();
           },
-          child: state.when(
-            loading: () => state.maybeWhen(
-              data: (transactions) {
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  itemCount: transactions.data!.length,
-                  separatorBuilder: (context, index) => const Gap(8),
-                  itemBuilder: (context, index) {
-                    final transaction = transactions.data![index];
-                    return TransactionCard(transactions: transaction);
-                  },
-                );
-              },
-              orElse: () {
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 16,
-                  ),
-                  itemCount: 6,
-                  separatorBuilder: (_, __) => const Gap(8),
-                  itemBuilder: (_, __) => const CryptoCardShimmer(),
-                );
-              },
+          child: state.transactions.when(
+            loading: () => ListView.separated(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 16,
+              ),
+              itemCount: 6,
+              separatorBuilder: (_, __) => const Gap(8),
+              itemBuilder: (_, __) => const CryptoCardShimmer(),
             ),
             error: (error, _) => Center(
               child: Column(
@@ -143,134 +128,167 @@ class TransactionHistoryScreen extends HookConsumerWidget {
   }
 }
 
-class FilterBottomSheet extends HookWidget {
+class FilterBottomSheet extends HookConsumerWidget {
   const FilterBottomSheet({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final selectedTransactionType = useState<String>("All");
     final selectedStatus = useState<String>("All");
     final selectedSortBy = useState<String>("Newest First");
     final fromDate = useState<String>("DD/MM/YY");
     final toDate = useState<String>("DD/MM/YY");
+    final isLoading = useState<bool>(false);
+
     final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 48,
-              height: 6,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : Colors.grey.shade300,
-              ),
-            ),
-          ),
-          const Gap(10),
-          const Text(
-            "Filters",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildFilterCard(
-            title: "Date Range",
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: _buildDateField(context, "From", fromDate),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildDateField(context, "To", toDate),
-                ),
-              ],
-            ),
-            context: context,
-          ),
-          const SizedBox(height: 8),
-          _buildFilterCard(
-            title: "Transaction Type",
-            child: _buildRadioGroup(
-              ["All", "Gift Cards", "Utilities", "Crypto"],
-              selectedTransactionType,
-            ),
-            context: context,
-          ),
-          const SizedBox(height: 8),
-          _buildFilterCard(
-            title: "Status",
-            child: _buildRadioGroup(
-              ["All", "Completed", "Pending", "Failed"],
-              selectedStatus,
-            ),
-            context: context,
-          ),
-          const SizedBox(height: 8),
-          _buildFilterCard(
-            title: "Sort By",
-            child: _buildRadioGroup(
-              [
-                "Newest First",
-                "Oldest First",
-                "Lowest Amount",
-                "Highest Amount"
-              ],
-              selectedSortBy,
-            ),
-            context: context,
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: FullButton(
-                  text: 'Clear Filters',
-                  width: 173,
-                  height: 60,
-                  onPressed: () {},
-                  textColor: theme.brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 48,
+                height: 6,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
                   color: theme.brightness == Brightness.dark
                       ? AppColors.secondaryColor.shade500
-                      : Colors.white,
+                      : Colors.grey.shade300,
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: FullButton(
-                  text: 'Apply Filters',
-                  width: 173,
-                  height: 60,
-                  onPressed: () {},
-                  textColor: Colors.white,
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.primaryColor.shade500
-                      : Colors.black,
-                ),
+            ),
+            const Gap(10),
+            const Text(
+              "Filters",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            _buildFilterCard(
+              title: "Date Range",
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(child: _buildDateField(context, "From", fromDate)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildDateField(context, "To", toDate)),
+                ],
               ),
-            ],
-          ),
-          const Gap(120),
-        ],
+              context: context,
+            ),
+            const SizedBox(height: 8),
+            _buildFilterCard(
+              title: "Transaction Type",
+              child: _buildRadioGroup(
+                ["All", "Gift Cards", "Utilities", "Crypto"],
+                selectedTransactionType,
+              ),
+              context: context,
+            ),
+            const SizedBox(height: 8),
+            _buildFilterCard(
+              title: "Status",
+              child: _buildRadioGroup(
+                ["All", "Completed", "Pending", "Failed"],
+                selectedStatus,
+              ),
+              context: context,
+            ),
+            const SizedBox(height: 8),
+            _buildFilterCard(
+              title: "Sort By",
+              child: _buildRadioGroup(
+                [
+                  "Newest First",
+                  "Oldest First",
+                  "Lowest Amount",
+                  "Highest Amount"
+                ],
+                selectedSortBy,
+              ),
+              context: context,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: FullButton(
+                    text: 'Clear Filters',
+                    width: double.infinity,
+                    height: 60,
+                    onPressed: () async {
+                      await ref
+                          .read(transactionControllerProvider.notifier)
+                          .getTransactions();
+                      Navigator.of(context).pop();
+                    },
+                    textColor: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FullButton(
+                    text: isLoading.value ? 'Applying...' : 'Apply Filters',
+                    width: double.infinity,
+                    height: 60,
+                    isLoading: isLoading.value,
+                    onPressed: () async {
+                      isLoading.value = true;
+                      await ref
+                          .read(transactionControllerProvider.notifier)
+                          .getTransactions(
+                            status: selectedStatus.value == "All"
+                                ? null
+                                : selectedStatus.value.toUpperCase(),
+                            type: selectedTransactionType.value == "All"
+                                ? null
+                                : selectedTransactionType.value.toUpperCase(),
+                            sortKey: selectedSortBy.value.contains('Amount')
+                                ? 'amount'
+                                : 'createdAt',
+                            sortOrder:
+                                selectedSortBy.value.contains('Lowest') ||
+                                        selectedSortBy.value.contains('Oldest')
+                                    ? 'ASC'
+                                    : 'DESC',
+                            startDate: fromDate.value != "DD/MM/YY"
+                                ? _formatDateForApi(fromDate.value)
+                                : null,
+                            endDate: toDate.value != "DD/MM/YY"
+                                ? _formatDateForApi(toDate.value)
+                                : null,
+                          );
+                      isLoading.value = false;
+                      Navigator.of(context).pop();
+                    },
+                    textColor: Colors.white,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.primaryColor.shade500
+                        : Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            const Gap(40),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildFilterCard(
-      {required String title,
-      required Widget child,
-      required BuildContext context}) {
+  Widget _buildFilterCard({
+    required String title,
+    required Widget child,
+    required BuildContext context,
+  }) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -298,9 +316,10 @@ class FilterBottomSheet extends HookWidget {
       BuildContext context, String label, ValueNotifier<String> dateValue) {
     return GestureDetector(
       onTap: () async {
+        final initialDate = DateTime.now().subtract(const Duration(days: 365));
         DateTime? pickedDate = await showDatePicker(
           context: context,
-          initialDate: DateTime.now(),
+          initialDate: initialDate,
           firstDate: DateTime(2020),
           lastDate: DateTime(2030),
         );
@@ -318,7 +337,13 @@ class FilterBottomSheet extends HookWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(dateValue.value),
+            Text(
+              dateValue.value,
+              style: TextStyle(
+                color:
+                    dateValue.value == "DD/MM/YY" ? Colors.grey : Colors.black,
+              ),
+            ),
             const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
           ],
         ),
@@ -348,5 +373,13 @@ class FilterBottomSheet extends HookWidget {
         );
       }).toList(),
     );
+  }
+
+  String _formatDateForApi(String dateString) {
+    final parts = dateString.split('/');
+    final day = parts[0].padLeft(2, '0');
+    final month = parts[1].padLeft(2, '0');
+    final year = parts[2];
+    return "$year-$month-${day}T00:00:00Z";
   }
 }

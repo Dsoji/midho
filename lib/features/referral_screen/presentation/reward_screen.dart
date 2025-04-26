@@ -47,10 +47,10 @@ class RewardScreen extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: Column(
+              child: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Gap(12),
+                  Gap(12),
                   RewardsList(),
                 ],
               ),
@@ -70,12 +70,8 @@ class RewardItem {
 }
 
 class RewardsList extends HookConsumerWidget {
-  RewardsList({super.key});
-  final List<RewardItem> rewards = [
-    RewardItem(amount: "1,000", date: "Jan 15, 2025"),
-    RewardItem(amount: "2,500", date: "Feb 10, 2025"),
-    RewardItem(amount: "5,000", date: "Mar 5, 2025"),
-  ];
+  const RewardsList({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
