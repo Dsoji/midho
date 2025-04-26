@@ -25,18 +25,20 @@ final logger = Logger();
 @RoutePage()
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
+  void initializeHomeData(WidgetRef ref) {
+    ref.read(authenticationControllerProvider.notifier).fetchProfile();
+    ref.read(giftCardControllerProvider.notifier).getGiftCards();
+    ref.read(profileControllerProvider.notifier).getFaq();
+    ref.read(transactionControllerProvider.notifier).getTransactions();
+    ref.read(transactionControllerProvider.notifier).getCurrencies();
+    ref.read(transactionControllerProvider.notifier).getRates();
+    ref.read(transactionControllerProvider.notifier).getReferrals();
+    ref.read(transactionControllerProvider.notifier).getRewards();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tabsRouter = AutoTabsRouter.of(context);
-
-    void initializeHomeData(WidgetRef ref) {
-      ref.read(authenticationControllerProvider.notifier).fetchProfile();
-      ref.read(giftCardControllerProvider.notifier).getGiftCards();
-      ref.read(profileControllerProvider.notifier).getFaq();
-      ref.read(transactionControllerProvider.notifier).getTransactions();
-      ref.read(transactionControllerProvider.notifier).getCurrencies();
-      ref.read(transactionControllerProvider.notifier).getRates();
-    }
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -54,7 +56,9 @@ class HomeScreen extends HookConsumerWidget {
 
       tabsRouter.addListener(listener);
 
-      listener();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        listener();
+      });
 
       return () {
         tabsRouter.removeListener(listener);

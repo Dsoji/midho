@@ -1,5 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/referral_screen/data/model/response/referall_model/referall_model.dart';
+import 'package:mdiho/features/referral_screen/data/model/response/rewards_model/rewards_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/currencies_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
@@ -174,6 +176,90 @@ class TransactionRepository {
         );
       }
     } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, ReferallModel>> getReferrals() async {
+    try {
+      final data = await transactionService.getReferrals();
+
+      if (data.isSuccess && data.value != null) {
+        final referalls = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put('referalls', referalls.toMap());
+
+        return Success(referalls);
+      } else {
+        var box = Hive.box('data');
+        final cachedReferalls = box.get('referalls');
+
+        if (cachedReferalls != null &&
+            cachedReferalls is Map<String, dynamic>) {
+          final cachedReferall = ReferallModel.fromMap(cachedReferalls);
+          return Success(cachedReferall);
+        }
+
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch rates',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch rates'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      var box = Hive.box('data');
+      final cachedReferalls = box.get('referalls');
+
+      if (cachedReferalls != null && cachedReferalls is Map<String, dynamic>) {
+        final cachedRate = ReferallModel.fromMap(cachedReferalls);
+        return Success(cachedRate);
+      }
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, RewardsModel>> getRewards() async {
+    try {
+      final data = await transactionService.getRewards();
+      if (data.isSuccess && data.value != null) {
+        final rewards = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put('rewards', rewards.toMap());
+
+        return Success(rewards);
+      } else {
+        var box = Hive.box('data');
+        final cachedRewards = box.get('rewards');
+
+        if (cachedRewards != null && cachedRewards is Map<String, dynamic>) {
+          final cachedReward = RewardsModel.fromMap(cachedRewards);
+          return Success(cachedReward);
+        }
+
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch rates',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch rates'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      var box = Hive.box('data');
+      final cachedRewards = box.get('rewards');
+
+      if (cachedRewards != null && cachedRewards is Map<String, dynamic>) {
+        final cachedReward = RewardsModel.fromMap(cachedRewards);
+        return Success(cachedReward);
+      }
       return Error(failure);
     }
   }

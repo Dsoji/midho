@@ -76,6 +76,8 @@ class SvgAssets {
   static const verify = '$_base/verify.svg';
   static const info = '$_base/info.svg';
   static const mdiho = '$_base/mdiho.svg';
+  static const buttonLogo = '$_base/button_logo.svg';
+
   static const mdihobckgrnd = '$_base/mdiho_bkgrnd.svg';
 }
 

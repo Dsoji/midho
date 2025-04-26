@@ -8,6 +8,8 @@ import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
 import '../../../../common/utils/utils.dart';
+import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
+import '../../../referral_screen/data/model/response/rewards_model/rewards_model.dart';
 import '../model/response/rates_model/rates_model.dart';
 
 final logger = Logger();
@@ -154,6 +156,48 @@ class TransactionService {
       ),
       parser: (data) {
         return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<ReferallModel>> getReferrals() async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.get(
+        'user/reward/referrals',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        queryParameters: {
+          'paginate': true,
+          'page': 1,
+          'limit': 10,
+        },
+      ),
+      parser: (data) {
+        return ReferallModel.fromMap(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<RewardsModel>> getRewards() async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.get(
+        'user/reward/rewards',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        queryParameters: {
+          'paginate': true,
+          'page': 1,
+          'limit': 10,
+        },
+      ),
+      parser: (data) {
+        return RewardsModel.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: true,

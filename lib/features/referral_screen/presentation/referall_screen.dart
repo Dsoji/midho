@@ -16,14 +16,13 @@ import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 
 @RoutePage()
 class ReferallScreen extends HookConsumerWidget {
   const ReferallScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isBalanceVisible = true;
-    final theme = Theme.of(context);
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
 
@@ -50,9 +49,7 @@ class ReferallScreen extends HookConsumerWidget {
               ),
             ),
             const Gap(16),
-            const ReferralBalanceCard(
-              balance: 50000,
-            ),
+            const ReferralBalanceCard(),
             const Gap(16),
             ReferralCodeCard(
                 referralCode: userInfo?.username ?? "DESIGNFATHER"),
@@ -341,17 +338,20 @@ class ReferralCodeCard extends StatelessWidget {
 }
 
 class ReferralBalanceCard extends HookConsumerWidget {
-  const ReferralBalanceCard({
-    super.key,
-    required this.balance,
-  });
-  final double balance;
+  const ReferralBalanceCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final balanceState =
+        ref.watch(authenticationControllerProvider).userDetails;
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
-
     final theme = Theme.of(context);
+    final refCount =
+        ref.watch(transactionControllerProvider).referals.valueOrNull?.data;
+
+    final color =
+        theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -367,147 +367,292 @@ class ReferralBalanceCard extends HookConsumerWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          const Text(
-            "Referrals Rewards Balance",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey),
-          ),
-          const SizedBox(height: 4),
+      child: balanceState.when(
+        loading: () => _ReferralLoadingContent(
+            theme: theme, isBalanceVisible: isBalanceVisible),
+        error: (error, stackTrace) => _ReferralErrorContent(theme: theme),
+        data: (userDetails) {
+          final balance = userDetails.wallet?.referralBalance ?? 0.0;
+          final lifetimeEarnings =
+              userDetails.wallet?.lifetimeReferralBalance ?? 0.0;
+          final totalReferrals = refCount?.length ?? 0;
 
-          // Balance with Visibility Icon
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                isBalanceVisible
-                    ? balance.toStringAsFixed(2).formatAsNaira()
-                    : "••••••••",
-                style: TextStyle(
+          return _ReferralDataContent(
+            ref: ref,
+            theme: theme,
+            balance: balance,
+            lifetimeEarnings: lifetimeEarnings,
+            totalReferrals: totalReferrals,
+            isBalanceVisible: isBalanceVisible,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ReferralDataContent extends StatelessWidget {
+  final ThemeData theme;
+  final num balance;
+  final num lifetimeEarnings;
+  final int totalReferrals;
+  final bool isBalanceVisible;
+  final WidgetRef ref;
+
+  const _ReferralDataContent({
+    required this.theme,
+    required this.balance,
+    required this.lifetimeEarnings,
+    required this.totalReferrals,
+    required this.isBalanceVisible,
+    required this.ref,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color =
+        theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Referrals Rewards Balance",
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Text(
+              isBalanceVisible
+                  ? balance.toStringAsFixed(2).formatAsNaira()
+                  : "••••••••",
+              style: TextStyle(
+                color: color,
+                fontSize: 29,
+                fontWeight: FontWeight.w600,
+                fontFamily: '',
+              ),
+            ),
+            const Gap(8),
+            Container(
+              width: 21,
+              height: 21,
+              decoration: ShapeDecoration(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade400
+                    : AppColors.greyColor.shade50,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5)),
+              ),
+              child: GestureDetector(
+                onTap: () => ref
+                    .read(balanceVisibilityProvider.notifier)
+                    .toggleVisibility(),
+                child: Icon(
+                  isBalanceVisible
+                      ? IconsaxPlusLinear.eye
+                      : IconsaxPlusLinear.eye_slash,
+                  size: 12,
                   color: theme.brightness == Brightness.dark
                       ? Colors.white
                       : Colors.black,
-                  fontSize: 29,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: '',
                 ),
-              ),
-              const Gap(8),
-              Container(
-                width: 21,
-                height: 21,
-                decoration: ShapeDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : AppColors.greyColor.shade50,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)),
-                ),
-                child: GestureDetector(
-                  onTap: () => ref
-                      .read(balanceVisibilityProvider.notifier)
-                      .toggleVisibility(),
-                  child: Icon(
-                    isBalanceVisible
-                        ? IconsaxPlusLinear.eye
-                        : IconsaxPlusLinear.eye_slash,
-                    size: 12,
-                    color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Lifetime Earnings & Total Referrals
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                child: SizedBox(
-                  width: 150,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Lifetime Earnings",
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "120000".formatAsNaira(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const Expanded(
-                child: SizedBox(
-                  width: 150,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Total Referrals",
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        "40",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Gap(24),
-
-          // Withdraw Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const WithdrawReferallScreen()));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor.shade500,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              icon: const Icon(IconsaxPlusLinear.send_square,
-                  color: Colors.white),
-              label: const Text(
-                "Withdraw",
-                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Lifetime Earnings",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      )),
+                  const SizedBox(height: 4),
+                  Text(
+                    lifetimeEarnings.toStringAsFixed(2).formatAsNaira(),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: ''),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Total Referrals",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        fontFamily: '',
+                      )),
+                  const SizedBox(height: 4),
+                  Text(
+                    totalReferrals.toString(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const Gap(24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const WithdrawReferallScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor.shade500,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon:
+                const Icon(IconsaxPlusLinear.send_square, color: Colors.white),
+            label: const Text("Withdraw",
+                style: TextStyle(color: Colors.white, fontSize: 16)),
           ),
+        ),
+        const Gap(24),
+        InfoWidget(
+            theme: theme,
+            text: 'Withdraw your referral earnings directly to your wallet.'),
+      ],
+    );
+  }
+}
 
-          const Gap(24),
-          InfoWidget(
-              theme: theme,
-              text: 'Withdraw your referral earnings directly to your wallet.')
-        ],
+class _ReferralLoadingContent extends StatelessWidget {
+  final ThemeData theme;
+  final bool isBalanceVisible;
+
+  const _ReferralLoadingContent({
+    required this.theme,
+    required this.isBalanceVisible,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color =
+        theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Referrals Rewards Balance",
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey),
+        ),
+        const SizedBox(height: 4),
+        const Row(
+          children: [
+            ShimmerWidget(width: 100, height: 30),
+            Gap(8),
+            // _VisibilityToggleButton(theme: theme),
+          ],
+        ),
+        const SizedBox(height: 12),
+        const Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Lifetime Earnings",
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  SizedBox(height: 4),
+                  ShimmerWidget(width: 80, height: 20),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Total Referrals",
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  SizedBox(height: 4),
+                  ShimmerWidget(width: 40, height: 20),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const Gap(24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor.shade200,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon:
+                const Icon(IconsaxPlusLinear.send_square, color: Colors.white),
+            label: const Text("Withdraw",
+                style: TextStyle(color: Colors.white, fontSize: 16)),
+          ),
+        ),
+        const Gap(24),
+        InfoWidget(
+            theme: theme,
+            text: 'Withdraw your referral earnings directly to your wallet.'),
+      ],
+    );
+  }
+}
+
+class _ReferralErrorContent extends StatelessWidget {
+  final ThemeData theme;
+
+  const _ReferralErrorContent({required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text(
+        'Failed to load referral balance',
+      ),
+    );
+  }
+}
+
+class ShimmerWidget extends StatelessWidget {
+  final double width;
+  final double height;
+
+  const ShimmerWidget({super.key, required this.width, required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }

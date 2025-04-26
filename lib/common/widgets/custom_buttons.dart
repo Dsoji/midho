@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:mdiho/common/res/app_colors.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../res/assets.dart';
 
 class GradientIconButton extends StatelessWidget {
   final IconData icon;
@@ -101,7 +105,6 @@ class GradientIconButton extends StatelessWidget {
 //       ),
 //     );
 //   }
-// }
 
 class FullButton extends StatelessWidget {
   final String text;
@@ -145,12 +148,33 @@ class FullButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(radius),
             color: isDisabled ? AppColors.greyColor.shade200 : color,
           ),
-          child: Center(
-            child: isLoading
-                ? const CircularProgressIndicator(
-                    color: Colors.white,
-                  )
-                : Text(
+          child: isLoading
+              ? Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Shimmer background
+                    Shimmer.fromColors(
+                      baseColor: AppColors.primaryColor.shade300,
+                      highlightColor: AppColors.primaryColor.shade100,
+                      child: Container(
+                        height: height,
+                        width: width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(radius),
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                    ),
+                    // SVG Logo stays clean
+                    SvgPicture.asset(
+                      SvgAssets.buttonLogo, // your logo
+                      width: 30,
+                      height: 30,
+                    ),
+                  ],
+                )
+              : Center(
+                  child: Text(
                     text,
                     style: TextStyle(
                       color: isDisabled ? Colors.white : textColor,
@@ -158,7 +182,7 @@ class FullButton extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-          ),
+                ),
         ),
       ),
     );
