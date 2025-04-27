@@ -71,17 +71,12 @@ class BuyAirtimeScreen extends HookConsumerWidget {
             ),
             const Gap(24),
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : Colors.white,
-                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,12 +87,37 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                     providers: providers,
                   ),
                   const Gap(24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Amount",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : AppColors.greyColor.shade700,
+                          )),
+                      Text(
+                        "Limit: NGN 500.00 - NGN 10,000.00",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.greyColor.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
                   CustomTextField(
                     controller: amountController,
                     hintText: 'Enter amount',
                     isPassword: false,
-                    label: 'Amount',
                     keyboardType: TextInputType.number,
+                    fillColor: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade700
+                        : AppColors.whiteColor.shade500,
                   ),
                   const Gap(16),
                   SizedBox(
@@ -133,12 +153,16 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
+                                color: theme.brightness == Brightness.dark
+                                    ? AppColors.secondaryColor
+                                        .shade700 // Light border for dark mode
+                                    : AppColors.whiteColor.shade300,
                                 border: Border.all(
                                   color: theme.brightness == Brightness.dark
-                                      ? Colors
-                                          .white54 // Light border for dark mode
-                                      : Colors
-                                          .transparent, // Subtle border for light mode
+                                      ? AppColors.secondaryColor
+                                          .shade700 // Light border for dark mode
+                                      : AppColors.whiteColor
+                                          .shade300, // Subtle border for light mode
                                   width: 1, // Border width
                                 ),
                                 borderRadius: BorderRadius.circular(8),

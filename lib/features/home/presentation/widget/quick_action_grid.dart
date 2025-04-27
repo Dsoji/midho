@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../bottomNav/app_router.gr.dart';
 
 // Define Action Model
 class ActionItem {
@@ -62,7 +63,7 @@ class QuickActionsGrid extends ConsumerWidget {
               ? const Color(0xFF0087E1)
               : AppColors.primaryColor,
           onTap: () {
-            // context.router.push(const BuyAirtimeRoute());
+            context.router.push(const BuyAirtimeRoute());
           },
         ),
         ActionItem(
@@ -72,7 +73,7 @@ class QuickActionsGrid extends ConsumerWidget {
               ? const Color(0xFFAC42FC)
               : AppColors.primaryColor,
           onTap: () {
-            // context.router.push(const BuyDataRoute());
+            context.router.push(const BuyDataRoute());
           },
         ),
         ActionItem(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 
+import '../../../../common/res/app_colors.dart';
+
 class ProviderPhoneInput extends HookWidget {
   final ValueNotifier<Map<String, String>> selectedProvider;
   final TextEditingController controller;
@@ -74,13 +76,17 @@ class ProviderPhoneInput extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       height: 52,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12), // Full rounded
-        border: Border.all(color: Colors.grey.shade300),
-        color: Colors.transparent,
+        border: Border.all(color: Colors.grey.shade300, width: 0.2),
+        color: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade700
+            : Colors.transparent,
       ),
       child: Row(
         children: [

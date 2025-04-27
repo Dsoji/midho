@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/bills/presentation/widget/custom_phone_textfield.dart';
+import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
@@ -71,17 +72,12 @@ class BuyDataScreen extends HookConsumerWidget {
             ),
             const Gap(24),
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : Colors.white,
-                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -110,7 +106,7 @@ class BuyDataScreen extends HookConsumerWidget {
                           text: "Wallet Balance: ",
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w400,
                             color: theme.brightness == Brightness.dark
                                 ? Colors.white
                                 : AppColors.greyColor.shade300,
@@ -120,7 +116,7 @@ class BuyDataScreen extends HookConsumerWidget {
                               text: "NGN 10,000.00",
                               style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
                                 color: theme.brightness == Brightness.dark
                                     ? Colors.white
                                     : AppColors.greyColor.shade500,
@@ -140,7 +136,11 @@ class BuyDataScreen extends HookConsumerWidget {
                           horizontal: 16, vertical: 20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.greyColor.shade50),
+                        border: Border.all(
+                            color: AppColors.greyColor.shade50, width: 0.3),
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade700
+                            : AppColors.whiteColor.shade500,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -157,6 +157,12 @@ class BuyDataScreen extends HookConsumerWidget {
                         ],
                       ),
                     ),
+                  ),
+                  const Gap(16),
+                  InfoWidget(
+                    theme: theme,
+                    text:
+                        'Ensure the phone number is correct. Transactions are non-refundable.',
                   ),
                   const Gap(32),
                   FullButton(
