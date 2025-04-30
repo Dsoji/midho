@@ -107,7 +107,9 @@ class ReferallList extends HookConsumerWidget {
                                 .copyWith(fontSize: 16),
                             children: [
                               TextSpan(
-                                text: reward.username,
+                                text: reward.username!.length > 5
+                                    ? '${reward.username!.substring(0, 5)}***'
+                                    : reward.username,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
@@ -119,7 +121,7 @@ class ReferallList extends HookConsumerWidget {
                       ],
                     ),
                     Text(
-                      '${reward.createdAt?.formatToReadableDateTime()}',
+                      '${reward.createdAt?.getFormattedDate()}',
                       style: TextStyle(
                           color: theme.brightness == Brightness.dark
                               ? Colors.white
@@ -199,7 +201,9 @@ class ReferallList extends HookConsumerWidget {
                           style: DefaultTextStyle.of(context).style.copyWith(),
                           children: [
                             TextSpan(
-                              text: reward.username,
+                              text: reward.username!.length > 5
+                                  ? '${reward.username!.substring(0, 5)}***'
+                                  : reward.username,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
@@ -211,7 +215,7 @@ class ReferallList extends HookConsumerWidget {
                     ],
                   ),
                   Text(
-                    '${reward.createdAt?.formatToReadableDateTime()}',
+                    '${reward.createdAt?.getFormattedDate()}',
                     style: TextStyle(
                         color: theme.brightness == Brightness.dark
                             ? Colors.white

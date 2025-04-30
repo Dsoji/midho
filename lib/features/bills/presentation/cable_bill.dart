@@ -22,8 +22,7 @@ class CableBillScreen extends HookConsumerWidget {
     // Controller for input field
     final meterNoController =
         useTextEditingController(); // Controller for meter number input field
-    final amountController =
-        useTextEditingController(); // Controller for amount input field
+// Controller for amount input field
 
     final selectedPlan = useState<String>("Dstv");
     final subPlan = useState<String>("DSTV Compact - ₦8,000/Month");
@@ -32,7 +31,9 @@ class CableBillScreen extends HookConsumerWidget {
       showModalBottomSheet(
         isScrollControlled: true,
         context: context,
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade700
+            : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
@@ -49,7 +50,7 @@ class CableBillScreen extends HookConsumerWidget {
         isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade500
+            ? AppColors.secondaryColor.shade700
             : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),

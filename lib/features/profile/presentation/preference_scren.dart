@@ -40,7 +40,6 @@ class PreferenceScreen extends HookConsumerWidget {
       themeAlert.value = themeNotifier == ThemeMode.light ? 'LIGHT' : 'DARK';
       return null;
     }, [themeNotifier]);
-    print(pushEnabled.value);
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Preferences & Notifications",

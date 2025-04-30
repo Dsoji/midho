@@ -75,7 +75,7 @@ class TransactionService {
       ),
       parser: (data) => TransactionHistory.fromMap(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -96,7 +96,7 @@ class TransactionService {
         return RatesModel.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -112,7 +112,7 @@ class TransactionService {
         return CurrenciesModel.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -143,7 +143,7 @@ class TransactionService {
         return TransactionData.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -180,7 +180,7 @@ class TransactionService {
         return TransactionData.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -201,7 +201,7 @@ class TransactionService {
         return ReferallModel.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -222,7 +222,7 @@ class TransactionService {
         return RewardsModel.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 }

@@ -156,8 +156,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                   const Gap(16),
                   InfoWidget(
                     theme: theme,
-                    text:
-                        'Enter a valid 10-digit account number linked to your bank.',
+                    text: 'Ensure the codes are visible to avoid delays.',
                   ),
                   const Gap(16),
 

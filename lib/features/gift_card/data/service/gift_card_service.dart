@@ -45,7 +45,7 @@ class GiftCardService {
         return GiftCardModel.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      // showSuccessToast: true,
     );
   }
 }

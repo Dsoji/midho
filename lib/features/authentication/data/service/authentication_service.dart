@@ -51,7 +51,6 @@ class AuthenticationService {
         },
       ),
       parser: (data) {
-        print(data);
         final token = data['token'];
         var box = Hive.box('data');
         box.put('accessToken', token);
@@ -71,7 +70,6 @@ class AuthenticationService {
         data: payload,
       ),
       parser: (data) {
-        print(data);
         final token = data['token'];
         var box = Hive.box('data');
         box.put('accessToken', token);
@@ -96,7 +94,6 @@ class AuthenticationService {
         },
       ),
       parser: (data) {
-        print(data);
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
@@ -119,7 +116,6 @@ class AuthenticationService {
         },
       ),
       parser: (data) {
-        print(data);
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
@@ -142,7 +138,6 @@ class AuthenticationService {
         },
       ),
       parser: (data) {
-        print(data);
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
@@ -164,7 +159,6 @@ class AuthenticationService {
         data: payload,
       ),
       parser: (data) {
-        print(data);
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
@@ -183,7 +177,7 @@ class AuthenticationService {
       ),
       parser: (data) => UserProfileModel.fromMap(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 

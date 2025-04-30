@@ -267,36 +267,33 @@ class AddBankScreen extends HookConsumerWidget {
           const Gap(23),
           const NetworkStatusIndicator(),
           const Gap(16),
-          SizedBox(
-            height: 248,
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: bankList.length,
-              separatorBuilder: (context, index) =>
-                  const Gap(10), // Space between cards
-              itemBuilder: (context, index) {
-                final bank = bankList[index];
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: bankList.length,
+            separatorBuilder: (context, index) =>
+                const Gap(10), // Space between cards
+            itemBuilder: (context, index) {
+              final bank = bankList[index];
 
-                return GestureDetector(
-                  child: BankInfoCard(
-                    image: bank["image"] ??
-                        "assets/default.png", // Use a default image if null
-                    name: bank["name"] ?? "Unknown Bank",
-                    color: bank["color"] ?? Colors.grey,
-                    status: bank["status"] ?? "No Status",
-                    percentage: bank["percentage"] ?? "0%",
-                    actNumber: bank["actNumber"] ?? "N/A",
-                    actName: bank["actName"] ?? "N/A",
-                    showBorder: false,
-                    icon: Icons.more_horiz,
-                    onTap: () {
-                      ref.read(selectedBankProvider.notifier).state = bank;
-                      Navigator.pop(context);
-                    },
-                  ),
-                );
-              },
-            ),
+              return GestureDetector(
+                child: BankInfoCard(
+                  image: bank["image"] ??
+                      "assets/default.png", // Use a default image if null
+                  name: bank["name"] ?? "Unknown Bank",
+                  color: bank["color"] ?? Colors.grey,
+                  status: bank["status"] ?? "No Status",
+                  percentage: bank["percentage"] ?? "0%",
+                  actNumber: bank["actNumber"] ?? "N/A",
+                  actName: bank["actName"] ?? "N/A",
+                  showBorder: false,
+                  icon: Icons.more_horiz,
+                  onTap: () {
+                    ref.read(selectedBankProvider.notifier).state = bank;
+                    Navigator.pop(context);
+                  },
+                ),
+              );
+            },
           ),
           const Gap(150),
           SizedBox(
@@ -381,9 +378,6 @@ class AddBankScreen extends HookConsumerWidget {
     );
 
     if (result == 'edit') {
-      print("Edit account selected");
-    } else if (result == 'delete') {
-      print("Delete account selected");
-    }
+    } else if (result == 'delete') {}
   }
 }

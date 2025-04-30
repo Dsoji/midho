@@ -274,7 +274,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         details = {
           "transactionId": transaction.id,
           "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount": transaction.amount,
+          "amount":
+              "${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
           "fee": transaction.fee,
           "breakdown": {
             "Crypto Sold":
@@ -291,7 +292,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": transaction.amount,
+            "amount":
+                "${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
             "fee": transaction.fee,
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
@@ -304,7 +306,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": transaction.amount,
+            "amount":
+                "${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
             "fee": transaction.fee,
             "breakdown": {
               "Gift Card Sold": "STEAM 10-200",
@@ -318,7 +321,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": transaction.amount,
+            "amount":
+                "${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
             "fee": transaction.fee,
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',

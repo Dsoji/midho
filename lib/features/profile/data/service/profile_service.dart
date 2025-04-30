@@ -48,11 +48,10 @@ class ProfileeService {
         data: payload,
       ),
       parser: (data) {
-        print(data);
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -67,7 +66,7 @@ class ProfileeService {
       ),
       parser: (data) => UserProfileModel.fromMap(data),
       showErrorToast: true,
-      // showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -85,7 +84,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -108,7 +107,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -130,7 +129,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -154,7 +153,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -174,7 +173,7 @@ class ProfileeService {
         return FaqResponse.fromMap(data);
       },
       showErrorToast: true,
-      // showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -193,7 +192,7 @@ class ProfileeService {
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 }

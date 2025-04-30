@@ -129,7 +129,9 @@ class TransactionCard extends HookConsumerWidget {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${txn.amount}".formatAsNaira(),
+                                        text:
+                                            "${(txn.amount ?? 0) * (txn.rate ?? 0) - (txn.fee ?? 0)}"
+                                                .formatAsNaira(),
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12,

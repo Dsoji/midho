@@ -19,6 +19,7 @@ class TransactionHistoryScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(transactionControllerProvider);
+
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -96,14 +97,21 @@ class TransactionHistoryScreen extends HookConsumerWidget {
                 );
               }
 
-              return ListView.separated(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                itemCount: transactions.data!.length,
-                separatorBuilder: (context, index) => const Gap(8),
-                itemBuilder: (context, index) {
-                  final transaction = transactions.data![index];
-                  return TransactionCard(transactions: transaction);
-                },
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      itemCount: transactions.data!.length,
+                      separatorBuilder: (context, index) => const Gap(8),
+                      itemBuilder: (context, index) {
+                        final transaction = transactions.data![index];
+                        return TransactionCard(transactions: transaction);
+                      },
+                    ),
+                  ),
+                  const Gap(85),
+                ],
               );
             },
           ),
@@ -141,6 +149,20 @@ class FilterBottomSheet extends HookConsumerWidget {
     final isLoading = useState<bool>(false);
 
     final theme = Theme.of(context);
+
+    String? mapUiTypeToBackend(String type) {
+      switch (type) {
+        case "Gift Cards":
+          return "GIFTCARDSALE";
+        case "Crypto":
+          return "CRYPTOSALE";
+        case "Utilities":
+          return "UTILITIES"; // let backend interpret this
+        case "All":
+        default:
+          return null;
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -248,9 +270,8 @@ class FilterBottomSheet extends HookConsumerWidget {
                             status: selectedStatus.value == "All"
                                 ? null
                                 : selectedStatus.value.toUpperCase(),
-                            type: selectedTransactionType.value == "All"
-                                ? null
-                                : selectedTransactionType.value.toUpperCase(),
+                            type: mapUiTypeToBackend(
+                                selectedTransactionType.value),
                             sortKey: selectedSortBy.value.contains('Amount')
                                 ? 'amount'
                                 : 'createdAt',
@@ -277,7 +298,7 @@ class FilterBottomSheet extends HookConsumerWidget {
                 ),
               ],
             ),
-            const Gap(40),
+            const Gap(75),
           ],
         ),
       ),

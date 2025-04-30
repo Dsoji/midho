@@ -23,7 +23,6 @@ class ProfileScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     var box = Hive.box('data'); // Replace 'data' with your box name
     final cached = box.get('userProfile');
-    print('Cached map: $cached');
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {

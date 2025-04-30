@@ -114,7 +114,6 @@ class UserDetailsStep extends HookConsumerWidget {
                   CustomDropdown(
                     onChanged: (value) {
                       country.value = value!;
-                      print(country.value);
                     },
                   ),
 

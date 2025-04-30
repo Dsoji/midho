@@ -340,7 +340,6 @@ class AuthenticationRepository {
 
   Future<Result<FailureHandler, UploadResponse>> uploadImage(
       dynamic payload) async {
-    print(payload);
     try {
       final data = await authService.updateImage(payload);
 

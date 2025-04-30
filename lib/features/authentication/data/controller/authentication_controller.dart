@@ -10,7 +10,6 @@ import 'package:mdiho/features/authentication/data/model/payload/sign_up_payload
 import 'package:mdiho/features/authentication/data/model/response/user_model/user_model.dart';
 
 import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
-import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../repository/authentication_repository.dart';
 import '../state/authentication_state.dart';
 
@@ -399,7 +398,7 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
       },
       (success) {
         state = state.copyWith(
-          imageUpload: AsyncValue.data(success ?? UploadResponse()),
+          imageUpload: AsyncValue.data(success),
         );
         return true;
       },

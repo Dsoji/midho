@@ -31,8 +31,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
       {'name': 'Airtel', 'logo': PlaceholderAssets.airtel},
       {'name': '9Mobile', 'logo': PlaceholderAssets.etisalat},
     ];
-    final selectedProvider =
-        useState<Map<String, String>>(providers[1]); // Default: Glo
+    useState<Map<String, String>>(providers[1]); // Default: Glo
     final selectedPlan = useState<String>("Ikeja Electric");
 
     void showDataPlanSheet(BuildContext context) {
@@ -40,7 +39,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
         isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
+            ? AppColors.secondaryColor.shade700
             : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -56,10 +55,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 2);
 
     useEffect(() {
-      void listener() {
-        print(
-            "Selected Tab: ${tabController.index == 0 ? 'Prepaid' : 'Postpaid'}");
-      }
+      void listener() {}
 
       tabController.addListener(listener);
       return () => tabController.removeListener(listener);

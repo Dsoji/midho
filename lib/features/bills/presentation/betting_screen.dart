@@ -33,7 +33,7 @@ class BettingScreen extends HookConsumerWidget {
         isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
+            ? AppColors.secondaryColor.shade700
             : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
