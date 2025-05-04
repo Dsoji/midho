@@ -7,6 +7,7 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
+import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
 import '../model/response/rates_model/rates_model.dart';
 import '../model/response/transaction_history/datum.dart';
 import '../service/transaction_service.dart';
@@ -275,6 +276,89 @@ class TransactionRepository {
         final cachedReward = RewardsModel.fromMap(cachedRewards);
         return Success(cachedReward);
       }
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> addBanks({
+    required String acctName,
+    required String acctNo,
+    required String bankName,
+    required String bankCode,
+  }) async {
+    try {
+      final data = await transactionService.addBanks(
+        acctName: acctName,
+        acctNo: acctNo,
+        bankName: bankName,
+        bankCode: bankCode,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch currencies',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch currencies'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, AcctNameModel>> getAcctname({
+    required String acctNo,
+    required String bankCode,
+  }) async {
+    try {
+      final data = await transactionService.getAcctName(
+        acctNo: acctNo,
+        bankCode: bankCode,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? AcctNameModel());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch currencies',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch currencies'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> deleteAcct({
+    required String acctId,
+  }) async {
+    try {
+      final data = await transactionService.deleteAcct(
+        acctId: acctId,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch currencies',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch currencies'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
       return Error(failure);
     }
   }

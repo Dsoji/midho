@@ -3,16 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../../common/res/assets.dart';
+import '../../../../common/toast/toast.dart';
+import '../../../../common/utils/debouncer.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../bank_network/data/model/response/bank_list/bank_list.dart';
 import '../../../bank_network/presentation/bank_network_screen.dart';
+import '../../../transaction/data/controller/transaction_controller.dart';
 import '../../../withdrawal/presentation/widget/bank_info_card.dart';
 import '../../../withdrawal/presentation/widget/info_widget.dart';
-import '../../../withdrawal/presentation/withdraw_funds_screen.dart';
+import '../../data/controller/profile_controller.dart';
+
+final logger = Logger();
+final selectedBankProvider = StateProvider<BanlList?>((ref) => null);
 
 @RoutePage()
 class AddNewBankScreen extends HookConsumerWidget {
@@ -25,8 +33,15 @@ class AddNewBankScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bankController = useTextEditingController();
     final theme = Theme.of(context);
+    final acctNumberController = useTextEditingController();
+    final acctNameController = useTextEditingController();
     final isVerify = useState(isverif);
     final selectedBank = ref.watch(selectedBankProvider);
+    final banks = ref.watch(profileControllerProvider).banks.valueOrNull;
+    final debouncer =
+        useMemoized(() => Debouncer(delay: const Duration(milliseconds: 100)));
+    useEffect(() => debouncer.dispose, [debouncer]);
+    final isLoadingName = useState(false);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -63,68 +78,94 @@ class AddNewBankScreen extends HookConsumerWidget {
                   // Email Field
                   BankInfoCard(
                     isAddBank: true,
-                    image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
-                    name: selectedBank?["name"] ?? 'GT Bank',
-                    color: selectedBank?["color"] ??
-                        AppColors.primaryColor.shade500,
-                    status: selectedBank?["status"] ?? 'Poor Network',
-                    percentage: selectedBank?["percentage"] ?? '90',
-                    actNumber: selectedBank?["actNumber"] ?? '1210125678',
-                    actName: selectedBank?["actName"] ?? 'John Doe',
+                    name: selectedBank?.name ?? 'GT Bank',
+                    status: selectedBank?.status ?? 'Poor Network',
+                    percentage: '${selectedBank?.strength ?? 0}%',
+                    actNumber: '1210125678',
+                    actName: 'John Doe',
                     onTap: () => _showAddBankDetailsSheet(context),
                   ),
                   const SizedBox(height: 28),
                   CustomTextField(
-                    controller: bankController,
+                    controller: acctNumberController,
                     label: "Account Number",
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      if (value.trim().length == 10) {
+                        isLoadingName.value = true; // 🔄 Start loading
+                        debouncer(() async {
+                          acctNameController.clear();
+                          final result = await ref
+                              .read(transactionControllerProvider.notifier)
+                              .acctName(
+                                acctNo: value.trim(),
+                                bankCode: selectedBank?.code ?? '',
+                              );
+
+                          if (result == true) {
+                            final acctname = ref
+                                .watch(transactionControllerProvider)
+                                .acctName
+                                .valueOrNull
+                                ?.accountName;
+                            acctNameController.text = acctname ?? '';
+                          }
+
+                          isLoadingName.value = false; // ✅ Stop loading
+                        });
+                      }
+                    },
                   ),
-                  const SizedBox(height: 28),
-                  if (isVerify.value == true)
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: theme.brightness == Brightness.dark
-                                ? AppColors.secondaryColor.shade700
-                                : const Color(
-                                    0xFFEDFCFE), // Dark navy blue background
-                            borderRadius:
-                                BorderRadius.circular(12), // Rounded corners
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Account Name",
-                                style: TextStyle(
-                                  // Light grey text
-                                  fontSize: 14,
-                                  color: theme.brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
+                  const SizedBox(height: 18),
+                  isLoadingName.value
+                      ? Row(
+                          children: [
+                            Text(
+                              "Account name: ",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.greyColor.shade700,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "John Doe",
+                            ),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.greyColor.shade700,
+                              ),
+                            ),
+                          ],
+                        )
+                      : RichText(
+                          maxLines: 2,
+                          text: TextSpan(
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : AppColors.greyColor.shade700,
+                            ),
+                            children: [
+                              const TextSpan(text: 'Account name: '),
+                              TextSpan(
+                                text: acctNameController.text,
                                 style: TextStyle(
+                                  fontWeight: FontWeight.bold,
                                   color: theme.brightness == Brightness.dark
                                       ? Colors.white
-                                      : Colors.black, // Bright white text
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                      : AppColors.greyColor.shade700,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 28),
-                      ],
-                    ),
+                  const SizedBox(height: 18),
                   InfoWidget(
                     theme: theme,
                     text:
@@ -134,15 +175,35 @@ class AddNewBankScreen extends HookConsumerWidget {
                   const SizedBox(height: 20),
                   // Continue Button
                   FullButton(
-                    text:
-                        isVerify.value == false ? "Verify Account" : "Confirm",
+                    isLoading: ref
+                        .watch(transactionControllerProvider)
+                        .addBank
+                        .isLoading,
+                    text: "Confirm",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
-                      if (isVerify.value == false) {
-                        isVerify.value = true;
-                      } else if (isVerify.value == true) {
-                        Navigator.of(context).pop();
+                    onPressed: () async {
+                      if (acctNameController.text.isNotEmpty) {
+                        final result = await ref
+                            .read(transactionControllerProvider.notifier)
+                            .addBanks(
+                              acctName: acctNameController.text.trim(),
+                              acctNo: acctNumberController.text.trim(),
+                              bankName: selectedBank?.name ?? '',
+                              bankCode: selectedBank?.code ?? '',
+                            );
+                        if (result == true) {
+                          await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .fetchProfile();
+
+                          Navigator.of(context).pop();
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Confirm details before proceeding.',
+                        );
                       }
                     },
                     textColor: Colors.white,
@@ -192,36 +253,18 @@ class AddBankScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Map<String, dynamic>> bankList = [
-      {
-        "name": "GTBank",
-        "image": PlaceholderAssets.gtbank, // Use 'image' instead of 'logo'
-        "status": "Poor Network",
-        "percentage": "49%", // Ensure this is a String
-        "color": Colors.red,
-        "actNumber": "1234 5678 9012", // Add this field
-        "actName": "Savings Account", // Add this field
-      },
-      {
-        "name": "UBA",
-        "image": PlaceholderAssets.uba,
-        "status": "Fair Network",
-        "percentage": "55%",
-        "color": Colors.amber,
-        "actNumber": "5678 9012 3456",
-        "actName": "Checking Account",
-      },
-      {
-        "name": "Opay",
-        "image": PlaceholderAssets.opay,
-        "status": "Good Network",
-        "percentage": "92%",
-        "color": Colors.green,
-        "actNumber": "9012 3456 7890",
-        "actName": "Business Account",
-      },
-    ];
+    final banks = ref.watch(profileControllerProvider).banks.valueOrNull;
     final theme = Theme.of(context);
+    final searchController = useTextEditingController();
+    final filteredBanks = useState<List<BanlList>>(banks ?? []);
+
+    useEffect(() {
+      if (banks != null) filteredBanks.value = banks;
+      return null;
+    }, [banks]);
+
+    if (banks == null) return const Center(child: CircularProgressIndicator());
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
@@ -243,37 +286,43 @@ class AddBankScreen extends HookConsumerWidget {
           const Gap(23),
           const NetworkStatusIndicator(),
           const Gap(16),
-          ListView.separated(
-            shrinkWrap: true,
-            itemCount: bankList.length,
-            separatorBuilder: (context, index) =>
-                const Gap(10), // Space between cards
-            itemBuilder: (context, index) {
-              final bank = bankList[index];
-
-              return BankInfoCard2(
-                image: bank["image"] ??
-                    "assets/default.png", // Use a default image if null
-                name: bank["name"] ?? "Unknown Bank",
-                color: bank["color"] ?? Colors.grey,
-                status: bank["status"] ?? "No Status",
-                percentage: bank["percentage"] ?? "0%",
-                actNumber: bank["actNumber"] ?? "N/A",
-                actName: bank["actName"] ?? "N/A",
-                showBorder: false,
-                icon: Icons.more_horiz,
-                onTap: () {
-                  ref.read(selectedBankProvider.notifier).state = bank;
-
-                  final GlobalKey<State<StatefulWidget>> globalKey =
-                      GlobalKey();
-                  _showPopupMenu(context, globalKey);
-                  Navigator.pop(context);
-                },
-              );
+          CustomTextField(
+            controller: searchController,
+            label: "Search Bank",
+            keyboardType: TextInputType.text,
+            onChanged: (value) {
+              final query = value.toLowerCase();
+              filteredBanks.value = banks
+                  .where((bank) =>
+                      bank.name?.toLowerCase().contains(query) ?? false)
+                  .toList();
             },
           ),
-          const Gap(100),
+          const Gap(16),
+          Expanded(
+            child: ListView.separated(
+              itemCount: filteredBanks.value.length,
+              physics: const BouncingScrollPhysics(),
+              separatorBuilder: (context, index) => const Gap(10),
+              itemBuilder: (context, index) {
+                final bank = filteredBanks.value[index];
+
+                return BankInfoCard2(
+                  name: bank.name ?? "Unknown Bank",
+                  status: bank.status ?? "No Status",
+                  percentage: '${bank.strength ?? 0}%',
+                  showBorder: false,
+                  onTap: () {
+                    ref.read(selectedBankProvider.notifier).state = bank;
+                    final GlobalKey<State<StatefulWidget>> globalKey =
+                        GlobalKey();
+                    _showPopupMenu(context, globalKey);
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -300,10 +349,8 @@ class AddBankScreen extends HookConsumerWidget {
             children: [
               Icon(Icons.edit, color: Colors.blue),
               SizedBox(width: 12),
-              Text(
-                "Edit",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
+              Text("Edit",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -313,22 +360,21 @@ class AddBankScreen extends HookConsumerWidget {
             children: [
               Icon(Icons.delete, color: Colors.red),
               SizedBox(width: 12),
-              Text(
-                "Delete",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
+              Text("Delete",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
       ],
       elevation: 8,
       color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
 
     if (result == 'edit') {
-    } else if (result == 'delete') {}
+      // Edit logic here
+    } else if (result == 'delete') {
+      // Delete logic here
+    }
   }
 }

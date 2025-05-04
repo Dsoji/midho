@@ -16,7 +16,7 @@ class TransactionCard extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(transactionControllerProvider).transactions;
+    final state = ref.watch(transactionControllerProvider).transactionList;
     final tabsRouter = AutoTabsRouter.of(context);
     final theme = Theme.of(context);
 

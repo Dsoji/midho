@@ -83,7 +83,7 @@ class QuickActionsGrid extends ConsumerWidget {
         ),
         ActionItem(
           IconsaxPlusLinear.bank,
-          "Bank network",
+          "Bank Network",
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
@@ -190,8 +189,16 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "Transaction ID", details["transactionId"], context, true),
         _buildDetailRow("Date & Time", details["dateTime"], context, false),
         _buildDetailRow("Type", type, context, false),
-        _buildDetailRow("Amount", "₦${details["amount"]}", context, false),
-        _buildDetailRow("Fee", "₦${details["fee"]}", context, false),
+        _buildDetailRow(
+            "Amount",
+            "${transaction.exchangeCurrency} ${details["amount"]}",
+            context,
+            false),
+        _buildDetailRow(
+            "Fee",
+            "${transaction.exchangeCurrency} ${details["fee"]}",
+            context,
+            false),
         _buildDetailRow("Status", status, context, false),
       ],
     );
@@ -257,7 +264,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
                       );
                     },
                     child: Text(
-                      value.formatAsNaira(),
+                      value,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: _getStatusColor(value, context),
@@ -301,15 +308,17 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         details = {
           "transactionId": transaction.id,
           "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount": transaction.amount,
-          "fee": transaction.fee,
+          "amount":
+              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
+          "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
           "breakdown": {
             "Crypto Sold":
                 "${transaction.asset?.name ?? ''} (${transaction.asset?.symbol ?? ''})",
             "Rate":
-                "₦${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
+                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
             "Amount Sold": "0.02 ${transaction.asset?.symbol ?? ''}",
-            "Total Received": "500000",
+            "Total Received":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
           }
         };
         break;
@@ -318,24 +327,28 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": transaction.amount,
-            "fee": transaction.fee,
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
+            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
-              "Rate": "₦750/USD",
+              "Rate":
+                  "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
               "Amount Sold": "\$50",
-              "Total Received": "37,000.00",
+              "Total Received":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
             }
           };
         } else if (transaction.status == "Failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": transaction.amount,
-            "fee": transaction.fee,
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
+            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
             "breakdown": {
               "Gift Card Sold": "STEAM 10-200",
-              "Rate": "₦750/USD",
+              "Rate": "${transaction.exchangeCurrency} 750/USD",
               "Amount Sold": "\$50",
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
@@ -345,13 +358,16 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": transaction.amount,
-            "fee": transaction.fee,
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
+            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
-              "Rate": "₦${transaction.rate}/${transaction.baseCurrency}",
+              "Rate":
+                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}",
               "Amount Sold": "\$${transaction.amount}",
-              "Total Received": "37000",
+              "Total Received":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
             }
           };
         }
@@ -362,11 +378,12 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": transaction.fee,
+            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Total Charged":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
             }
           };
         } else if (transaction.status == "Failed") {
@@ -374,7 +391,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": transaction.fee,
+            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -388,11 +405,12 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": transaction.fee,
+            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Total Charged":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
             }
           };
         }

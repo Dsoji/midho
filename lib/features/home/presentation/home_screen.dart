@@ -27,13 +27,16 @@ class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
   void initializeHomeData(WidgetRef ref) {
     ref.read(authenticationControllerProvider.notifier).fetchProfile();
+    ref.read(authenticationControllerProvider.notifier).fetchNotification();
     ref.read(giftCardControllerProvider.notifier).getGiftCards();
+    ref.read(transactionControllerProvider.notifier).fetchTransactions();
     ref.read(profileControllerProvider.notifier).getFaq();
     ref.read(transactionControllerProvider.notifier).getTransactions();
     ref.read(transactionControllerProvider.notifier).getCurrencies();
     ref.read(transactionControllerProvider.notifier).getRates();
     ref.read(transactionControllerProvider.notifier).getReferrals();
     ref.read(transactionControllerProvider.notifier).getRewards();
+    ref.read(profileControllerProvider.notifier).getBanks();
   }
 
   @override

@@ -54,6 +54,7 @@ class Wallet {
         'locked': locked,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
+        'id': id,
       };
 
   /// `dart:convert`

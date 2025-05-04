@@ -19,6 +19,25 @@ class TransactionHistoryScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(transactionControllerProvider);
+    final tabsRouter = AutoTabsRouter.of(context);
+
+    useEffect(() {
+      void listener() {
+        if (tabsRouter.activeIndex != 3) {
+          ref.read(transactionControllerProvider.notifier).getTransactions();
+        }
+      }
+
+      tabsRouter.addListener(listener);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        listener();
+      });
+
+      return () {
+        tabsRouter.removeListener(listener);
+      };
+    }, [tabsRouter]);
 
     return PopScope(
       canPop: false, // Prevent default back navigation

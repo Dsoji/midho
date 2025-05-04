@@ -6,6 +6,7 @@ import 'package:mdiho/features/transaction/data/model/response/currencies_model.
 import 'package:mdiho/features/transaction/data/model/response/rates_model/rates_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
+import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
 import '../model/response/transaction_history/datum.dart';
 import '../repository/transaction_repository.dart';
@@ -65,6 +66,43 @@ class TransactionController extends StateNotifier<TransactionState> {
       (success) {
         state = state.copyWith(
           transactions:
+              AsyncValue.data(result.getSuccess() ?? TransactionHistory()),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> fetchTransactions({
+    String? status,
+    String? type,
+    String? startDate,
+    String? endDate,
+    String sortKey = 'createdAt',
+    String sortOrder = 'DESC',
+  }) async {
+    state = state.copyWith(transactions: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getTransactions(
+      status: status,
+      type: type,
+      startDate: startDate,
+      endDate: endDate,
+      sortKey: sortKey,
+      sortOrder: sortOrder,
+    );
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          transactionList:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          transactionList:
               AsyncValue.data(result.getSuccess() ?? TransactionHistory()),
         );
         return true;
@@ -295,6 +333,89 @@ class TransactionController extends StateNotifier<TransactionState> {
       (success) {
         state = state.copyWith(
           referals: AsyncValue.data(result.getSuccess() ?? ReferallModel()),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> addBanks({
+    required String acctName,
+    required String acctNo,
+    required String bankName,
+    required String bankCode,
+  }) async {
+    state = state.copyWith(addBank: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.addBanks(
+      acctName: acctName,
+      acctNo: acctNo,
+      bankName: bankName,
+      bankCode: bankCode,
+    );
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          addBank:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          addBank: AsyncValue.data(result.getSuccess() ?? ''),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> acctName({
+    required String acctNo,
+    required String bankCode,
+  }) async {
+    state = state.copyWith(acctName: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getAcctname(
+      acctNo: acctNo,
+      bankCode: bankCode,
+    );
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          acctName:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          acctName: AsyncValue.data(result.getSuccess() ?? AcctNameModel()),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> deleteBanks({
+    required String acctId,
+  }) async {
+    state = state.copyWith(addBank: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.deleteAcct(
+      acctId: acctId,
+    );
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          addBank:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          addBank: AsyncValue.data(result.getSuccess() ?? ''),
         );
         return true;
       },

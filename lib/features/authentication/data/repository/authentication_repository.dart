@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/notification/data/model/response/notifcation_list/notifcation_list.dart';
 
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
@@ -352,6 +353,27 @@ class AuthenticationRepository {
                 message: 'Failed to update image',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to update image'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, NotifcationList>> getNotification() async {
+    try {
+      final data = await authService.getNotification();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? NotifcationList());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch notifications',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch notification'),
               ),
         );
       }

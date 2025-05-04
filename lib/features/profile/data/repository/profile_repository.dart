@@ -5,6 +5,7 @@ import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.da
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
 import '../../../authentication/data/model/payload/profile_payload.dart';
+import '../../../bank_network/data/model/response/bank_list/bank_list.dart';
 import '../Model/response/user_profile_model/user_profile_model.dart';
 import '../service/profile_service.dart';
 
@@ -213,6 +214,27 @@ class ProfileRepository {
                 message: 'Failed to post feedback',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to post feedback'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, List<BanlList>>> fetchBanks() async {
+    try {
+      final data = await authService.getBankList();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? []);
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch banks',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch banks'),
               ),
         );
       }

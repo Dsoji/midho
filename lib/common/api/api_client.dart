@@ -36,6 +36,7 @@ abstract class IApiClient {
   Future<Response> delete(
     String uri, {
     dynamic data,
+    Map<String, dynamic>? headers,
     Map<String, dynamic>? queryParameters,
   });
 

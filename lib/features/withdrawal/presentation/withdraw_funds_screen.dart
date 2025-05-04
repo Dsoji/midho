@@ -11,6 +11,7 @@ import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bank_network/presentation/bank_network_screen.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
 import '../../profile/presentation/bank/add_bank.dart';
@@ -29,6 +30,8 @@ class WithdrawFundsScreen extends HookConsumerWidget {
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
     final amountController = useTextEditingController();
     final selectedBank = ref.watch(selectedBankProvider);
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -78,16 +81,45 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        isBalanceVisible ? "₦950,0000" : "••••••••",
-                        style: TextStyle(
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 29,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: '',
-                        ),
+                      RichText(
+                        text: isBalanceVisible
+                            ? TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        '${userInfo?.wallet?.currency ?? ''} ',
+                                    style: TextStyle(
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: '',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '${userInfo?.wallet?.mainBalance ?? 0}',
+                                    style: TextStyle(
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 29,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: '',
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const TextSpan(
+                                text: "••••••••",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 29,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: '',
+                                ),
+                              ),
                       ),
                       const Gap(8),
                       Container(
@@ -132,8 +164,6 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                   BankInfoCard(
                     image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
                     name: selectedBank?["name"] ?? 'GT Bank',
-                    color: selectedBank?["color"] ??
-                        AppColors.primaryColor.shade500,
                     status: selectedBank?["status"] ?? 'Poor Network',
                     percentage: selectedBank?["percentage"] ?? '90',
                     actNumber: selectedBank?["actNumber"] ?? '1210125678',
@@ -280,7 +310,6 @@ class AddBankScreen extends HookConsumerWidget {
                   image: bank["image"] ??
                       "assets/default.png", // Use a default image if null
                   name: bank["name"] ?? "Unknown Bank",
-                  color: bank["color"] ?? Colors.grey,
                   status: bank["status"] ?? "No Status",
                   percentage: bank["percentage"] ?? "0%",
                   actNumber: bank["actNumber"] ?? "N/A",

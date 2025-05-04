@@ -8,13 +8,12 @@ import '../../../../common/res/app_colors.dart';
 import '../../../bottomNav/app_router.gr.dart';
 
 class BankInfoCard extends HookConsumerWidget {
-  const BankInfoCard({
+  BankInfoCard({
     super.key,
-    required this.image,
+    this.image,
     required this.name,
-    required this.color,
-    required this.status,
-    required this.percentage,
+    this.status,
+    this.percentage,
     required this.actNumber,
     required this.actName,
     this.showBorder = true,
@@ -23,14 +22,14 @@ class BankInfoCard extends HookConsumerWidget {
     this.onTap,
     this.showStrength = true,
     this.isAddBank = false,
+    this.delete,
   });
 
   final bool isAddBank;
-  final String image;
+  final String? image;
   final String name;
-  final Color color;
-  final String status;
-  final String percentage;
+  String? status;
+  String? percentage;
   final String actNumber;
   final String actName;
   final bool showBorder;
@@ -38,10 +37,20 @@ class BankInfoCard extends HookConsumerWidget {
   final VoidCallback? iconTap;
   final VoidCallback? onTap;
   final bool? showStrength;
+  final VoidCallback? delete;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    final int parsedPercentage =
+        int.tryParse(percentage?.replaceAll('%', '') ?? '') ?? 0;
+    final Color color = parsedPercentage <= 33
+        ? Colors.red
+        : parsedPercentage <= 66
+            ? Colors.amber
+            : Colors.green;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -52,7 +61,7 @@ class BankInfoCard extends HookConsumerWidget {
               : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: showBorder // Conditionally add border
+            side: showBorder
                 ? BorderSide(color: AppColors.greyColor.shade50)
                 : BorderSide.none,
           ),
@@ -60,97 +69,85 @@ class BankInfoCard extends HookConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CircleAvatar(
-              backgroundImage: AssetImage(image),
-              radius: 14,
-            ),
-            const Gap(12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
-                    const Gap(12),
-                    if (showStrength == true)
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: color,
-                              radius: 3,
-                            ),
-                            const Gap(4),
-                            Text(
-                              status,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'at $percentage%',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-                if (isAddBank == false)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        actNumber,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : const Color(0xFF707070),
-                        ),
-                      ),
-                      const Gap(12),
-                      Text(
-                        actName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : AppColors.greyColor.shade500,
-                        ),
-                      ),
-                    ],
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
                   ),
+                ),
+                const Gap(12),
+                if (showStrength == true &&
+                    status != null &&
+                    percentage != null)
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: color,
+                          radius: 3,
+                        ),
+                        const Gap(4),
+                        Text(
+                          status!,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'at $percentage',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (!isAddBank) ...[
+                  const Gap(12),
+                  Text(
+                    actNumber,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : const Color(0xFF707070),
+                    ),
+                  ),
+                  const Gap(12),
+                  Text(
+                    actName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : AppColors.greyColor.shade500,
+                    ),
+                  ),
+                ],
               ],
             ),
             const Spacer(),
             icon == Icons.more_horiz
                 ? PopupMenuButton<int>(
                     itemBuilder: (context) => [
-                      // Edit option
                       PopupMenuItem(
                         onTap: () {
                           context.router.push(
@@ -160,51 +157,41 @@ class BankInfoCard extends HookConsumerWidget {
                         value: 1,
                         child: const Row(
                           children: [
-                            Icon(Icons.edit_outlined,
-                                color: Colors.blue), // Blue edit icon
+                            Icon(Icons.edit_outlined, color: Colors.blue),
                             SizedBox(width: 10),
-                            Text(
-                              "Edit",
-                            ),
+                            Text("Edit"),
                           ],
                         ),
                       ),
-                      // Delete option
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 2,
-                        child: Row(
+                        onTap: delete,
+                        child: const Row(
                           children: [
-                            Icon(IconsaxPlusLinear.trash,
-                                color: Colors.red), // Red delete icon
+                            Icon(IconsaxPlusLinear.trash, color: Colors.red),
                             SizedBox(width: 10),
-                            Text(
-                              "Delete",
-                            ),
+                            Text("Delete"),
                           ],
                         ),
                       ),
                     ],
-                    offset: const Offset(
-                        0, 40), // Adjust offset for correct positioning
+                    offset: const Offset(0, 40),
                     color: theme.brightness == Brightness.dark
                         ? AppColors.secondaryColor.shade400
-                        : Colors.white, // White background
+                        : Colors.white,
                     elevation: 4,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // Rounded corners
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     onSelected: (value) {
                       if (value == 1) {
-                        // Handle edit action
+                        // handle edit
                       } else if (value == 2) {
-                        // Handle delete action
+                        // handle delete
                       }
                     },
                   )
-                : Icon(
-                    icon,
-                    size: 16,
-                  ),
+                : Icon(icon, size: 16),
           ],
         ),
       ),
@@ -215,29 +202,20 @@ class BankInfoCard extends HookConsumerWidget {
 class BankInfoCard2 extends HookConsumerWidget {
   const BankInfoCard2({
     super.key,
-    required this.image,
     required this.name,
-    required this.color,
     required this.status,
     required this.percentage,
-    required this.actNumber,
-    required this.actName,
     this.showBorder = true,
-    this.icon = IconsaxPlusLinear.arrow_right_3,
     this.iconTap,
     this.onTap,
     this.showStrength = true,
   });
 
-  final String image;
   final String name;
-  final Color color;
+
   final String status;
   final String percentage;
-  final String actNumber;
-  final String actName;
   final bool showBorder;
-  final IconData icon;
   final VoidCallback? iconTap;
   final VoidCallback? onTap;
   final bool? showStrength;
@@ -245,6 +223,11 @@ class BankInfoCard2 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final color = int.parse(percentage.replaceAll('%', '')) <= 33
+        ? Colors.red
+        : int.parse(percentage.replaceAll('%', '')) <= 66
+            ? Colors.amber
+            : Colors.green;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -263,61 +246,51 @@ class BankInfoCard2 extends HookConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CircleAvatar(
-              backgroundImage: AssetImage(image),
-              radius: 14,
-            ),
-            const Gap(12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                ),
+                const Gap(12),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: color,
+                        radius: 3,
                       ),
-                    ),
-                    const Gap(12),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(30),
+                      const Gap(4),
+                      Text(
+                        status,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: color,
-                            radius: 3,
-                          ),
-                          const Gap(4),
-                          Text(
-                            status,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'at $percentage%',
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 6),
+                      Text(
+                        'at $percentage%',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

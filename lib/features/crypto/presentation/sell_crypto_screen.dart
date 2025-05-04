@@ -316,7 +316,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixText: currencySign,
-                    hintText: currencySign,
+                    hintText: '0',
                   ),
                   onChanged: onChanged,
                   style: const TextStyle(

@@ -36,13 +36,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         ref.watch(transactionControllerProvider).rates.valueOrNull?.data;
     final selectedRate = useState<RateData?>(null); // To hold selected value
     final selectedPlan = useState<String>("USD");
-    final itemRates = rates!
-        .where((rate) =>
-            rate.name?.toLowerCase().contains(giftCard.name!.toLowerCase()) ==
-                true &&
-            rate.baseCurrency?.toUpperCase() ==
-                selectedPlan.value.toUpperCase())
-        .toList();
+    final exchangeCurrency = useState<String>("NGN");
+    final itemRates = useState<List<RateData>>([]);
     final conversionRate = useState<num?>(null);
     final rateId = useState<String?>(null);
 
@@ -65,24 +60,72 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       );
     }
 
+    final tabController = useTabController(initialLength: 2);
+    final currentTab = useState(0);
+
+// Listen to tab changes and update currentTab
     useEffect(() {
-      if (rates.isNotEmpty) {
+      void listener() {
+        currentTab.value = tabController.index;
+      }
+
+      tabController.addListener(listener);
+      return () => tabController.removeListener(listener);
+    }, []);
+
+// Update conversion rate when selectedPlan, rates, or current tab changes
+    useEffect(() {
+      if (rates != null && rates.isNotEmpty) {
+        final matchedRates = rates
+            .where(
+              (rate) =>
+                  rate.name
+                          ?.toLowerCase()
+                          .contains(giftCard.name!.toLowerCase()) ==
+                      true &&
+                  rate.baseCurrency?.toUpperCase() ==
+                      selectedPlan.value.toUpperCase(),
+            )
+            .toList();
+
+        itemRates.value = matchedRates; // <-- Add this line
+
+        final matchedRate =
+            matchedRates.isNotEmpty ? matchedRates.first : RateData();
+
+        conversionRate.value = currentTab.value == 0
+            ? matchedRate.ecodeRate ?? 0.0
+            : matchedRate.rate ?? 0.0;
+
+        rateId.value = matchedRate.id;
+        exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
+      }
+
+      return null;
+    }, [selectedPlan.value, currentTab.value, rates]);
+    //
+    useEffect(() {
+      if (rates != null && rates.isNotEmpty) {
         final matchedRate = rates.firstWhere(
           (rate) =>
               rate.name?.toLowerCase().contains(giftCard.name!.toLowerCase()) ==
                   true &&
-              rate.baseCurrency == selectedPlan.value,
-          orElse: () {
-            return RateData(); // Return a default RateData object if no match is found
-          },
+              rate.baseCurrency?.toUpperCase() ==
+                  selectedPlan.value.toUpperCase(),
+          orElse: () => RateData(),
         );
 
-        conversionRate.value = matchedRate.rate ??
-            0.0; // Replace with the correct property or default value
+        conversionRate.value = currentTab.value == 0
+            ? matchedRate.ecodeRate ?? 0.0
+            : matchedRate.rate ?? 0.0;
+
         rateId.value = matchedRate.id;
+        exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
       }
+
       return null;
-    }, [selectedPlan.value, rates]);
+    }, [selectedPlan.value, currentTab.value, rates]);
+
     final usdController = useTextEditingController();
     final ngnController = useTextEditingController();
 
@@ -106,7 +149,17 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
           (ngn / (conversionRate.value ?? 1)).toStringAsFixed(2);
     }
 
-    final tabController = useTabController(initialLength: 2);
+    useEffect(() {
+      final usdText = usdController.text.trim();
+      final ngnText = ngnController.text.trim();
+
+      if (usdText.isNotEmpty) {
+        convertUSDToNGN(usdText);
+      } else if (ngnText.isNotEmpty) {
+        convertNGNToUSD(ngnText);
+      }
+      return null;
+    }, [conversionRate.value]);
 
     useEffect(() {
       void listener() {}
@@ -328,7 +381,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         )),
                   ),
                   const Gap(8),
-                  itemRates.isEmpty
+                  itemRates.value.isEmpty
                       ? GestureDetector(
                           onTap: () {
                             ToastService().showToast(
@@ -423,14 +476,14 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                           onChanged: (value) {
                             selectedRate.value = value;
                           },
-                          items: itemRates.map((rate) {
+                          items: itemRates.value.map((rate) {
                             return DropdownMenuItem<RateData>(
                               value: rate,
                               child: Text(rate.name ?? ''),
                             );
                           }).toList(),
                           selectedItemBuilder: (context) {
-                            return itemRates.map((rate) {
+                            return itemRates.value.map((rate) {
                               return Text(rate.name ?? '');
                             }).toList();
                           },
@@ -507,7 +560,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                               "USD",
                               PlaceholderAssets.us,
                               convertUSDToNGN,
-                              "\$ ",
+                              selectedPlan.value,
                               true,
                               context,
                               selectedPlan.value == "USD" ? "\$" : "₦",
@@ -521,7 +574,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                               "NGN",
                               PlaceholderAssets.ng,
                               convertNGNToUSD,
-                              "₦",
+                              exchangeCurrency.value,
                               false,
                               context,
                               selectedPlan.value,
@@ -600,6 +653,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                           giftCard: giftCard,
                           amount: int.tryParse(usdController.text.trim()) ?? 0,
                           rates: selectedRate.value?.id,
+                          isCode: tabController.index == 0 ? true : false,
+                          currency: selectedPlan.value,
                         ),
                       );
                     },
@@ -673,14 +728,6 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                const Spacer(),
-                const Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    'Quantity',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
-                ),
               ] else ...[
                 const Spacer(),
                 Text(
@@ -702,8 +749,9 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    prefixText: currencySign,
-                    hintText: currencySign,
+                    prefixText: isTop == true ? currencySign : '',
+                    hintText: '0',
+                    prefixStyle: const TextStyle(fontFamily: '', fontSize: 10),
                   ),
                   onChanged: onChanged,
                   style: const TextStyle(
@@ -725,21 +773,15 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.white,
-                        backgroundImage: AssetImage(flagPath),
-                      ),
-                      const SizedBox(width: 4),
                       Text(
-                        currency,
+                        currencySign,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 )
               else
-                const CounterWidget(),
+                const SizedBox.shrink(),
             ],
           ),
         ],

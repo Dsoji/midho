@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
@@ -66,32 +65,55 @@ class WalletBalanceCard extends HookConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                isBalanceVisible
-                    ? '${userInfo?.wallet?.mainBalance ?? 0}'.formatAsNaira()
-                    : "••••••••",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 29,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: '',
-                ),
+              RichText(
+                text: isBalanceVisible
+                    ? TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${userInfo?.wallet?.currency ?? ''} ',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: '',
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${userInfo?.wallet?.mainBalance ?? 0}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 29,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: '',
+                            ),
+                          ),
+                        ],
+                      )
+                    : const TextSpan(
+                        text: "••••••••",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 29,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: '',
+                        ),
+                      ),
               ),
               const Gap(8),
-              Container(
-                width: 21,
-                height: 21,
-                decoration: ShapeDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : AppColors.greyColor.shade500,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)),
-                ),
-                child: GestureDetector(
-                  onTap: () => ref
-                      .read(balanceVisibilityProvider.notifier)
-                      .toggleVisibility(),
+              GestureDetector(
+                onTap: () => ref
+                    .read(balanceVisibilityProvider.notifier)
+                    .toggleVisibility(),
+                child: Container(
+                  width: 21,
+                  height: 21,
+                  decoration: ShapeDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade400
+                        : AppColors.greyColor.shade500,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                  ),
                   child: Icon(
                     isBalanceVisible
                         ? IconsaxPlusLinear.eye

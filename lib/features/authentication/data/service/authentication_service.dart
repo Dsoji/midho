@@ -6,6 +6,7 @@ import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
 import '../../../../common/utils/utils.dart';
+import '../../../notification/data/model/response/notifcation_list/notifcation_list.dart';
 import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
 import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../model/payload/profile_payload.dart';
@@ -278,8 +279,23 @@ class AuthenticationService {
         },
       ),
       parser: (data) {
-        logger.d(data);
         return UploadResponse.fromMap(data);
+      },
+      showErrorToast: true,
+    );
+  }
+
+  Future<ResultValue<NotifcationList>> getNotification() async {
+    return await apiRequestHelper.handleApiRequest<NotifcationList>(
+      () => apiClient.get(
+        'user/notification/notifications',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        logger.d(data);
+        return NotifcationList.fromMap(data);
       },
       showErrorToast: true,
     );

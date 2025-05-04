@@ -7,6 +7,8 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
+import '../../../../common/utils/utils.dart';
+import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
 import '../../../referral_screen/data/model/response/rewards_model/rewards_model.dart';
 import '../model/response/rates_model/rates_model.dart';
@@ -220,6 +222,77 @@ class TransactionService {
       ),
       parser: (data) {
         return RewardsModel.fromMap(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<String>> addBanks({
+    String? acctNo,
+    String? acctName,
+    String? bankName,
+    String? bankCode,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/profile/addBank',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "accountName": acctName,
+          "accountNumber": acctNo,
+          "bankName": bankName,
+          "bankCode": bankCode,
+        },
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<AcctNameModel>> getAcctName({
+    String? acctNo,
+    String? bankCode,
+  }) async {
+    return apiRequestHelper.handleApiRequest<AcctNameModel>(
+      () => apiClient.get(
+        'resolve?',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        queryParameters: {
+          "accountNumber": acctNo,
+          "bankCode": bankCode,
+        },
+      ),
+      parser: (data) {
+        return AcctNameModel.fromMap(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<String>> deleteAcct({
+    String? acctId,
+  }) async {
+    return apiRequestHelper.handleApiRequest<String>(
+      () => apiClient.delete(
+        'user/profile/removeBank?',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        queryParameters: {
+          "id": acctId,
+        },
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
       },
       showErrorToast: true,
       showSuccessToast: false,

@@ -404,4 +404,25 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
       },
     );
   }
+
+  Future<bool> fetchNotification() async {
+    state = state.copyWith(notification: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getNotification();
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          notification: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          notification: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
 }

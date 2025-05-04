@@ -270,6 +270,8 @@ class CardDetailsProofRoute
     required _i51.GiftCardData giftCard,
     required int amount,
     required String? rates,
+    required bool isCode,
+    required String currency,
     List<_i49.PageRouteInfo>? children,
   }) : super(
           CardDetailsProofRoute.name,
@@ -278,6 +280,8 @@ class CardDetailsProofRoute
             giftCard: giftCard,
             amount: amount,
             rates: rates,
+            isCode: isCode,
+            currency: currency,
           ),
           initialChildren: children,
         );
@@ -293,6 +297,8 @@ class CardDetailsProofRoute
         giftCard: args.giftCard,
         amount: args.amount,
         rates: args.rates,
+        isCode: args.isCode,
+        currency: args.currency,
       );
     },
   );
@@ -304,6 +310,8 @@ class CardDetailsProofRouteArgs {
     required this.giftCard,
     required this.amount,
     required this.rates,
+    required this.isCode,
+    required this.currency,
   });
 
   final _i50.Key? key;
@@ -314,9 +322,13 @@ class CardDetailsProofRouteArgs {
 
   final String? rates;
 
+  final bool isCode;
+
+  final String currency;
+
   @override
   String toString() {
-    return 'CardDetailsProofRouteArgs{key: $key, giftCard: $giftCard, amount: $amount, rates: $rates}';
+    return 'CardDetailsProofRouteArgs{key: $key, giftCard: $giftCard, amount: $amount, rates: $rates, isCode: $isCode, currency: $currency}';
   }
 }
 
