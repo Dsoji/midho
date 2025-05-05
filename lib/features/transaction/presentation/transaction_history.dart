@@ -77,24 +77,20 @@ class TransactionHistoryScreen extends HookConsumerWidget {
               itemBuilder: (_, __) => const CryptoCardShimmer(),
             ),
             error: (error, _) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Gap(52),
-                  const Icon(Icons.warning_amber_rounded,
-                      size: 48, color: Colors.red),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Failed to load transactions.",
-                    style: TextStyle(fontSize: 16, color: Colors.red[600]),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    error.toString(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ],
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Gap(52),
+                    const Icon(Icons.info_outline,
+                        color: Colors.grey, size: 48),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Failed to load transactions.",
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
               ),
             ),
             data: (transactions) {

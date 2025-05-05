@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:intl/intl.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/features/notification/data/model/response/notifcation_list/datum.dart';
 
 import '../../common/res/app_colors.dart';
 import '../../common/widgets/custom_app_bar.dart';
+import '../crypto/presentation/crypto_screen.dart';
 
 @RoutePage()
 class NotificationScreen extends HookConsumerWidget {
@@ -17,42 +17,9 @@ class NotificationScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationList =
-        ref.watch(authenticationControllerProvider).notification.valueOrNull;
-    final notifications = notificationList?.data ?? [];
-
-    Map<String, List<dynamic>> groupedNotifications = {};
-
-    for (var item in notifications) {
-      final parsedDate = item.createdAt ?? DateTime.now();
-      final now = DateTime.now();
-      final difference = now.difference(parsedDate).inDays;
-
-      String key;
-      if (difference == 0) {
-        key = 'Today';
-      } else if (difference == 1) {
-        key = 'Yesterday';
-      } else {
-        key = DateFormat('MMM dd, yyyy').format(parsedDate);
-      }
-
-      groupedNotifications.putIfAbsent(key, () => []).add(item);
-    }
-
-    final sortedKeys = groupedNotifications.keys.toList()
-      ..sort((a, b) {
-        // Sort keys by parsed date (today first)
-        DateTime parseKey(String k) {
-          if (k == 'Today') return DateTime.now();
-          if (k == 'Yesterday') {
-            return DateTime.now().subtract(const Duration(days: 1));
-          }
-          return DateFormat('MMM dd, yyyy').parse(k);
-        }
-
-        return parseKey(b).compareTo(parseKey(a));
-      });
+    final asyncNotification = ref.watch(
+      authenticationControllerProvider.select((state) => state.notification),
+    );
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -62,53 +29,84 @@ class NotificationScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Stay updated with your transactions and activities.",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+      body: asyncNotification.when(
+        loading: () => ListView.separated(
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 16,
+          ),
+          itemCount: 6,
+          separatorBuilder: (_, __) => const Gap(8),
+          itemBuilder: (_, __) => const CryptoCardShimmer(),
+        ),
+        error: (error, _) => Center(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Gap(52),
+                const Icon(Icons.info_outline, color: Colors.grey, size: 48),
+                const SizedBox(height: 8),
+                Text(
+                  "Failed to load notifications.",
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
-              ),
+              ],
             ),
-            const Gap(16),
-            if (notifications.isEmpty)
-              const Center(
-                child: Text(
-                  "No notifications yet.",
-                  style: TextStyle(color: Colors.grey),
-                ),
-              )
-            else
-              ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+          ),
+        ),
+        data: (notificationList) {
+          final notifications = (notificationList.data ?? [])
+            ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+
+          return RefreshIndicator.adaptive(
+            onRefresh: () async {
+              await ref
+                  .read(authenticationControllerProvider.notifier)
+                  .fetchNotification();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final key in sortedKeys) ...[
-                    Text(
-                      key,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Stay updated with your transactions and activities.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const Gap(10),
-                    ...groupedNotifications[key]!
-                        .map((n) => NotificationCard(notification: n)),
-                    const Gap(24),
-                  ]
+                  ),
+                  const Gap(16),
+                  if (notifications.isEmpty)
+                    const Center(
+                      child: Text(
+                        "No notifications yet.",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: notifications.length,
+                      separatorBuilder: (_, __) => const Gap(12),
+                      itemBuilder: (context, index) {
+                        return NotificationCard(
+                          notification: notifications[index],
+                        );
+                      },
+                    ),
+                  const Gap(150),
                 ],
               ),
-            const Gap(150),
-          ],
-        ),
+            ),
+          );
+        },
       ),
     );
   }
