@@ -196,6 +196,11 @@ class AddNewBankScreen extends HookConsumerWidget {
                           await ref
                               .read(authenticationControllerProvider.notifier)
                               .fetchProfile();
+                          ref
+                              .read(authenticationControllerProvider)
+                              .userDetails
+                              .value
+                              ?.banks;
 
                           Navigator.of(context).pop();
                         }

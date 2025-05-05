@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
@@ -63,26 +62,16 @@ class LinkedBanksScreen extends HookConsumerWidget {
           ),
         ),
         data: (user) {
-          final localBanks = useState<List<dynamic>>(user.banks ?? []);
-
-          Future<void> refreshBanks() async {
-            await ref
-                .read(authenticationControllerProvider.notifier)
-                .fetchProfile();
-
-            final newBanks = ref
-                    .read(authenticationControllerProvider)
-                    .userDetails
-                    .value
-                    ?.banks ??
-                [];
-            localBanks.value = newBanks;
-          }
+          final localBanks = userProfileAsync.valueOrNull?.banks;
 
           return RefreshIndicator(
-            onRefresh: refreshBanks,
+            onRefresh: () async {
+              await ref
+                  .read(authenticationControllerProvider.notifier)
+                  .fetchProfile();
+            },
             color: AppColors.primaryColor.shade500,
-            child: localBanks.value.isEmpty
+            child: localBanks!.isEmpty
                 ? ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: const [
@@ -102,9 +91,9 @@ class LinkedBanksScreen extends HookConsumerWidget {
                       ),
                       const Gap(16),
                       ...List.generate(
-                        localBanks.value.length,
+                        localBanks.length,
                         (index) {
-                          final bank = localBanks.value[index];
+                          final bank = localBanks[index];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: BankInfoCard(
@@ -120,11 +109,10 @@ class LinkedBanksScreen extends HookConsumerWidget {
                                     .read(
                                         transactionControllerProvider.notifier)
                                     .deleteBanks(acctId: bank.id ?? '');
-                                if (result == true) {
-                                  localBanks.value = List.from(localBanks.value)
-                                    ..removeWhere((b) => b.id == bank.id);
-                                  await refreshBanks();
-                                }
+                                await ref
+                                    .read(authenticationControllerProvider
+                                        .notifier)
+                                    .fetchProfile();
                               },
                             ),
                           );
