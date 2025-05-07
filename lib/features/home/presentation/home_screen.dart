@@ -178,6 +178,10 @@ class HomeScreen extends HookConsumerWidget {
         body: RefreshIndicator(
           onRefresh: () async {
             ref.read(authenticationControllerProvider.notifier).fetchProfile();
+            ref
+                .read(transactionControllerProvider.notifier)
+                .fetchTransactions();
+
             return Future.delayed(const Duration(seconds: 1));
           },
           child: const SingleChildScrollView(

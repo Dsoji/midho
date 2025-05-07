@@ -248,7 +248,13 @@ class AddNewBankScreen extends HookConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      builder: (context) => const AddBankScreen(),
+      builder: (context) {
+        final height = MediaQuery.of(context).size.height;
+        return const FractionallySizedBox(
+          heightFactor: 0.85, // 70% of screen height
+          child: AddBankScreen(),
+        );
+      },
     );
   }
 }

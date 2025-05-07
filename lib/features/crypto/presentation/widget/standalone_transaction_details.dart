@@ -35,23 +35,13 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
         if (!didPop) {
-          if (type == 'Crypto Sale') {
-            context.router.replaceAll([const CryptoRoute()]);
+          context.router.replaceAll([const CryptoRoute()]);
 
-            final tabsRouter = AutoTabsRouter.of(
-              context,
-            );
+          final tabsRouter = AutoTabsRouter.of(
+            context,
+          );
 
-            tabsRouter.setActiveIndex(0);
-          } else {
-            context.router.replaceAll([const HomeRoute()]);
-
-            final tabsRouter = AutoTabsRouter.of(
-              context,
-            );
-
-            tabsRouter.setActiveIndex(0);
-          }
+          tabsRouter.setActiveIndex(0);
         }
       },
       child: Scaffold(
@@ -61,23 +51,13 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
           showTitle: false,
           showAction: false,
           onBackPressed: () {
-            if (type == 'Crypto Sale') {
-              context.router.replaceAll([const CryptoRoute()]);
+            context.router.replaceAll([const CryptoRoute()]);
 
-              final tabsRouter = AutoTabsRouter.of(
-                context,
-              );
+            final tabsRouter = AutoTabsRouter.of(
+              context,
+            );
 
-              tabsRouter.setActiveIndex(0);
-            } else {
-              context.router.replaceAll([const HomeRoute()]);
-
-              final tabsRouter = AutoTabsRouter.of(
-                context,
-              );
-
-              tabsRouter.setActiveIndex(0);
-            }
+            tabsRouter.setActiveIndex(0);
           },
         ),
         body: SingleChildScrollView(
@@ -126,23 +106,13 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 60,
                 onPressed: () {
-                  if (type == 'Crypto Sale') {
-                    context.router.replaceAll([const CryptoRoute()]);
+                  context.router.replaceAll([const CryptoRoute()]);
 
-                    final tabsRouter = AutoTabsRouter.of(
-                      context,
-                    );
+                  final tabsRouter = AutoTabsRouter.of(
+                    context,
+                  );
 
-                    tabsRouter.setActiveIndex(0);
-                  } else if (type == 'GIFTCARDSALE') {
-                    context.router.replaceAll([const HomeRoute()]);
-
-                    final tabsRouter = AutoTabsRouter.of(
-                      context,
-                    );
-
-                    tabsRouter.setActiveIndex(0);
-                  }
+                  tabsRouter.setActiveIndex(0);
                 },
                 textColor: AppColors.whiteColor,
                 color: theme.brightness == Brightness.dark

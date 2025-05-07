@@ -283,7 +283,7 @@ class BankInfoCard2 extends HookConsumerWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'at $percentage%',
+                        'at $percentage',
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,

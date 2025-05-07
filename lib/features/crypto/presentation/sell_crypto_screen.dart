@@ -49,6 +49,18 @@ class SellCryptoScreen extends HookConsumerWidget {
       usdController.text = (ngn / conversionRate).toStringAsFixed(2);
     }
 
+    useEffect(() {
+      final usdText = usdController.text.trim();
+      final ngnText = ngnController.text.trim();
+
+      if (usdText.isNotEmpty) {
+        convertUSDToNGN(usdText);
+      } else if (ngnText.isNotEmpty) {
+        convertNGNToUSD(ngnText);
+      }
+      return null;
+    }, [conversionRate]);
+
     final theme = Theme.of(context);
     return Scaffold(
         appBar: const CustomAppBar(
@@ -167,20 +179,20 @@ class SellCryptoScreen extends HookConsumerWidget {
                               _buildCurrencyField(
                                   "You Pay",
                                   usdController,
-                                  "USD",
+                                  rates.baseCurrency ?? '',
                                   PlaceholderAssets.us,
                                   convertUSDToNGN,
-                                  "\$ ",
+                                  "${rates.baseCurrency} ",
                                   context,
                                   true),
                               const Gap(4),
                               _buildCurrencyField(
                                   "You Receive",
                                   ngnController,
-                                  "NGN",
+                                  rates.exchangeCurrency ?? '',
                                   PlaceholderAssets.ng,
                                   convertNGNToUSD,
-                                  "₦ ",
+                                  "${rates.exchangeCurrency} ",
                                   context,
                                   false),
                             ],
@@ -231,6 +243,16 @@ class SellCryptoScreen extends HookConsumerWidget {
                           ToastService().showToast(
                             NotificationType.info,
                             message: 'Input your amount.',
+                          );
+                          return;
+                        }
+                        if (usdController.text.isEmpty ||
+                            (num.tryParse(usdController.text) ?? 0) <
+                                (rates.moq ?? 0)) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message:
+                                'Input your amount greater than or equal to ${rates.moq ?? 0}',
                           );
                           return;
                         }
@@ -317,6 +339,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                     border: InputBorder.none,
                     prefixText: currencySign,
                     hintText: '0',
+                    prefixStyle: const TextStyle(fontFamily: '', fontSize: 10),
                   ),
                   onChanged: onChanged,
                   style: const TextStyle(
@@ -335,19 +358,9 @@ class SellCryptoScreen extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(16), // Rounded corners
                   // Light grey border
                 ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.white,
-                      backgroundImage: AssetImage(flagPath),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      currency,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                child: Text(
+                  currency,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               )
             ],
