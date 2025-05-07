@@ -83,10 +83,20 @@ class NotificationScreen extends HookConsumerWidget {
                   ),
                   const Gap(16),
                   if (notifications.isEmpty)
-                    const Center(
-                      child: Text(
-                        "No notifications yet.",
-                        style: TextStyle(color: Colors.grey),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Gap(52),
+                          const Icon(Icons.info_outline,
+                              color: Colors.grey, size: 48),
+                          const SizedBox(height: 8),
+                          Text(
+                            "You do not have any notifications.",
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.grey[600]),
+                          ),
+                        ],
                       ),
                     )
                   else

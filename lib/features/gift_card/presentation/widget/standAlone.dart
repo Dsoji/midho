@@ -159,16 +159,8 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
             "Transaction ID", details["transactionId"], context, true),
         _buildDetailRow("Date & Time", details["dateTime"], context, false),
         _buildDetailRow("Type", type, context, false),
-        _buildDetailRow(
-            "Amount",
-            "${transaction.exchangeCurrency}  ${details["amount"]}",
-            context,
-            false),
-        _buildDetailRow(
-            "Fee",
-            "${transaction.exchangeCurrency}  ${details["fee"]}",
-            context,
-            false),
+        _buildDetailRow("Amount", "${details["amount"]}", context, false),
+        _buildDetailRow("Fee", "${details["fee"]}", context, false),
         _buildDetailRow("Status", status, context, false),
       ],
     );

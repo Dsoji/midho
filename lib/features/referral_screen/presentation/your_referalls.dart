@@ -23,9 +23,14 @@ class MyReferallScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      body: RefreshIndicator.adaptive(
+        onRefresh: () async {
+          await ref.read(transactionControllerProvider.notifier).getReferrals();
+          await ref.read(transactionControllerProvider.notifier).getRewards();
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          physics: const AlwaysScrollableScrollPhysics(),
           children: [
             const Align(
               alignment: Alignment.centerLeft,

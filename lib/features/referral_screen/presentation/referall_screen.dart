@@ -36,29 +36,36 @@ class ReferallScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Earn rewards by inviting friends to M-Diho!",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+      body: RefreshIndicator.adaptive(
+        onRefresh: () async {
+          ref.read(transactionControllerProvider.notifier).getReferrals();
+          ref.read(transactionControllerProvider.notifier).getRewards();
+          return Future.delayed(const Duration(seconds: 1));
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Earn rewards by inviting friends to M-Diho!",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
-            ),
-            const Gap(16),
-            const ReferralBalanceCard(),
-            const Gap(16),
-            ReferralCodeCard(
-                referralCode: userInfo?.username ?? "DESIGNFATHER"),
-            const Gap(16),
-            const RewardEmptyStateCard(),
-            const Gap(150),
-          ],
+              const Gap(16),
+              const ReferralBalanceCard(),
+              const Gap(16),
+              ReferralCodeCard(
+                  referralCode: userInfo?.username ?? "DESIGNFATHER"),
+              const Gap(16),
+              const RewardEmptyStateCard(),
+              const Gap(150),
+            ],
+          ),
         ),
       ),
     );
@@ -432,6 +439,7 @@ class ReferralBalanceCard extends HookConsumerWidget {
           final lifetimeEarnings =
               userDetails.wallet?.lifetimeReferralBalance ?? 0.0;
           final totalReferrals = refCount?.length ?? 0;
+          final currency = userDetails.wallet?.currency ?? '';
 
           return _ReferralDataContent(
             ref: ref,
@@ -440,6 +448,7 @@ class ReferralBalanceCard extends HookConsumerWidget {
             lifetimeEarnings: lifetimeEarnings,
             totalReferrals: totalReferrals,
             isBalanceVisible: isBalanceVisible,
+            currency: currency,
           );
         },
       ),
@@ -454,6 +463,7 @@ class _ReferralDataContent extends StatelessWidget {
   final int totalReferrals;
   final bool isBalanceVisible;
   final WidgetRef ref;
+  final String currency;
 
   const _ReferralDataContent({
     required this.theme,
@@ -462,6 +472,7 @@ class _ReferralDataContent extends StatelessWidget {
     required this.totalReferrals,
     required this.isBalanceVisible,
     required this.ref,
+    required this.currency,
   });
 
   @override
@@ -481,7 +492,7 @@ class _ReferralDataContent extends StatelessWidget {
           children: [
             Text(
               isBalanceVisible
-                  ? balance.toStringAsFixed(2).formatAsNaira()
+                  ? '$currency ${balance.toStringAsFixed(2).commaFormat()}'
                   : "••••••••",
               style: TextStyle(
                 color: color,
@@ -532,7 +543,7 @@ class _ReferralDataContent extends StatelessWidget {
                       )),
                   const SizedBox(height: 4),
                   Text(
-                    lifetimeEarnings.toStringAsFixed(2).formatAsNaira(),
+                    '$currency ${lifetimeEarnings.toStringAsFixed(2).commaFormat()}',
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

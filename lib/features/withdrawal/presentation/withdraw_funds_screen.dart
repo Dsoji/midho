@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
 import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart';
@@ -99,7 +100,8 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                                   ),
                                   TextSpan(
                                     text:
-                                        '${userInfo?.wallet?.mainBalance ?? 0}',
+                                        '${userInfo?.wallet?.mainBalance ?? 0}'
+                                            .commaFormat(),
                                     style: TextStyle(
                                       color: theme.brightness == Brightness.dark
                                           ? Colors.white

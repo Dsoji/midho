@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
@@ -274,16 +275,22 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           "transactionId": transaction.id,
           "dateTime": transaction.createdAt!.formatToReadableDateTime(),
           "amount":
-              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                  .commaFormat(),
+          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+              .commaFormat(),
           "breakdown": {
             "Crypto Sold":
                 "${transaction.asset?.name ?? ''} (${transaction.asset?.symbol ?? ''})",
             "Rate":
-                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
-            "Amount Sold": "0.02 ${transaction.asset?.symbol ?? ''}",
+                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                    .commaFormat(),
+            "Amount Sold":
+                "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                    .commaFormat(),
             "Total Received":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                    .commaFormat(),
           }
         };
         break;
@@ -293,15 +300,21 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
-              "Amount Sold": "\$50",
+                  "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold":
+                  "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
               "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
         } else if (transaction.status == "Failed") {
@@ -309,11 +322,13 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": "STEAM 10-200",
-              "Rate": "${transaction.exchangeCurrency} 750/USD",
+              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
               "Amount Sold": "\$50",
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
@@ -324,16 +339,20 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}",
-              "Amount Sold":
-                  "${transaction.baseCurrency} ${transaction.amount}",
+                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}"
+                      .commaFormat(),
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
+                  .commaFormat(),
               "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
         }
@@ -344,7 +363,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -356,7 +376,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -370,7 +391,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",

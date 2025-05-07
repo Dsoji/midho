@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
@@ -159,16 +160,8 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "Transaction ID", details["transactionId"], context, true),
         _buildDetailRow("Date & Time", details["dateTime"], context, false),
         _buildDetailRow("Type", type, context, false),
-        _buildDetailRow(
-            "Amount",
-            "${transaction.exchangeCurrency} ${details["amount"]}",
-            context,
-            false),
-        _buildDetailRow(
-            "Fee",
-            "${transaction.exchangeCurrency} ${details["fee"]}",
-            context,
-            false),
+        _buildDetailRow("Amount", " ${details["amount"]}", context, false),
+        _buildDetailRow("Fee", "${details["fee"]}", context, false),
         _buildDetailRow("Status", status, context, false),
       ],
     );
@@ -279,16 +272,22 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
           "transactionId": transaction.id,
           "dateTime": transaction.createdAt!.formatToReadableDateTime(),
           "amount":
-              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-          "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
+              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                  .commaFormat(),
+          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+              .commaFormat(),
           "breakdown": {
             "Crypto Sold":
                 "${transaction.asset?.name ?? ''} (${transaction.asset?.symbol ?? ''})",
             "Rate":
-                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
-            "Amount Sold": "0.02 ${transaction.asset?.symbol ?? ''}",
+                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                    .commaFormat(),
+            "Amount Sold":
+                "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                    .commaFormat(),
             "Total Received":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                    .commaFormat(),
           }
         };
         break;
@@ -298,15 +297,21 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.symbol ?? ''}",
-              "Amount Sold": "\$50",
+                  "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold":
+                  "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
               "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
         } else if (transaction.status == "Failed") {
@@ -314,11 +319,13 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": "STEAM 10-200",
-              "Rate": "${transaction.exchangeCurrency} 750/USD",
+              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
               "Amount Sold": "\$50",
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
@@ -329,15 +336,20 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}",
-              "Amount Sold": "\$${transaction.amount}",
+                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}"
+                      .commaFormat(),
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
+                  .commaFormat(),
               "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
         }
@@ -348,12 +360,12 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
-              "Total Charged":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+              "Total Charged": "10500",
             }
           };
         } else if (transaction.status == "Failed") {
@@ -361,7 +373,8 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -375,12 +388,12 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency} ${transaction.fee}',
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
-              "Total Charged":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+              "Total Charged": "10500",
             }
           };
         }

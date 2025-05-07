@@ -112,8 +112,8 @@ class TransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "${(transactions.amount ?? 0) * (transactions.rate ?? 0) - (transactions.fee ?? 0)}"
-                      .formatAsNaira(),
+                  "${transactions.exchangeCurrency} ${(transactions.amount ?? 0) * (transactions.rate ?? 0) - (transactions.fee ?? 0)}"
+                      .commaFormat(),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

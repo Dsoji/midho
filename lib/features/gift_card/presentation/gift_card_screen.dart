@@ -40,34 +40,32 @@ class GiftCardScreen extends HookConsumerWidget {
         ),
         body: RefreshIndicator(
           onRefresh: () async {
-            ref.read(giftCardControllerProvider.notifier).getGiftCards();
-            return Future.delayed(const Duration(seconds: 1));
+            await ref.read(giftCardControllerProvider.notifier).getGiftCards();
           },
-          child: SingleChildScrollView(
+          child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Choose the type of gift card you'd like to sell from our supported list",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
+            physics:
+                const AlwaysScrollableScrollPhysics(), // ensures refresh is possible even if content < screen
+            children: [
+              const Text(
+                "Choose the type of gift card you'd like to sell from our supported list",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                 ),
-                const Gap(16),
-                CustomTextField(
-                  controller: searchController,
-                  hintText: "Search Gift Card",
-                  fillColor: theme.brightness == Brightness.dark
-                      ? Colors.transparent
-                      : Colors.white,
-                  suffixIcon: const Icon(Icons.search),
-                ),
-                const Gap(16),
-                GiftCardGrid(searchController: searchController),
-              ],
-            ),
+              ),
+              const Gap(16),
+              CustomTextField(
+                controller: searchController,
+                hintText: "Search Gift Card",
+                fillColor: theme.brightness == Brightness.dark
+                    ? Colors.transparent
+                    : Colors.white,
+                suffixIcon: const Icon(Icons.search),
+              ),
+              const Gap(16),
+              GiftCardGrid(searchController: searchController),
+            ],
           ),
         ),
       ),

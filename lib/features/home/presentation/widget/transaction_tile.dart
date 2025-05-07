@@ -10,6 +10,7 @@ import 'package:mdiho/common/widgets/custom_buttons.dart';
 import '../../../../common/res/app_colors.dart';
 import '../../../crypto/presentation/crypto_screen.dart';
 import '../../../transaction/data/controller/transaction_controller.dart';
+import '../../../transaction/presentation/transaction_details.dart';
 
 class TransactionCard extends HookConsumerWidget {
   const TransactionCard({super.key});
@@ -84,91 +85,106 @@ class TransactionCard extends HookConsumerWidget {
                   (index) {
                     if (index.isEven) {
                       final txn = displayTransactions[index ~/ 2];
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: theme.brightness == Brightness.dark
-                                  ? AppColors.secondaryColor.shade600
-                                  : const Color(0xFFF9F9FB),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: theme.brightness == Brightness.dark
-                                    ? AppColors.secondaryColor.shade400
-                                    : Colors.transparent,
-                                width: 0.5,
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TransactionDetailsScreen(
+                                transaction: txn,
+                                status: txn.status ?? 'Unknown',
+                                type: txn.type ?? '',
                               ),
                             ),
-                            child: const Center(
-                              child: Icon(IconsaxPlusLinear.arrow_down_1,
-                                  size: 18),
+                          );
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: theme.brightness == Brightness.dark
+                                    ? AppColors.secondaryColor.shade600
+                                    : const Color(0xFFF9F9FB),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: theme.brightness == Brightness.dark
+                                      ? AppColors.secondaryColor.shade400
+                                      : Colors.transparent,
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: const Center(
+                                child: Icon(IconsaxPlusLinear.arrow_down_1,
+                                    size: 18),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color:
+                                            theme.brightness == Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: "${txn.type}   ",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                              "${(txn.amount ?? 0) * (txn.rate ?? 0) - (txn.fee ?? 0)}"
+                                                  .formatAsNaira(),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            fontFamily: '',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    txn.createdAt?.getFormattedDate() ?? '',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 12,
                                       color: theme.brightness == Brightness.dark
-                                          ? Colors.white
+                                          ? AppColors.secondaryColor.shade100
                                           : Colors.black,
                                     ),
-                                    children: [
-                                      TextSpan(
-                                        text: "${txn.type}   ",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            "${(txn.amount ?? 0) * (txn.rate ?? 0) - (txn.fee ?? 0)}"
-                                                .formatAsNaira(),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                          fontFamily: '',
-                                        ),
-                                      ),
-                                    ],
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  txn.createdAt?.getFormattedDate() ?? '',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: theme.brightness == Brightness.dark
-                                        ? AppColors.secondaryColor.shade100
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Text(
-                            "${txn.status}",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: txn.status!.toLowerCase() == 'pending'
-                                  ? Colors.orange
-                                  : txn.status!.toLowerCase() == 'completed'
-                                      ? Colors.green
-                                      : txn.status!.toLowerCase() == 'failed'
-                                          ? Colors.red
-                                          : Colors.grey,
+                            Text(
+                              "${txn.status}",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: txn.status!.toLowerCase() == 'pending'
+                                    ? Colors.orange
+                                    : txn.status!.toLowerCase() == 'completed'
+                                        ? Colors.green
+                                        : txn.status!.toLowerCase() == 'failed'
+                                            ? Colors.red
+                                            : Colors.grey,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     } else {
                       return const Gap(16);
