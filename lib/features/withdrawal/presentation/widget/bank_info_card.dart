@@ -85,7 +85,7 @@ class BankInfoCard extends HookConsumerWidget {
                 const Gap(12),
                 if (showStrength == true &&
                     status != null &&
-                    percentage != null)
+                    percentage != null) ...[
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
@@ -118,6 +118,7 @@ class BankInfoCard extends HookConsumerWidget {
                       ],
                     ),
                   ),
+                ],
                 if (!isAddBank) ...[
                   const Gap(12),
                   Text(

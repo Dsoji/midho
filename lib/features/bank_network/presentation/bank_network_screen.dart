@@ -5,9 +5,11 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../common/res/app_colors.dart';
-import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_textfield.dart';
+import '../../profile/data/controller/profile_controller.dart';
+import '../../withdrawal/presentation/widget/bank_info_card.dart';
+import '../data/model/response/bank_list/bank_list.dart';
 
 @RoutePage()
 class BankNetworkScreen extends HookConsumerWidget {
@@ -15,31 +17,17 @@ class BankNetworkScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
+    final banks = ref.watch(profileControllerProvider).banks.valueOrNull;
 
-    final List<Map<String, dynamic>> banks = [
-      {
-        "name": "GTBank",
-        "logo": PlaceholderAssets.gtbank, // Replace with actual asset path
-        "status": "Poor Network",
-        "percentage": 49,
-        "color": Colors.red,
-      },
-      {
-        "name": "UBA",
-        "logo": PlaceholderAssets.uba, // Replace with actual asset path
-        "status": "Fair Network",
-        "percentage": 55,
-        "color": Colors.amber,
-      },
-      {
-        "name": "Opay",
-        "logo": PlaceholderAssets.opay, // Replace with actual asset path
-        "status": "Good Network",
-        "percentage": 92,
-        "color": Colors.green,
-      },
-    ];
     final theme = Theme.of(context);
+    final filteredBanks = useState<List<BanlList>>(banks ?? []);
+
+    useEffect(() {
+      if (banks != null) filteredBanks.value = banks;
+      return null;
+    }, [banks]);
+
+    if (banks == null) return const Center(child: CircularProgressIndicator());
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -49,8 +37,8 @@ class BankNetworkScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -58,31 +46,33 @@ class BankNetworkScreen extends HookConsumerWidget {
             const Gap(16),
             CustomTextField(
               controller: searchController,
-              hintText: 'Search for your bank',
-              suffixIcon: const Icon(Icons.search), // Optional
-              isPassword: false,
+              label: "Search Bank",
+              keyboardType: TextInputType.text,
+              onChanged: (value) {
+                final query = value.toLowerCase();
+                filteredBanks.value = banks
+                    .where((bank) =>
+                        bank.name?.toLowerCase().contains(query) ?? false)
+                    .toList();
+              },
             ),
-            const Gap(12),
-            Container(
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : Colors.white, // Dark theme color
-                borderRadius: BorderRadius.circular(20),
-              ),
+            const Gap(16),
+            Expanded(
               child: ListView.separated(
-                itemCount: banks.length,
-                shrinkWrap: true,
-                separatorBuilder: (context, index) => Divider(
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.black
-                      : AppColors.greyColor.shade100,
-                  thickness: 0.5,
-                ),
-                itemBuilder: (context, index) => buildBankItem(
-                  banks[index],
-                  context,
-                ),
+                itemCount: filteredBanks.value.length,
+                physics: const BouncingScrollPhysics(),
+                separatorBuilder: (context, index) => const Gap(10),
+                itemBuilder: (context, index) {
+                  final bank = filteredBanks.value[index];
+
+                  return BankInfoCard2(
+                    name: bank.name ?? "Unknown Bank",
+                    status: bank.status ?? "No Status",
+                    percentage: '${bank.strength ?? 0}%',
+                    showBorder: false,
+                    onTap: () {},
+                  );
+                },
               ),
             ),
           ],
