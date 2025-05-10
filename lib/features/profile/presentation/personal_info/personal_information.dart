@@ -15,7 +15,6 @@ import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
-import '../../../authentication/data/model/payload/profile_payload.dart';
 import '../../data/controller/profile_controller.dart';
 
 @RoutePage()
@@ -50,27 +49,29 @@ class PersonalInfoScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Update your name, or phone number. Keep your details up-to-date to avoid issues.",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Update your name, or phone number. Keep your details up-to-date to avoid issues.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
               const Gap(10),
               Container(
                 decoration: ShapeDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade600
+                      ? AppColors.darkBorder
                       : AppColors.whiteColor.shade100,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(0),
                   ),
                 ),
                 padding: const EdgeInsets.all(16),
@@ -186,33 +187,34 @@ class PersonalInfoScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () async {
-                        authService.updateProfileDetails(
-                          ProfilePayload(
-                            firstname: firstNameController.text.trim().isEmpty
-                                ? null
-                                : firstNameController.text.trim(),
-                            lastname: lastNameController.text.trim().isEmpty
-                                ? null
-                                : lastNameController.text.trim(),
-                            phone: phoneController.text.trim().isEmpty
-                                ? null
-                                : phoneController.text.trim(),
-                          ),
-                        );
-                        final profileDetails = ref
-                            .watch(authenticationControllerProvider)
-                            .profilePayload
-                            .valueOrNull;
-                        final result =
-                            await profileService.updateProfile(profileDetails!);
-                        if (result == true) {
-                          await ref
-                              .read(authenticationControllerProvider.notifier)
-                              .fetchProfile()
-                              .then((_) {
-                            Navigator.pop(context);
-                          });
-                        }
+                        Navigator.pop(context);
+                        // authService.updateProfileDetails(
+                        //   ProfilePayload(
+                        //     firstname: firstNameController.text.trim().isEmpty
+                        //         ? null
+                        //         : firstNameController.text.trim(),
+                        //     lastname: lastNameController.text.trim().isEmpty
+                        //         ? null
+                        //         : lastNameController.text.trim(),
+                        //     phone: phoneController.text.trim().isEmpty
+                        //         ? null
+                        //         : phoneController.text.trim(),
+                        //   ),
+                        // );
+                        // final profileDetails = ref
+                        //     .watch(authenticationControllerProvider)
+                        //     .profilePayload
+                        //     .valueOrNull;
+                        // final result =
+                        //     await profileService.updateProfile(profileDetails!);
+                        // if (result == true) {
+                        //   await ref
+                        //       .read(authenticationControllerProvider.notifier)
+                        //       .fetchProfile()
+                        //       .then((_) {
+                        //     Navigator.pop(context);
+                        //   });
+                        // }
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

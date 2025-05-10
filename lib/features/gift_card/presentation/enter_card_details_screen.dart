@@ -554,6 +554,7 @@ class ProviderBottomSheet extends HookConsumerWidget {
       },
     ];
     final searchController = useTextEditingController();
+    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.all(16),

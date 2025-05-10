@@ -83,31 +83,37 @@ class CableBillScreen extends HookConsumerWidget {
             ),
             const Gap(24),
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : Colors.white,
-                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Cable TV providers",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : AppColors.greyColor.shade500,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Cable TV providers".toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12,
+                          height: 1.5,
+                          letterSpacing: 2.04, // 17% of 12
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : const Color(0xFF8B8EAF),
+                        ),
                       ),
                     ),
                   ),
@@ -120,11 +126,13 @@ class CableBillScreen extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.greyColor.shade50,
-                          width: 0.3,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.transparent
+                              : AppColors.greyColor.shade50,
+                          width: 0.35,
                         ), // Slightly darker border
                         color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
+                            ? AppColors.secondaryColor
                             : Colors.white, // Ensures white background
                       ),
                       child: Row(
@@ -191,13 +199,18 @@ class CableBillScreen extends HookConsumerWidget {
                     onTap: () => showSubPlanSheet(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 20),
+                          horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.greyColor.shade50,
-                          width: 0.3,
-                        ),
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.transparent
+                              : AppColors.greyColor.shade50,
+                          width: 0.35,
+                        ), // Slightly darker border
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor
+                            : Colors.white, // Ensures white background
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

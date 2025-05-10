@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 
 import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../bottomNav/app_router.gr.dart';
 
 // StateNotifier for Balance Visibility
 class BalanceVisibilityNotifier extends StateNotifier<bool> {
@@ -94,7 +96,7 @@ class WalletBalanceCard extends HookConsumerWidget {
                       decoration: ShapeDecoration(
                         color: theme.brightness == Brightness.dark
                             ? AppColors.secondaryColor.shade400
-                            : AppColors.greyColor.shade500,
+                            : AppColors.greyColor.shade300,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
                       ),
@@ -122,7 +124,7 @@ class WalletBalanceCard extends HookConsumerWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      // context.router.push(const WithdrawFundsRoute());
+                      context.router.push(const WithdrawFundsRoute());
                       // Navigator.push(
                       //     context,
                       //     MaterialPageRoute(
@@ -160,59 +162,65 @@ class ReferralsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
-            : const Color(0xFFF6F8FE),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Text(
-                'Referrals',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.white
-                      : AppColors.primaryColor.shade700,
-                  fontWeight: FontWeight.w500,
+    return InkWell(
+      onTap: () {
+        context.router.push(const ReferallRoute());
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade600
+              : const Color(0xFFF6F8FE),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Referrals',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.primaryColor.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: theme.brightness == Brightness.dark
-                      ? const Color(0xFF1B1B1B)
-                      : AppColors.blueColor.shade50, // light icon background
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.brightness == Brightness.dark
+                        ? const Color(0xFF1B1B1B)
+                        : AppColors.blueColor.shade50, // light icon background
+                  ),
+                  child: Icon(
+                    Icons.north_east, // ↗️ arrow
+                    size: 14,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.primaryColor.shade700,
+                  ),
                 ),
-                child: Icon(
-                  Icons.north_east, // ↗️ arrow
-                  size: 14,
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.white
-                      : AppColors.primaryColor.shade700,
-                ),
-              ),
-            ],
-          ),
-          Text(
-            '₦50,000.00',
-            style: TextStyle(
-              fontSize: 16,
-              color: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : AppColors.primaryColor.shade700,
-              fontWeight: FontWeight.bold,
+              ],
             ),
-          ),
-        ],
+            Text(
+              '₦50,000.00',
+              style: TextStyle(
+                fontSize: 16,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.primaryColor.shade700,
+                fontWeight: FontWeight.bold,
+                fontFamily: '',
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

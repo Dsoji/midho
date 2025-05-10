@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/features/profile/presentation/bank/bank_list.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../suggestion_box/presentation/suggestion_screen.dart';
+import '../../../support_faq/presentation/support_faq_screen.dart';
+import '../personal_info/personal_information.dart';
+import '../preference_scren.dart';
+import '../security_settings/security_settings.dart';
 
 class ProfileOption extends StatelessWidget {
   const ProfileOption({super.key});
@@ -24,10 +30,10 @@ class ProfileOption extends StatelessWidget {
             "Personal Information",
             context,
             () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const PersonalInfoScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PersonalInfoScreen()));
             },
           ),
           Divider(
@@ -39,10 +45,10 @@ class ProfileOption extends StatelessWidget {
             "Security Settings",
             context,
             () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const SecurtiySettingsScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SecurtiySettingsScreen()));
             },
           ),
           Divider(
@@ -54,10 +60,10 @@ class ProfileOption extends StatelessWidget {
             "Linked Bank Accounts",
             context,
             () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const LinkedBanksScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const LinkedBanksScreen()));
             },
           ),
           Divider(
@@ -69,10 +75,10 @@ class ProfileOption extends StatelessWidget {
             "Preferences & Notifications",
             context,
             () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const PreferenceScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PreferenceScreen()));
             },
           ),
           Divider(
@@ -84,10 +90,10 @@ class ProfileOption extends StatelessWidget {
             "Suggestion Box",
             context,
             () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const SuggestionScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SuggestionScreen()));
             },
           ),
           Divider(
@@ -99,10 +105,10 @@ class ProfileOption extends StatelessWidget {
             "Support and FAQ",
             context,
             () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const SupportFaqScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SupportFaqScreen()));
             },
           ),
         ],

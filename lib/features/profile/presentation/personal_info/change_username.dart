@@ -11,7 +11,6 @@ import '../../../../common/utils/validator.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
-import '../../../authentication/data/controller/authentication_controller.dart';
 
 @RoutePage()
 class ChangeUsernameScreen extends HookConsumerWidget {
@@ -37,27 +36,29 @@ class ChangeUsernameScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Update your username to personalize your profile.",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Update your username to personalize your profile.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
               const Gap(10),
               Container(
                 decoration: ShapeDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : AppColors.whiteColor.shade100,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(0),
                   ),
                   shadows: [
                     BoxShadow(
@@ -106,21 +107,22 @@ class ChangeUsernameScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () async {
-                        if (!formKey.currentState!.validate()) {
-                          return;
-                        }
+                        Navigator.pop(context);
+                        // if (!formKey.currentState!.validate()) {
+                        //   return;
+                        // }
 
-                        final result = await authService.updateUsername(
-                          newnameController.text.trim(),
-                        );
-                        if (result == true) {
-                          await ref
-                              .read(authenticationControllerProvider.notifier)
-                              .fetchProfile()
-                              .then((_) {
-                            Navigator.pop(context);
-                          });
-                        }
+                        // final result = await authService.updateUsername(
+                        //   newnameController.text.trim(),
+                        // );
+                        // if (result == true) {
+                        //   await ref
+                        //       .read(authenticationControllerProvider.notifier)
+                        //       .fetchProfile()
+                        //       .then((_) {
+                        //     Navigator.pop(context);
+                        //   });
+                        // }
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

@@ -26,42 +26,48 @@ class SupportFaqScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "How can we help you today?",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                "How can we help you today?",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             const Gap(4),
-            const Text(
-              "Find answers to common questions or reach out to our support team.",
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w400,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                "Find answers to common questions or reach out to our support team.",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             const Gap(16),
-            const Text(
-              "Contact Support",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                "Contact Support",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const Gap(16),
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: const RoundedRectangleBorder(),
               ),
               padding: const EdgeInsets.all(16),
               child: Column(

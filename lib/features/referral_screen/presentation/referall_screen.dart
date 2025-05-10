@@ -36,27 +36,28 @@ class ReferallScreen extends HookConsumerWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Earn rewards by inviting friends to  Swift Swap!",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Earn rewards by inviting friends to  Swift Swap!",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ),
-            const Gap(16),
             const ReferralBalanceCard(
               balance: 50000,
             ),
-            const Gap(16),
+            const Gap(2),
             ReferralCodeCard(
                 referralCode: userInfo?.username ?? "DESIGNFATHER"),
-            const Gap(16),
+            const Gap(2),
             RewardEmptyStateCard(
                 referralCode: userInfo?.username ?? "DESIGNFATHER"),
             const Gap(150),
@@ -84,9 +85,8 @@ class RewardEmptyStateCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade500
+            ? AppColors.darkBorder
             : Colors.white,
-        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -186,7 +186,7 @@ class RewardEmptyStateCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.secondaryColor.shade400
                     : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
@@ -241,9 +241,8 @@ class ReferralCodeCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade500
+            ? AppColors.darkBorder
             : Colors.white,
-        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -310,7 +309,7 @@ class ReferralCodeCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.secondaryColor.shade400
                     : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
@@ -356,9 +355,8 @@ class ReferralBalanceCard extends HookConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade500
+            ? AppColors.darkBorder
             : Colors.white,
-        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),

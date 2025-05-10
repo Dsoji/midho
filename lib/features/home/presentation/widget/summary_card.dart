@@ -32,8 +32,7 @@ class SummaryCards extends StatelessWidget {
               title: "Total Withdrawal",
               amount: "₦50,000.00",
               icon: HugeIcons.strokeRoundedArrowUp03,
-              context: context // use your preferred icon
-              ),
+              context: context),
         ],
       ),
     );
@@ -62,8 +61,10 @@ class SummaryCards extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                color: Colors.white70,
+              style: TextStyle(
+                color: theme.brightness == Brightness.light
+                    ? const Color(0xFF1B1B1B)
+                    : AppColors.blueColor.shade50,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 fontFamily: '',
@@ -75,8 +76,10 @@ class SummaryCards extends StatelessWidget {
               children: [
                 Text(
                   amount,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: theme.brightness == Brightness.light
+                        ? const Color(0xFF1B1B1B)
+                        : AppColors.blueColor.shade50,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: '',

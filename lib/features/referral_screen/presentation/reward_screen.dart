@@ -21,28 +21,27 @@ class RewardScreen extends HookConsumerWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "View your referral rewards history.",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "View your referral rewards history.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ),
-            const Gap(16),
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: const RoundedRectangleBorder(),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

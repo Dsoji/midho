@@ -10,11 +10,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
-import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
-import '../../../common/toast/toast.dart';
 import '../../../common/utils/validator.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_textfield.dart';
@@ -66,34 +64,37 @@ class SuggestionScreen extends HookConsumerWidget {
       body: Form(
         key: formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "We Value Your Feedback",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  "We Value Your Feedback",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               const Gap(4),
-              const Text(
-                "Help us improve  Swift Swap by sharing your suggestions.",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w400,
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  "Help us improve  Swift Swap by sharing your suggestions.",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
               const Gap(16),
               Container(
                 decoration: ShapeDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : AppColors.whiteColor.shade100,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  shape: const RoundedRectangleBorder(),
                 ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -260,51 +261,52 @@ class SuggestionScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () async {
-                        if (!formKey.currentState!.validate()) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Ensure fields are feild appropriately.',
-                          );
-                          return;
-                        }
+                        Navigator.pop(context);
+                        // if (!formKey.currentState!.validate()) {
+                        //   ToastService().showToast(
+                        //     NotificationType.info,
+                        //     message: 'Ensure fields are feild appropriately.',
+                        //   );
+                        //   return;
+                        // }
 
-                        if (imageFiles.value.isNotEmpty) {
-                          final result = await ref
-                              .read(authenticationControllerProvider.notifier)
-                              .uploadMultipleFiles(
-                                imageFiles.value,
-                              );
-                          if (result == true) {
-                            final uploadedFiles = ref
-                                .read(authenticationControllerProvider)
-                                .imageUpload
-                                .valueOrNull;
-                            List<String> paths =
-                                getPathsFromUploadResponse(uploadedFiles);
-                            logger.d(paths);
-                            final result = await profileService.postFeedBack(
-                              SuggestionPayload(
-                                title: titleController.text.trim(),
-                                content: suggestionController.text.trim(),
-                                files: paths,
-                              ),
-                            );
-                            if (result == true) {
-                              Navigator.pop(context);
-                            }
-                          }
-                        } else {
-                          final result = await profileService.postFeedBack(
-                            SuggestionPayload(
-                              title: titleController.text.trim(),
-                              content: suggestionController.text.trim(),
-                              files: const [],
-                            ),
-                          );
-                          if (result == true) {
-                            Navigator.pop(context);
-                          }
-                        }
+                        // if (imageFiles.value.isNotEmpty) {
+                        //   final result = await ref
+                        //       .read(authenticationControllerProvider.notifier)
+                        //       .uploadMultipleFiles(
+                        //         imageFiles.value,
+                        //       );
+                        //   if (result == true) {
+                        //     final uploadedFiles = ref
+                        //         .read(authenticationControllerProvider)
+                        //         .imageUpload
+                        //         .valueOrNull;
+                        //     List<String> paths =
+                        //         getPathsFromUploadResponse(uploadedFiles);
+                        //     logger.d(paths);
+                        //     final result = await profileService.postFeedBack(
+                        //       SuggestionPayload(
+                        //         title: titleController.text.trim(),
+                        //         content: suggestionController.text.trim(),
+                        //         files: paths,
+                        //       ),
+                        //     );
+                        //     if (result == true) {
+                        //       Navigator.pop(context);
+                        //     }
+                        //   }
+                        // } else {
+                        //   final result = await profileService.postFeedBack(
+                        //     SuggestionPayload(
+                        //       title: titleController.text.trim(),
+                        //       content: suggestionController.text.trim(),
+                        //       files: const [],
+                        //     ),
+                        //   );
+                        //   if (result == true) {
+                        //     Navigator.pop(context);
+                        //   }
+                        // }
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

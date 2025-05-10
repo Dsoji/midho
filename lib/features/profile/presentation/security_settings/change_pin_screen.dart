@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
@@ -82,26 +81,26 @@ class ChangePinScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Set a new PIN for secure transactions.",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "Set a new PIN for secure transactions.",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             const Gap(10),
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: const RoundedRectangleBorder(),
                 shadows: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1), // Light shadow color
@@ -367,31 +366,32 @@ class ChangePinScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      if (otpController.text.isNotEmpty &&
-                          newPinController.text.isNotEmpty &&
-                          confirmPinController.text.isNotEmpty) {
-                        if (newPinController.text ==
-                            confirmPinController.text) {
-                          final result = await authService.changePin(
-                            userInfo?.email ?? '',
-                            otpController.text.trim(),
-                            newPinController.text.trim(),
-                          );
-                          if (result == true) {
-                            Navigator.pop(context);
-                          }
-                        } else {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'New PIN and Confirm PIN do not match',
-                          );
-                        }
-                      } else {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message: 'Please fill in all fields',
-                        );
-                      }
+                      // if (otpController.text.isNotEmpty &&
+                      //     newPinController.text.isNotEmpty &&
+                      //     confirmPinController.text.isNotEmpty) {
+                      //   if (newPinController.text ==
+                      //       confirmPinController.text) {
+                      //     final result = await authService.changePin(
+                      //       userInfo?.email ?? '',
+                      //       otpController.text.trim(),
+                      //       newPinController.text.trim(),
+                      //     );
+                      //     if (result == true) {
+                      //       Navigator.pop(context);
+                      //     }
+                      //   } else {
+                      //     ToastService().showToast(
+                      //       NotificationType.info,
+                      //       message: 'New PIN and Confirm PIN do not match',
+                      //     );
+                      //   }
+                      // } else {
+                      //   ToastService().showToast(
+                      //     NotificationType.info,
+                      //     message: 'Please fill in all fields',
+                      //   );
+                      // }
+                      Navigator.pop(context);
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

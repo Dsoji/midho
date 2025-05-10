@@ -4,6 +4,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../transaction_details.dart';
 
 class TransactionCard extends StatelessWidget {
   final IconData icon;
@@ -29,15 +30,15 @@ class TransactionCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => TransactionDetailsScreen(
-        //       status: status,
-        //       type: title,
-        //     ),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TransactionDetailsScreen(
+              status: status,
+              type: title,
+            ),
+          ),
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/common/toast/toast.dart';
 import 'package:mdiho/features/profile/presentation/personal_info/email_verification.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
@@ -33,27 +32,29 @@ class ChangeEmailScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Update your email",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Update your email",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
               const Gap(10),
               Container(
                 decoration: ShapeDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : AppColors.whiteColor.shade100,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(0),
                   ),
                   shadows: [
                     BoxShadow(
@@ -95,31 +96,39 @@ class ChangeEmailScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () async {
-                        if (!formKey.currentState!.validate()) {
-                          return;
-                        }
-                        if (emailController.text.isNotEmpty) {
-                          final result = await authService.emailVerify(
-                            emailController.text.trim(),
-                            null,
-                            'CHANGEEMAIL',
-                          );
-                          if (result == true) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EmailVerificationScreen(
-                                  email: emailController.text.trim(),
-                                ),
-                              ),
-                            );
-                          }
-                        } else {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Please Fill all necessary fields.',
-                          );
-                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EmailVerificationScreen(
+                              email: emailController.text.trim(),
+                            ),
+                          ),
+                        );
+                        // if (!formKey.currentState!.validate()) {
+                        //   return;
+                        // }
+                        // if (emailController.text.isNotEmpty) {
+                        //   final result = await authService.emailVerify(
+                        //     emailController.text.trim(),
+                        //     null,
+                        //     'CHANGEEMAIL',
+                        //   );
+                        //   if (result == true) {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => EmailVerificationScreen(
+                        //           email: emailController.text.trim(),
+                        //         ),
+                        //       ),
+                        //     );
+                        //   }
+                        // } else {
+                        //   ToastService().showToast(
+                        //     NotificationType.info,
+                        //     message: 'Please Fill all necessary fields.',
+                        //   );
+                        // }
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

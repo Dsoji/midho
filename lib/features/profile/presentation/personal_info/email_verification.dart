@@ -1,12 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
@@ -36,7 +37,7 @@ class EmailVerificationScreen extends HookConsumerWidget {
         builder: (context) {
           return AlertDialog(
             backgroundColor: theme.brightness == Brightness.dark
-                ? AppColors.secondaryColor.shade500
+                ? AppColors.darkBorder
                 : AppColors.whiteColor.shade100,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -58,33 +59,9 @@ class EmailVerificationScreen extends HookConsumerWidget {
                 const SizedBox(height: 15),
 
                 // Info Box
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.secondaryColor.shade400
-                        : const Color(0xFFEFFBF2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.info_outline,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          "Use your new email to log in next time.",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                InfoWidget(
+                  theme: theme,
+                  text: "Use your new email to log in next time.",
                 ),
                 const SizedBox(height: 20),
 
@@ -122,17 +99,17 @@ class EmailVerificationScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Gap(16),
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(0),
                 ),
                 shadows: [
                   BoxShadow(
@@ -150,7 +127,7 @@ class EmailVerificationScreen extends HookConsumerWidget {
                   const Text(
                     "Enter the 6-digit code we just sent to your email",
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -234,34 +211,42 @@ class EmailVerificationScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      if (otpController.text.isNotEmpty) {
-                        final result = await authService.updateEmail(
-                          email,
-                          otpController.text.trim(),
-                        );
-                        if (result == true) {
-                          await ref
-                              .read(authenticationControllerProvider.notifier)
-                              .fetchProfile()
-                              .then((_) {
-                            showEmailUpdateDialog(
-                              context,
-                              () {
-                                context.router
-                                    .replaceAll([const ProfileRoute()]);
+                      showEmailUpdateDialog(
+                        context,
+                        () {
+                          context.router.replaceAll([const ProfileRoute()]);
 
-                                Navigator.pop(context);
-                              },
-                            );
-                          });
-                        }
-                      } else {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message:
-                              'Please Fill all necessary fields appropriately.',
-                        );
-                      }
+                          Navigator.pop(context);
+                        },
+                      );
+                      // if (otpController.text.isNotEmpty) {
+                      //   final result = await authService.updateEmail(
+                      //     email,
+                      //     otpController.text.trim(),
+                      //   );
+                      //   if (result == true) {
+                      //     await ref
+                      //         .read(authenticationControllerProvider.notifier)
+                      //         .fetchProfile()
+                      //         .then((_) {
+                      //       showEmailUpdateDialog(
+                      //         context,
+                      //         () {
+                      //           context.router
+                      //               .replaceAll([const ProfileRoute()]);
+
+                      //           Navigator.pop(context);
+                      //         },
+                      //       );
+                      //     });
+                      //   }
+                      // } else {
+                      //   ToastService().showToast(
+                      //     NotificationType.info,
+                      //     message:
+                      //         'Please Fill all necessary fields appropriately.',
+                      //   );
+                      // }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

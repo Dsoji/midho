@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
@@ -32,26 +31,26 @@ class ChangePasswordScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Create a strong password to protect your account.",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "Create a strong password to protect your account.",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             const Gap(10),
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: const RoundedRectangleBorder(),
               ),
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -99,21 +98,22 @@ class ChangePasswordScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      if (confirmPswrdController.text.trim() ==
-                          newPswrdController.text.trim()) {
-                        final result = await authService.changePassword(
-                          newPswrdController.text.trim(),
-                          pswrdController.text.trim(),
-                        );
-                        if (result == true) {
-                          Navigator.pop(context);
-                        }
-                      } else {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message: 'Passwords do not match.',
-                        );
-                      }
+                      Navigator.pop(context);
+                      // if (confirmPswrdController.text.trim() ==
+                      //     newPswrdController.text.trim()) {
+                      //   final result = await authService.changePassword(
+                      //     newPswrdController.text.trim(),
+                      //     pswrdController.text.trim(),
+                      //   );
+                      //   if (result == true) {
+                      //     Navigator.pop(context);
+                      //   }
+                      // } else {
+                      //   ToastService().showToast(
+                      //     NotificationType.info,
+                      //     message: 'Passwords do not match.',
+                      //   );
+                      // }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

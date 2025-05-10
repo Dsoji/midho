@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../bank_network/presentation/bank_network_screen.dart';
 import '../../../bottomNav/app_router.gr.dart';
 
 // Define Action Model
@@ -83,7 +84,7 @@ class QuickActionsGrid extends ConsumerWidget {
               ? const Color(0xFF00BFE1)
               : AppColors.primaryColor,
           onTap: () {
-            // context.router.push(const BettingRoute());
+            context.router.push(const BettingRoute());
           },
         ),
         ActionItem(
@@ -93,7 +94,7 @@ class QuickActionsGrid extends ConsumerWidget {
               ? const Color(0xFFCAE100)
               : AppColors.primaryColor,
           onTap: () {
-            // context.router.push(const ElectricityBillRoute());
+            context.router.push(const ElectricityBillRoute());
           },
         ),
         ActionItem(
@@ -103,7 +104,7 @@ class QuickActionsGrid extends ConsumerWidget {
               ? const Color(0xFF8B9CF4)
               : AppColors.primaryColor,
           onTap: () {
-            // context.router.push(const CableBillRoute());
+            context.router.push(const CableBillRoute());
           },
         ),
         ActionItem(
@@ -113,10 +114,10 @@ class QuickActionsGrid extends ConsumerWidget {
               ? const Color(0xFFE1AC00)
               : AppColors.primaryColor,
           onTap: () {
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //       builder: (context) => const BankNetworkScreen()),
-            // );
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => const BankNetworkScreen()),
+            );
           },
         ),
       ];

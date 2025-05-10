@@ -39,27 +39,26 @@ class WithdrawFundsScreen extends HookConsumerWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Text(
-              'Transfer your wallet balance securely to your bank account. Check bank network status before proceeding.',
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Transfer your wallet balance securely to your bank account. Check bank network status before proceeding.',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                ),
               ),
             ),
-            const Gap(16),
             Container(
               padding: const EdgeInsets.all(24),
               width: double.infinity,
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: const RoundedRectangleBorder(),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,13 +131,13 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                   BankInfoCard(
                     image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
                     name: selectedBank?["name"] ?? 'GT Bank',
-                    color: selectedBank?["color"] ??
-                        AppColors.primaryColor.shade500,
+                    color: selectedBank?["color"] ?? Colors.red,
                     status: selectedBank?["status"] ?? 'Poor Network',
                     percentage: selectedBank?["percentage"] ?? '90',
                     actNumber: selectedBank?["actNumber"] ?? '1210125678',
                     actName: selectedBank?["actName"] ?? 'John Doe',
                     onTap: () => _showAddBankDetailsSheet(context),
+                    radius: 16,
                   ),
                   const Gap(24),
                   InfoWidget(

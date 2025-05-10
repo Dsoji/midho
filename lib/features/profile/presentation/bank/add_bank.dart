@@ -50,17 +50,26 @@ class AddNewBankScreen extends HookConsumerWidget {
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: const RoundedRectangleBorder(),
               ),
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Email Field
+                  Text(
+                    'Select Bank',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : AppColors.greyColor.shade700,
+                    ),
+                  ),
+                  const Gap(16),
                   BankInfoCard(
                     isAddBank: true,
                     image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
@@ -72,6 +81,7 @@ class AddNewBankScreen extends HookConsumerWidget {
                     actNumber: selectedBank?["actNumber"] ?? '1210125678',
                     actName: selectedBank?["actName"] ?? 'John Doe',
                     onTap: () => _showAddBankDetailsSheet(context),
+                    radius: 16,
                   ),
                   const SizedBox(height: 28),
                   CustomTextField(
@@ -79,7 +89,6 @@ class AddNewBankScreen extends HookConsumerWidget {
                     label: "Account Number",
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 28),
                   if (isVerify.value == true)
                     Column(
                       mainAxisSize: MainAxisSize.min,
@@ -95,31 +104,15 @@ class AddNewBankScreen extends HookConsumerWidget {
                             borderRadius:
                                 BorderRadius.circular(12), // Rounded corners
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Account Name",
-                                style: TextStyle(
-                                  // Light grey text
-                                  fontSize: 14,
-                                  color: theme.brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "John Doe",
-                                style: TextStyle(
-                                  color: theme.brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black, // Bright white text
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            "John Doe",
+                            style: TextStyle(
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black, // Bright white text
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 28),
@@ -177,7 +170,7 @@ class AddNewBankScreen extends HookConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: theme.brightness == Brightness.dark
-          ? AppColors.secondaryColor.shade700
+          ? AppColors.darkBorder
           : AppColors.scaffoldColorLight,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -249,7 +242,7 @@ class AddBankScreen extends HookConsumerWidget {
               shrinkWrap: true,
               itemCount: bankList.length,
               separatorBuilder: (context, index) =>
-                  const Gap(10), // Space between cards
+                  const Gap(2), // Space between cards
               itemBuilder: (context, index) {
                 final bank = bankList[index];
 

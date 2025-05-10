@@ -23,6 +23,7 @@ class BankInfoCard extends HookConsumerWidget {
     this.onTap,
     this.showStrength = true,
     this.isAddBank = false,
+    this.radius = 0,
   });
 
   final bool isAddBank;
@@ -38,6 +39,7 @@ class BankInfoCard extends HookConsumerWidget {
   final VoidCallback? iconTap;
   final VoidCallback? onTap;
   final bool? showStrength;
+  final double? radius;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,12 +50,17 @@ class BankInfoCard extends HookConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         decoration: ShapeDecoration(
           color: theme.brightness == Brightness.dark
-              ? AppColors.secondaryColor.shade500
+              ? AppColors.darkBorder
               : Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(radius!),
             side: showBorder // Conditionally add border
-                ? BorderSide(color: AppColors.greyColor.shade50)
+                ? BorderSide(
+                    width: 0.5,
+                    color: theme.brightness == Brightness.light
+                        ? AppColors.greyColor.shade50
+                        : AppColors.secondaryColor.shade400,
+                  )
                 : BorderSide.none,
           ),
         ),
@@ -61,8 +68,17 @@ class BankInfoCard extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundImage: AssetImage(image),
+              backgroundColor: theme.brightness == Brightness.dark
+                  ? AppColors.customBlue
+                  : const Color(0xFFE6ECFC),
               radius: 14,
+              child: Icon(
+                IconsaxPlusLinear.bank,
+                color: theme.brightness == Brightness.dark
+                    ? const Color(0xFFE6ECFC)
+                    : AppColors.customBlue,
+                size: 16,
+              ),
             ),
             const Gap(12),
             Column(

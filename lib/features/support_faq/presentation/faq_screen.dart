@@ -47,9 +47,6 @@ class FaqScreen extends HookConsumerWidget {
                 hintText: 'Search Provider',
                 isPassword: false,
                 suffixIcon: const Icon(Icons.search),
-                fillColor: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : Colors.white,
                 borderRadius: 12,
               ),
               const Gap(16),
@@ -105,7 +102,7 @@ class FAQItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       decoration: ShapeDecoration(
         color: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
+            ? AppColors.darkBorder
             : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),

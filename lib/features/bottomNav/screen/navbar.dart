@@ -5,6 +5,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/res/assets.dart';
 import '../app_router.gr.dart';
 import 'bottom_nav.dart';
 
@@ -60,34 +61,39 @@ class NaviBarScreen extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(5, (index) {
-                  final icons = [
-                    [IconsaxPlusBold.home_2, IconsaxPlusLinear.home_2],
-                    [
-                      HugeIcons.strokeRoundedBitcoinTransaction,
-                      HugeIcons.strokeRoundedBitcoinTransaction
-                    ],
-                    [IconsaxPlusBold.coin_1, IconsaxPlusLinear.coin_1],
-                    [
-                      HugeIcons.strokeRoundedGiftCard,
-                      HugeIcons.strokeRoundedGiftCard
-                    ],
-                    [HugeIcons.strokeRoundedUser, HugeIcons.strokeRoundedUser],
-                  ];
-                  final labels = [
-                    'Home',
-                    'Crypto',
-                    'Transactions',
-                    'Gift Cards',
-                    'Profile'
+                  final items = [
+                    {
+                      'icon': IconsaxPlusBold.home_2,
+                      'inactiveIcon': IconsaxPlusLinear.home_2,
+                      'label': 'Home',
+                    },
+                    {
+                      'icon': HugeIcons.strokeRoundedBitcoinTransaction,
+                      'inactiveIcon': HugeIcons.strokeRoundedBitcoinTransaction,
+                      'label': 'Crypto',
+                    },
+                    {
+                      'imagePath': ImageAssets.logo,
+                      'label': 'Transactions',
+                    },
+                    {
+                      'icon': HugeIcons.strokeRoundedGiftCard,
+                      'inactiveIcon': HugeIcons.strokeRoundedGiftCard,
+                      'label': 'Gift Cards',
+                    },
+                    {
+                      'icon': HugeIcons.strokeRoundedUser,
+                      'inactiveIcon': HugeIcons.strokeRoundedUser,
+                      'label': 'Profile',
+                    },
                   ];
 
                   return BottomNav(
                     index: index,
-                    onTap: () => tabsRouter.setActiveIndex(index), // Change tab
-                    icon: activeIndex == index
-                        ? icons[index][0]
-                        : icons[index][1],
-                    label: labels[index],
+                    onTap: () => tabsRouter.setActiveIndex(index),
+                    icon: items[index]['icon'] as IconData?,
+                    imagePath: items[index]['imagePath'] as String?,
+                    label: items[index]['label'] as String,
                     color: activeIndex == index
                         ? AppColors.primaryColor.shade500
                         : AppColors.secondaryColor.shade200,

@@ -89,32 +89,37 @@ class BettingScreen extends HookConsumerWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : Colors.white,
-                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                     child: Text(
-                      "Select Betting Platform",
+                      "Select Betting Platform".toUpperCase(),
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
                         fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        height: 1.5,
+                        letterSpacing: 2.04, // 17% of 12
                         color: theme.brightness == Brightness.dark
                             ? Colors.white
-                            : AppColors.greyColor.shade500,
+                            : const Color(0xFF8B8EAF),
                       ),
                     ),
                   ),
-                  const Gap(8),
+                  const Gap(12),
                   GestureDetector(
                     onTap: () => showDataPlanSheet(context),
                     child: Container(
@@ -123,11 +128,13 @@ class BettingScreen extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.greyColor.shade50,
-                          width: 0.2,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.transparent
+                              : AppColors.greyColor.shade50,
+                          width: 0.35,
                         ), // Slightly darker border
                         color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
+                            ? AppColors.secondaryColor
                             : Colors.white, // Ensures white background
                       ),
                       child: Row(
@@ -168,6 +175,9 @@ class BettingScreen extends HookConsumerWidget {
                     label: "Betting ID",
                     keyboardType: TextInputType.number,
                     hintText: 'Enter Betting ID / Username',
+                    fillColor: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor
+                        : Colors.transparent,
                   ),
                   const Gap(24),
                   CustomTextField(
@@ -176,70 +186,9 @@ class BettingScreen extends HookConsumerWidget {
                     isPassword: false,
                     label: 'Amount',
                     keyboardType: TextInputType.number,
-                  ),
-                  const Gap(16),
-                  SizedBox(
-                    height: 84,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4, // 4 items per row
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 2.5, // Adjust for button shape
-                      ),
-                      itemCount: amounts.length,
-                      itemBuilder: (context, index) {
-                        final amount = amounts[index];
-                        final isSelected = selectedAmount.value == amount;
-
-                        return InkWell(
-                          onTap: () => updateSelection(amount),
-                          borderRadius: BorderRadius.circular(
-                              8), // Ensures ripple effect stays within bounds
-                          splashColor: Colors.orange
-                              .withOpacity(0.3), // Customize splash color
-                          highlightColor: Colors.orange
-                              .withOpacity(0.1), // Customize highlight color
-                          child: Material(
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.transparent
-                                : const Color(0xFFFAFAFA), // Background color
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: theme.brightness == Brightness.dark
-                                      ? Colors
-                                          .white54 // Light border for dark mode
-                                      : Colors
-                                          .transparent, // Subtle border for light mode
-                                  width: 1, // Border width
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical:
-                                      4), // Adds spacing for better tap feedback
-                              alignment: Alignment.center,
-                              child: Text(
-                                amount,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: theme.brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.grey.shade800,
-                                  fontFamily: '',
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                    fillColor: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor
+                        : Colors.transparent,
                   ),
                   const Gap(24),
                   InfoWidget(

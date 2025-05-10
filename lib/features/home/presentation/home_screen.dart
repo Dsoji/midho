@@ -10,6 +10,7 @@ import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
+import '../../bottomNav/app_router.gr.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/summary_card.dart';
 import 'widget/wallet_balance_card.dart';
@@ -111,13 +112,7 @@ class ReferralButton extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // context.router.push(const ReferallRoute());
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => const ReferallScreen(),
-        //   ),
-        // );
+        context.router.push(const ReferallRoute());
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

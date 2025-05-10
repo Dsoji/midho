@@ -138,7 +138,9 @@ class CustomTextField extends HookWidget {
               ),
             ),
             filled: true,
-            fillColor: fillColor ?? Colors.transparent,
+            fillColor: theme.brightness == Brightness.dark
+                ? AppColors.secondaryColor
+                : Colors.transparent,
             counterText: "", // Hides maxLength counter
             isDense: true, // Makes the input field more compact
           ),

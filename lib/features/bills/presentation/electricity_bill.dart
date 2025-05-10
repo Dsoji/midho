@@ -89,28 +89,35 @@ class ElectricityBillScreen extends HookConsumerWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
+                    ? AppColors.darkBorder
                     : Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : Colors.white,
-                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Provider",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : AppColors.greyColor.shade500,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Select Your Electricity Provider".toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 12,
+                          height: 1.5,
+                          letterSpacing: 2.04, // 17% of 12
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : const Color(0xFF8B8EAF),
+                        ),
                       ),
                     ),
                   ),
@@ -123,11 +130,13 @@ class ElectricityBillScreen extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.greyColor.shade50,
-                          width: 0.3,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.transparent
+                              : AppColors.greyColor.shade50,
+                          width: 0.35,
                         ), // Slightly darker border
                         color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
+                            ? AppColors.secondaryColor
                             : Colors.white, // Ensures white background
                       ),
                       child: Row(
@@ -182,7 +191,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
                         ),
                         indicatorDecoration: BoxDecoration(
                           color: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade500
+                              ? AppColors.darkBorder
                               : Colors.white,
                           borderRadius: BorderRadius.circular(10),
                         ),

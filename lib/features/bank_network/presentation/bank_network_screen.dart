@@ -50,39 +50,43 @@ class BankNetworkScreen extends HookConsumerWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const Gap(12),
             const NetworkStatusIndicator(),
             const Gap(16),
-            CustomTextField(
-              controller: searchController,
-              hintText: 'Search for your bank',
-              suffixIcon: const Icon(Icons.search), // Optional
-              isPassword: false,
-            ),
-            const Gap(12),
             Container(
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : Colors.white, // Dark theme color
-                borderRadius: BorderRadius.circular(20),
               ),
-              child: ListView.separated(
-                itemCount: banks.length,
-                shrinkWrap: true,
-                separatorBuilder: (context, index) => Divider(
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.black
-                      : AppColors.greyColor.shade100,
-                  thickness: 0.5,
-                ),
-                itemBuilder: (context, index) => buildBankItem(
-                  banks[index],
-                  context,
-                ),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  CustomTextField(
+                    controller: searchController,
+                    hintText: 'Search for your bank',
+                    suffixIcon: const Icon(Icons.search), // Optional
+                    isPassword: false,
+                  ),
+                  const Gap(12),
+                  ListView.separated(
+                    itemCount: banks.length,
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) => Divider(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.black
+                          : AppColors.greyColor.shade100,
+                      thickness: 0.5,
+                    ),
+                    itemBuilder: (context, index) => buildBankItem(
+                      banks[index],
+                      context,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -176,12 +180,12 @@ class NetworkStatusIndicator extends StatelessWidget {
         ),
         const Gap(8),
         Container(
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
             color: theme.brightness == Brightness.dark
-                ? AppColors.secondaryColor.shade500
+                ? AppColors.darkBorder
                 : Colors.white,
-            borderRadius: BorderRadius.circular(25), // Rounded edges
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

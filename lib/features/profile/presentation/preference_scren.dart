@@ -5,7 +5,6 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/res/assets.dart';
-import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
 import '../../../common/app_theme.dart';
@@ -43,25 +42,27 @@ class PreferenceScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Customize your app experience and notification preferences.",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "Customize your app experience and notification preferences.",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             const Gap(10),
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(0),
                 ),
               ),
               child: Column(
@@ -90,6 +91,11 @@ class PreferenceScreen extends HookConsumerWidget {
                     ),
                     context: context,
                   ),
+                  Divider(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor
+                        : AppColors.whiteColor.shade100,
+                  ),
                   _buildSettingsOption(
                     icon: IconsaxPlusLinear.notification_bing,
                     title: "Email Alerts",
@@ -117,146 +123,154 @@ class PreferenceScreen extends HookConsumerWidget {
               ),
             ),
             const Gap(16),
-            const Text(
-              "App Theme",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "App Theme",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             const Gap(16),
             Container(
               decoration: ShapeDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : AppColors.whiteColor.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: const RoundedRectangleBorder(),
               ),
               padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      selectedIndex.value = 0;
-                      ref
-                          .read(themeNotifierProvider)
-                          .toggleTheme(ThemeMode.light);
-                      themeAlert.value = 'LIGHT';
-                    },
-                    child: Container(
-                      height: 118,
-                      width: 143,
-                      padding: const EdgeInsets.all(11),
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFFFFBFA),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: selectedIndex.value == 0
-                              ? const BorderSide(
-                                  color: AppColors.primaryColor, width: 0.5)
-                              : BorderSide.none,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            height: 66, // Fixed height
-                            width: 121, // Fixed width
-                            PlaceholderAssets.lightmode,
-                          ),
-                          const Gap(12),
-                          const Text(
-                            'Light Mode',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.primaryColor,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          selectedIndex.value = 0;
+                          ref
+                              .read(themeNotifierProvider)
+                              .toggleTheme(ThemeMode.light);
+                          themeAlert.value = 'LIGHT';
+                        },
+                        child: Container(
+                          height: 118,
+                          width: 143,
+                          padding: const EdgeInsets.all(11),
+                          decoration: ShapeDecoration(
+                            color: const Color(0xFFFFFBFA),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: selectedIndex.value == 0
+                                  ? const BorderSide(
+                                      color: AppColors.primaryColor, width: 0.5)
+                                  : BorderSide.none,
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Gap(26),
-                  GestureDetector(
-                    onTap: () {
-                      selectedIndex.value = 1;
-                      ref
-                          .read(themeNotifierProvider)
-                          .toggleTheme(ThemeMode.dark);
-                      themeAlert.value = 'DARK';
-                    },
-                    child: Container(
-                      height: 118,
-                      width: 143,
-                      padding: const EdgeInsets.all(11),
-                      decoration: ShapeDecoration(
-                        color: AppColors.secondaryColor.shade700,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: selectedIndex.value == 1
-                              ? const BorderSide(
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                height: 66, // Fixed height
+                                width: 121, // Fixed width
+                                PlaceholderAssets.lightmode,
+                              ),
+                              const Gap(12),
+                              const Text(
+                                'Light Mode',
+                                style: TextStyle(
+                                  fontSize: 12,
                                   color: AppColors.primaryColor,
-                                  width: 0.5,
-                                )
-                              : BorderSide.none,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            height: 66, // Fixed height
-                            width: 121, // Fixed width
-                            PlaceholderAssets.darkmode,
-                          ),
-                          const Gap(12),
-                          const Text(
-                            'Dark Mode',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
+                      const Gap(26),
+                      GestureDetector(
+                        onTap: () {
+                          selectedIndex.value = 1;
+                          ref
+                              .read(themeNotifierProvider)
+                              .toggleTheme(ThemeMode.dark);
+                          themeAlert.value = 'DARK';
+                        },
+                        child: Container(
+                          height: 118,
+                          width: 143,
+                          padding: const EdgeInsets.all(11),
+                          decoration: ShapeDecoration(
+                            color: AppColors.secondaryColor.shade700,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: selectedIndex.value == 1
+                                  ? const BorderSide(
+                                      color: AppColors.primaryColor,
+                                      width: 0.5,
+                                    )
+                                  : BorderSide.none,
                             ),
-                          )
-                        ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                height: 66, // Fixed height
+                                width: 121, // Fixed width
+                                PlaceholderAssets.darkmode,
+                              ),
+                              const Gap(12),
+                              const Text(
+                                'Dark Mode',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                  const Gap(20),
+                  FullButton(
+                    isLoading: ref
+                        .watch(profileControllerProvider)
+                        .forgotPassword
+                        .isLoading,
+                    text: "Save Changes",
+                    width: double.infinity,
+                    height: 48,
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      // final result =
+                      //     await profileService.updateProfile(ProfilePayload(
+                      //   emailAlert: emailEnabled.value,
+                      //   pushAlert: pushEnabled.value,
+                      //   theme: themeAlert.value,
+                      // ));
+                      // if (result == true) {
+                      //   await ref
+                      //       .read(authenticationControllerProvider.notifier)
+                      //       .fetchProfile()
+                      //       .then((_) {
+                      //     Navigator.pop(context);
+                      //   });
+                      // }
+                    },
+                    textColor: Colors.white,
+                    color: AppColors.primaryColor.shade500,
                   ),
                 ],
               ),
-            ),
-            const Gap(16),
-            FullButton(
-              isLoading:
-                  ref.watch(profileControllerProvider).forgotPassword.isLoading,
-              text: "Save Changes",
-              width: double.infinity,
-              height: 48,
-              onPressed: () async {
-                final result =
-                    await profileService.updateProfile(ProfilePayload(
-                  emailAlert: emailEnabled.value,
-                  pushAlert: pushEnabled.value,
-                  theme: themeAlert.value,
-                ));
-                if (result == true) {
-                  await ref
-                      .read(authenticationControllerProvider.notifier)
-                      .fetchProfile()
-                      .then((_) {
-                    Navigator.pop(context);
-                  });
-                }
-              },
-              textColor: Colors.white,
-              color: AppColors.primaryColor.shade500,
             ),
           ],
         ),

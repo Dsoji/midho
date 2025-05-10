@@ -7,6 +7,7 @@ import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:screenshot/screenshot.dart';
 
 import '../../../common/mixin/share_mixin.dart';
@@ -44,29 +45,52 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             )
           : null,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (showAppBar != true) const Gap(72),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "Transaction Summary",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.whiteColor
+                      : Colors.black,
+                ),
+              ),
+            ),
             Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
+                      ? AppColors.darkBorder
                       : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: _buildTransactionSummary(transactionDetails, context)),
-            const Gap(12),
+            const Gap(20),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "Breakdown",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.whiteColor
+                      : Colors.black,
+                ),
+              ),
+            ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
+                    ? AppColors.darkBorder
                     : Colors.white,
-                borderRadius: BorderRadius.circular(16),
               ),
               child: _buildBreakdown(
                 transactionDetails["breakdown"],
@@ -74,59 +98,60 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               ),
             ),
             if (showAppBar == true)
-              Column(
-                children: [
-                  const Gap(16),
-                  FullButton(
-                    text:
-                        status == 'Failed' ? 'Retry Trade' : "Download Reciept",
-                    width: double.infinity,
-                    height: 60,
-                    onPressed: isProcessing.value == true
-                        ? () {}
-                        : () async {
-                            if (status != 'Failed') {
-                              isProcessing.value = true;
-                              await screenshotController
-                                  .captureFromWidget(
-                                    MediaQuery(
-                                      data: MediaQueryData.fromView(
-                                          WidgetsBinding.instance.window),
-                                      child: InheritedTheme.captureAll(
-                                        context,
-                                        TransactionDetailsScreen(
-                                          type: type,
-                                          status: status,
-                                          showAppBar: false,
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Gap(16),
+                    FullButton(
+                        text: status == 'Failed'
+                            ? 'Retry Trade'
+                            : "Download Reciept",
+                        width: double.infinity,
+                        height: 60,
+                        onPressed: isProcessing.value == true
+                            ? () {}
+                            : () async {
+                                if (status != 'Failed') {
+                                  isProcessing.value = true;
+                                  await screenshotController
+                                      .captureFromWidget(
+                                        MediaQuery(
+                                          data: MediaQueryData.fromView(
+                                              WidgetsBinding.instance.window),
+                                          child: InheritedTheme.captureAll(
+                                            context,
+                                            TransactionDetailsScreen(
+                                              type: type,
+                                              status: status,
+                                              showAppBar: false,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  )
-                                  .then(processAndSaveImage)
-                                  .catchError((onError) {
-                                // Handle error
-                                debugPrint('Screenshot error: $onError');
-                              });
-                              isProcessing.value = false;
-                            }
-                          },
-                    textColor: AppColors.whiteColor,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.primaryColor.shade500
-                        : Colors.black,
-                  ),
-                  const Gap(4),
-                  FullButton(
-                    text: "Contact Support",
-                    width: double.infinity,
-                    height: 60,
-                    onPressed: () {},
-                    textColor: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                    color: Colors.transparent,
-                  ),
-                ],
+                                      )
+                                      .then(processAndSaveImage)
+                                      .catchError((onError) {
+                                    // Handle error
+                                    debugPrint('Screenshot error: $onError');
+                                  });
+                                  isProcessing.value = false;
+                                }
+                              },
+                        textColor: AppColors.whiteColor,
+                        color: AppColors.primaryColor.shade500),
+                    const Gap(4),
+                    FullButton(
+                      text: "Contact Support",
+                      width: double.infinity,
+                      height: 60,
+                      onPressed: () {},
+                      textColor: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                      color: Colors.transparent,
+                    ),
+                  ],
+                ),
               ),
             const Gap(150),
           ],
@@ -141,17 +166,6 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Transaction Summary",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: theme.brightness == Brightness.dark
-                ? AppColors.whiteColor
-                : Colors.black,
-          ),
-        ),
-        const Gap(20),
         _buildDetailRow(
             "Transaction ID", details["transactionId"], context, true),
         _buildDetailRow("Date & Time", details["dateTime"], context, false),
@@ -159,6 +173,12 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         _buildDetailRow("Amount", "₦${details["amount"]}", context, false),
         _buildDetailRow("Fee", "₦${details["fee"]}", context, false),
         _buildDetailRow("Status", status, context, false),
+        const Gap(20),
+        if (status.toUpperCase() == 'PENDING')
+          InfoWidget(
+              theme: theme,
+              text:
+                  'The admin team will review your transaction. Once approved, you will receive a notification, and your wallet will be credited promptly.')
       ],
     );
   }
@@ -169,17 +189,6 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start, // Aligns items to the left
       children: [
-        Text(
-          "Breakdown",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: theme.brightness == Brightness.dark
-                ? AppColors.whiteColor
-                : Colors.black,
-          ),
-        ),
-        const Gap(20),
         ...breakdown.entries.map(
           (entry) => _buildDetailRow(
               entry.key, entry.value.toString(), context, false),

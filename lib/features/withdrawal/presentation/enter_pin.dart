@@ -59,185 +59,189 @@ class TransactionPinScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: const CustomAppBar(
-        title: 'Enter Your Transaction Pin',
         showAction: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Gap(16),
-            Text(
-              "For security, please enter your 4-digit PIN.  ",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : AppColors.greyColor.shade400,
-              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Gap(12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.darkBorder
+                  : AppColors.whiteColor.shade100,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1), // Light shadow color
+                  blurRadius: 8, // Soft shadow effect
+                  spreadRadius: 1, // Spread of the shadow
+                  offset: const Offset(0, 2), // Moves shadow slightly down
+                ),
+              ],
             ),
-            const Gap(16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : AppColors.whiteColor.shade100,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Light shadow color
-                    blurRadius: 8, // Soft shadow effect
-                    spreadRadius: 1, // Spread of the shadow
-                    offset: const Offset(0, 2), // Moves shadow slightly down
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // PIN Code Field
+                Text(
+                  "Enter Your Transaction Pin",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.greyColor.shade400,
                   ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // PIN Code Field
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 233,
-                        child: PinCodeTextField(
-                          appContext: context,
-                          length: 4,
-                          controller: pinController,
-                          obscureText: pinState.isPinHidden,
-                          keyboardType: TextInputType.number,
-                          animationType: AnimationType.fade,
-                          textStyle: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: theme.brightness == Brightness.dark
-                                  ? AppColors.whiteColor.shade50
-                                  : Colors.black),
-                          pinTheme: PinTheme(
-                            shape: PinCodeFieldShape.box,
-                            borderRadius: BorderRadius.circular(8),
-                            fieldHeight: 53,
-                            fieldWidth: 53,
-                            activeFillColor: theme.brightness == Brightness.dark
-                                ? AppColors.secondaryColor.shade400
-                                : const Color(0x0fffff5f),
-                            inactiveFillColor:
-                                AppColors.secondaryColor.shade400,
-                            selectedFillColor:
-                                AppColors.secondaryColor.shade400,
-                            selectedColor: AppColors.primaryColor,
-                            activeColor: AppColors.primaryColor,
-                            inactiveColor: Colors.grey,
-                          ),
-                          onChanged: (value) {
-                            pinNotifier.updatePin(value);
-                          },
-                        ),
-                      ),
-                      const Gap(23),
-                      // Visibility Toggle Button
-                      GestureDetector(
-                        onTap: pinNotifier.toggleVisibility,
-                        child: Container(
-                          width: 53,
-                          height: 53,
-                          decoration: ShapeDecoration(
+                ),
+                const Gap(10),
+                Text(
+                  "For security, please enter your 4-digit PIN.  ",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.greyColor.shade400,
+                  ),
+                ),
+                const Gap(18),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 233,
+                      child: PinCodeTextField(
+                        appContext: context,
+                        length: 4,
+                        controller: pinController,
+                        obscureText: pinState.isPinHidden,
+                        keyboardType: TextInputType.number,
+                        animationType: AnimationType.fade,
+                        textStyle: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
                             color: theme.brightness == Brightness.dark
-                                ? AppColors.secondaryColor.shade300
-                                : Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              pinState.isPinHidden
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: Colors.grey,
-                            ),
+                                ? AppColors.whiteColor.shade50
+                                : Colors.black),
+                        pinTheme: PinTheme(
+                          shape: PinCodeFieldShape.box,
+                          borderRadius: BorderRadius.circular(8),
+                          fieldHeight: 53,
+                          fieldWidth: 53,
+                          activeFillColor: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : const Color(0x0fffff5f),
+                          inactiveFillColor: AppColors.secondaryColor.shade400,
+                          selectedFillColor: AppColors.secondaryColor.shade400,
+                          selectedColor: AppColors.primaryColor,
+                          activeColor: AppColors.primaryColor,
+                          inactiveColor: Colors.grey,
+                        ),
+                        onChanged: (value) {
+                          pinNotifier.updatePin(value);
+                        },
+                      ),
+                    ),
+                    const Gap(23),
+                    // Visibility Toggle Button
+                    GestureDetector(
+                      onTap: pinNotifier.toggleVisibility,
+                      child: Container(
+                        width: 53,
+                        height: 53,
+                        decoration: ShapeDecoration(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade300
+                              : Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            pinState.isPinHidden
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const Gap(24),
+                    ),
+                  ],
+                ),
+                const Gap(24),
 
-                  // Next Button
-                  FullButton(
-                    text: "Next",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () => showWithdrawSuccessDialog(context),
-                    doublePressed: () => showWithdrawalFailedDialog(context),
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                  const Gap(24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Forgot PIN?",
+                // Next Button
+                FullButton(
+                  text: "Next",
+                  width: double.infinity,
+                  height: 48,
+                  onPressed: () => showWithdrawSuccessDialog(context),
+                  doublePressed: () => showWithdrawalFailedDialog(context),
+                  textColor: Colors.white,
+                  color: AppColors.primaryColor.shade500,
+                ),
+                const Gap(24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Forgot PIN?",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChangePinScreen(),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade400
+                            : Colors.transparent,
+                        side: BorderSide(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade300
+                              : Colors.grey.shade300,
+                        ), // Border color
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8), // Matches the image
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                      ),
+                      child: Text(
+                        "Reset PIN",
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ChangePinScreen(),
-                            ),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade400
-                              : Colors.transparent,
-                          side: BorderSide(
-                            color: theme.brightness == Brightness.dark
-                                ? AppColors.secondaryColor.shade300
-                                : Colors.grey.shade300,
-                          ), // Border color
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8), // Matches the image
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                        ),
-                        child: Text(
-                          "Reset PIN",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Gap(24),
-                  InfoWidget(
-                    theme: theme,
-                    text:
-                        'Select a bank with good network status for faster processing.',
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                const Gap(24),
+                InfoWidget(
+                  theme: theme,
+                  text:
+                      'Select a bank with good network status for faster processing.',
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

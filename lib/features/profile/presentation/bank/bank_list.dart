@@ -58,51 +58,51 @@ class LinkedBanksScreen extends HookConsumerWidget {
           );
         },
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
+      body: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
               "Manage the bank accounts linked to your wallet for withdrawals.",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
             ),
-            const Gap(16),
-            SizedBox(
-              height: 248,
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: bankList.length,
-                separatorBuilder: (context, index) =>
-                    const Gap(10), // Space between cards
-                itemBuilder: (context, index) {
-                  final bank = bankList[index];
+          ),
+          const Gap(16),
+          SizedBox(
+            height: 248,
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: bankList.length,
+              separatorBuilder: (context, index) =>
+                  const Gap(2), // Space between cards
+              itemBuilder: (context, index) {
+                final bank = bankList[index];
 
-                  return BankInfoCard(
-                    image: bank["image"] ??
-                        "assets/default.png", // Use a default image if null
-                    name: bank["name"] ?? "Unknown Bank",
-                    color: bank["color"] ?? Colors.grey,
-                    status: bank["status"] ?? "No Status",
-                    percentage: bank["percentage"] ?? "0%",
-                    actNumber: bank["actNumber"] ?? "N/A",
-                    actName: bank["actName"] ?? "N/A",
-                    showBorder: false,
-                    icon: Icons.more_horiz,
-                    showStrength: false,
-                    onTap: () {
-                      final GlobalKey<State<StatefulWidget>> globalKey =
-                          GlobalKey();
-                      // _showPopupMenu(context, globalKey);
-                    },
-                  );
-                },
-              ),
+                return BankInfoCard(
+                  image: bank["image"] ??
+                      "assets/default.png", // Use a default image if null
+                  name: bank["name"] ?? "Unknown Bank",
+                  color: bank["color"] ?? Colors.grey,
+                  status: bank["status"] ?? "No Status",
+                  percentage: bank["percentage"] ?? "0%",
+                  actNumber: bank["actNumber"] ?? "N/A",
+                  actName: bank["actName"] ?? "N/A",
+                  showBorder: false,
+                  icon: Icons.more_horiz,
+                  showStrength: false,
+                  onTap: () {
+                    final GlobalKey<State<StatefulWidget>> globalKey =
+                        GlobalKey();
+                    // _showPopupMenu(context, globalKey);
+                  },
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -21,7 +21,7 @@ class InfoWidget extends StatelessWidget {
       decoration: ShapeDecoration(
         color: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade500
-            : const Color(0xFFF6F6F9),
+            : const Color.fromARGB(15, 168, 226, 251),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -42,7 +42,7 @@ class InfoWidget extends StatelessWidget {
                 fontSize: 12,
                 color: theme.brightness == Brightness.dark
                     ? Colors.white
-                    : Colors.black,
+                    : AppColors.primaryColor,
               ),
             ),
           ),
