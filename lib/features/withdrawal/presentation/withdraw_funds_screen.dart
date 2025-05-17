@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
 import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart';
@@ -11,9 +12,11 @@ import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bank_network/presentation/bank_network_screen.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
 import '../../profile/presentation/bank/add_bank.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 import 'widget/bank_info_card.dart';
 import 'widget/info_widget.dart';
 
@@ -28,8 +31,11 @@ class WithdrawFundsScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
     final amountController = useTextEditingController();
-    final selectedBank = ref.watch(selectedBankProvider);
 
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+
+    final selectedBank = ref.watch(selectedBankProvider);
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Withdraw Funds",
@@ -77,16 +83,46 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        isBalanceVisible ? "₦950,0000" : "••••••••",
-                        style: TextStyle(
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 29,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: '',
-                        ),
+                      RichText(
+                        text: isBalanceVisible
+                            ? TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        '${userInfo?.wallet?.currency ?? ''} ',
+                                    style: TextStyle(
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: '',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '${userInfo?.wallet?.mainBalance ?? 0}'
+                                            .commaFormat(),
+                                    style: TextStyle(
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 29,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: '',
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const TextSpan(
+                                text: "••••••••",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 29,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: '',
+                                ),
+                              ),
                       ),
                       const Gap(8),
                       Container(
@@ -129,9 +165,10 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                   ),
                   const Gap(8),
                   BankInfoCard(
+                    showStrength: false,
                     image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
                     name: selectedBank?["name"] ?? 'GT Bank',
-                    color: selectedBank?["color"] ?? Colors.red,
+                    // color: selectedBank?["color"] ?? Colors.red,
                     status: selectedBank?["status"] ?? 'Poor Network',
                     percentage: selectedBank?["percentage"] ?? '90',
                     actNumber: selectedBank?["actNumber"] ?? '1210125678',
@@ -195,7 +232,13 @@ class WithdrawFundsScreen extends HookConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      builder: (context) => const AddBankScreen(),
+      builder: (context) {
+        final height = MediaQuery.of(context).size.height;
+        return const FractionallySizedBox(
+          heightFactor: 0.85, // 70% of screen height
+          child: AddBankScreen(),
+        );
+      },
     );
   }
 }
@@ -204,40 +247,14 @@ class AddBankScreen extends HookConsumerWidget {
   const AddBankScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Map<String, dynamic>> bankList = [
-      {
-        "name": "GTBank",
-        "image": PlaceholderAssets.gtbank, // Use 'image' instead of 'logo'
-        "status": "Poor Network",
-        "percentage": "49%", // Ensure this is a String
-        "color": Colors.red,
-        "actNumber": "1234 5678 9012", // Add this field
-        "actName": "Savings Account", // Add this field
-      },
-      {
-        "name": "UBA",
-        "image": PlaceholderAssets.uba,
-        "status": "Fair Network",
-        "percentage": "55%",
-        "color": Colors.amber,
-        "actNumber": "5678 9012 3456",
-        "actName": "Checking Account",
-      },
-      {
-        "name": "Opay",
-        "image": PlaceholderAssets.opay,
-        "status": "Good Network",
-        "percentage": "92%",
-        "color": Colors.green,
-        "actNumber": "9012 3456 7890",
-        "actName": "Business Account",
-      },
-    ];
     final theme = Theme.of(context);
-    return Padding(
+    final userProfileAsync =
+        ref.watch(authenticationControllerProvider).userDetails;
+    final localBanks = userProfileAsync.valueOrNull?.banks;
+
+    return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
@@ -266,46 +283,88 @@ class AddBankScreen extends HookConsumerWidget {
           const Gap(23),
           const NetworkStatusIndicator(),
           const Gap(16),
-          SizedBox(
-            height: 248,
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: bankList.length,
-              separatorBuilder: (context, index) =>
-                  const Gap(10), // Space between cards
-              itemBuilder: (context, index) {
-                final bank = bankList[index];
-
-                return GestureDetector(
-                  child: BankInfoCard(
-                    image: bank["image"] ??
-                        "assets/default.png", // Use a default image if null
-                    name: bank["name"] ?? "Unknown Bank",
-                    color: bank["color"] ?? Colors.grey,
-                    status: bank["status"] ?? "No Status",
-                    percentage: bank["percentage"] ?? "0%",
-                    actNumber: bank["actNumber"] ?? "N/A",
-                    actName: bank["actName"] ?? "N/A",
-                    showBorder: false,
-                    icon: Icons.more_horiz,
-                    onTap: () {
-                      ref.read(selectedBankProvider.notifier).state = bank;
-                      Navigator.pop(context);
-                    },
+          RefreshIndicator(
+            onRefresh: () async {
+              await ref
+                  .read(authenticationControllerProvider.notifier)
+                  .fetchProfile();
+            },
+            color: AppColors.primaryColor.shade500,
+            child: localBanks!.isEmpty
+                ? SizedBox(
+                    height: 200,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [
+                        SizedBox(height: 100),
+                        Center(child: Text("No linked bank accounts.")),
+                      ],
+                    ),
+                  )
+                : SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: ListView(
+                      padding: const EdgeInsets.all(16),
+                      children: [
+                        const Text(
+                          "Manage the bank accounts linked to your wallet for withdrawals.",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        const Gap(16),
+                        ...List.generate(localBanks.length, (index) {
+                          final bank = localBanks[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: BankInfoCard(
+                              name: bank.bankName ?? "Unknown Bank",
+                              actNumber: bank.accountNumber ?? "N/A",
+                              actName: bank.accountName ?? "N/A",
+                              showBorder: false,
+                              icon: Icons.more_horiz,
+                              showStrength: false,
+                              onTap: () {
+                                ref.read(selectedBankProvider.notifier).state =
+                                    {
+                                  "name": bank.bankName ?? "Unknown Bank",
+                                  "image": PlaceholderAssets
+                                      .gtbank, // or bank.image if available
+                                  "status": "bank.", // or however you derive it
+                                  "percentage":
+                                      "92%", // optionally set from your logic
+                                  "actNumber": bank.accountNumber ?? "N/A",
+                                  "actName": bank.accountName ?? "N/A",
+                                };
+                                Navigator.pop(context);
+                              },
+                              delete: () async {
+                                final result = await ref
+                                    .read(
+                                        transactionControllerProvider.notifier)
+                                    .deleteBanks(acctId: bank.id ?? '');
+                                await ref
+                                    .read(authenticationControllerProvider
+                                        .notifier)
+                                    .fetchProfile();
+                              },
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                );
-              },
-            ),
           ),
-          const Gap(150),
+          const Gap(50),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AddNewBankScreen()));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddNewBankScreen(),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor.shade500,
@@ -314,10 +373,7 @@ class AddBankScreen extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              icon: const Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.add, color: Colors.white),
               label: const Text(
                 "Add New Bank Account",
                 style: TextStyle(color: Colors.white, fontSize: 16),
@@ -380,9 +436,6 @@ class AddBankScreen extends HookConsumerWidget {
     );
 
     if (result == 'edit') {
-      print("Edit account selected");
-    } else if (result == 'delete') {
-      print("Delete account selected");
-    }
+    } else if (result == 'delete') {}
   }
 }

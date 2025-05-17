@@ -3,14 +3,18 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/custom_dropdown.dart';
 
 import '../../../../../../common/res/app_colors.dart';
+import '../../../../../../common/toast/toast.dart';
 import '../../../../../../common/utils/validator.dart';
 import '../../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../../common/widgets/custom_textfield.dart';
 import '../../../../data/controller/authentication_controller.dart';
+import '../../../../data/model/payload/profile_payload.dart';
+import '../../../../data/model/payload/sign_up_payload.dart';
 import '../../../pin_creation/presentation/create_pin.dart';
 
 final logger = Logger();
@@ -233,125 +237,120 @@ class UserDetailsStep extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const CreatePinScreen()),
-                      );
-                      // if (!formKey.currentState!.validate()) {
-                      //   return;
-                      // }
-                      // if (country.value != '') {
-                      //   if (phoneController.text.isNotEmpty) {
-                      //     var box = Hive.box('data');
-                      //     final String email = box.get('email');
-                      //     final String password = box.get('password');
-                      //     final String referral = box.get('referral');
-                      //     final String storedToken = box.get('fcm_token');
-                      //     logger.d(email);
-                      //     logger.d(password);
-                      //     logger.d(referral);
-                      //     logger.d(storedToken);
-                      //     authService.updateProfileDetails(ProfilePayload(
-                      //       firstname: firstNameController.text.trim(),
-                      //       lastname: lastNameController.text.trim(),
-                      //       phone: phoneController.text.trim(),
-                      //     ));
-                      //     final result = await authService.signUp(
-                      //       SignUpPayload(
-                      //         email: email,
-                      //         password: password,
-                      //         referral: referral,
-                      //         firstname: firstNameController.text.trim(),
-                      //         lastname: lastNameController.text.trim(),
-                      //         country: 'NG',
-                      //         phone: formattedPhoneNumber,
-                      //         device: deviceId,
-                      //         fcmToken: storedToken,
-                      //       ),
-                      //     );
-                      //     if (result == true) {
-                      //       final localAuth = LocalAuthentication();
-                      //       final canAuthenticate =
-                      //           await localAuth.canCheckBiometrics ||
-                      //               await localAuth.isDeviceSupported();
+                      if (!formKey.currentState!.validate()) {
+                        return;
+                      }
+                      if (country.value != '') {
+                        if (phoneController.text.isNotEmpty) {
+                          var box = Hive.box('data');
+                          final String email = box.get('email');
+                          final String password = box.get('password');
+                          final String referral = box.get('referral');
+                          final String storedToken = box.get('fcm_token');
+                          logger.d(email);
+                          logger.d(password);
+                          logger.d(referral);
+                          logger.d(storedToken);
+                          authService.updateProfileDetails(ProfilePayload(
+                            firstname: firstNameController.text.trim(),
+                            lastname: lastNameController.text.trim(),
+                            phone: phoneController.text.trim(),
+                          ));
+                          final result = await authService.signUp(
+                            SignUpPayload(
+                              email: email,
+                              password: password,
+                              referral: referral,
+                              firstname: firstNameController.text.trim(),
+                              lastname: lastNameController.text.trim(),
+                              country: 'NG',
+                              phone: formattedPhoneNumber,
+                              device: deviceId,
+                              fcmToken: storedToken,
+                            ),
+                          );
+                          if (result == true) {
+                            final localAuth = LocalAuthentication();
+                            final canAuthenticate =
+                                await localAuth.canCheckBiometrics ||
+                                    await localAuth.isDeviceSupported();
 
-                      //       if (canAuthenticate) {
-                      //         final availableBiometrics =
-                      //             await localAuth.getAvailableBiometrics();
-                      //         if (availableBiometrics.isNotEmpty) {
-                      //           try {
-                      //             final authenticated =
-                      //                 await localAuth.authenticate(
-                      //               localizedReason:
-                      //                   "Authenticate to complete registration",
-                      //               options: const AuthenticationOptions(
-                      //                   biometricOnly: true),
-                      //             );
+                            if (canAuthenticate) {
+                              final availableBiometrics =
+                                  await localAuth.getAvailableBiometrics();
+                              if (availableBiometrics.isNotEmpty) {
+                                try {
+                                  final authenticated =
+                                      await localAuth.authenticate(
+                                    localizedReason:
+                                        "Authenticate to complete registration",
+                                    options: const AuthenticationOptions(
+                                        biometricOnly: true),
+                                  );
 
-                      //             var box = Hive.box('data');
-                      //             box.put('biometric_auth', authenticated);
+                                  var box = Hive.box('data');
+                                  box.put('biometric_auth', authenticated);
 
-                      //             if (authenticated) {
-                      //               Navigator.push(
-                      //                 context,
-                      //                 MaterialPageRoute(
-                      //                     builder: (context) =>
-                      //                         const CreatePinScreen()),
-                      //               );
-                      //             }
-                      //           } catch (e) {
-                      //             debugPrint(
-                      //                 "Biometric authentication failed: $e");
-                      //             var box = Hive.box('data');
-                      //             box.put('biometric_auth', false);
+                                  if (authenticated) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CreatePinScreen()),
+                                    );
+                                  }
+                                } catch (e) {
+                                  debugPrint(
+                                      "Biometric authentication failed: $e");
+                                  var box = Hive.box('data');
+                                  box.put('biometric_auth', false);
 
-                      //             Navigator.push(
-                      //               context,
-                      //               MaterialPageRoute(
-                      //                   builder: (context) =>
-                      //                       const CreatePinScreen()),
-                      //             );
-                      //           }
-                      //         } else {
-                      //           debugPrint(
-                      //               "Biometric authentication is not available on this device.");
-                      //           var box = Hive.box('data');
-                      //           box.put('biometric_auth', false);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CreatePinScreen()),
+                                  );
+                                }
+                              } else {
+                                debugPrint(
+                                    "Biometric authentication is not available on this device.");
+                                var box = Hive.box('data');
+                                box.put('biometric_auth', false);
 
-                      //           Navigator.push(
-                      //             context,
-                      //             MaterialPageRoute(
-                      //                 builder: (context) =>
-                      //                     const CreatePinScreen()),
-                      //           );
-                      //         }
-                      //       } else {
-                      //         debugPrint(
-                      //             "Biometric authentication is not available on this device.");
-                      //         var box = Hive.box('data');
-                      //         box.put('biometric_auth', false);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CreatePinScreen()),
+                                );
+                              }
+                            } else {
+                              debugPrint(
+                                  "Biometric authentication is not available on this device.");
+                              var box = Hive.box('data');
+                              box.put('biometric_auth', false);
 
-                      //         Navigator.push(
-                      //           context,
-                      //           MaterialPageRoute(
-                      //               builder: (context) =>
-                      //                   const CreatePinScreen()),
-                      //         );
-                      //       }
-                      //     }
-                      //   } else {
-                      //     ToastService().showToast(
-                      //       NotificationType.info,
-                      //       message: 'Fill all fields',
-                      //     );
-                      //   }
-                      // } else {
-                      //   ToastService().showToast(
-                      //     NotificationType.info,
-                      //     message: 'Select a country',
-                      //   );
-                      // }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CreatePinScreen()),
+                              );
+                            }
+                          }
+                        } else {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Fill all fields',
+                          );
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Select a country',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

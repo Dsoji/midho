@@ -19,12 +19,15 @@ class CustomTextField extends HookWidget {
   final int? maxLines;
   final int? maxLength;
   final bool readOnly;
+  final void Function(String)? onChanged; // ✅ Add this
 
   const CustomTextField({
     super.key,
     this.maxLines = 1,
     this.maxLength,
     required this.controller,
+    this.onChanged, // ✅ Add to constructor
+
     this.label,
     this.hintText,
     this.prefixIcon,
@@ -64,6 +67,8 @@ class CustomTextField extends HookWidget {
           maxLines: maxLines,
           maxLength: maxLength,
           readOnly: readOnly,
+          onChanged: onChanged, // ✅ Wire it here
+
           decoration: InputDecoration(
             prefixIcon: prefixIcon != null
                 ? Icon(

@@ -59,6 +59,7 @@ class PlaceholderAssets {
   static const lightmode = '$_base/light_mode.png';
   static const darkmode = '$_base/dark_mode.png';
   static const union = '$_base/union.png';
+  static const unionLight = '$_base/union_light.png';
 }
 
 class ImageAssets {

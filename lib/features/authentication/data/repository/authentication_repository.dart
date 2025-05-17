@@ -1,4 +1,6 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/notification/data/model/response/notifcation_list/notifcation_list.dart';
 
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
@@ -188,19 +190,43 @@ class AuthenticationRepository {
     try {
       final data = await authService.fetchUserInfo();
 
-      if (data.isSuccess) {
-        return Success(data.value ?? UserProfileModel());
+      if (data.isSuccess && data.value != null) {
+        final profile = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put('userProfile', profile.toMap());
+
+        return Success(profile);
       } else {
+        // Fallback to local cache if fetch failed
+        var box = Hive.box('data');
+        final cachedMap = box.get('userProfile');
+
+        if (cachedMap != null && cachedMap is Map<String, dynamic>) {
+          final cachedProfile = UserProfileModel.fromMap(cachedMap);
+          return Success(cachedProfile);
+        }
+
         return Error(
           data.error ??
               FailureHandler(
-                message: 'Failed to update profile',
+                message: 'Failed to fetch profile',
                 stackTrace: StackTrace.current,
-                exception: Exception('Failed to update profile'),
+                exception: Exception('Failed to fetch profile'),
               ),
         );
       }
     } on FailureHandler catch (failure) {
+      // Fallback to cache on exception too
+      var box = Hive.box('data');
+      final cachedMap = box.get('userProfile');
+
+      if (cachedMap != null && cachedMap is Map<String, dynamic>) {
+        final cachedProfile = UserProfileModel.fromMap(cachedMap);
+        return Success(cachedProfile);
+      }
+
       return Error(failure);
     }
   }
@@ -315,7 +341,6 @@ class AuthenticationRepository {
 
   Future<Result<FailureHandler, UploadResponse>> uploadImage(
       dynamic payload) async {
-    print(payload);
     try {
       final data = await authService.updateImage(payload);
 
@@ -328,6 +353,27 @@ class AuthenticationRepository {
                 message: 'Failed to update image',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to update image'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, NotifcationList>> getNotification() async {
+    try {
+      final data = await authService.getNotification();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? NotifcationList());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch notifications',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch notification'),
               ),
         );
       }

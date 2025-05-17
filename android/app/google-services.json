@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1026709119955",
+    "project_id": "swiftswap-59406",
+    "storage_bucket": "swiftswap-59406.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026709119955:android:2feaa6ae8c02c983a90526",
+        "android_client_info": {
+          "package_name": "com.swiftswap.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnc86_E15Ct7w368B22jzNB126B9BiyPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

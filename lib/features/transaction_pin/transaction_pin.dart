@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/success_dialogue.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -75,7 +76,9 @@ class TransactionPinScreen extends HookConsumerWidget {
           onButtonPressed: () {
             context.router.push(
               StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment', status: 'Completed'),
+                  type: 'Bill Payment',
+                  status: 'Completed',
+                  transaction: TransactionData()),
             );
           },
           onSecondaryAction: () {
@@ -102,7 +105,9 @@ class TransactionPinScreen extends HookConsumerWidget {
           onButtonPressed: () {
             context.router.replaceAll([
               StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment', status: 'Completed'),
+                  type: 'Bill Payment',
+                  status: 'Completed',
+                  transaction: TransactionData()),
             ]);
             Navigator.pop(context);
           },
@@ -131,7 +136,9 @@ class TransactionPinScreen extends HookConsumerWidget {
           onButtonPressed: () {
             context.router.replaceAll([
               StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment', status: 'Completed'),
+                  type: 'Bill Payment',
+                  status: 'Completed',
+                  transaction: TransactionData()),
             ]);
             Navigator.pop(context);
           },
@@ -160,7 +167,9 @@ class TransactionPinScreen extends HookConsumerWidget {
           onButtonPressed: () {
             context.router.replaceAll([
               StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment', status: 'Completed'),
+                  type: 'Bill Payment',
+                  status: 'Completed',
+                  transaction: TransactionData()),
             ]);
           },
           onSecondaryAction: () {
@@ -179,7 +188,9 @@ class TransactionPinScreen extends HookConsumerWidget {
           onButtonPressed: () {
             context.router.replaceAll([
               StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment', status: 'Completed'),
+                  type: 'Bill Payment',
+                  status: 'Completed',
+                  transaction: TransactionData()),
             ]);
             Navigator.pop(context);
           },

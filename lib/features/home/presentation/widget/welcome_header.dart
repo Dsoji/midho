@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/res/assets.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
-class WelcomeHeader extends StatelessWidget {
+class WelcomeHeader extends HookConsumerWidget {
   const WelcomeHeader({super.key});
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -55,7 +59,7 @@ class WelcomeHeader extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Olamide John',
+                    '${userInfo?.firstname} ${userInfo?.lastname}',
                     style: TextStyle(
                       color: theme.brightness == Brightness.dark
                           ? Colors.white

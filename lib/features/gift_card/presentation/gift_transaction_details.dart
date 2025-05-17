@@ -12,7 +12,6 @@ import 'package:screenshot/screenshot.dart';
 import '../../../common/mixin/share_mixin.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
-import '../../transaction/presentation/transaction_details.dart';
 
 @RoutePage()
 class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
@@ -85,30 +84,30 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
                     onPressed: isProcessing.value == true
                         ? () {}
                         : () async {
-                            if (status != 'Failed') {
-                              isProcessing.value = true;
-                              await screenshotController
-                                  .captureFromWidget(
-                                    MediaQuery(
-                                      data: MediaQueryData.fromView(
-                                          WidgetsBinding.instance.window),
-                                      child: InheritedTheme.captureAll(
-                                        context,
-                                        TransactionDetailsScreen(
-                                          type: type,
-                                          status: status,
-                                          showAppBar: false,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .then(processAndSaveImage)
-                                  .catchError((onError) {
-                                // Handle error
-                                debugPrint('Screenshot error: $onError');
-                              });
-                              isProcessing.value = false;
-                            }
+                            // if (status != 'Failed') {
+                            //   isProcessing.value = true;
+                            //   await screenshotController
+                            //       .captureFromWidget(
+                            //         MediaQuery(
+                            //           data: MediaQueryData.fromView(
+                            //               WidgetsBinding.instance.window),
+                            //           child: InheritedTheme.captureAll(
+                            //             context,
+                            //             TransactionDetailsScreen(
+                            //               type: type,
+                            //               status: status,
+                            //               showAppBar: false,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       )
+                            //       .then(processAndSaveImage)
+                            //       .catchError((onError) {
+                            //     // Handle error
+                            //     debugPrint('Screenshot error: $onError');
+                            //   });
+                            //   isProcessing.value = false;
+                            // }
                           },
                     textColor: AppColors.whiteColor,
                     color: theme.brightness == Brightness.dark
@@ -402,32 +401,32 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
     final theme = Theme.of(context);
     return OutlinedButton(
       onPressed: () async {
-        await screenshotController
-            .captureFromWidget(
-          MediaQuery(
-            data: MediaQueryData.fromView(WidgetsBinding.instance.window),
-            child: InheritedTheme.captureAll(
-              context,
-              TransactionDetailsScreen(
-                type: type,
-                status: status,
-                showAppBar: false,
-              ),
-            ),
-          ),
-        )
-            .then((image) {
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              backgroundColor: Colors.white,
-              content: Image.memory(image),
-            ),
-          );
-        }).catchError((onError) {
-          // Handle error
-          debugPrint('Screenshot error: $onError');
-        });
+        // await screenshotController
+        //     .captureFromWidget(
+        //   MediaQuery(
+        //     data: MediaQueryData.fromView(WidgetsBinding.instance.window),
+        //     child: InheritedTheme.captureAll(
+        //       context,
+        //       TransactionDetailsScreen(
+        //         type: type,
+        //         status: status,
+        //         showAppBar: false,
+        //       ),
+        //     ),
+        //   ),
+        // )
+        //     .then((image) {
+        //   showDialog(
+        //     context: context,
+        //     builder: (_) => AlertDialog(
+        //       backgroundColor: Colors.white,
+        //       content: Image.memory(image),
+        //     ),
+        //   );
+        // }).catchError((onError) {
+        //   // Handle error
+        //   debugPrint('Screenshot error: $onError');
+        // });
       },
       style: OutlinedButton.styleFrom(
         backgroundColor: theme.brightness == Brightness.dark

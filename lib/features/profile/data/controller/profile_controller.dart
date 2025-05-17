@@ -231,4 +231,25 @@ class ProfileController extends StateNotifier<ProfileState> {
       },
     );
   }
+
+  Future<bool> getBanks() async {
+    state = state.copyWith(banks: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.fetchBanks();
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          banks: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          banks: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
 }

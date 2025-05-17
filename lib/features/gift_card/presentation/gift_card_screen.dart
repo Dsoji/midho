@@ -3,28 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
+import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../bottomNav/app_router.gr.dart';
+import '../data/model/response/gift_card_model/datum.dart';
 
 @RoutePage()
 class GiftCardScreen extends HookConsumerWidget {
   const GiftCardScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
+
     return PopScope(
-      canPop: false, // Prevent default back navigation
+      canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          final tabsRouter = AutoTabsRouter.of(
-            context,
-          );
-
+          final tabsRouter = AutoTabsRouter.of(context);
           tabsRouter.setActiveIndex(0);
         }
       },
@@ -36,10 +38,14 @@ class GiftCardScreen extends HookConsumerWidget {
           showAction: false,
           centerTitle: true,
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(giftCardControllerProvider.notifier).getGiftCards();
+          },
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            physics:
+                const AlwaysScrollableScrollPhysics(), // ensures refresh is possible even if content < screen
             children: [
               const Text(
                 "Choose the type of gift card you'd like to sell from our supported list",
@@ -58,7 +64,7 @@ class GiftCardScreen extends HookConsumerWidget {
                 suffixIcon: const Icon(Icons.search),
               ),
               const Gap(16),
-              const GiftCardGrid(),
+              GiftCardGrid(searchController: searchController),
             ],
           ),
         ),
@@ -67,81 +73,150 @@ class GiftCardScreen extends HookConsumerWidget {
   }
 }
 
-class GiftCard {
-  final String image;
-  final String name;
-  final String desc;
-
-  GiftCard({required this.image, required this.name, required this.desc});
-}
-
-class GiftCardGrid extends HookWidget {
-  const GiftCardGrid({super.key});
+class GiftCardGrid extends HookConsumerWidget {
+  final TextEditingController searchController;
+  const GiftCardGrid({super.key, required this.searchController});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(giftCardControllerProvider).giftCards;
+    final query = useListenable(searchController).text.toLowerCase();
     final theme = Theme.of(context);
 
-    // Define the list inside the widget using useState
-    final giftCards = useState<List<GiftCard>>([
-      GiftCard(
-          image: PlaceholderAssets.steam, name: 'STEAM', desc: 'Gift Card'),
-      GiftCard(
-          image: PlaceholderAssets.amazon, name: 'Amazon', desc: 'Gift Card'),
-      GiftCard(
-          image: theme.brightness == Brightness.dark
-              ? PlaceholderAssets.appleWhite
-              : PlaceholderAssets.apple,
-          name: 'iTunes',
-          desc: 'Gift Card'),
-      GiftCard(
-          image: PlaceholderAssets.google,
-          name: 'Google Play',
-          desc: 'Gift Card'),
-      GiftCard(
-          image: PlaceholderAssets.walmart, name: 'Walmart', desc: 'Gift Card'),
-      GiftCard(image: PlaceholderAssets.visa, name: 'Visa', desc: 'Gift Card'),
-    ]);
-
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? AppColors.darkBorder
-            : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: GridView.builder(
-        shrinkWrap: true,
-        padding: EdgeInsets.zero, // prevent inner GridView padding
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 4,
-          childAspectRatio: 1.6,
-        ),
-        itemCount: giftCards.value.length,
-        itemBuilder: (context, index) {
-          final card = giftCards.value[index];
-          return GestureDetector(
-            onTap: () {
-              context.router.push(
-                EnterCardDetailsRoute(
-                  giftCard: giftCards.value[index],
-                ),
-              );
-            },
-            child: GiftCardItem(giftCard: card),
+    return state.when(
+      loading: () => state.maybeWhen(
+        data: (giftCards) {
+          final filteredCards = useMemoized(() {
+            if (query.isEmpty) return giftCards.data ?? [];
+            return (giftCards.data ?? [])
+                .where(
+                    (card) => card.name?.toLowerCase().contains(query) == true)
+                .toList();
+          }, [giftCards, query]);
+          //
+          return Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.darkBorder
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: GridView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero, // prevent inner GridView padding
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 4,
+                mainAxisSpacing: 4,
+                childAspectRatio: 1.6,
+              ),
+              itemCount: filteredCards.length,
+              itemBuilder: (context, index) {
+                final card = filteredCards[index];
+                return GestureDetector(
+                  onTap: () {
+                    context.router.push(EnterCardDetailsRoute(giftCard: card));
+                  },
+                  child: GiftCardItem(giftCard: card),
+                );
+              },
+            ),
           );
         },
+        orElse: () => GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1,
+          ),
+          itemCount: 6,
+          itemBuilder: (_, __) => const GiftCardShimmerItem(),
+        ),
       ),
+      error: (error, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.warning_amber_outlined,
+                size: 48, color: Colors.red),
+            const Gap(12),
+            Text(
+              'Failed to load gift cards.',
+              style: TextStyle(color: Colors.red[600], fontSize: 16),
+            ),
+            const Gap(6),
+            Text(error.toString(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+      ),
+      data: (giftCards) {
+        final filteredCards = useMemoized(() {
+          if (query.isEmpty) return giftCards.data ?? [];
+          return (giftCards.data ?? [])
+              .where((card) => card.name?.toLowerCase().contains(query) == true)
+              .toList();
+        }, [giftCards, query]);
+
+        if (filteredCards.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Gap(52),
+                const Icon(Icons.info_outline, color: Colors.grey, size: 48),
+                const SizedBox(height: 8),
+                Text(
+                  "No gift cards available.",
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: theme.brightness == Brightness.dark
+                ? AppColors.darkBorder
+                : const Color(0xFFCBD7F8),
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 4,
+              mainAxisSpacing: 4,
+              childAspectRatio: 1,
+            ),
+            itemCount: filteredCards.length,
+            itemBuilder: (context, index) {
+              final card = filteredCards[index];
+              return GestureDetector(
+                onTap: () {
+                  context.router.push(EnterCardDetailsRoute(giftCard: card));
+                },
+                child: GiftCardItem(giftCard: card),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
 
 class GiftCardItem extends StatelessWidget {
-  final GiftCard giftCard;
+  final GiftCardData giftCard;
 
   const GiftCardItem({super.key, required this.giftCard});
 
@@ -151,7 +226,7 @@ class GiftCardItem extends StatelessWidget {
 
     return SizedBox(
       width: 175, // Fixed width
-      height: 112, // Fixed height
+      height: 100, // Fixed height
       child: Container(
         decoration: ShapeDecoration(
           color: theme.brightness == Brightness.dark
@@ -170,34 +245,58 @@ class GiftCardItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.asset(
-                    giftCard.image,
+                  Image.network(
+                    giftCard.icon ?? '',
                     height: 28,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    giftCard.name,
+                    giftCard.name ?? '',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    giftCard.desc,
+                    'Gift cards',
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
               const Spacer(),
-              Image.asset(
-                PlaceholderAssets.union,
-                height: 42,
-                fit: BoxFit.contain,
-              ),
+              theme.brightness == Brightness.dark
+                  ? Image.asset(
+                      PlaceholderAssets.union,
+                      height: 42,
+                      fit: BoxFit.contain,
+                    )
+                  : Image.asset(
+                      PlaceholderAssets.unionLight,
+                      height: 42,
+                      fit: BoxFit.contain,
+                    ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class GiftCardShimmerItem extends StatelessWidget {
+  const GiftCardShimmerItem({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.primaryColor.shade50,
+      highlightColor: AppColors.primaryColor.shade100,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );

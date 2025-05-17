@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
-import '../../../transaction/presentation/transaction_details.dart';
 import 'info_widget.dart';
 
 void showWithdrawalSuccessDialog({
@@ -112,13 +111,13 @@ void showWithdrawalSuccessDialog({
                 width: double.infinity,
                 height: 48,
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const TransactionDetailsScreen(
-                                type: 'Crypto Sale',
-                                status: 'Completed',
-                              )));
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const TransactionDetailsScreen(
+                  //               type: 'Crypto Sale',
+                  //               status: 'Completed',
+                  //             )));
                 },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,

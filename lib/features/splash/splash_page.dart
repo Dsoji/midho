@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
-import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
+
+import '../bottomNav/app_router.gr.dart';
 
 final _logger = Logger();
 
@@ -33,25 +33,18 @@ class _SplashScreenState extends State<SplashScreen> {
     _logger.d("Device ID: $deviceId");
     _logger.d("FCM Token: $fcmtoken");
 
-    await Future.delayed(const Duration(seconds: 3));
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const OnboardingScreen(),
-      ),
-    );
-    // if (token == null) {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => const OnboardingScreen(),
-    //     ),
-    //   );
-    // } else {
-    //   context.router.push(
-    //     const NaviBarRoute(),
-    //   );
-    // }
+    if (token == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const OnboardingScreen(),
+        ),
+      );
+    } else {
+      context.router.push(
+        const NaviBarRoute(),
+      );
+    }
   }
 
   @override
@@ -61,33 +54,8 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor:
           theme.brightness == Brightness.dark ? Colors.black : Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(
-              child: Image.asset(
-                ImageAssets.logo,
-                width: 62,
-                height: 62,
-              ),
-            ),
-            const Gap(25),
-            Text(
-              'Swift Swap',
-              style: TextStyle(
-                fontSize: 35,
-                fontWeight: FontWeight.w600,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      body: const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

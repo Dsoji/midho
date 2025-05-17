@@ -5,40 +5,91 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
+import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
+import 'package:mdiho/features/home/presentation/widget/welcome_header.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
+import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 
-import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
+import '../../../common/theme_notifier.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bottomNav/app_router.gr.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/summary_card.dart';
 import 'widget/wallet_balance_card.dart';
-import 'widget/welcome_header.dart';
+
+final logger = Logger();
 
 @RoutePage()
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
+  void initializeHomeData(WidgetRef ref) {
+    ref.read(authenticationControllerProvider.notifier).fetchProfile();
+    ref.read(authenticationControllerProvider.notifier).fetchNotification();
+    ref.read(giftCardControllerProvider.notifier).getGiftCards();
+    ref.read(transactionControllerProvider.notifier).fetchTransactions();
+    ref.read(profileControllerProvider.notifier).getFaq();
+    ref.read(transactionControllerProvider.notifier).getTransactions();
+    ref.read(transactionControllerProvider.notifier).getCurrencies();
+    ref.read(transactionControllerProvider.notifier).getRates();
+    ref.read(transactionControllerProvider.notifier).getReferrals();
+    ref.read(transactionControllerProvider.notifier).getRewards();
+    ref.read(profileControllerProvider.notifier).getBanks();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tabsRouter = AutoTabsRouter.of(context);
+
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // ref.read(authenticationControllerProvider.notifier).fetchProfile();
-        // ref.read(profileControllerProvider.notifier).getFaq();
+        initializeHomeData(ref);
       });
       return null;
     }, []);
 
-    final theme = Theme.of(context);
+    useEffect(() {
+      void listener() {
+        if (tabsRouter.activeIndex == 0) {
+          ref.read(authenticationControllerProvider.notifier).fetchProfile();
+        }
+      }
+
+      tabsRouter.addListener(listener);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        listener();
+      });
+
+      return () {
+        tabsRouter.removeListener(listener);
+      };
+    }, [tabsRouter]);
+
     int backPressCounter = 0;
     DateTime? lastBackPressTime;
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
-    if (userInfo?.theme == 'LIGHT') {
-      ref.read(themeNotifierProvider).toggleTheme(ThemeMode.light);
-    } else if (userInfo?.theme == 'DARK') {
-      ref.read(themeNotifierProvider).toggleTheme(ThemeMode.dark);
-    }
+
+// Automatically sync theme once userInfo is available
+    useEffect(() {
+      if (userInfo?.theme != null) {
+        Future.microtask(() {
+          final userTheme = userInfo!.theme!.toLowerCase().trim();
+          final themeNotifier = ref.read(themeProvider.notifier);
+
+          if (userTheme == 'light') {
+            themeNotifier.setLightTheme();
+          } else if (userTheme == 'dark') {
+            themeNotifier.setDarkTheme();
+          }
+        });
+      }
+      return null;
+    }, [userInfo?.theme]);
+
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) async {
@@ -75,6 +126,10 @@ class HomeScreen extends HookConsumerWidget {
                 ref
                     .read(authenticationControllerProvider.notifier)
                     .fetchProfile();
+                ref
+                    .read(transactionControllerProvider.notifier)
+                    .fetchTransactions();
+
                 return Future.delayed(const Duration(seconds: 1));
               },
               child: const Column(

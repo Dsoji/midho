@@ -3,6 +3,7 @@ import 'package:mdiho/features/authentication/data/model/payload/profile_payload
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
+import '../../../bank_network/data/model/response/bank_list/bank_list.dart';
 import '../Model/response/user_profile_model/user_profile_model.dart';
 
 class ProfileState {
@@ -15,6 +16,7 @@ class ProfileState {
   final AsyncValue<FaqResponse> faq;
   final AsyncValue<SuggestionPayload> suggestion;
   final AsyncValue<String> feedBack;
+  final AsyncValue<List<BanlList>> banks;
 
   const ProfileState({
     required this.profilePayload,
@@ -26,6 +28,7 @@ class ProfileState {
     required this.faq,
     required this.suggestion,
     required this.feedBack,
+    required this.banks,
   });
 
   factory ProfileState.initial() {
@@ -39,6 +42,7 @@ class ProfileState {
       faq: AsyncValue.data(FaqResponse()),
       suggestion: AsyncValue.data(SuggestionPayload()),
       feedBack: const AsyncValue.data(''),
+      banks: const AsyncValue.data([]),
     );
   }
 
@@ -54,6 +58,7 @@ class ProfileState {
     AsyncValue<FaqResponse>? faq,
     AsyncValue<SuggestionPayload>? suggestion,
     AsyncValue<String>? feedBack,
+    AsyncValue<List<BanlList>>? banks,
   }) {
     return ProfileState(
       profilePayload: profilePayload ?? this.profilePayload,
@@ -65,6 +70,7 @@ class ProfileState {
       faq: faq ?? this.faq,
       suggestion: suggestion ?? this.suggestion,
       feedBack: feedBack ?? this.feedBack,
+      banks: banks ?? this.banks,
     );
   }
 }

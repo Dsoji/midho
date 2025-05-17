@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/features/bank_network/data/model/response/bank_list/bank_list.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
 import '../../../../common/api/api.dart';
@@ -48,11 +49,10 @@ class ProfileeService {
         data: payload,
       ),
       parser: (data) {
-        print(data);
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -67,7 +67,7 @@ class ProfileeService {
       ),
       parser: (data) => UserProfileModel.fromMap(data),
       showErrorToast: true,
-      // showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -85,7 +85,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -108,7 +108,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -130,7 +130,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -154,7 +154,7 @@ class ProfileeService {
       ),
       parser: (data) => BaseModel.toRawString(data),
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -174,7 +174,7 @@ class ProfileeService {
         return FaqResponse.fromMap(data);
       },
       showErrorToast: true,
-      // showSuccessToast: true,
+      showSuccessToast: false,
     );
   }
 
@@ -193,7 +193,24 @@ class ProfileeService {
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
-      showSuccessToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<List<BanlList>>> getBankList() async {
+    return await apiRequestHelper.handleApiRequest<List<BanlList>>(
+      () => apiClient.get(
+        'banks',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        // ✅ If `data` is already List<dynamic>
+        return (data as List<dynamic>).map((e) => BanlList.fromMap(e)).toList();
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
     );
   }
 }

@@ -26,7 +26,7 @@ class LoginScreen extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
 
-    final passwordStrength = useState("Weak");
+    useState("Weak");
 
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();
@@ -154,17 +154,17 @@ class LoginScreen extends HookConsumerWidget {
                         width: double.infinity,
                         height: 48,
                         onPressed: () async {
-                          context.router.replace(const NaviBarRoute());
-                          // if (!formKey.currentState!.validate()) {
-                          //   return;
-                          // }
-                          // final result = await authentication.signIn(
-                          //   emailController.text.trim(),
-                          //   passwordController.text.trim(),
-                          // );
-                          // if (result == true) {
-                          //   context.router.replace(const NaviBarRoute());
-                          // }
+                          // context.router.replace(const NaviBarRoute());
+                          if (!formKey.currentState!.validate()) {
+                            return;
+                          }
+                          final result = await authentication.signIn(
+                            emailController.text.trim(),
+                            passwordController.text.trim(),
+                          );
+                          if (result == true) {
+                            context.router.replace(const NaviBarRoute());
+                          }
                         },
                         textColor: Colors.white,
                         color: AppColors.primaryColor.shade500,

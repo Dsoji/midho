@@ -8,6 +8,7 @@ import 'package:mdiho/common/res/app_colors.dart';
 
 import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../bottomNav/app_router.gr.dart';
+import '../../../transaction/data/controller/transaction_controller.dart';
 
 // StateNotifier for Balance Visibility
 class BalanceVisibilityNotifier extends StateNotifier<bool> {
@@ -73,45 +74,64 @@ class WalletBalanceCard extends HookConsumerWidget {
 
                 // Balance and Eye Icon Row
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      isBalanceVisible
-                          ? '${userInfo?.wallet?.mainBalance ?? 0}'
-                              .formatAsNaira()
-                          : "••••••••",
-                      style: TextStyle(
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : AppColors.primaryColor,
-                        fontSize: 29,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: '',
-                      ),
+                    RichText(
+                      text: isBalanceVisible
+                          ? TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '${userInfo?.wallet?.currency ?? ''} ',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: '',
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '${userInfo?.wallet?.mainBalance ?? 0}'
+                                      .commaFormat(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 29,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: '',
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const TextSpan(
+                              text: "••••••••",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 29,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: '',
+                              ),
+                            ),
                     ),
                     const Gap(8),
-                    Container(
-                      width: 21,
-                      height: 21,
-                      decoration: ShapeDecoration(
-                        color: theme.brightness == Brightness.dark
-                            ? AppColors.secondaryColor.shade400
-                            : AppColors.greyColor.shade300,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                      ),
-                      child: GestureDetector(
-                        onTap: () => ref
-                            .read(balanceVisibilityProvider.notifier)
-                            .toggleVisibility(),
+                    GestureDetector(
+                      onTap: () => ref
+                          .read(balanceVisibilityProvider.notifier)
+                          .toggleVisibility(),
+                      child: Container(
+                        width: 21,
+                        height: 21,
+                        decoration: ShapeDecoration(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : AppColors.greyColor.shade500,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                        ),
                         child: Icon(
                           isBalanceVisible
                               ? IconsaxPlusLinear.eye
                               : IconsaxPlusLinear.eye_slash,
                           size: 12,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
+                          color: Colors.white54,
                         ),
                       ),
                     ),
@@ -155,13 +175,16 @@ class WalletBalanceCard extends HookConsumerWidget {
   }
 }
 
-class ReferralsCard extends StatelessWidget {
+class ReferralsCard extends HookConsumerWidget {
   const ReferralsCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
+    final refCount =
+        ref.watch(transactionControllerProvider).referals.valueOrNull?.data;
+    final balanceState =
+        ref.watch(authenticationControllerProvider).userDetails;
     return InkWell(
       onTap: () {
         context.router.push(const ReferallRoute());
@@ -196,10 +219,10 @@ class ReferralsCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: theme.brightness == Brightness.dark
                         ? const Color(0xFF1B1B1B)
-                        : AppColors.blueColor.shade50, // light icon background
+                        : AppColors.blueColor.shade50,
                   ),
                   child: Icon(
-                    Icons.north_east, // ↗️ arrow
+                    Icons.north_east,
                     size: 14,
                     color: theme.brightness == Brightness.dark
                         ? Colors.white
@@ -208,15 +231,39 @@ class ReferralsCard extends StatelessWidget {
                 ),
               ],
             ),
-            Text(
-              '₦50,000.00',
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : AppColors.primaryColor.shade700,
-                fontWeight: FontWeight.bold,
-                fontFamily: '',
+            balanceState.when(
+              data: (userData) => Text(
+                '${userData.wallet?.currency ?? '₦'}${userData.wallet?.referralBalance ?? '0.00'}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : AppColors.primaryColor.shade700,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: '',
+                ),
+              ),
+              loading: () => Text(
+                '0.00',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : AppColors.primaryColor.shade700,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: '',
+                ),
+              ),
+              error: (_, __) => Text(
+                '₦0.00',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : AppColors.primaryColor.shade700,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: '',
+                ),
               ),
             ),
           ],

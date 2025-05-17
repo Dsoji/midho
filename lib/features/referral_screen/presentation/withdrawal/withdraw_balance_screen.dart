@@ -73,8 +73,6 @@ class WithdrawReferallScreen extends HookConsumerWidget {
                   BankInfoCard(
                     image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
                     name: selectedBank?["name"] ?? 'GT Bank',
-                    color: selectedBank?["color"] ??
-                        AppColors.primaryColor.shade500,
                     status: selectedBank?["status"] ?? 'Poor Network',
                     percentage: selectedBank?["percentage"] ?? '90',
                     actNumber: selectedBank?["actNumber"] ?? '1210125678',

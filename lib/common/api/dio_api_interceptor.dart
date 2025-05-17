@@ -6,6 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/common/utils/locator.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 import '../toast/taost_service.dart';
 import '../toast/type.dart';
@@ -81,6 +83,7 @@ class DioApiInterceptor extends Interceptor {
     if (statusCode == 401) {
       /// get the previous user from the local storage
       // UserModel previousUser = await authLocalService.getUser();
+      appRouter.replaceAll([const OnboardingRoute()]);
 
       final dio = Dio()
         ..interceptors.add(LogInterceptor(
@@ -133,14 +136,13 @@ class DioApiInterceptor extends Interceptor {
         // }
       } on DioException catch (dioError) {
         if (dioError.response != null) {
+          appRouter.replaceAll([const OnboardingRoute()]);
+
           ToastService().showToast(
             NotificationType.error,
             message:
                 'Oops! There was a problem. A quick log in should get things back on track.',
           );
-          // appRouter.replaceAll([
-          //   const AuthRoute(children: [SignInRoute()]),
-          // ]);
         }
       } catch (e) {
         // Handle any other errors

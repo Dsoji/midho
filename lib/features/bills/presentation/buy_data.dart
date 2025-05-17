@@ -20,7 +20,6 @@ class BuyDataScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final amountController = useTextEditingController();
     final numberController =
         useTextEditingController(); // Controller for input field
     final List<Map<String, String>> providers = [
@@ -38,7 +37,7 @@ class BuyDataScreen extends HookConsumerWidget {
         isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
+            ? AppColors.secondaryColor.shade700
             : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),

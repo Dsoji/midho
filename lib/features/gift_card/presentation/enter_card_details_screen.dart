@@ -1,19 +1,26 @@
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
-import 'gift_card_screen.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
+import '../../transaction/data/model/response/rates_model/datum.dart';
+import '../data/model/response/gift_card_model/datum.dart';
 
 @RoutePage()
 class EnterCardDetailsScreen extends HookConsumerWidget {
@@ -21,18 +28,27 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     super.key,
     required this.giftCard,
   });
-  final GiftCard giftCard;
+  final GiftCardData giftCard;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
+    final rates =
+        ref.watch(transactionControllerProvider).rates.valueOrNull?.data;
+    final selectedRate = useState<RateData?>(null); // To hold selected value
     final selectedPlan = useState<String>("USD");
+    final exchangeCurrency = useState<String>("NGN");
+    final itemRates = useState<List<RateData>>([]);
+    final conversionRate = useState<num?>(null);
+    final rateId = useState<String?>(null);
+
     final selectedCategory = useState<String>("Select Sub-Category");
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
         isScrollControlled: true,
         context: context,
-        backgroundColor: const Color(0xFFF7F7F7),
+        backgroundColor: theme.brightness == Brightness.dark
+            ? AppColors.secondaryColor.shade600
+            : Colors.white,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
@@ -44,10 +60,74 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       );
     }
 
+    final tabController = useTabController(initialLength: 2);
+    final currentTab = useState(0);
+
+// Listen to tab changes and update currentTab
+    useEffect(() {
+      void listener() {
+        currentTab.value = tabController.index;
+      }
+
+      tabController.addListener(listener);
+      return () => tabController.removeListener(listener);
+    }, []);
+
+// Update conversion rate when selectedPlan, rates, or current tab changes
+    useEffect(() {
+      if (rates != null && rates.isNotEmpty) {
+        final matchedRates = rates
+            .where(
+              (rate) =>
+                  rate.name
+                          ?.toLowerCase()
+                          .contains(giftCard.name!.toLowerCase()) ==
+                      true &&
+                  rate.baseCurrency?.toUpperCase() ==
+                      selectedPlan.value.toUpperCase(),
+            )
+            .toList();
+
+        itemRates.value = matchedRates; // <-- Add this line
+
+        final matchedRate =
+            matchedRates.isNotEmpty ? matchedRates.first : RateData();
+
+        conversionRate.value = currentTab.value == 0
+            ? matchedRate.ecodeRate ?? 0.0
+            : matchedRate.rate ?? 0.0;
+
+        rateId.value = matchedRate.id;
+        exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
+      }
+
+      return null;
+    }, [selectedPlan.value, currentTab.value, rates]);
+    //
+    useEffect(() {
+      if (rates != null && rates.isNotEmpty) {
+        final matchedRate = rates.firstWhere(
+          (rate) =>
+              rate.name?.toLowerCase().contains(giftCard.name!.toLowerCase()) ==
+                  true &&
+              rate.baseCurrency?.toUpperCase() ==
+                  selectedPlan.value.toUpperCase(),
+          orElse: () => RateData(),
+        );
+
+        conversionRate.value = currentTab.value == 0
+            ? matchedRate.ecodeRate ?? 0.0
+            : matchedRate.rate ?? 0.0;
+
+        rateId.value = matchedRate.id;
+        exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
+      }
+
+      return null;
+    }, [selectedPlan.value, currentTab.value, rates]);
+
     final usdController = useTextEditingController();
     final ngnController = useTextEditingController();
-
-    const conversionRate = 1400.0;
 
     void convertUSDToNGN(String value) {
       if (value.isEmpty) {
@@ -55,7 +135,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         return;
       }
       final usd = double.tryParse(value) ?? 0;
-      ngnController.text = (usd * conversionRate).toStringAsFixed(2);
+      ngnController.text =
+          (usd * (conversionRate.value ?? 0)).toStringAsFixed(2);
     }
 
     void convertNGNToUSD(String value) {
@@ -64,16 +145,24 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         return;
       }
       final ngn = double.tryParse(value) ?? 0;
-      usdController.text = (ngn / conversionRate).toStringAsFixed(2);
+      usdController.text =
+          (ngn / (conversionRate.value ?? 1)).toStringAsFixed(2);
     }
 
-    final tabController = useTabController(initialLength: 2);
+    useEffect(() {
+      final usdText = usdController.text.trim();
+      final ngnText = ngnController.text.trim();
+
+      if (usdText.isNotEmpty) {
+        convertUSDToNGN(usdText);
+      } else if (ngnText.isNotEmpty) {
+        convertNGNToUSD(ngnText);
+      }
+      return null;
+    }, [conversionRate.value]);
 
     useEffect(() {
-      void listener() {
-        print(
-            "Selected Tab: ${tabController.index == 0 ? 'Prepaid' : 'Postpaid'}");
-      }
+      void listener() {}
 
       tabController.addListener(listener);
       return () => tabController.removeListener(listener);
@@ -126,7 +215,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              giftCard.name.toUpperCase(),
+                              giftCard.name ?? '',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -137,7 +226,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              giftCard.desc,
+                              'Gift Card',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey.shade600,
@@ -147,11 +236,27 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         ),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            giftCard.image,
-                            height: 32,
-                            width: 32,
+                          child: CachedNetworkImage(
+                            imageUrl: giftCard.icon ?? '',
+                            height: 28,
                             fit: BoxFit.contain,
+                            placeholder: (context, url) => Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Container(
+                                height: 28,
+                                width: 28,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/default_icon.png',
+                              height: 28,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ],
@@ -189,18 +294,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 14, // Adjust size to match design
-                            backgroundImage: AssetImage(
-                              selectedPlan.value == "USD"
-                                  ? PlaceholderAssets.us
-                                  : PlaceholderAssets.ng,
-                            ), // Replace with correct asset
-                            backgroundColor: Colors
-                                .transparent, // Ensure no background color
-                          ),
-                          const SizedBox(
-                              width: 12), // Space between icon and text
+                          // Space between icon and text
                           Expanded(
                             child: Text(
                               selectedPlan.value,
@@ -288,46 +382,173 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         )),
                   ),
                   const Gap(8),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: theme.brightness == Brightness.dark
-                            ? AppColors.secondaryColor.shade600
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.transparent
-                              : AppColors.whiteColor.shade600,
-                          width: 0.3,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          // Space between icon and text
-                          Expanded(
-                            child: Text(
-                              selectedCategory.value,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black, // Ensures dark text
+                  itemRates.value.isEmpty
+                      ? GestureDetector(
+                          onTap: () {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message:
+                                  "No sub-category avalaible for the currency selected",
+                            );
+                          },
+                          child: AbsorbPointer(
+                            // Prevent interaction with the underlying dropdown
+                            child: DropdownButtonFormField2<RateData>(
+                              value: null,
+                              isExpanded: true,
+                              hint: Text(
+                                selectedCategory.value,
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.grey),
+                              ),
+                              onChanged: (_) {}, // required but won't be called
+                              items: const [], // empty
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    width: 0.3,
+                                    color: AppColors.greyColor.shade50,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    width: 0.3,
+                                    color: AppColors.greyColor.shade50,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    width: 0.3,
+                                    color: AppColors.greyColor.shade50,
+                                  ),
+                                ),
+                                disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    width: 0.3,
+                                    color: AppColors.greyColor.shade50,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.transparent,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 14),
+                              ),
+                              iconStyleData: IconStyleData(
+                                icon: Icon(
+                                  IconsaxPlusLinear.arrow_down,
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                  size: 16,
+                                ),
+                              ),
+                              dropdownStyleData: DropdownStyleData(
+                                maxHeight: 250,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: theme.brightness == Brightness.dark
+                                      ? AppColors.secondaryColor.shade400
+                                      : Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                elevation: 3,
                               ),
                             ),
                           ),
-                          const Icon(
-                            IconsaxPlusLinear.arrow_down,
-                            size: 16, // Slightly larger for better visibility
+                        )
+                      : DropdownButtonFormField2<RateData>(
+                          value: selectedRate.value,
+                          isExpanded: true,
+                          hint: Text(
+                            selectedCategory.value,
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
+                          onChanged: (value) {
+                            selectedRate.value = value;
+                          },
+                          items: itemRates.value.map((rate) {
+                            return DropdownMenuItem<RateData>(
+                              value: rate,
+                              child: Text(rate.name ?? ''),
+                            );
+                          }).toList(),
+                          selectedItemBuilder: (context) {
+                            return itemRates.value.map((rate) {
+                              return Text(rate.name ?? '');
+                            }).toList();
+                          },
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                width: 0.3,
+                                color: AppColors.greyColor.shade50,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                width: 0.3,
+                                color: AppColors.greyColor.shade50,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                width: 0.3,
+                                color: AppColors.greyColor.shade50,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                width: 0.3,
+                                color: AppColors.greyColor.shade50,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Colors.transparent,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 14),
+                          ),
+                          iconStyleData: IconStyleData(
+                            icon: Icon(
+                              IconsaxPlusLinear.arrow_down,
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                              size: 16,
+                            ),
+                          ),
+                          dropdownStyleData: DropdownStyleData(
+                            maxHeight: 250,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: theme.brightness == Brightness.dark
+                                  ? AppColors.secondaryColor.shade400
+                                  : Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            elevation: 3,
+                          ),
+                        ),
                   const Gap(24),
                   SizedBox(
                     child: Stack(
@@ -335,28 +556,32 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         Column(
                           children: [
                             _buildCurrencyField(
-                                "Amount",
-                                usdController,
-                                "USD",
-                                PlaceholderAssets.us,
-                                convertUSDToNGN,
-                                selectedPlan.value == "USD" ? "\$ " : "₦",
-                                true,
-                                context,
-                                selectedPlan.value == "USD" ? "\$" : "₦"),
+                              "Amount",
+                              usdController,
+                              "USD",
+                              PlaceholderAssets.us,
+                              convertUSDToNGN,
+                              selectedPlan.value,
+                              true,
+                              context,
+                              selectedPlan.value == "USD" ? "\$" : "₦",
+                              selectedRate.value?.moq?.toString() ?? 'N/A',
+                              conversionRate.value?.toString() ?? 'N/A',
+                            ),
                             const Gap(4),
                             _buildCurrencyField(
-                                "You Will Receive",
-                                ngnController,
-                                selectedPlan.value == "USD" ? "NGN" : "USD",
-                                selectedPlan.value == "USD"
-                                    ? PlaceholderAssets.ng
-                                    : PlaceholderAssets.us,
-                                convertNGNToUSD,
-                                selectedPlan.value == "USD" ? "₦ " : "\$ ",
-                                false,
-                                context,
-                                selectedPlan.value == "USD" ? "\$" : "₦"),
+                              "You Will Receive",
+                              ngnController,
+                              "NGN",
+                              PlaceholderAssets.ng,
+                              convertNGNToUSD,
+                              exchangeCurrency.value,
+                              false,
+                              context,
+                              selectedPlan.value,
+                              selectedRate.value?.moq?.toString() ?? 'N/A',
+                              conversionRate.value?.toString() ?? 'N/A',
+                            ),
                           ],
                         ),
                         Positioned(
@@ -398,12 +623,41 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                   ),
                   const Gap(16),
                   FullButton(
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .imageUpload
+                        .isLoading,
                     text: "Next",
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
+                      if (selectedRate.value == null) {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Select a sub-category',
+                        );
+
+                        return;
+                      }
+                      if (usdController.text.isEmpty ||
+                          (num.tryParse(usdController.text) ?? 0) <
+                              (selectedRate.value!.moq ?? 0)) {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message:
+                              'Input your amount greater than or equal to ${selectedRate.value?.moq ?? 0}',
+                        );
+                        return;
+                      }
+
                       context.router.push(
-                        CardDetailsProofRoute(img: giftCard.image),
+                        CardDetailsProofRoute(
+                          giftCard: giftCard,
+                          amount: int.tryParse(usdController.text.trim()) ?? 0,
+                          rates: selectedRate.value?.id,
+                          isCode: tabController.index == 0 ? true : false,
+                          currency: selectedPlan.value,
+                        ),
                       );
                     },
                     textColor: Colors.white,
@@ -420,15 +674,18 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
   }
 
   Widget _buildCurrencyField(
-      String label,
-      TextEditingController controller,
-      String currency,
-      String flagPath,
-      Function(String) onChanged,
-      String currencySign,
-      final bool isTop,
-      BuildContext context,
-      String sign) {
+    String label,
+    TextEditingController controller,
+    String currency,
+    String flagPath,
+    Function(String) onChanged,
+    String currencySign,
+    final bool isTop,
+    BuildContext context,
+    String sign,
+    String rate,
+    String conversionRate,
+  ) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -464,7 +721,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         : Border.all(color: Colors.grey.shade300),
                   ),
                   child: Text(
-                    ' Minimum ~ \$50',
+                    ' Minimum ~ \$$rate ',
                     style: TextStyle(
                       fontSize: 10,
                       color: theme.brightness == Brightness.dark
@@ -473,16 +730,15 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                const Spacer(),
-                const Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    'Quantity',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
-                ),
               ] else ...[
                 const Spacer(),
+                Text(
+                  '₦$conversionRate/$sign',
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: ''),
+                ),
               ],
             ],
           ),
@@ -495,8 +751,9 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    prefixText: currencySign,
-                    hintText: currencySign,
+                    prefixText: isTop == true ? currencySign : '',
+                    hintText: '0',
+                    prefixStyle: const TextStyle(fontFamily: '', fontSize: 10),
                   ),
                   onChanged: onChanged,
                   style: const TextStyle(
@@ -510,25 +767,22 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   decoration: BoxDecoration(
                     color: theme.brightness == Brightness.dark
-                        ? AppColors.darkBorder
-                        : Colors.white,
-                    border: Border.all(
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
-                            : Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(16),
+                        ? AppColors.secondaryColor.shade500
+                        : Colors.white, // Background color
+                    borderRadius: BorderRadius.circular(16), // Rounded corners
+                    // Light grey border
                   ),
-                  child: Text(
-                    sign == '\$' ? 'Rate~ ₦750/USD' : "Rate~ \$0.0006/NGN",
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: '',
-                    ),
+                  child: Row(
+                    children: [
+                      Text(
+                        currencySign,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 )
               else
-                const CounterWidget(),
+                const SizedBox.shrink(),
             ],
           ),
         ],
@@ -543,17 +797,25 @@ class ProviderBottomSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Map<String, String>> providers = [
-      {
-        "name": "NGN",
-        "logo": PlaceholderAssets.ng,
-      },
-      {
-        "name": "USD",
-        "logo": PlaceholderAssets.us,
-      },
-    ];
     final searchController = useTextEditingController();
+    final currencies =
+        ref.watch(transactionControllerProvider).currency.valueOrNull?.data ??
+            [];
+
+    final filteredCurrencies = useState<List<dynamic>>(currencies);
+
+    // Listen to search changes and filter the list
+    useEffect(() {
+      void listener() {
+        final query = searchController.text.toLowerCase();
+        filteredCurrencies.value = currencies
+            .where((currency) => currency.toLowerCase().contains(query))
+            .toList();
+      }
+
+      searchController.addListener(listener);
+      return () => searchController.removeListener(listener);
+    }, [currencies]);
     final theme = Theme.of(context);
 
     return Padding(
@@ -580,43 +842,42 @@ class ProviderBottomSheet extends HookConsumerWidget {
             hintText: 'Search currency',
             isPassword: false,
             suffixIcon: const Icon(Icons.search),
-            fillColor: Colors.white,
             borderRadius: 12,
           ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.secondaryColor.shade700
+                  : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListView.separated(
-                  itemCount: providers.length,
-                  shrinkWrap: true,
-                  separatorBuilder: (context, index) =>
-                      Divider(color: Colors.grey.shade100),
-                  itemBuilder: (context, index) {
-                    final provider = providers[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage(provider["logo"]!),
-                        backgroundColor: Colors.transparent,
-                      ),
-                      title: Text(
-                        provider["name"]!,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      onTap: () {
-                        selectedProvider.value = provider["name"]!;
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
+            child: filteredCurrencies.value.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text("No match found."),
+                  )
+                : ListView.separated(
+                    itemCount: filteredCurrencies.value.length,
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) => Divider(
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade400
+                            : Colors.grey.shade100),
+                    itemBuilder: (context, index) {
+                      final provider = filteredCurrencies.value[index];
+                      return ListTile(
+                        title: Text(
+                          provider,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        onTap: () {
+                          selectedProvider.value = provider;
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
           ),
           const Gap(150),
         ],
@@ -653,7 +914,6 @@ class CounterWidget extends HookWidget {
               onTap: () {
                 if (count.value > 1) {
                   count.value = count.value - 1;
-                  print("Decrement: ${count.value}");
                 }
               },
               child: Icon(
@@ -686,7 +946,6 @@ class CounterWidget extends HookWidget {
             InkWell(
               onTap: () {
                 count.value++;
-                print("Increment: ${count.value}");
               },
               child: const Icon(
                 Icons.add,

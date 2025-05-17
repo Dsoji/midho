@@ -135,7 +135,6 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                       itemCount: amounts.length,
                       itemBuilder: (context, index) {
                         final amount = amounts[index];
-                        final isSelected = selectedAmount.value == amount;
 
                         return InkWell(
                           onTap: () => updateSelection(amount),

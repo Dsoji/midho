@@ -92,7 +92,7 @@ class RegistrationScreen extends HookConsumerWidget {
     final pageController = ref.watch(pageControllerProvider);
     final pageIndex = useState(0);
 
-    final isInitialized = useState(false);
+    useState(false);
     void goBack() {
       if (pageIndex.value == 2) {
         // If on page 2, always go back to page 0

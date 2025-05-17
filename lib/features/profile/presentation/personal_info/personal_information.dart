@@ -38,7 +38,7 @@ class PersonalInfoScreen extends HookConsumerWidget {
     final lastNameController =
         useTextEditingController(text: userInfo?.lastname);
     final phoneController = useTextEditingController(text: userInfo?.phone);
-    var box = Hive.box('data'); // Replace 'data' with your box name
+    Hive.box('data'); // Replace 'data' with your box name
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(

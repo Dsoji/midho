@@ -26,14 +26,14 @@ class BettingScreen extends HookConsumerWidget {
         useTextEditingController(); // Controller for amount input field
 
     final selectedPlan = useState<String>("Sporty Bet");
-    final subPlan = useState<String>("DSTV Compact - ₦8,000/Month");
+    useState<String>("DSTV Compact - ₦8,000/Month");
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
         isScrollControlled: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
-            ? AppColors.secondaryColor.shade600
+            ? AppColors.secondaryColor.shade700
             : const Color(0xFFF7F7F7),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -186,9 +186,70 @@ class BettingScreen extends HookConsumerWidget {
                     isPassword: false,
                     label: 'Amount',
                     keyboardType: TextInputType.number,
-                    fillColor: theme.brightness == Brightness.dark
-                        ? AppColors.secondaryColor
-                        : Colors.transparent,
+                  ),
+                  const Gap(16),
+                  SizedBox(
+                    height: 84,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4, // 4 items per row
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 2.5, // Adjust for button shape
+                      ),
+                      itemCount: amounts.length,
+                      itemBuilder: (context, index) {
+                        final amount = amounts[index];
+                        final isSelected = selectedAmount.value == amount;
+
+                        return InkWell(
+                          onTap: () => updateSelection(amount),
+                          borderRadius: BorderRadius.circular(
+                              8), // Ensures ripple effect stays within bounds
+                          splashColor: Colors.orange
+                              .withOpacity(0.3), // Customize splash color
+                          highlightColor: Colors.orange
+                              .withOpacity(0.1), // Customize highlight color
+                          child: Material(
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.transparent
+                                : const Color(0xFFFAFAFA), // Background color
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors
+                                          .white54 // Light border for dark mode
+                                      : Colors
+                                          .transparent, // Subtle border for light mode
+                                  width: 1, // Border width
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical:
+                                      4), // Adds spacing for better tap feedback
+                              alignment: Alignment.center,
+                              child: Text(
+                                amount,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.grey.shade800,
+                                  fontFamily: '',
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   const Gap(24),
                   InfoWidget(

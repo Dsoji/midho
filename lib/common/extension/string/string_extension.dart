@@ -285,4 +285,30 @@ extension StringExtension on String {
         return 'dat';
     }
   }
+
+  String commaFormat() {
+    try {
+      // Match optional prefix/suffix around the number
+      final match =
+          RegExp(r'^([^\d\-]*?)\s*([\d,]+)\s*([^\d]*)$').firstMatch(this);
+
+      if (match != null) {
+        final prefix = match.group(1)?.trim() ?? '';
+        final numberPart = match.group(2)?.replaceAll(',', '') ?? '0';
+        final suffix = match.group(3)?.trim() ?? '';
+
+        final value = int.parse(numberPart);
+        final formatted = NumberFormat('#,###').format(value);
+
+        final hasPrefix = prefix.isNotEmpty;
+        final hasSuffix = suffix.isNotEmpty;
+
+        return '${hasPrefix ? "$prefix " : ""}$formatted${hasSuffix ? " $suffix" : ""}';
+      }
+
+      return "0";
+    } catch (e) {
+      return "0";
+    }
+  }
 }

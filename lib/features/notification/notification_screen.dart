@@ -3,55 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/utils/date_utils.dart';
+import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/features/notification/data/model/response/notifcation_list/datum.dart';
 
 import '../../common/res/app_colors.dart';
 import '../../common/widgets/custom_app_bar.dart';
+import '../crypto/presentation/crypto_screen.dart';
 
 @RoutePage()
 class NotificationScreen extends HookConsumerWidget {
   const NotificationScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<NotificationItem> notifications = [
-      NotificationItem(
-        title: "Crypto Sale Pending",
-        message:
-            "Your Bitcoin (BTC) sale for ₦495,000.00 is currently under review. You will be notified once it’s approved.",
-        date: "Jan 15, 2025, 10:30",
-      ),
-      NotificationItem(
-        title: "Gift Card Trade Approved",
-        message:
-            "Your STEAM gift card trade for \$50 has been successfully approved. ₦37,000.00 has been credited to your wallet.",
-        date: "Jan 15, 2025, 10:30",
-      ),
-      NotificationItem(
-        title: "Utility Bill Payment Failed",
-        message:
-            "Your payment of ₦10,000.00 to Ikeja Electric failed due to insufficient wallet balance. Please fund your wallet and retry.",
-        date: "Jan 15, 2025, 10:30",
-      ),
-      NotificationItem(
-        title: "Withdrawal Processed",
-        message:
-            "Your withdrawal of ₦100,000.00 to Access Bank account 1234567890 has been successfully processed.",
-        date: "Jan 15, 2025, 10:30",
-      ),
-      NotificationItem(
-        title: "Referral Reward Earned",
-        message:
-            "You earned ₦2,000.00 for referring john_doe! Your reward has been added to your wallet balance.",
-        date: "Jan 15, 2025, 10:30",
-        isYesterday: true,
-      ),
-      NotificationItem(
-        title: "Gift Card Trade Failed",
-        message:
-            "Your STEAM gift card trade for \$50 failed due to an invalid card. See details and proof below.",
-        date: "Jan 15, 2025, 10:30",
-        isYesterday: true,
-      ),
-    ];
+    final asyncNotification = ref.watch(
+      authenticationControllerProvider.select((state) => state.notification),
+    );
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -61,59 +29,101 @@ class NotificationScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Stay updated with your transactions and activities.",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-            const Gap(16),
-            ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+      body: asyncNotification.when(
+        loading: () => ListView.separated(
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 16,
+          ),
+          itemCount: 6,
+          separatorBuilder: (_, __) => const Gap(8),
+          itemBuilder: (_, __) => const CryptoCardShimmer(),
+        ),
+        error: (error, _) => Center(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  "Recent Notifications",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
+                const Gap(52),
+                const Icon(Icons.info_outline, color: Colors.grey, size: 48),
+                const SizedBox(height: 8),
+                Text(
+                  "Failed to load notifications.",
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
-                ...notifications
-                    .where((n) => !n.isYesterday)
-                    .map((n) => NotificationCard(notification: n)),
-                const SizedBox(height: 20),
-                const Text(
-                  "Yesterday",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                ),
-                ...notifications
-                    .where((n) => n.isYesterday)
-                    .map((n) => NotificationCard(notification: n)),
               ],
             ),
-            const Gap(150),
-          ],
+          ),
         ),
+        data: (notificationList) {
+          final notifications = (notificationList.data ?? [])
+            ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+
+          return RefreshIndicator.adaptive(
+            onRefresh: () async {
+              await ref
+                  .read(authenticationControllerProvider.notifier)
+                  .fetchNotification();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Stay updated with your transactions and activities.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  const Gap(16),
+                  if (notifications.isEmpty)
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Gap(52),
+                          const Icon(Icons.info_outline,
+                              color: Colors.grey, size: 48),
+                          const SizedBox(height: 8),
+                          Text(
+                            "You do not have any notifications.",
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: notifications.length,
+                      separatorBuilder: (_, __) => const Gap(12),
+                      itemBuilder: (context, index) {
+                        return NotificationCard(
+                          notification: notifications[index],
+                        );
+                      },
+                    ),
+                  const Gap(150),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
 class NotificationCard extends StatelessWidget {
-  final NotificationItem notification;
+  final Datum notification;
 
   const NotificationCard({super.key, required this.notification});
 
@@ -153,20 +163,21 @@ class NotificationCard extends StatelessWidget {
                 children: [
                   const SizedBox(width: 12),
                   Text(
-                    notification.title,
+                    notification.title ?? '',
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    notification.message,
+                    notification.description ?? '',
                     style: const TextStyle(
                       fontSize: 12,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    notification.date,
+                    (notification.createdAt ?? DateTime.now())
+                        .formatToReadableDateTime(),
                     style: const TextStyle(
                       fontSize: 10,
                     ),

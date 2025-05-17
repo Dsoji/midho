@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/utils/validator.dart';
@@ -10,6 +11,7 @@ import 'package:mdiho/features/authentication/presentation/login/presentation/lo
 import '../../../../../../common/res/app_colors.dart';
 import '../../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../../common/widgets/custom_textfield.dart';
+import '../../../../data/model/payload/sign_up_payload.dart';
 
 class EmailPasswordStep extends HookConsumerWidget {
   final VoidCallback onNext;
@@ -119,36 +121,39 @@ class EmailPasswordStep extends HookConsumerWidget {
 
                   // Continue Button
                   FullButton(
-                    isLoading: isLoading,
+                    isLoading: ref
+                        .watch(authenticationControllerProvider)
+                        .emailVerification
+                        .isLoading,
                     text: "Continue",
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      onNext();
-                      // if (!formKey.currentState!.validate()) {
-                      //   return;
-                      // }
-                      // var box = Hive.box('data');
-                      // box.put('email', emailController.text.trim());
-                      // box.put('password', passwordController.text.trim());
-                      // box.put('referral', referralController.text.trim());
-                      // authService.updateSignUpDetails(
-                      //   SignUpPayload(
-                      //     email: emailController.text.trim(),
-                      //     password: passwordController.text.trim(),
-                      //     referral: referralController.text.trim(),
-                      //   ),
-                      // );
+                      // onNext();
+                      if (!formKey.currentState!.validate()) {
+                        return;
+                      }
+                      var box = Hive.box('data');
+                      box.put('email', emailController.text.trim());
+                      box.put('password', passwordController.text.trim());
+                      box.put('referral', referralController.text.trim());
+                      authService.updateSignUpDetails(
+                        SignUpPayload(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                          referral: referralController.text.trim(),
+                        ),
+                      );
 
-                      // final result = await authService.emailVerify(
-                      //   emailController.text.trim(),
-                      //   referralController.text.trim(),
-                      //   'SIGNUP',
-                      // );
+                      final result = await authService.emailVerify(
+                        emailController.text.trim(),
+                        referralController.text.trim(),
+                        'SIGNUP',
+                      );
 
-                      // if (result == true) {
-                      //   onNext(); // Correctly invoke the function
-                      // }
+                      if (result == true) {
+                        onNext(); // Correctly invoke the function
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

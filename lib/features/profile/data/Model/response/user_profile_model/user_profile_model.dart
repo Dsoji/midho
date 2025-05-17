@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'bank.dart';
 import 'wallet.dart';
 
 class UserProfileModel {
@@ -17,6 +18,8 @@ class UserProfileModel {
   String? username;
   DateTime? createdAt;
   DateTime? updatedAt;
+  String? fcmToken;
+  List<Bank>? banks;
   Wallet? wallet;
 
   UserProfileModel({
@@ -34,12 +37,14 @@ class UserProfileModel {
     this.username,
     this.createdAt,
     this.updatedAt,
+    this.fcmToken,
+    this.banks,
     this.wallet,
   });
 
   @override
   String toString() {
-    return 'UserProfileModel(id: $id, email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, country: $country, locked: $locked, pushAlert: $pushAlert, emailAlert: $emailAlert, theme: $theme, biometrics: $biometrics, username: $username, createdAt: $createdAt, updatedAt: $updatedAt, id: $id, wallet: $wallet)';
+    return 'UserProfileModel(id: $id, email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, country: $country, locked: $locked, pushAlert: $pushAlert, emailAlert: $emailAlert, theme: $theme, biometrics: $biometrics, username: $username, createdAt: $createdAt, updatedAt: $updatedAt, fcmToken: $fcmToken, banks: $banks, id: $id, wallet: $wallet)';
   }
 
   factory UserProfileModel.fromMap(Map<String, dynamic> data) {
@@ -62,9 +67,13 @@ class UserProfileModel {
       updatedAt: data['updatedAt'] == null
           ? null
           : DateTime.parse(data['updatedAt'] as String),
+      fcmToken: data['fcmToken'] as String?,
+      banks: (data['banks'] as List<dynamic>?)
+          ?.map((e) => Bank.fromMap(Map<String, dynamic>.from(e)))
+          .toList(),
       wallet: data['wallet'] == null
           ? null
-          : Wallet.fromMap(data['wallet'] as Map<String, dynamic>),
+          : Wallet.fromMap(Map<String, dynamic>.from(data['wallet'])),
     );
   }
 
@@ -83,6 +92,8 @@ class UserProfileModel {
         'username': username,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
+        'fcmToken': fcmToken,
+        'banks': banks?.map((e) => e.toMap()).toList(),
         'id': id,
         'wallet': wallet?.toMap(),
       };
@@ -114,6 +125,8 @@ class UserProfileModel {
     String? username,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? fcmToken,
+    List<Bank>? banks,
     Wallet? wallet,
   }) {
     return UserProfileModel(
@@ -131,6 +144,8 @@ class UserProfileModel {
       username: username ?? this.username,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      fcmToken: fcmToken ?? this.fcmToken,
+      banks: banks ?? this.banks,
       wallet: wallet ?? this.wallet,
     );
   }

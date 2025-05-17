@@ -1,13 +1,19 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../app_router.gr.dart';
 import 'bottom_nav.dart';
+
+final logger = Logger();
 
 @RoutePage()
 class NaviBarScreen extends HookConsumerWidget {
@@ -16,6 +22,26 @@ class NaviBarScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    useEffect(() {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        AwesomeNotifications().createNotification(
+          content: NotificationContent(
+            id: 10,
+            channelKey: 'high_importance_channel',
+            title: message.notification?.title ?? 'No Title',
+            body: message.notification?.body ?? 'No Body',
+            notificationLayout: NotificationLayout.Default,
+          ),
+        );
+      });
+
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        logger.d('A new onMessageOpenedApp event was published!');
+      });
+
+      return () {};
+    }, []);
 
     return AutoTabsRouter(
       routes: const [

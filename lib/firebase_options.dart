@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDf7OD3LA1QkqhAcv3Sg0JNeVfTCTMLs-0',
-    appId: '1:1007681185382:android:73aaad03abddfcbbc76fa7',
-    messagingSenderId: '1007681185382',
-    projectId: 'mdiho-886c4',
-    storageBucket: 'mdiho-886c4.firebasestorage.app',
+    apiKey: 'AIzaSyCnc86_E15Ct7w368B22jzNB126B9BiyPo',
+    appId: '1:1026709119955:android:2feaa6ae8c02c983a90526',
+    messagingSenderId: '1026709119955',
+    projectId: 'swiftswap-59406',
+    storageBucket: 'swiftswap-59406.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyChRA06cPQImXcj5j5Oyv5MiA9VZfJeX1U',
-    appId: '1:1007681185382:ios:9f5bc5dfb5ef960ac76fa7',
-    messagingSenderId: '1007681185382',
-    projectId: 'mdiho-886c4',
-    storageBucket: 'mdiho-886c4.firebasestorage.app',
-    iosBundleId: 'com.example.mdiho',
+    apiKey: 'AIzaSyArrF5cNz1tW9bxddAjWjI7w0-cnIl3KOE',
+    appId: '1:1026709119955:ios:5cb9749e0e1e6f0da90526',
+    messagingSenderId: '1026709119955',
+    projectId: 'swiftswap-59406',
+    storageBucket: 'swiftswap-59406.firebasestorage.app',
+    iosBundleId: 'com.swiftswap.app',
   );
+
 }

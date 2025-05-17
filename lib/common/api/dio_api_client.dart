@@ -23,7 +23,7 @@ class DioApiClient implements IApiClient {
       receiveTimeout: 1.minutes,
       contentType: 'application/json',
       validateStatus: _validateStatus,
-      baseUrl: 'https://mdihobackend.onrender.com/v1/',
+      baseUrl: 'https://swiftswapbackend.onrender.com/v1/',
     );
 
     // set the options
@@ -119,12 +119,14 @@ class DioApiClient implements IApiClient {
     String uri, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? headers,
   }) async {
     try {
       final response = await _dio.delete(
         uri,
         data: data,
         queryParameters: queryParameters,
+        options: Options(headers: headers),
       );
 
       return response;

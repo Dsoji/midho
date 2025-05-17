@@ -7,11 +7,12 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 
-import '../../../common/app_theme.dart';
 import '../../../common/res/app_colors.dart';
+import '../../../common/theme_notifier.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
+import '../../authentication/data/model/payload/profile_payload.dart';
 
 @RoutePage()
 class PreferenceScreen extends HookConsumerWidget {
@@ -21,19 +22,24 @@ class PreferenceScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final themeNotifier =
-        ref.watch(themeNotifierProvider); // ✅ Watch ThemeNotifier
+    final themeNotifier = ref.watch(themeProvider); // ✅ Watch ThemeNotifier
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final authService = ref.read(authenticationControllerProvider.notifier);
     final profileService = ref.read(profileControllerProvider.notifier);
     final selectedIndex =
         useState(theme.brightness == Brightness.light ? 0 : 1);
-    final pushEnabled = useState(userInfo?.pushAlert);
-    final emailEnabled = useState(userInfo?.emailAlert);
+    final pushEnabled = useState(userInfo?.pushAlert ?? false);
+    final emailEnabled = useState(userInfo?.emailAlert ?? false);
     final themeAlert =
         useState(theme.brightness == Brightness.light ? 'LIGHT' : 'DARK');
-    print(pushEnabled.value);
+
+    useEffect(() {
+      // Set the selected index and theme alert when themeMode changes.
+      selectedIndex.value = themeNotifier == ThemeMode.light ? 0 : 1;
+      themeAlert.value = themeNotifier == ThemeMode.light ? 'LIGHT' : 'DARK';
+      return null;
+    }, [themeNotifier]);
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Preferences & Notifications",
@@ -142,135 +148,130 @@ class PreferenceScreen extends HookConsumerWidget {
                 shape: const RoundedRectangleBorder(),
               ),
               padding: const EdgeInsets.all(16),
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          selectedIndex.value = 0;
-                          ref
-                              .read(themeNotifierProvider)
-                              .toggleTheme(ThemeMode.light);
-                          themeAlert.value = 'LIGHT';
-                        },
-                        child: Container(
-                          height: 118,
-                          width: 143,
-                          padding: const EdgeInsets.all(11),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFFFFFBFA),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: selectedIndex.value == 0
-                                  ? const BorderSide(
-                                      color: AppColors.primaryColor, width: 0.5)
-                                  : BorderSide.none,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                height: 66, // Fixed height
-                                width: 121, // Fixed width
-                                PlaceholderAssets.lightmode,
-                              ),
-                              const Gap(12),
-                              const Text(
-                                'Light Mode',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.primaryColor,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Gap(26),
-                      GestureDetector(
-                        onTap: () {
-                          selectedIndex.value = 1;
-                          ref
-                              .read(themeNotifierProvider)
-                              .toggleTheme(ThemeMode.dark);
-                          themeAlert.value = 'DARK';
-                        },
-                        child: Container(
-                          height: 118,
-                          width: 143,
-                          padding: const EdgeInsets.all(11),
-                          decoration: ShapeDecoration(
-                            color: AppColors.secondaryColor.shade700,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: selectedIndex.value == 1
-                                  ? const BorderSide(
-                                      color: AppColors.primaryColor,
-                                      width: 0.5,
-                                    )
-                                  : BorderSide.none,
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                height: 66, // Fixed height
-                                width: 121, // Fixed width
-                                PlaceholderAssets.darkmode,
-                              ),
-                              const Gap(12),
-                              const Text(
-                                'Dark Mode',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Gap(20),
-                  FullButton(
-                    isLoading: ref
-                        .watch(profileControllerProvider)
-                        .forgotPassword
-                        .isLoading,
-                    text: "Save Changes",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      // final result =
-                      //     await profileService.updateProfile(ProfilePayload(
-                      //   emailAlert: emailEnabled.value,
-                      //   pushAlert: pushEnabled.value,
-                      //   theme: themeAlert.value,
-                      // ));
-                      // if (result == true) {
-                      //   await ref
-                      //       .read(authenticationControllerProvider.notifier)
-                      //       .fetchProfile()
-                      //       .then((_) {
-                      //     Navigator.pop(context);
-                      //   });
-                      // }
+                  GestureDetector(
+                    onTap: () {
+                      // Update the selectedIndex and toggle the theme using Riverpod.
+                      selectedIndex.value = 0;
+                      ref.read(themeProvider.notifier).setLightTheme();
+
+                      themeAlert.value =
+                          'LIGHT'; // Optional, if you want to track the theme mode
                     },
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
+                    child: Container(
+                      height: 118,
+                      width: 143,
+                      padding: const EdgeInsets.all(11),
+                      decoration: ShapeDecoration(
+                        color: const Color(0xFFFFFBFA),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: selectedIndex.value == 0
+                              ? const BorderSide(
+                                  color: AppColors.primaryColor, width: 0.5)
+                              : BorderSide.none,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            height: 66, // Fixed height
+                            width: 121, // Fixed width
+                            PlaceholderAssets.lightmode,
+                          ),
+                          const Gap(12),
+                          const Text(
+                            'Light Mode',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.primaryColor,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  const Gap(26),
+                  GestureDetector(
+                    onTap: () {
+                      // Update the selectedIndex and toggle the theme using Riverpod.
+                      selectedIndex.value = 1;
+                      ref.read(themeProvider.notifier).setDarkTheme();
+
+                      themeAlert.value =
+                          'DARK'; // Optional, if you want to track the theme mode
+                    },
+                    child: Container(
+                      height: 118,
+                      width: 143,
+                      padding: const EdgeInsets.all(11),
+                      decoration: ShapeDecoration(
+                        color: AppColors.secondaryColor.shade700,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: selectedIndex.value == 1
+                              ? const BorderSide(
+                                  color: AppColors.primaryColor,
+                                  width: 0.5,
+                                )
+                              : BorderSide.none,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            height: 66, // Fixed height
+                            width: 121, // Fixed width
+                            PlaceholderAssets.darkmode,
+                          ),
+                          const Gap(12),
+                          const Text(
+                            'Dark Mode',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
+            ),
+            const Gap(16),
+            FullButton(
+              isLoading:
+                  ref.watch(profileControllerProvider).forgotPassword.isLoading,
+              text: "Save Changes",
+              width: double.infinity,
+              height: 48,
+              onPressed: () async {
+                final result =
+                    await profileService.updateProfile(ProfilePayload(
+                  emailAlert: emailEnabled.value,
+                  pushAlert: pushEnabled.value,
+                  theme: themeAlert.value,
+                ));
+                if (result == true) {
+                  await ref
+                      .read(authenticationControllerProvider.notifier)
+                      .fetchProfile()
+                      .then((_) {
+                    Navigator.pop(context);
+                  });
+                }
+              },
+              textColor: Colors.white,
+              color: AppColors.primaryColor.shade500,
             ),
           ],
         ),

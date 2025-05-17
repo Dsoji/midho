@@ -1,5 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
+import 'package:mdiho/features/notification/data/model/response/notifcation_list/notifcation_list.dart';
 
 import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
 import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
@@ -30,6 +31,7 @@ class AuthenticationState {
   final AsyncValue<String> emailChange;
   final AsyncValue<String> resetPin;
   final AsyncValue<UploadResponse> imageUpload;
+  final AsyncValue<NotifcationList> notification;
 
   const AuthenticationState({
     required this.login,
@@ -45,6 +47,7 @@ class AuthenticationState {
     required this.emailChange,
     required this.resetPin,
     required this.imageUpload,
+    required this.notification,
   });
 
   factory AuthenticationState.initial() {
@@ -62,6 +65,7 @@ class AuthenticationState {
       emailChange: const AsyncValue.data(''),
       resetPin: const AsyncValue.data(''),
       imageUpload: AsyncValue.data(UploadResponse()),
+      notification: AsyncValue.data(NotifcationList()),
     );
   }
 
@@ -79,6 +83,7 @@ class AuthenticationState {
     AsyncValue<String>? emailChange,
     AsyncValue<String>? resetPin,
     AsyncValue<UploadResponse>? imageUpload,
+    AsyncValue<NotifcationList>? notification,
   }) {
     return AuthenticationState(
       login: login ?? this.login,
@@ -94,6 +99,7 @@ class AuthenticationState {
       emailChange: emailChange ?? this.emailChange,
       resetPin: resetPin ?? this.resetPin,
       imageUpload: imageUpload ?? this.imageUpload,
+      notification: notification ?? this.notification,
     );
   }
 
@@ -108,7 +114,8 @@ class AuthenticationState {
 
     return other.login == login &&
         other.signUp == signUp &&
-        other.status == status;
+        other.status == status &&
+        other.notification == notification;
   }
 
   @override
