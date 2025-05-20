@@ -421,4 +421,200 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
     );
   }
+
+  Future<bool> buyAirtime({
+    required String assetId,
+    required int amount,
+    required String accountNumber,
+  }) async {
+    state = state.copyWith(buyAirtime: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.buyAirtime(
+      assetId: assetId,
+      amount: amount,
+      accountNumber: accountNumber,
+    );
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          buyAirtime:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          buyAirtime: AsyncValue.data(result.getSuccess() ?? ''),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> buyData({
+    required String assetId,
+    required String accountNumber,
+  }) async {
+    state = state.copyWith(buyData: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.buyData(
+      assetId: assetId,
+      accountNumber: accountNumber,
+    );
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          buyData:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          buyData: AsyncValue.data(result.getSuccess() ?? ''),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> buyElectricity({
+    required String assetId,
+    required int amount,
+    required String accountNumber,
+  }) async {
+    state = state.copyWith(buyElectricity: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.buyElectricity(
+      assetId: assetId,
+      amount: amount,
+      accountNumber: accountNumber,
+    );
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          buyElectricity:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          buyElectricity: AsyncValue.data(result.getSuccess() ?? ''),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> buyCableTv({
+    required String assetId,
+    required String accountNumber,
+  }) async {
+    state = state.copyWith(buyCableTv: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.buyCableTv(
+      assetId: assetId,
+      accountNumber: accountNumber,
+    );
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          buyCableTv:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          buyCableTv: AsyncValue.data(result.getSuccess() ?? ''),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> getDataPlans() async {
+    state = state.copyWith(dataPlans: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getDataPlans();
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          dataPlans:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          dataPlans: AsyncValue.data(result.getSuccess() ?? []),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> getCableTvPlans() async {
+    state = state.copyWith(cableTvPlans: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getCableTvPlans();
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          cableTvPlans:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          cableTvPlans: AsyncValue.data(result.getSuccess() ?? []),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> getElectricalPlans() async {
+    state = state.copyWith(electricityPlans: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getElectricalPlans();
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          electricityPlans:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          electricityPlans: AsyncValue.data(result.getSuccess() ?? []),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> getAirtimePlans() async {
+    state = state.copyWith(airtimePlans: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getAirtimePlans();
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          airtimePlans:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          airtimePlans: AsyncValue.data(result.getSuccess() ?? []),
+        );
+        return true;
+      },
+    );
+  }
 }

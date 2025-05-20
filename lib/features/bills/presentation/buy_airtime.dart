@@ -11,6 +11,7 @@ import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 import '../../transaction_pin/transaction_pin.dart';
 
 @RoutePage()
@@ -49,6 +50,15 @@ class BuyAirtimeScreen extends HookConsumerWidget {
       amountController.text =
           amount.replaceAll('₦', ''); // Remove currency symbol
     }
+
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(transactionControllerProvider.notifier).getAirtimePlans();
+      });
+      return null;
+    }, []);
+
+    final airtimePlans = ref.watch(transactionControllerProvider).airtimePlans;
 
     return Scaffold(
       appBar: const CustomAppBar(

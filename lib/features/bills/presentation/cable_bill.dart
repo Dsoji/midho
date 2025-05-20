@@ -10,6 +10,7 @@ import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 import '../../transaction_pin/transaction_pin.dart';
 
 @RoutePage()
@@ -24,7 +25,10 @@ class CableBillScreen extends HookConsumerWidget {
         useTextEditingController(); // Controller for meter number input field
 // Controller for amount input field
 
-    final selectedPlan = useState<String>("Dstv");
+    final selectedPlan = useState<Map<String, String>>({
+      "name": "Dstv",
+      "logo": PlaceholderAssets.dstv, // Default logo
+    });
     final subPlan = useState<String>("DSTV Compact - ₦8,000/Month");
 
     void showDataPlanSheet(BuildContext context) {
@@ -63,6 +67,14 @@ class CableBillScreen extends HookConsumerWidget {
       );
     }
 
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(transactionControllerProvider.notifier).getCableTvPlans();
+      });
+      return null;
+    }, []);
+
+    final cableTvPlans = ref.watch(transactionControllerProvider).cableTvPlans;
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Pay Cable TV Subscription",
@@ -123,38 +135,39 @@ class CableBillScreen extends HookConsumerWidget {
                         border: Border.all(
                           color: AppColors.greyColor.shade50,
                           width: 0.3,
-                        ), // Slightly darker border
+                        ),
                         color: theme.brightness == Brightness.dark
                             ? Colors.transparent
-                            : Colors.white, // Ensures white background
+                            : Colors.white,
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
-                            radius: 14, // Adjust size to match design
-                            backgroundImage: AssetImage(
-                              PlaceholderAssets.dstv,
-                            ), // Replace with correct asset
-                            backgroundColor: Colors
-                                .transparent, // Ensure no background color
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundImage: selectedPlan.value["logo"]
+                                        ?.startsWith('http') ??
+                                    false
+                                ? NetworkImage(selectedPlan.value["logo"]!)
+                                : AssetImage(selectedPlan.value["logo"]!)
+                                    as ImageProvider,
+                            backgroundColor: Colors.transparent,
                           ),
-                          const SizedBox(
-                              width: 12), // Space between icon and text
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              selectedPlan.value,
+                              selectedPlan.value["name"] ?? '',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 color: theme.brightness == Brightness.dark
                                     ? Colors.white
-                                    : Colors.black, // Ensures dark text
+                                    : Colors.black,
                               ),
                             ),
                           ),
                           const Icon(
                             Icons.arrow_forward_ios,
-                            size: 16, // Slightly larger for better visibility
+                            size: 16,
                           ),
                         ],
                       ),
@@ -248,26 +261,14 @@ class CableBillScreen extends HookConsumerWidget {
 }
 
 class ProviderBottomSheet extends HookConsumerWidget {
-  final ValueNotifier<String> selectedProvider;
+  final ValueNotifier<Map<String, String>> selectedProvider;
   const ProviderBottomSheet({super.key, required this.selectedProvider});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Map<String, String>> providers = [
-      {
-        "name": "Dstv",
-        "logo": PlaceholderAssets.dstv,
-      },
-      {
-        "name": "Gotv",
-        "logo": PlaceholderAssets.dstv,
-      },
-      {
-        "name": "Star Times",
-        "logo": PlaceholderAssets.dstv,
-      },
-    ];
+    final cableTvPlans = ref.watch(transactionControllerProvider).cableTvPlans;
     final searchController = useTextEditingController();
+    final searchQuery = useState('');
     final theme = Theme.of(context);
 
     return Padding(
@@ -298,45 +299,60 @@ class ProviderBottomSheet extends HookConsumerWidget {
                 ? AppColors.secondaryColor.shade500
                 : Colors.white,
             borderRadius: 12,
+            onChanged: (value) => searchQuery.value = value,
           ),
           const SizedBox(height: 12),
           Container(
+            height: 300,
             decoration: BoxDecoration(
               color: theme.brightness == Brightness.dark
                   ? AppColors.secondaryColor.shade500
                   : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListView.separated(
-                  itemCount: providers.length,
+            child: cableTvPlans.when(
+              data: (plans) {
+                final filteredPlans = plans
+                    .where((provider) =>
+                        provider.name?.toLowerCase().contains(
+                              searchQuery.value.toLowerCase(),
+                            ) ??
+                        false)
+                    .toList();
+
+                return ListView.separated(
+                  itemCount: filteredPlans.length,
                   shrinkWrap: true,
                   separatorBuilder: (context, index) =>
                       Divider(color: Colors.grey.shade100),
                   itemBuilder: (context, index) {
-                    final provider = providers[index];
+                    final provider = filteredPlans[index];
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: AssetImage(provider["logo"]!),
+                        backgroundImage: NetworkImage(provider.logo ?? ''),
                         backgroundColor: Colors.transparent,
                       ),
                       title: Text(
-                        provider["name"]!,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontFamily: '',
-                        ),
+                        provider.name ?? '',
+                        style: const TextStyle(fontSize: 16),
                       ),
                       onTap: () {
-                        selectedProvider.value = provider["name"]!;
+                        selectedProvider.value = {
+                          "name": provider.name ?? '',
+                          "logo": provider.logo ?? '',
+                        };
                         Navigator.pop(context);
                       },
                     );
                   },
-                ),
-              ],
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (error, stack) => Center(
+                child: Text('Error: $error'),
+              ),
             ),
           ),
           const Gap(150),
