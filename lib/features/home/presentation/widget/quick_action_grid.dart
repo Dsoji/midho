@@ -109,7 +109,7 @@ class QuickActionsGrid extends ConsumerWidget {
         ),
         ActionItem(
           HugeIcons.strokeRoundedSatellite01,
-          "Bank network",
+          "Bank Network",
           theme.brightness == Brightness.dark
               ? const Color(0xFFE1AC00)
               : AppColors.primaryColor,

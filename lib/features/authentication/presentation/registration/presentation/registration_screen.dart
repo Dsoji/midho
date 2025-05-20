@@ -2,9 +2,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/step_progress_indicator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
+import '../../pin_creation/presentation/create_pin.dart';
 import 'widget/email_password_step.dart';
 import 'widget/otp_verification_step.dart';
 import 'widget/user_details_screen.dart';
@@ -112,40 +115,40 @@ class RegistrationScreen extends HookConsumerWidget {
       }
     }
 
-    // Future<void> requestPermissionsAndAuthenticate(BuildContext context) async {
-    //   final localAuth = LocalAuthentication();
+    Future<void> requestPermissionsAndAuthenticate(BuildContext context) async {
+      final localAuth = LocalAuthentication();
 
-    //   // Step 1: Request notification permission first
-    //   PermissionStatus notificationPermission =
-    //       await Permission.notification.request();
+      // Step 1: Request notification permission first
+      PermissionStatus notificationPermission =
+          await Permission.notification.request();
 
-    //   // Step 2: Ensure the app is still mounted before proceeding
-    //   if (!context.mounted) return;
+      // Step 2: Ensure the app is still mounted before proceeding
+      if (!context.mounted) return;
 
-    //   // Step 3: Check if biometric authentication is available
-    //   bool canAuthenticate = await localAuth.canCheckBiometrics ||
-    //       await localAuth.isDeviceSupported();
-    //   bool biometricSuccess = false;
+      // Step 3: Check if biometric authentication is available
+      bool canAuthenticate = await localAuth.canCheckBiometrics ||
+          await localAuth.isDeviceSupported();
+      bool biometricSuccess = false;
 
-    //   if (canAuthenticate) {
-    //     try {
-    //       biometricSuccess = await localAuth.authenticate(
-    //         localizedReason: "Authenticate to continue",
-    //         options: const AuthenticationOptions(biometricOnly: true),
-    //       );
-    //     } catch (e) {
-    //       debugPrint("Biometric authentication failed: $e");
-    //     }
-    //   }
+      if (canAuthenticate) {
+        try {
+          biometricSuccess = await localAuth.authenticate(
+            localizedReason: "Authenticate to continue",
+            options: const AuthenticationOptions(biometricOnly: true),
+          );
+        } catch (e) {
+          debugPrint("Biometric authentication failed: $e");
+        }
+      }
 
-    //   // Step 4: Ensure context is still mounted before navigating
-    //   if (context.mounted) {
-    //     Navigator.push(
-    //       context,
-    //       MaterialPageRoute(builder: (context) => const CreatePinScreen()),
-    //     );
-    //   }
-    // }
+      // Step 4: Ensure context is still mounted before navigating
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CreatePinScreen()),
+        );
+      }
+    }
 
     final theme = Theme.of(context);
     return PopScope(

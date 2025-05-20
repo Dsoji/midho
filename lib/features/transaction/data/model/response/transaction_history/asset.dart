@@ -4,7 +4,6 @@ class Asset {
   String? id;
   String? type;
   String? name;
-  String? symbol;
   String? baseCurrency;
   String? exchangeCurrency;
   int? moq;
@@ -20,7 +19,6 @@ class Asset {
     this.id,
     this.type,
     this.name,
-    this.symbol,
     this.baseCurrency,
     this.exchangeCurrency,
     this.moq,
@@ -42,7 +40,6 @@ class Asset {
         id: data['_id'] as String?,
         type: data['type'] as String?,
         name: data['name'] as String?,
-        symbol: data['symbol'] as String?,
         baseCurrency: data['baseCurrency'] as String?,
         exchangeCurrency: data['exchangeCurrency'] as String?,
         moq: data['moq'] as int?,
@@ -91,7 +88,6 @@ class Asset {
     String? id,
     String? type,
     String? name,
-    String? symbol,
     String? baseCurrency,
     String? exchangeCurrency,
     int? moq,
@@ -107,7 +103,6 @@ class Asset {
       id: id ?? this.id,
       type: type ?? this.type,
       name: name ?? this.name,
-      symbol: symbol ?? this.symbol,
       baseCurrency: baseCurrency ?? this.baseCurrency,
       exchangeCurrency: exchangeCurrency ?? this.exchangeCurrency,
       moq: moq ?? this.moq,

@@ -13,10 +13,12 @@ import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/utils/validator.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_textfield.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
+import '../data/payload/suggestion_payload.dart';
 import '../data/response/upload_response/upload_response.dart';
 
 final logger = Logger();
@@ -261,52 +263,51 @@ class SuggestionScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () async {
-                        Navigator.pop(context);
-                        // if (!formKey.currentState!.validate()) {
-                        //   ToastService().showToast(
-                        //     NotificationType.info,
-                        //     message: 'Ensure fields are feild appropriately.',
-                        //   );
-                        //   return;
-                        // }
+                        if (!formKey.currentState!.validate()) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Ensure fields are feild appropriately.',
+                          );
+                          return;
+                        }
 
-                        // if (imageFiles.value.isNotEmpty) {
-                        //   final result = await ref
-                        //       .read(authenticationControllerProvider.notifier)
-                        //       .uploadMultipleFiles(
-                        //         imageFiles.value,
-                        //       );
-                        //   if (result == true) {
-                        //     final uploadedFiles = ref
-                        //         .read(authenticationControllerProvider)
-                        //         .imageUpload
-                        //         .valueOrNull;
-                        //     List<String> paths =
-                        //         getPathsFromUploadResponse(uploadedFiles);
-                        //     logger.d(paths);
-                        //     final result = await profileService.postFeedBack(
-                        //       SuggestionPayload(
-                        //         title: titleController.text.trim(),
-                        //         content: suggestionController.text.trim(),
-                        //         files: paths,
-                        //       ),
-                        //     );
-                        //     if (result == true) {
-                        //       Navigator.pop(context);
-                        //     }
-                        //   }
-                        // } else {
-                        //   final result = await profileService.postFeedBack(
-                        //     SuggestionPayload(
-                        //       title: titleController.text.trim(),
-                        //       content: suggestionController.text.trim(),
-                        //       files: const [],
-                        //     ),
-                        //   );
-                        //   if (result == true) {
-                        //     Navigator.pop(context);
-                        //   }
-                        // }
+                        if (imageFiles.value.isNotEmpty) {
+                          final result = await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .uploadMultipleFiles(
+                                imageFiles.value,
+                              );
+                          if (result == true) {
+                            final uploadedFiles = ref
+                                .read(authenticationControllerProvider)
+                                .imageUpload
+                                .valueOrNull;
+                            List<String> paths =
+                                getPathsFromUploadResponse(uploadedFiles);
+                            logger.d(paths);
+                            final result = await profileService.postFeedBack(
+                              SuggestionPayload(
+                                title: titleController.text.trim(),
+                                content: suggestionController.text.trim(),
+                                files: paths,
+                              ),
+                            );
+                            if (result == true) {
+                              Navigator.pop(context);
+                            }
+                          }
+                        } else {
+                          final result = await profileService.postFeedBack(
+                            SuggestionPayload(
+                              title: titleController.text.trim(),
+                              content: suggestionController.text.trim(),
+                              files: const [],
+                            ),
+                          );
+                          if (result == true) {
+                            Navigator.pop(context);
+                          }
+                        }
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

@@ -65,5 +65,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'swiftswap-59406.firebasestorage.app',
     iosBundleId: 'com.swiftswap.app',
   );
-
 }

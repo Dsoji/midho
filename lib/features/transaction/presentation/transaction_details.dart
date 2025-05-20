@@ -289,7 +289,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               .commaFormat(),
           "breakdown": {
             "Crypto Sold":
-                "${transaction.asset?.name ?? ''} (${transaction.asset?.symbol ?? ''})",
+                "${transaction.asset?.name ?? ''} (${transaction.asset?.name ?? ''})",
             "Rate":
                 "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
                     .commaFormat(),

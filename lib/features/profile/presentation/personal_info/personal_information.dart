@@ -15,6 +15,7 @@ import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../authentication/data/model/payload/profile_payload.dart';
 import '../../data/controller/profile_controller.dart';
 
 @RoutePage()
@@ -187,34 +188,33 @@ class PersonalInfoScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () async {
-                        Navigator.pop(context);
-                        // authService.updateProfileDetails(
-                        //   ProfilePayload(
-                        //     firstname: firstNameController.text.trim().isEmpty
-                        //         ? null
-                        //         : firstNameController.text.trim(),
-                        //     lastname: lastNameController.text.trim().isEmpty
-                        //         ? null
-                        //         : lastNameController.text.trim(),
-                        //     phone: phoneController.text.trim().isEmpty
-                        //         ? null
-                        //         : phoneController.text.trim(),
-                        //   ),
-                        // );
-                        // final profileDetails = ref
-                        //     .watch(authenticationControllerProvider)
-                        //     .profilePayload
-                        //     .valueOrNull;
-                        // final result =
-                        //     await profileService.updateProfile(profileDetails!);
-                        // if (result == true) {
-                        //   await ref
-                        //       .read(authenticationControllerProvider.notifier)
-                        //       .fetchProfile()
-                        //       .then((_) {
-                        //     Navigator.pop(context);
-                        //   });
-                        // }
+                        authService.updateProfileDetails(
+                          ProfilePayload(
+                            firstname: firstNameController.text.trim().isEmpty
+                                ? null
+                                : firstNameController.text.trim(),
+                            lastname: lastNameController.text.trim().isEmpty
+                                ? null
+                                : lastNameController.text.trim(),
+                            phone: phoneController.text.trim().isEmpty
+                                ? null
+                                : phoneController.text.trim(),
+                          ),
+                        );
+                        final profileDetails = ref
+                            .watch(authenticationControllerProvider)
+                            .profilePayload
+                            .valueOrNull;
+                        final result =
+                            await profileService.updateProfile(profileDetails!);
+                        if (result == true) {
+                          await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .fetchProfile()
+                              .then((_) {
+                            Navigator.pop(context);
+                          });
+                        }
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

@@ -8,6 +8,7 @@ import 'package:mdiho/features/authentication/data/controller/authentication_con
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../../common/res/app_colors.dart';
+import '../../../../../../common/toast/toast.dart';
 import '../../../../../../common/widgets/custom_buttons.dart';
 
 class OtpVerificationStep extends HookConsumerWidget {
@@ -48,7 +49,7 @@ class OtpVerificationStep extends HookConsumerWidget {
 
     final theme = Theme.of(context);
     var box = Hive.box('data');
-    // final String email = box.get('email');
+    final String email = box.get('email');
 
     return SingleChildScrollView(
       child: Column(
@@ -163,24 +164,23 @@ class OtpVerificationStep extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
-                    onNext();
-                    // if (otpController.text.trim().isEmpty ||
-                    //     otpController.text.trim().length < 6) {
-                    //   ToastService().showToast(
-                    //     NotificationType.info,
-                    //     message: 'Please input a valid OTP.',
-                    //   );
-                    //   return;
-                    // }
-                    // final result = await authService.emailConfirm(
-                    //   email,
-                    //   otpController.text.trim(),
-                    //   'SIGNUP',
-                    // );
+                    if (otpController.text.trim().isEmpty ||
+                        otpController.text.trim().length < 6) {
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Please input a valid OTP.',
+                      );
+                      return;
+                    }
+                    final result = await authService.emailConfirm(
+                      email,
+                      otpController.text.trim(),
+                      'SIGNUP',
+                    );
 
-                    // if (result == true) {
-                    //   onNext();
-                    // }
+                    if (result == true) {
+                      onNext();
+                    }
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,

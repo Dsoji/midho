@@ -11,6 +11,7 @@ import '../../../../common/utils/validator.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
 @RoutePage()
 class ChangeUsernameScreen extends HookConsumerWidget {
@@ -107,22 +108,21 @@ class ChangeUsernameScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () async {
-                        Navigator.pop(context);
-                        // if (!formKey.currentState!.validate()) {
-                        //   return;
-                        // }
+                        if (!formKey.currentState!.validate()) {
+                          return;
+                        }
 
-                        // final result = await authService.updateUsername(
-                        //   newnameController.text.trim(),
-                        // );
-                        // if (result == true) {
-                        //   await ref
-                        //       .read(authenticationControllerProvider.notifier)
-                        //       .fetchProfile()
-                        //       .then((_) {
-                        //     Navigator.pop(context);
-                        //   });
-                        // }
+                        final result = await authService.updateUsername(
+                          newnameController.text.trim(),
+                        );
+                        if (result == true) {
+                          await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .fetchProfile()
+                              .then((_) {
+                            Navigator.pop(context);
+                          });
+                        }
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

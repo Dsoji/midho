@@ -248,30 +248,35 @@ class PreferenceScreen extends HookConsumerWidget {
               ),
             ),
             const Gap(16),
-            FullButton(
-              isLoading:
-                  ref.watch(profileControllerProvider).forgotPassword.isLoading,
-              text: "Save Changes",
-              width: double.infinity,
-              height: 48,
-              onPressed: () async {
-                final result =
-                    await profileService.updateProfile(ProfilePayload(
-                  emailAlert: emailEnabled.value,
-                  pushAlert: pushEnabled.value,
-                  theme: themeAlert.value,
-                ));
-                if (result == true) {
-                  await ref
-                      .read(authenticationControllerProvider.notifier)
-                      .fetchProfile()
-                      .then((_) {
-                    Navigator.pop(context);
-                  });
-                }
-              },
-              textColor: Colors.white,
-              color: AppColors.primaryColor.shade500,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FullButton(
+                isLoading: ref
+                    .watch(profileControllerProvider)
+                    .forgotPassword
+                    .isLoading,
+                text: "Save Changes",
+                width: double.infinity,
+                height: 48,
+                onPressed: () async {
+                  final result =
+                      await profileService.updateProfile(ProfilePayload(
+                    emailAlert: emailEnabled.value,
+                    pushAlert: pushEnabled.value,
+                    theme: themeAlert.value,
+                  ));
+                  if (result == true) {
+                    await ref
+                        .read(authenticationControllerProvider.notifier)
+                        .fetchProfile()
+                        .then((_) {
+                      Navigator.pop(context);
+                    });
+                  }
+                },
+                textColor: Colors.white,
+                color: AppColors.primaryColor.shade500,
+              ),
             ),
           ],
         ),

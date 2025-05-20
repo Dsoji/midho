@@ -8,6 +8,7 @@ import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
@@ -211,42 +212,34 @@ class EmailVerificationScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      showEmailUpdateDialog(
-                        context,
-                        () {
-                          context.router.replaceAll([const ProfileRoute()]);
+                      if (otpController.text.isNotEmpty) {
+                        final result = await authService.updateEmail(
+                          email,
+                          otpController.text.trim(),
+                        );
+                        if (result == true) {
+                          await ref
+                              .read(authenticationControllerProvider.notifier)
+                              .fetchProfile()
+                              .then((_) {
+                            showEmailUpdateDialog(
+                              context,
+                              () {
+                                context.router
+                                    .replaceAll([const ProfileRoute()]);
 
-                          Navigator.pop(context);
-                        },
-                      );
-                      // if (otpController.text.isNotEmpty) {
-                      //   final result = await authService.updateEmail(
-                      //     email,
-                      //     otpController.text.trim(),
-                      //   );
-                      //   if (result == true) {
-                      //     await ref
-                      //         .read(authenticationControllerProvider.notifier)
-                      //         .fetchProfile()
-                      //         .then((_) {
-                      //       showEmailUpdateDialog(
-                      //         context,
-                      //         () {
-                      //           context.router
-                      //               .replaceAll([const ProfileRoute()]);
-
-                      //           Navigator.pop(context);
-                      //         },
-                      //       );
-                      //     });
-                      //   }
-                      // } else {
-                      //   ToastService().showToast(
-                      //     NotificationType.info,
-                      //     message:
-                      //         'Please Fill all necessary fields appropriately.',
-                      //   );
-                      // }
+                                Navigator.pop(context);
+                              },
+                            );
+                          });
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message:
+                              'Please Fill all necessary fields appropriately.',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

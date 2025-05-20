@@ -82,8 +82,10 @@ class WalletBalanceCard extends HookConsumerWidget {
                               children: [
                                 TextSpan(
                                   text: '${userInfo?.wallet?.currency ?? ''} ',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : AppColors.primaryColor.shade700,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
                                     fontFamily: '',
@@ -92,8 +94,10 @@ class WalletBalanceCard extends HookConsumerWidget {
                                 TextSpan(
                                   text: '${userInfo?.wallet?.mainBalance ?? 0}'
                                       .commaFormat(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : AppColors.primaryColor.shade700,
                                     fontSize: 29,
                                     fontWeight: FontWeight.w600,
                                     fontFamily: '',
