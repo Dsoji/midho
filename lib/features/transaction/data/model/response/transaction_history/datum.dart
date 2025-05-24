@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'asset.dart';
 import 'origination.dart';
+import 'user.dart';
 
 class TransactionData {
   String? id;
-  String? user;
+  User? user;
   String? type;
   String? status;
   String? baseCurrency;
@@ -50,12 +51,14 @@ class TransactionData {
 
   @override
   String toString() {
-    return 'TransactionData(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)';
+    return 'Datum(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)';
   }
 
   factory TransactionData.fromMap(Map<String, dynamic> data) => TransactionData(
         id: data['_id'] as String?,
-        user: data['user'] as String?,
+        user: data['user'] == null
+            ? null
+            : User.fromMap(data['user'] as Map<String, dynamic>),
         type: data['type'] as String?,
         status: data['status'] as String?,
         baseCurrency: data['baseCurrency'] as String?,
@@ -86,7 +89,7 @@ class TransactionData {
 
   Map<String, dynamic> toMap() => {
         '_id': id,
-        'user': user,
+        'user': user?.toMap(),
         'type': type,
         'status': status,
         'baseCurrency': baseCurrency,
@@ -109,19 +112,19 @@ class TransactionData {
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [TransactionData].
+  /// Parses the string and returns the resulting Json object as [Datum].
   factory TransactionData.fromJson(String data) {
     return TransactionData.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [TransactionData] to a JSON string.
+  /// Converts [Datum] to a JSON string.
   String toJson() => json.encode(toMap());
 
   TransactionData copyWith({
     String? id,
-    String? user,
+    User? user,
     String? type,
     String? status,
     String? baseCurrency,

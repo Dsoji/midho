@@ -278,7 +278,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               .commaFormat(),
           "breakdown": {
             "Crypto Sold":
-                "${transaction.asset?.name ?? ''} (${transaction.asset?.symbol ?? ''})",
+                "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
             "Rate":
                 "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
                     .commaFormat(),

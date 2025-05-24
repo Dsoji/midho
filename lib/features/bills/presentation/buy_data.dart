@@ -24,7 +24,6 @@ class BuyDataScreen extends HookConsumerWidget {
     final numberController =
         useTextEditingController(); // Controller for input field
     // Default: Glo
-    final selectedPlan = useState<String>("Select data plan");
 
     final dataPlans = ref.watch(transactionControllerProvider).dataPlans;
 
@@ -54,11 +53,13 @@ class BuyDataScreen extends HookConsumerWidget {
       ),
     ));
 
-    // final selectedPlan = useState<Product>(dataPlans.when(
-    //   data: (plans) => plans.isNotEmpty ? plans.first.products?.first : null,
-    //   loading: () => null,
-    //   error: (_, __) => null,
-    // ));
+    final selectedPlan = useState<Product?>(
+      dataPlans.when(
+        data: (plans) => plans.isNotEmpty ? plans.first.products?.first : null,
+        loading: () => null,
+        error: (_, __) => null,
+      ),
+    );
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
@@ -72,8 +73,8 @@ class BuyDataScreen extends HookConsumerWidget {
         ),
         builder: (context) {
           return DataPlanBottomSheet(
+            selectedPlan: selectedPlan,
             products: selectedProvider.value.products ?? [],
-            // selectedPlan: selectedProvider,
           );
         },
       );
@@ -195,7 +196,7 @@ class BuyDataScreen extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            selectedPlan.value,
+                            selectedPlan.value?.name ?? "Select data plan",
                             style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500),
                           ),
@@ -216,8 +217,10 @@ class BuyDataScreen extends HookConsumerWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const TransactionPinScreen(
+                              builder: (context) => TransactionPinScreen(
                                     selectedType: 'Data',
+                                    assetId: selectedPlan.value?.id ?? '',
+                                    accountNumber: numberController.text,
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
                                   )));
@@ -236,11 +239,11 @@ class BuyDataScreen extends HookConsumerWidget {
 }
 
 class DataPlanBottomSheet extends HookConsumerWidget {
-  // final ValueNotifier<({Product products})> selectedPlan;
+  final ValueNotifier<Product?> selectedPlan;
   final List<Product> products;
   const DataPlanBottomSheet({
     super.key,
-    // required this.selectedPlan,
+    required this.selectedPlan,
     required this.products,
   });
 
@@ -304,6 +307,7 @@ class DataPlanBottomSheet extends HookConsumerWidget {
                   ),
                   onTap: () {
                     Navigator.pop(context);
+                    selectedPlan.value = product;
                   },
                 );
               },

@@ -107,32 +107,41 @@ class TransactionPinScreen extends HookConsumerWidget {
           );
         }
       } else if (selectedType == "Data") {
-        showSuccessDialog(
-          context: context,
-          title: "Data Purchase Successful!",
-          details: [
-            {"Network": "MTN"},
-            {"Phone Number": "08012345678"},
-            {"Plan": "1GB @ ₦500"},
-            {"Payment Source": "Wallet"},
-          ],
-          buttonText: "View Details",
-          onButtonPressed: () {
-            context.router.replaceAll([
-              StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment',
-                  status: 'Completed',
-                  transaction: TransactionData()),
-            ]);
-            Navigator.pop(context);
-          },
-          onSecondaryAction: () {
-            context.router
-                .popUntil((route) => route.settings.name == BuyDataRoute.name);
-          },
-          primaryButtonColor: Colors.orange,
-          backgroundColor: Colors.blue.shade900,
-        );
+        final result =
+            await ref.read(transactionControllerProvider.notifier).buyData(
+                  assetId: assetId ?? '',
+                  accountNumber: accountNumber ?? '',
+                  pin: pinController.text,
+                );
+
+        if (result == true) {
+          showSuccessDialog(
+            context: context,
+            title: "Data Purchase Successful!",
+            details: [
+              {"Network": "MTN"},
+              {"Phone Number": "08012345678"},
+              {"Plan": "1GB @ ₦500"},
+              {"Payment Source": "Wallet"},
+            ],
+            buttonText: "View Details",
+            onButtonPressed: () {
+              context.router.replaceAll([
+                StandAloneTransactionDetailsRoute(
+                    type: 'Bill Payment',
+                    status: 'Completed',
+                    transaction: TransactionData()),
+              ]);
+              Navigator.pop(context);
+            },
+            onSecondaryAction: () {
+              context.router.popUntil(
+                  (route) => route.settings.name == BuyDataRoute.name);
+            },
+            primaryButtonColor: Colors.orange,
+            backgroundColor: Colors.blue.shade900,
+          );
+        }
       } else if (selectedType == "Electricity") {
         final result = await ref
             .read(transactionControllerProvider.notifier)
@@ -174,33 +183,42 @@ class TransactionPinScreen extends HookConsumerWidget {
           );
         }
       } else if (selectedType == "DSTV") {
-        showSuccessDialog(
-          context: context,
-          title: "Subscription Successful!",
-          details: [
-            {"Provider": "DSTV"},
-            {"Smart Card Number": "12345678901"},
-            {"Package": "DSTV Compact\n₦8,000/Month"},
-            {"Amount": "₦8,000"},
-            {"Payment Source": "Wallet"},
-            {"Token": "1234-5678-9012"},
-          ],
-          buttonText: "View Details",
-          onButtonPressed: () {
-            context.router.replaceAll([
-              StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment',
-                  status: 'Completed',
-                  transaction: TransactionData()),
-            ]);
-          },
-          onSecondaryAction: () {
-            context.router.popUntil(
-                (route) => route.settings.name == CableBillRoute.name);
-          },
-          primaryButtonColor: Colors.orange,
-          backgroundColor: Colors.white,
-        );
+        final result =
+            await ref.read(transactionControllerProvider.notifier).buyCableTv(
+                  assetId: assetId ?? '',
+                  accountNumber: accountNumber ?? '',
+                  pin: pinController.text,
+                );
+
+        if (result == true) {
+          showSuccessDialog(
+            context: context,
+            title: "Subscription Successful!",
+            details: [
+              {"Provider": "DSTV"},
+              {"Smart Card Number": "12345678901"},
+              {"Package": "DSTV Compact\n₦8,000/Month"},
+              {"Amount": "₦8,000"},
+              {"Payment Source": "Wallet"},
+              {"Token": "1234-5678-9012"},
+            ],
+            buttonText: "View Details",
+            onButtonPressed: () {
+              context.router.replaceAll([
+                StandAloneTransactionDetailsRoute(
+                    type: 'Bill Payment',
+                    status: 'Completed',
+                    transaction: TransactionData()),
+              ]);
+            },
+            onSecondaryAction: () {
+              context.router.popUntil(
+                  (route) => route.settings.name == CableBillRoute.name);
+            },
+            primaryButtonColor: Colors.orange,
+            backgroundColor: Colors.white,
+          );
+        }
       } else if (selectedType == "Betting") {
         showSuccessDialog(
           context: context,
