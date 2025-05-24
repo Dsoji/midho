@@ -8,6 +8,8 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
+import '../../../bills/data/model/response/airtime_electric_model/airtime_electric_model.dart';
+import '../../../bills/data/model/response/data_tv_model/data_tv_model.dart';
 import '../model/response/rates_model/rates_model.dart';
 import '../model/response/transaction_history/datum.dart';
 import '../service/transaction_service.dart';
@@ -359,6 +361,307 @@ class TransactionRepository {
         );
       }
     } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> buyAirtime({
+    required String assetId,
+    required int amount,
+    required String accountNumber,
+  }) async {
+    try {
+      final data = await transactionService.buyAirtime(
+        assetId: assetId,
+        amount: amount,
+        accountNumber: accountNumber,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to buy airtime',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to buy airtime'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> buyData({
+    required String assetId,
+    required String accountNumber,
+  }) async {
+    try {
+      final data = await transactionService.buyData(
+        assetId: assetId,
+        accountNumber: accountNumber,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to buy data',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to buy data'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> buyElectricity({
+    required String assetId,
+    required int amount,
+    required String accountNumber,
+  }) async {
+    try {
+      final data = await transactionService.buyElectricity(
+        assetId: assetId,
+        amount: amount,
+        accountNumber: accountNumber,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to buy electricity',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to buy electricity'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> buyCableTv({
+    required String assetId,
+    required String accountNumber,
+  }) async {
+    try {
+      final data = await transactionService.buyCableTv(
+        assetId: assetId,
+        accountNumber: accountNumber,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to buy cable TV',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to buy cable TV'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, List<DataTvModel>>> getDataPlans() async {
+    try {
+      final data = await transactionService.fetchDataPlans();
+      if (data.isSuccess && data.value != null) {
+        final dataPlans = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put('dataPlans', dataPlans.map((e) => e.toMap()).toList());
+
+        return Success(dataPlans);
+      } else {
+        var box = Hive.box('data');
+        final cachedDataPlans = box.get('dataPlans');
+
+        if (cachedDataPlans != null &&
+            cachedDataPlans is List<Map<String, dynamic>>) {
+          final cachedDataPlan =
+              cachedDataPlans.map((e) => DataTvModel.fromMap(e)).toList();
+          return Success(cachedDataPlan);
+        }
+
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch rates',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch rates'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      var box = Hive.box('data');
+      final cachedDataPlans = box.get('dataPlans');
+
+      if (cachedDataPlans != null &&
+          cachedDataPlans is List<Map<String, dynamic>>) {
+        final cachedDataPlan =
+            cachedDataPlans.map((e) => DataTvModel.fromMap(e)).toList();
+        return Success(cachedDataPlan);
+      }
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, List<DataTvModel>>> getCableTvPlans() async {
+    try {
+      final data = await transactionService.fetchCableTvPlans();
+      if (data.isSuccess && data.value != null) {
+        final cableTvPlans = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put(
+            'cableTvPlans', cableTvPlans.map((e) => e.toMap()).toList());
+
+        return Success(cableTvPlans);
+      } else {
+        var box = Hive.box('data');
+        final cachedCableTvPlans = box.get('cableTvPlans');
+
+        if (cachedCableTvPlans != null &&
+            cachedCableTvPlans is List<Map<String, dynamic>>) {
+          final cachedCableTvPlan =
+              cachedCableTvPlans.map((e) => DataTvModel.fromMap(e)).toList();
+          return Success(cachedCableTvPlan);
+        }
+
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch rates',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch rates'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      var box = Hive.box('data');
+      final cachedCableTvPlans = box.get('cableTvPlans');
+
+      if (cachedCableTvPlans != null &&
+          cachedCableTvPlans is List<Map<String, dynamic>>) {
+        final cachedCableTvPlan =
+            cachedCableTvPlans.map((e) => DataTvModel.fromMap(e)).toList();
+        return Success(cachedCableTvPlan);
+      }
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, List<AirtimeElectricModel>>>
+      getElectricalPlans() async {
+    try {
+      final data = await transactionService.fetchElectricityPlans();
+      if (data.isSuccess && data.value != null) {
+        final electricityPlans = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put('electricityPlans',
+            electricityPlans.map((e) => e.toMap()).toList());
+
+        return Success(electricityPlans);
+      } else {
+        var box = Hive.box('data');
+        final cachedElectricityPlans = box.get('electricityPlans');
+
+        if (cachedElectricityPlans != null &&
+            cachedElectricityPlans is List<Map<String, dynamic>>) {
+          final cachedElectricityPlan = cachedElectricityPlans
+              .map((e) => AirtimeElectricModel.fromMap(e))
+              .toList();
+          return Success(cachedElectricityPlan);
+        }
+
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch rates',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch rates'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      var box = Hive.box('data');
+      final cachedElectricityPlans = box.get('electricityPlans');
+
+      if (cachedElectricityPlans != null &&
+          cachedElectricityPlans is List<Map<String, dynamic>>) {
+        final cachedElectricityPlan = cachedElectricityPlans
+            .map((e) => AirtimeElectricModel.fromMap(e))
+            .toList();
+        return Success(cachedElectricityPlan);
+      }
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, List<AirtimeElectricModel>>>
+      getAirtimePlans() async {
+    try {
+      final data = await transactionService.fetchAirtimePlans();
+      if (data.isSuccess && data.value != null) {
+        final airtimePlans = data.value!;
+
+        // Save profile to Hive as a Map
+        var box = Hive.box('data');
+        await box.put(
+            'airtimePlans', airtimePlans.map((e) => e.toMap()).toList());
+
+        return Success(airtimePlans);
+      } else {
+        var box = Hive.box('data');
+        final cachedAirtimePlans = box.get('airtimePlans');
+
+        if (cachedAirtimePlans != null &&
+            cachedAirtimePlans is List<Map<String, dynamic>>) {
+          final cachedAirtimePlan = cachedAirtimePlans
+              .map((e) => AirtimeElectricModel.fromMap(e))
+              .toList();
+          return Success(cachedAirtimePlan);
+        }
+
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to fetch rates',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to fetch rates'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      var box = Hive.box('data');
+      final cachedAirtimePlans = box.get('airtimePlans');
+
+      if (cachedAirtimePlans != null &&
+          cachedAirtimePlans is List<Map<String, dynamic>>) {
+        final cachedAirtimePlan = cachedAirtimePlans
+            .map((e) => AirtimeElectricModel.fromMap(e))
+            .toList();
+        return Success(cachedAirtimePlan);
+      }
       return Error(failure);
     }
   }

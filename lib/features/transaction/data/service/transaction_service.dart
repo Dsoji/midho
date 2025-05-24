@@ -1,6 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/features/bills/data/model/response/airtime_electric_model/airtime_electric_model.dart';
+import 'package:mdiho/features/bills/data/model/response/data_tv_model/data_tv_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/currencies_model.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
@@ -296,6 +298,157 @@ class TransactionService {
       },
       showErrorToast: true,
       showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<String>> buyAirtime({
+    String? assetId,
+    int? amount,
+    String? accountNumber,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post('user/tx/buyAirtime', header: {
+        'Authorization': 'Bearer $accessToken',
+      }, data: {
+        "asset": {"id": assetId},
+        "amount": amount,
+        "accountNumber": accountNumber,
+      }),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<String>> buyData({
+    String? assetId,
+    String? accountNumber,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post('user/tx/buyMobileData', header: {
+        'Authorization': 'Bearer $accessToken',
+      }, data: {
+        "asset": {"id": assetId},
+        "accountNumber": accountNumber,
+      }),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<String>> buyElectricity({
+    String? assetId,
+    int? amount,
+    String? accountNumber,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post('user/tx/buyElectricity', header: {
+        'Authorization': 'Bearer $accessToken',
+      }, data: {
+        "asset": {"id": assetId},
+        "amount": amount,
+        "accountNumber": accountNumber,
+      }),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<String>> buyCableTv({
+    String? assetId,
+    String? accountNumber,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post('user/tx/buyCableTv', header: {
+        'Authorization': 'Bearer $accessToken',
+      }, data: {
+        "asset": {"id": assetId},
+        "accountNumber": accountNumber,
+      }),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<List<DataTvModel>>> fetchDataPlans() async {
+    return apiRequestHelper.handleApiRequest<List<DataTvModel>>(
+      () => apiClient.get(
+        'utilities?category=mobile-data',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return (data as List<dynamic>)
+            .map((e) => DataTvModel.fromMap(e))
+            .toList();
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<List<DataTvModel>>> fetchCableTvPlans() async {
+    return apiRequestHelper.handleApiRequest<List<DataTvModel>>(
+      () => apiClient.get(
+        'utilities?category=cable-tv',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return (data as List<dynamic>)
+            .map((e) => DataTvModel.fromMap(e))
+            .toList();
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<List<AirtimeElectricModel>>> fetchAirtimePlans() async {
+    return apiRequestHelper.handleApiRequest<List<AirtimeElectricModel>>(
+      () => apiClient.get(
+        'utilities?category=airtime',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return (data as List<dynamic>)
+            .map((e) => AirtimeElectricModel.fromMap(e))
+            .toList();
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<List<AirtimeElectricModel>>>
+      fetchElectricityPlans() async {
+    return apiRequestHelper.handleApiRequest<List<AirtimeElectricModel>>(
+      () => apiClient.get(
+        'utilities?category=electricity',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return (data as List<dynamic>)
+            .map((e) => AirtimeElectricModel.fromMap(e))
+            .toList();
+      },
     );
   }
 }

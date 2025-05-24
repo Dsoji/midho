@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 import '../../transaction_pin/transaction_pin.dart';
 
 @RoutePage()
@@ -25,14 +25,30 @@ class ElectricityBillScreen extends HookConsumerWidget {
         useTextEditingController(); // Controller for meter number input field
     final amountController =
         useTextEditingController(); // Controller for amount input field
-    final List<Map<String, String>> providers = [
-      {'name': 'MTN', 'logo': PlaceholderAssets.mtn},
-      {'name': 'Glo', 'logo': PlaceholderAssets.glo},
-      {'name': 'Airtel', 'logo': PlaceholderAssets.airtel},
-      {'name': '9Mobile', 'logo': PlaceholderAssets.etisalat},
-    ];
-    useState<Map<String, String>>(providers[1]); // Default: Glo
-    final selectedPlan = useState<String>("Ikeja Electric");
+
+    final electricityPlans =
+        ref.watch(transactionControllerProvider).electricityPlans;
+    // Default: Glo
+    final selectedPlan = useState<
+        ({
+          String name,
+          String logo,
+          String max,
+          String min,
+          String id
+        })>(electricityPlans.when(
+      data: (plans) => plans.isNotEmpty
+          ? (
+              name: plans.first.name ?? '',
+              logo: plans.first.logo ?? '',
+              max: plans.first.max.toString(),
+              min: plans.first.min.toString(),
+              id: plans.first.id ?? ''
+            )
+          : (name: '', logo: '', max: '', min: '', id: ''),
+      loading: () => (name: '', logo: '', max: '', min: '', id: ''),
+      error: (_, __) => (name: '', logo: '', max: '', min: '', id: ''),
+    ));
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
@@ -60,6 +76,13 @@ class ElectricityBillScreen extends HookConsumerWidget {
       tabController.addListener(listener);
       return () => tabController.removeListener(listener);
     }, [tabController]);
+
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(transactionControllerProvider.notifier).getElectricalPlans();
+      });
+      return null;
+    }, []);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -137,10 +160,10 @@ class ElectricityBillScreen extends HookConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 14, // Adjust size to match design
-                            backgroundImage: AssetImage(
-                              PlaceholderAssets.ie,
+                            backgroundImage: NetworkImage(
+                              selectedPlan.value.logo,
                             ), // Replace with correct asset
                             backgroundColor: Colors
                                 .transparent, // Ensure no background color
@@ -149,7 +172,7 @@ class ElectricityBillScreen extends HookConsumerWidget {
                               width: 12), // Space between icon and text
                           Expanded(
                             child: Text(
-                              selectedPlan.value,
+                              selectedPlan.value.name,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -256,7 +279,8 @@ class ElectricityBillScreen extends HookConsumerWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: " NGN 500.00 - NGN 10,000.00",
+                              text:
+                                  " NGN ${selectedPlan.value.min} - NGN ${selectedPlan.value.max}",
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
@@ -307,30 +331,18 @@ class ElectricityBillScreen extends HookConsumerWidget {
 }
 
 class ProviderBottomSheet extends HookConsumerWidget {
-  final ValueNotifier<String> selectedProvider;
+  final ValueNotifier<
+          ({String name, String logo, String max, String min, String id})>
+      selectedProvider;
   const ProviderBottomSheet({super.key, required this.selectedProvider});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Map<String, String>> providers = [
-      {
-        "name": "Ikeja Electric",
-        "logo": PlaceholderAssets.ie,
-      },
-      {
-        "name": "Eko Electric",
-        "logo": PlaceholderAssets.ie,
-      },
-      {
-        "name": "Abuja Electric",
-        "logo": PlaceholderAssets.ie,
-      },
-      {
-        "name": "Kano Electric",
-        "logo": PlaceholderAssets.ie,
-      },
-    ];
+    final electricityPlans =
+        ref.watch(transactionControllerProvider).electricityPlans;
+
     final searchController = useTextEditingController();
+    final searchQuery = useState('');
     final theme = Theme.of(context);
 
     return Padding(
@@ -361,6 +373,7 @@ class ProviderBottomSheet extends HookConsumerWidget {
                 ? AppColors.secondaryColor.shade500
                 : Colors.white,
             borderRadius: 12,
+            onChanged: (value) => searchQuery.value = value,
           ),
           const SizedBox(height: 12),
           Container(
@@ -371,28 +384,93 @@ class ProviderBottomSheet extends HookConsumerWidget {
                   : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: ListView.separated(
-              itemCount: providers.length,
-              shrinkWrap: true,
-              separatorBuilder: (context, index) =>
-                  Divider(color: Colors.grey.shade100),
-              itemBuilder: (context, index) {
-                final provider = providers[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage(provider["logo"]!),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  title: Text(
-                    provider["name"]!,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  onTap: () {
-                    selectedProvider.value = provider["name"]!;
-                    Navigator.pop(context);
+            child: electricityPlans.when(
+              data: (plans) {
+                final filteredPlans = plans
+                    .where((provider) =>
+                        provider.name?.toLowerCase().contains(
+                              searchQuery.value.toLowerCase(),
+                            ) ??
+                        false)
+                    .toList();
+
+                return ListView.separated(
+                  itemCount: filteredPlans.length,
+                  shrinkWrap: true,
+                  separatorBuilder: (context, index) =>
+                      Divider(color: Colors.grey.shade100),
+                  itemBuilder: (context, index) {
+                    final provider = filteredPlans[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(provider.logo ?? ''),
+                        backgroundColor: Colors.transparent,
+                      ),
+                      title: Text(
+                        provider.name ?? '',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      onTap: () {
+                        selectedProvider.value = (
+                          logo: provider.logo ?? '',
+                          name: provider.name ?? '',
+                          max: provider.max.toString(),
+                          min: provider.min.toString(),
+                          id: provider.id ?? '',
+                        );
+                        Navigator.pop(context);
+                      },
+                    );
                   },
                 );
               },
+              loading: () => electricityPlans.maybeWhen(
+                data: (plans) {
+                  final filteredPlans = plans
+                      .where((provider) =>
+                          provider.name?.toLowerCase().contains(
+                                searchQuery.value.toLowerCase(),
+                              ) ??
+                          false)
+                      .toList();
+
+                  return ListView.separated(
+                    itemCount: filteredPlans.length,
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) =>
+                        Divider(color: Colors.grey.shade100),
+                    itemBuilder: (context, index) {
+                      final provider = filteredPlans[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(provider.logo ?? ''),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        title: Text(
+                          provider.name ?? '',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        onTap: () {
+                          selectedProvider.value = (
+                            logo: provider.logo ?? '',
+                            name: provider.name ?? '',
+                            max: provider.max.toString(),
+                            min: provider.min.toString(),
+                            id: provider.id ?? '',
+                          );
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  );
+                },
+                orElse: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (error, stack) => Center(
+                child: Text('Error: $error'),
+              ),
             ),
           ),
           const Gap(150),
