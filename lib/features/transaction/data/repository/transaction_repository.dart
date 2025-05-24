@@ -369,12 +369,14 @@ class TransactionRepository {
     required String assetId,
     required int amount,
     required String accountNumber,
+    required String pin,
   }) async {
     try {
       final data = await transactionService.buyAirtime(
         assetId: assetId,
         amount: amount,
         accountNumber: accountNumber,
+        pin: pin,
       );
 
       if (data.isSuccess) {
@@ -397,11 +399,13 @@ class TransactionRepository {
   Future<Result<FailureHandler, String>> buyData({
     required String assetId,
     required String accountNumber,
+    required String pin,
   }) async {
     try {
       final data = await transactionService.buyData(
         assetId: assetId,
         accountNumber: accountNumber,
+        pin: pin,
       );
 
       if (data.isSuccess) {
@@ -425,12 +429,14 @@ class TransactionRepository {
     required String assetId,
     required int amount,
     required String accountNumber,
+    required String pin,
   }) async {
     try {
       final data = await transactionService.buyElectricity(
         assetId: assetId,
         amount: amount,
         accountNumber: accountNumber,
+        pin: pin,
       );
 
       if (data.isSuccess) {
@@ -453,11 +459,13 @@ class TransactionRepository {
   Future<Result<FailureHandler, String>> buyCableTv({
     required String assetId,
     required String accountNumber,
+    required String pin,
   }) async {
     try {
       final data = await transactionService.buyCableTv(
         assetId: assetId,
         accountNumber: accountNumber,
+        pin: pin,
       );
 
       if (data.isSuccess) {

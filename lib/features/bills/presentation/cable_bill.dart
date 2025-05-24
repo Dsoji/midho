@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
@@ -12,6 +11,7 @@ import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
 import '../../transaction/data/controller/transaction_controller.dart';
 import '../../transaction_pin/transaction_pin.dart';
+import '../data/model/response/data_tv_model/product.dart';
 
 @RoutePage()
 class CableBillScreen extends HookConsumerWidget {
@@ -25,11 +25,40 @@ class CableBillScreen extends HookConsumerWidget {
         useTextEditingController(); // Controller for meter number input field
 // Controller for amount input field
 
-    final selectedPlan = useState<Map<String, String>>({
-      "name": "Dstv",
-      "logo": PlaceholderAssets.dstv, // Default logo
-    });
-    final subPlan = useState<String>("DSTV Compact - ₦8,000/Month");
+    final tvPlans = ref.watch(transactionControllerProvider).cableTvPlans;
+    final selectedPlan =
+        useState<({String name, String logo, List<Product>? products})>(
+            tvPlans.when(
+      data: (plans) => plans.isNotEmpty
+          ? (
+              name: plans.first.name ?? '',
+              logo: plans.first.logo ?? '',
+              products: plans.first.products ?? [],
+            )
+          : (
+              name: '',
+              logo: '',
+              products: [],
+            ),
+      loading: () => (
+        name: '',
+        logo: '',
+        products: [],
+      ),
+      error: (_, __) => (
+        name: '',
+        logo: '',
+        products: [],
+      ),
+    ));
+
+    final subPlan = useState<Product?>(
+      tvPlans.when(
+        data: (plans) => plans.isNotEmpty ? plans.first.products?.first : null,
+        loading: () => null,
+        error: (_, __) => null,
+      ),
+    );
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
@@ -43,7 +72,8 @@ class CableBillScreen extends HookConsumerWidget {
         ),
         builder: (context) {
           return ProviderBottomSheet(
-            selectedProvider: selectedPlan,
+            selectedPlan: selectedPlan,
+            products: selectedPlan.value.products ?? [],
           );
         },
       );
@@ -62,6 +92,7 @@ class CableBillScreen extends HookConsumerWidget {
         builder: (context) {
           return SubPlanBottomSheet(
             selectedPlan: subPlan,
+            products: selectedPlan.value.products ?? [],
           );
         },
       );
@@ -152,18 +183,14 @@ class CableBillScreen extends HookConsumerWidget {
                         children: [
                           CircleAvatar(
                             radius: 14,
-                            backgroundImage: selectedPlan.value["logo"]
-                                        ?.startsWith('http') ??
-                                    false
-                                ? NetworkImage(selectedPlan.value["logo"]!)
-                                : AssetImage(selectedPlan.value["logo"]!)
-                                    as ImageProvider,
+                            backgroundImage:
+                                NetworkImage(selectedPlan.value.logo),
                             backgroundColor: Colors.transparent,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              selectedPlan.value["name"] ?? '',
+                              selectedPlan.value.name,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -230,7 +257,7 @@ class CableBillScreen extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            subPlan.value,
+                            subPlan.value?.name ?? "Select subscription plan",
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
@@ -253,8 +280,10 @@ class CableBillScreen extends HookConsumerWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const TransactionPinScreen(
+                              builder: (context) => TransactionPinScreen(
                                     selectedType: 'DSTV',
+                                    assetId: subPlan.value?.id ?? '',
+                                    accountNumber: meterNoController.text,
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
                                   )));
@@ -274,8 +303,14 @@ class CableBillScreen extends HookConsumerWidget {
 }
 
 class ProviderBottomSheet extends HookConsumerWidget {
-  final ValueNotifier<Map<String, String>> selectedProvider;
-  const ProviderBottomSheet({super.key, required this.selectedProvider});
+  final ValueNotifier<({String name, String logo, List<Product>? products})>
+      selectedPlan;
+  final List<Product> products;
+  const ProviderBottomSheet({
+    super.key,
+    required this.selectedPlan,
+    required this.products,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -350,10 +385,11 @@ class ProviderBottomSheet extends HookConsumerWidget {
                         style: const TextStyle(fontSize: 16),
                       ),
                       onTap: () {
-                        selectedProvider.value = {
-                          "name": provider.name ?? '',
-                          "logo": provider.logo ?? '',
-                        };
+                        selectedPlan.value = (
+                          name: provider.name ?? '',
+                          logo: provider.logo ?? '',
+                          products: provider.products ?? [],
+                        );
                         Navigator.pop(context);
                       },
                     );
@@ -376,21 +412,20 @@ class ProviderBottomSheet extends HookConsumerWidget {
 }
 
 class SubPlanBottomSheet extends HookConsumerWidget {
-  final ValueNotifier<String> selectedPlan;
-  const SubPlanBottomSheet({super.key, required this.selectedPlan});
+  final ValueNotifier<Product?> selectedPlan;
+  final List<Product> products;
+  const SubPlanBottomSheet({
+    super.key,
+    required this.selectedPlan,
+    required this.products,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<String> plans = [
-      "DSTV Compact - ₦8,000/Month",
-      "DSTV Flex - ₦5,000/Month",
-      "DSTV Original - ₦8,000/Month",
-      "DSTV Yanga - ₦3,500/Month",
-    ];
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -399,25 +434,23 @@ class SubPlanBottomSheet extends HookConsumerWidget {
             width: 50,
             height: 4,
             decoration: BoxDecoration(
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade500
-                  : const Color(0xFFD9D9D9),
+              color: const Color(0xFFD9D9D9),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
           const SizedBox(height: 12),
           const Text(
-            "Select Subscription Plan",
+            "Select Data Plan",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           CustomTextField(
             controller: searchController,
-            hintText: 'Search subscription Plan',
+            hintText: 'Search Data Plan',
             isPassword: false,
             suffixIcon: const Icon(Icons.search),
             fillColor: theme.brightness == Brightness.dark
-                ? Colors.transparent
+                ? AppColors.secondaryColor.shade500
                 : Colors.white,
             borderRadius: 12,
           ),
@@ -431,29 +464,29 @@ class SubPlanBottomSheet extends HookConsumerWidget {
               borderRadius: BorderRadius.circular(24),
             ),
             child: ListView.separated(
-              itemCount: plans.length,
+              itemCount: products.length,
               shrinkWrap: true,
               separatorBuilder: (context, index) =>
                   Divider(color: Colors.grey.shade100),
               itemBuilder: (context, index) {
-                final plan = plans[index];
+                final product = products[index];
                 return ListTile(
                   title: Center(
                     child: Text(
-                      plan,
-                      style: const TextStyle(fontSize: 16, fontFamily: ''),
-                      textAlign: TextAlign.center, // Ensures text is centered
+                      "${product.name} - NGN ${product.amount}",
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   onTap: () {
-                    selectedPlan.value = plan;
                     Navigator.pop(context);
+                    selectedPlan.value = product;
                   },
                 );
               },
             ),
           ),
-          const Gap(150),
+          const Gap(130),
         ],
       ),
     );

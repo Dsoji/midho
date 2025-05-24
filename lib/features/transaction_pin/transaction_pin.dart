@@ -14,6 +14,7 @@ import '../../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/success_dialog.dart';
 import '../bottomNav/app_router.gr.dart';
 import '../profile/presentation/security_settings/change_pin_screen.dart';
+import '../transaction/data/controller/transaction_controller.dart';
 
 class PinState {
   final String pin;
@@ -51,134 +52,177 @@ class TransactionPinScreen extends HookConsumerWidget {
     super.key,
     required this.info,
     this.selectedType,
+    this.assetId,
+    this.amount,
+    this.accountNumber,
   });
 
   final String info;
   final String? selectedType;
+  final String? assetId;
+  final String? amount;
+  final String? accountNumber;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinController = useTextEditingController();
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
-    void handleDialog() {
+    void handleDialog() async {
       if (selectedType == "Airtime") {
-        showSuccessDialog(
-          context: context,
-          title: "Airtime Purchase Successful!",
-          details: [
-            {"Network": "Glo"},
-            {"Phone Number": "08012345678"},
-            {"Amount Sold": "₦500"},
-            {"Payment Source": "Wallet"},
-          ],
-          buttonText: "View Details",
-          onButtonPressed: () {
-            context.router.push(
-              StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment',
-                  status: 'Completed',
-                  transaction: TransactionData()),
-            );
-          },
-          onSecondaryAction: () {
-            context.router.popUntil(
-                (route) => route.settings.name == BuyAirtimeRoute.name);
-            Navigator.of(context).pop;
-          },
-          primaryButtonColor: Colors.orange,
-          backgroundColor: Colors.blue.shade900,
-          secondaryButtonText: 'Buy more airtime',
-          info: 'airtime',
-        );
+        final result =
+            await ref.read(transactionControllerProvider.notifier).buyAirtime(
+                  assetId: assetId ?? '',
+                  amount: amount != null ? int.parse(amount!) : 0,
+                  accountNumber: accountNumber ?? '',
+                  pin: pinController.text,
+                );
+
+        if (result == true) {
+          showSuccessDialog(
+            context: context,
+            title: "Airtime Purchase Successful!",
+            details: [
+              {"Network": "Glo"},
+              {"Phone Number": "08012345678"},
+              {"Amount Sold": "₦500"},
+              {"Payment Source": "Wallet"},
+            ],
+            buttonText: "View Details",
+            onButtonPressed: () {
+              context.router.push(
+                StandAloneTransactionDetailsRoute(
+                    type: 'Bill Payment',
+                    status: 'Completed',
+                    transaction: TransactionData()),
+              );
+            },
+            onSecondaryAction: () {
+              context.router.popUntil(
+                  (route) => route.settings.name == BuyAirtimeRoute.name);
+              Navigator.of(context).pop;
+            },
+            primaryButtonColor: Colors.orange,
+            backgroundColor: Colors.blue.shade900,
+            secondaryButtonText: '',
+          );
+        }
       } else if (selectedType == "Data") {
-        showSuccessDialog(
-          context: context,
-          title: "Data Purchase Successful!",
-          details: [
-            {"Network": "MTN"},
-            {"Phone Number": "08012345678"},
-            {"Plan": "1GB @ ₦500"},
-            {"Payment Source": "Wallet"},
-          ],
-          buttonText: "View Details",
-          onButtonPressed: () {
-            context.router.replaceAll([
-              StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment',
-                  status: 'Completed',
-                  transaction: TransactionData()),
-            ]);
-            Navigator.pop(context);
-          },
-          info: 'data',
-          secondaryButtonText: 'Buy more data',
-          onSecondaryAction: () {
-            context.router
-                .popUntil((route) => route.settings.name == BuyDataRoute.name);
-          },
-          primaryButtonColor: Colors.orange,
-          backgroundColor: Colors.blue.shade900,
-        );
+        final result =
+            await ref.read(transactionControllerProvider.notifier).buyData(
+                  assetId: assetId ?? '',
+                  accountNumber: accountNumber ?? '',
+                  pin: pinController.text,
+                );
+
+        if (result == true) {
+          showSuccessDialog(
+            context: context,
+            title: "Data Purchase Successful!",
+            details: [
+              {"Network": "MTN"},
+              {"Phone Number": "08012345678"},
+              {"Plan": "1GB @ ₦500"},
+              {"Payment Source": "Wallet"},
+            ],
+            buttonText: "View Details",
+            onButtonPressed: () {
+              context.router.replaceAll([
+                StandAloneTransactionDetailsRoute(
+                    type: 'Bill Payment',
+                    status: 'Completed',
+                    transaction: TransactionData()),
+              ]);
+              Navigator.pop(context);
+            },
+            onSecondaryAction: () {
+              context.router.popUntil(
+                  (route) => route.settings.name == BuyDataRoute.name);
+            },
+            primaryButtonColor: Colors.orange,
+            backgroundColor: Colors.blue.shade900,
+            secondaryButtonText: '',
+          );
+        }
       } else if (selectedType == "Electricity") {
-        showSuccessDialog(
-          context: context,
-          title: "Transaction Summary",
-          details: [
-            {"Provider": "Ikeja Electric"},
-            {"Meter Number": "12345678901"},
-            {"Meter Type": "Prepaid"},
-            {"Amount": "₦5,000"},
-            {"Payment Source": "Wallet"},
-            {"Token": "1234-5678-9012"},
-          ],
-          buttonText: "View Details",
-          onButtonPressed: () {
-            context.router.replaceAll([
-              StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment',
-                  status: 'Completed',
-                  transaction: TransactionData()),
-            ]);
-            Navigator.pop(context);
-          },
-          onSecondaryAction: () {
-            context.router.popUntil(
-                (route) => route.settings.name == ElectricityBillRoute.name);
-          },
-          primaryButtonColor: Colors.orange,
-          backgroundColor: Colors.blue.shade900,
-          secondaryButtonText: 'Buy more electricity',
-        );
+        final result = await ref
+            .read(transactionControllerProvider.notifier)
+            .buyElectricity(
+              assetId: assetId ?? '',
+              amount: amount != null ? int.parse(amount!) : 0,
+              accountNumber: accountNumber ?? '',
+              pin: pinController.text,
+            );
+
+        if (result == true) {
+          showSuccessDialog(
+            context: context,
+            title: "Transaction Summary",
+            details: [
+              {"Provider": "Ikeja Electric"},
+              {"Meter Number": "12345678901"},
+              {"Meter Type": "Prepaid"},
+              {"Amount": "₦5,000"},
+              {"Payment Source": "Wallet"},
+              {"Token": "1234-5678-9012"},
+            ],
+            buttonText: "View Details",
+            onButtonPressed: () {
+              context.router.replaceAll([
+                StandAloneTransactionDetailsRoute(
+                    type: 'Bill Payment',
+                    status: 'Completed',
+                    transaction: TransactionData()),
+              ]);
+              Navigator.pop(context);
+            },
+            onSecondaryAction: () {
+              context.router.popUntil(
+                  (route) => route.settings.name == ElectricityBillRoute.name);
+            },
+            primaryButtonColor: Colors.orange,
+            backgroundColor: Colors.blue.shade900,
+            secondaryButtonText: '',
+          );
+        }
       } else if (selectedType == "DSTV") {
-        showSuccessDialog(
-          context: context,
-          title: "Subscription Successful!",
-          details: [
-            {"Provider": "DSTV"},
-            {"Smart Card Number": "12345678901"},
-            {"Package": "DSTV Compact\n₦8,000/Month"},
-            {"Amount": "₦8,000"},
-            {"Payment Source": "Wallet"},
-            {"Token": "1234-5678-9012"},
-          ],
-          secondaryButtonText: 'Buy more DSTV',
-          buttonText: "View Details",
-          onButtonPressed: () {
-            context.router.replaceAll([
-              StandAloneTransactionDetailsRoute(
-                  type: 'Bill Payment',
-                  status: 'Completed',
-                  transaction: TransactionData()),
-            ]);
-          },
-          onSecondaryAction: () {
-            context.router.popUntil(
-                (route) => route.settings.name == CableBillRoute.name);
-          },
-          primaryButtonColor: Colors.orange,
-          backgroundColor: Colors.white,
-        );
+        final result =
+            await ref.read(transactionControllerProvider.notifier).buyCableTv(
+                  assetId: assetId ?? '',
+                  accountNumber: accountNumber ?? '',
+                  pin: pinController.text,
+                );
+
+        if (result == true) {
+          showSuccessDialog(
+            context: context,
+            title: "Subscription Successful!",
+            details: [
+              {"Provider": "DSTV"},
+              {"Smart Card Number": "12345678901"},
+              {"Package": "DSTV Compact\n₦8,000/Month"},
+              {"Amount": "₦8,000"},
+              {"Payment Source": "Wallet"},
+              {"Token": "1234-5678-9012"},
+            ],
+            buttonText: "View Details",
+            onButtonPressed: () {
+              context.router.replaceAll([
+                StandAloneTransactionDetailsRoute(
+                    type: 'Bill Payment',
+                    status: 'Completed',
+                    transaction: TransactionData()),
+              ]);
+            },
+            onSecondaryAction: () {
+              context.router.popUntil(
+                  (route) => route.settings.name == CableBillRoute.name);
+            },
+            primaryButtonColor: Colors.orange,
+            backgroundColor: Colors.white,
+            secondaryButtonText: '',
+          );
+        }
       } else if (selectedType == "Betting") {
         showSuccessDialog(
           context: context,
@@ -219,6 +263,22 @@ class TransactionPinScreen extends HookConsumerWidget {
         // );
       }
     }
+
+    final isLoading = selectedType == "Airtime"
+        ? ref.watch(transactionControllerProvider).buyAirtime.isLoading
+        : selectedType == "Data"
+            ? ref.watch(transactionControllerProvider).buyData.isLoading
+            : selectedType == "Electricity"
+                ? ref
+                    .watch(transactionControllerProvider)
+                    .buyElectricity
+                    .isLoading
+                : selectedType == "DSTV"
+                    ? ref
+                        .watch(transactionControllerProvider)
+                        .cableTvPlans
+                        .isLoading
+                    : false;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -346,6 +406,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                   text: "Confirm",
                   width: double.infinity,
                   height: 48,
+                  isDisabled: isLoading,
                   onPressed: () => handleDialog(),
                   doublePressed: () => showWithdrawalFailedDialog(context),
                   textColor: Colors.white,
@@ -385,12 +446,12 @@ class TransactionPinScreen extends HookConsumerWidget {
                               BorderRadius.circular(8), // Matches the image
                         ),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 10),
+                            horizontal: 16, vertical: 10),
                       ),
                       child: Text(
                         "Reset PIN",
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: theme.brightness == Brightness.dark
                               ? Colors.white

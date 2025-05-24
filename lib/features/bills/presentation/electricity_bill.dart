@@ -1,4 +1,3 @@
-import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -188,59 +187,6 @@ class ElectricityBillScreen extends HookConsumerWidget {
                     ),
                   ),
                   const Gap(24),
-                  Container(
-                    height: 48,
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade700
-                          : const Color(0xFFF7F7F7),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: SegmentedTabControl(
-                        tabPadding: const EdgeInsets.all(0),
-                        controller: tabController,
-                        indicatorPadding: const EdgeInsets.all(0),
-                        barDecoration: BoxDecoration(
-                          color: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade500
-                              : AppColors.greyColor.shade600,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        indicatorDecoration: BoxDecoration(
-                          color: theme.brightness == Brightness.dark
-                              ? AppColors.darkBorder
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        tabs: [
-                          SegmentTab(
-                            label: 'Prepaid',
-                            backgroundColor: Colors.transparent,
-                            selectedTextColor:
-                                theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
-                            textColor: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black54,
-                          ),
-                          SegmentTab(
-                              label: 'Postpaid',
-                              backgroundColor: Colors.transparent,
-                              selectedTextColor:
-                                  theme.brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                              textColor: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black54),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Gap(24),
                   CustomTextField(
                     controller: meterNoController,
                     label: "Meter Number",
@@ -310,11 +256,17 @@ class ElectricityBillScreen extends HookConsumerWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const TransactionPinScreen(
+                              builder: (context) => TransactionPinScreen(
+                                    assetId: selectedPlan.value.id,
+                                    amount: amountController.text,
+                                    accountNumber: meterNoController.text,
                                     selectedType: 'Electricity',
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
-                                  )));
+                                  ))).then((value) {
+                        meterNoController.clear();
+                        amountController.clear();
+                      });
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

@@ -426,6 +426,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     required String assetId,
     required int amount,
     required String accountNumber,
+    required String pin,
   }) async {
     state = state.copyWith(buyAirtime: const AsyncValue.loading());
 
@@ -433,6 +434,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       assetId: assetId,
       amount: amount,
       accountNumber: accountNumber,
+      pin: pin,
     );
     return result.when(
       (error) {
@@ -454,12 +456,14 @@ class TransactionController extends StateNotifier<TransactionState> {
   Future<bool> buyData({
     required String assetId,
     required String accountNumber,
+    required String pin,
   }) async {
     state = state.copyWith(buyData: const AsyncValue.loading());
 
     final result = await _authenticationRepository.buyData(
       assetId: assetId,
       accountNumber: accountNumber,
+      pin: pin,
     );
     return result.when(
       (error) {
@@ -482,6 +486,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     required String assetId,
     required int amount,
     required String accountNumber,
+    required String pin,
   }) async {
     state = state.copyWith(buyElectricity: const AsyncValue.loading());
 
@@ -489,6 +494,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       assetId: assetId,
       amount: amount,
       accountNumber: accountNumber,
+      pin: pin,
     );
     return result.when(
       (error) {
@@ -510,12 +516,14 @@ class TransactionController extends StateNotifier<TransactionState> {
   Future<bool> buyCableTv({
     required String assetId,
     required String accountNumber,
+    required String pin,
   }) async {
     state = state.copyWith(buyCableTv: const AsyncValue.loading());
 
     final result = await _authenticationRepository.buyCableTv(
       assetId: assetId,
       accountNumber: accountNumber,
+      pin: pin,
     );
     return result.when(
       (error) {

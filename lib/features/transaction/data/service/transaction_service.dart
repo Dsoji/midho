@@ -305,10 +305,12 @@ class TransactionService {
     String? assetId,
     int? amount,
     String? accountNumber,
+    required String pin,
   }) async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post('user/tx/buyAirtime', header: {
         'Authorization': 'Bearer $accessToken',
+        'pin': pin,
       }, data: {
         "asset": {"id": assetId},
         "amount": amount,
@@ -325,10 +327,12 @@ class TransactionService {
   Future<ResultValue<String>> buyData({
     String? assetId,
     String? accountNumber,
+    required String pin,
   }) async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post('user/tx/buyMobileData', header: {
         'Authorization': 'Bearer $accessToken',
+        'pin': pin,
       }, data: {
         "asset": {"id": assetId},
         "accountNumber": accountNumber,
@@ -345,10 +349,12 @@ class TransactionService {
     String? assetId,
     int? amount,
     String? accountNumber,
+    required String pin,
   }) async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post('user/tx/buyElectricity', header: {
         'Authorization': 'Bearer $accessToken',
+        'pin': pin,
       }, data: {
         "asset": {"id": assetId},
         "amount": amount,
@@ -365,10 +371,12 @@ class TransactionService {
   Future<ResultValue<String>> buyCableTv({
     String? assetId,
     String? accountNumber,
+    required String pin,
   }) async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post('user/tx/buyCableTv', header: {
         'Authorization': 'Bearer $accessToken',
+        'pin': pin,
       }, data: {
         "asset": {"id": assetId},
         "accountNumber": accountNumber,

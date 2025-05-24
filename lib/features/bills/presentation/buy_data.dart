@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/common/res/assets.dart';
+import 'package:mdiho/features/bills/data/model/response/data_tv_model/data_tv_model.dart';
 import 'package:mdiho/features/bills/presentation/widget/custom_phone_textfield.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
@@ -13,6 +13,7 @@ import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
 import '../../transaction/data/controller/transaction_controller.dart';
 import '../../transaction_pin/transaction_pin.dart';
+import '../data/model/response/data_tv_model/product.dart';
 
 @RoutePage()
 class BuyDataScreen extends HookConsumerWidget {
@@ -23,15 +24,43 @@ class BuyDataScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final numberController =
         useTextEditingController(); // Controller for input field
-    final List<Map<String, String>> providers = [
-      {'name': 'MTN', 'logo': PlaceholderAssets.mtn},
-      {'name': 'Glo', 'logo': PlaceholderAssets.glo},
-      {'name': 'Airtel', 'logo': PlaceholderAssets.airtel},
-      {'name': '9Mobile', 'logo': PlaceholderAssets.etisalat},
-    ];
+    // Default: Glo
+
+    final dataPlans = ref.watch(transactionControllerProvider).dataPlans;
+
     final selectedProvider =
-        useState<Map<String, String>>(providers[1]); // Default: Glo
-    final selectedPlan = useState<String>("6 GB for 30 Days  NGN 10,000.00");
+        useState<({String name, String logo, List<Product>? products})>(
+            dataPlans.when(
+      data: (plans) => plans.isNotEmpty
+          ? (
+              name: plans.first.name ?? '',
+              logo: plans.first.logo ?? '',
+              products: plans.first.products ?? [],
+            )
+          : (
+              name: '',
+              logo: '',
+              products: [],
+            ),
+      loading: () => (
+        name: '',
+        logo: '',
+        products: [],
+      ),
+      error: (_, __) => (
+        name: '',
+        logo: '',
+        products: [],
+      ),
+    ));
+
+    final selectedPlan = useState<Product?>(
+      dataPlans.when(
+        data: (plans) => plans.isNotEmpty ? plans.first.products?.first : null,
+        loading: () => null,
+        error: (_, __) => null,
+      ),
+    );
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
@@ -46,6 +75,7 @@ class BuyDataScreen extends HookConsumerWidget {
         builder: (context) {
           return DataPlanBottomSheet(
             selectedPlan: selectedPlan,
+            products: selectedProvider.value.products ?? [],
           );
         },
       );
@@ -58,7 +88,19 @@ class BuyDataScreen extends HookConsumerWidget {
       return null;
     }, []);
 
-    final dataPlans = ref.watch(transactionControllerProvider).dataPlans;
+    final List<DataTvModel> providers = dataPlans.when(
+      data: (data) {
+        return data
+            .map((e) => DataTvModel(
+                  name: e.name ?? "",
+                  logo: e.logo ?? "",
+                  products: e.products ?? [],
+                ))
+            .toList();
+      },
+      error: (error, stackTrace) => [],
+      loading: () => [],
+    );
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Buy Data",
@@ -90,7 +132,7 @@ class BuyDataScreen extends HookConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ProviderPhoneInput(
+                  DataProviderPhoneInput(
                     selectedProvider: selectedProvider,
                     controller: numberController,
                     providers: providers,
@@ -154,7 +196,7 @@ class BuyDataScreen extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            selectedPlan.value,
+                            selectedPlan.value?.name ?? "Select data plan",
                             style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500),
                           ),
@@ -181,8 +223,10 @@ class BuyDataScreen extends HookConsumerWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const TransactionPinScreen(
+                              builder: (context) => TransactionPinScreen(
                                     selectedType: 'Data',
+                                    assetId: selectedPlan.value?.id ?? '',
+                                    accountNumber: numberController.text,
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
                                   )));
@@ -201,17 +245,16 @@ class BuyDataScreen extends HookConsumerWidget {
 }
 
 class DataPlanBottomSheet extends HookConsumerWidget {
-  final ValueNotifier<String> selectedPlan;
-  const DataPlanBottomSheet({super.key, required this.selectedPlan});
+  final ValueNotifier<Product?> selectedPlan;
+  final List<Product> products;
+  const DataPlanBottomSheet({
+    super.key,
+    required this.selectedPlan,
+    required this.products,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<String> plans = [
-      "6 GB for 30 Days  NGN 10,000.00",
-      "3 GB for 14 Days  NGN 5,000.00",
-      "1.5 GB for 7 Days  NGN 2,500.00",
-      "500 MB for 1 Day  NGN 500.00",
-    ];
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
 
@@ -254,23 +297,23 @@ class DataPlanBottomSheet extends HookConsumerWidget {
               borderRadius: BorderRadius.circular(24),
             ),
             child: ListView.separated(
-              itemCount: plans.length,
+              itemCount: products.length,
               shrinkWrap: true,
               separatorBuilder: (context, index) =>
                   Divider(color: Colors.grey.shade100),
               itemBuilder: (context, index) {
-                final plan = plans[index];
+                final product = products[index];
                 return ListTile(
                   title: Center(
                     child: Text(
-                      plan,
+                      "${product.name} - NGN ${product.amount}",
                       style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center, // Ensures text is centered
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   onTap: () {
-                    selectedPlan.value = plan;
                     Navigator.pop(context);
+                    selectedPlan.value = product;
                   },
                 );
               },

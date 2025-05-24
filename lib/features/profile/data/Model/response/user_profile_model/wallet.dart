@@ -10,6 +10,8 @@ class Wallet {
   bool? locked;
   DateTime? createdAt;
   DateTime? updatedAt;
+  int? inFlow;
+  int? outFlow;
 
   Wallet({
     this.id,
@@ -21,11 +23,13 @@ class Wallet {
     this.locked,
     this.createdAt,
     this.updatedAt,
+    this.inFlow,
+    this.outFlow,
   });
 
   @override
   String toString() {
-    return 'Wallet(id: $id, user: $user, mainBalance: $mainBalance, referralBalance: $referralBalance, lifetimeReferralBalance: $lifetimeReferralBalance, currency: $currency, locked: $locked, createdAt: $createdAt, updatedAt: $updatedAt, id: $id)';
+    return 'Wallet(id: $id, user: $user, mainBalance: $mainBalance, referralBalance: $referralBalance, lifetimeReferralBalance: $lifetimeReferralBalance, currency: $currency, locked: $locked, createdAt: $createdAt, updatedAt: $updatedAt, id: $id, inFlow: $inFlow, outFlow: $outFlow )';
   }
 
   factory Wallet.fromMap(Map<String, dynamic> data) => Wallet(
@@ -42,6 +46,8 @@ class Wallet {
         updatedAt: data['updatedAt'] == null
             ? null
             : DateTime.parse(data['updatedAt'] as String),
+        inFlow: data['inflow'] as int?,
+        outFlow: data['outflow'] as int?,
       );
 
   Map<String, dynamic> toMap() => {
@@ -55,6 +61,8 @@ class Wallet {
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         'id': id,
+        'inflow': inFlow,
+        'outflow': outFlow,
       };
 
   /// `dart:convert`
@@ -79,6 +87,8 @@ class Wallet {
     bool? locked,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? inFlow,
+    int? outFlow,
   }) {
     return Wallet(
       id: id ?? this.id,
@@ -91,6 +101,8 @@ class Wallet {
       locked: locked ?? this.locked,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      inFlow: inFlow ?? this.inFlow,
+      outFlow: outFlow ?? this.outFlow,
     );
   }
 }

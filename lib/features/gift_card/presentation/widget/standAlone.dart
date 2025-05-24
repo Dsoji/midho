@@ -275,10 +275,10 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
           "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
           "breakdown": {
             "Crypto Sold":
-                "${transaction.asset?.name ?? ''} (${transaction.asset?.name ?? ''})",
+                "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
             "Rate":
-                "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.name ?? ''}",
-            "Amount Sold": "0.02 ${transaction.asset?.name ?? ''}",
+                "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}",
+            "Amount Sold": "0.02 ${transaction.asset?.baseCurrency ?? ''}",
             "Total Received":
                 "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
           }

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/res/assets.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 
-class SummaryCards extends StatelessWidget {
+class SummaryCards extends HookConsumerWidget {
   const SummaryCards({super.key});
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -23,14 +25,15 @@ class SummaryCards extends StatelessWidget {
         children: [
           _buildCard(
             title: "Total In-Flow",
-            amount: "₦50,000.00",
+            amount: "${userInfo?.wallet?.currency} ${userInfo?.wallet?.inFlow}",
             iconImage: ImageAssets.logo,
             context: context, // use your preferred icon
           ),
           const SizedBox(width: 16),
           _buildCard(
               title: "Total Withdrawal",
-              amount: "₦50,000.00",
+              amount:
+                  "${userInfo?.wallet?.currency} ${userInfo?.wallet?.outFlow}",
               icon: HugeIcons.strokeRoundedArrowUp03,
               context: context),
         ],
