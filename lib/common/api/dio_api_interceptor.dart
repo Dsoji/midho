@@ -83,7 +83,7 @@ class DioApiInterceptor extends Interceptor {
     if (statusCode == 401) {
       /// get the previous user from the local storage
       // UserModel previousUser = await authLocalService.getUser();
-      appRouter.replaceAll([const OnboardingRoute()]);
+      appRouter.navigate(const OnboardingRoute());
 
       final dio = Dio()
         ..interceptors.add(LogInterceptor(
@@ -98,6 +98,7 @@ class DioApiInterceptor extends Interceptor {
 
       /// make a request to the refresh token endpoint
       try {
+        appRouter.navigate(const OnboardingRoute());
         // final response = await dio.post(
         //   EnvironmentConfig.instance.baseUrl + ApiEndpoints.refreshToken,
         //   data: {
@@ -136,7 +137,7 @@ class DioApiInterceptor extends Interceptor {
         // }
       } on DioException catch (dioError) {
         if (dioError.response != null) {
-          appRouter.replaceAll([const OnboardingRoute()]);
+          appRouter.navigate(const OnboardingRoute());
 
           ToastService().showToast(
             NotificationType.error,

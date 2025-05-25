@@ -17,23 +17,28 @@ import '../../../bank_network/presentation/bank_network_screen.dart';
 import '../../../transaction/data/controller/transaction_controller.dart';
 import '../../../withdrawal/presentation/widget/bank_info_card.dart';
 import '../../../withdrawal/presentation/widget/info_widget.dart';
+import '../../data/Model/response/user_profile_model/bank.dart';
 import '../../data/controller/profile_controller.dart';
 
 final logger = Logger();
 final selectedBankProvider = StateProvider<BanlList?>((ref) => null);
 
 @RoutePage()
-class AddNewBankScreen extends HookConsumerWidget {
-  const AddNewBankScreen({
+class EditBankScreen extends HookConsumerWidget {
+  const EditBankScreen({
     super.key,
     this.isverif = false,
+    required this.bankDetails,
   });
   final bool? isverif;
+  final Bank bankDetails;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bankController = useTextEditingController();
     final theme = Theme.of(context);
-    final acctNumberController = useTextEditingController();
+    final acctNumberController = useTextEditingController(
+      text: bankDetails.accountNumber ?? '',
+    );
     final acctNameController = useTextEditingController();
     final isVerify = useState(isverif);
     final selectedBank = ref.watch(selectedBankProvider);
@@ -42,11 +47,10 @@ class AddNewBankScreen extends HookConsumerWidget {
         useMemoized(() => Debouncer(delay: const Duration(milliseconds: 100)));
     useEffect(() => debouncer.dispose, [debouncer]);
     final isLoadingName = useState(false);
-    final firstBank = ref.watch(profileControllerProvider).banks.valueOrNull;
-    final localBanks = firstBank?.first;
+
     return Scaffold(
       appBar: const CustomAppBar(
-        title: "Add Bank Accounts",
+        title: "Edit Bank Accounts",
         showBackButton: true,
         showTitle: true,
         showAction: false,
@@ -79,15 +83,11 @@ class AddNewBankScreen extends HookConsumerWidget {
                   // Email Field
                   BankInfoCard(
                     isAddBank: true,
-                    name: selectedBank?.name ??
-                        localBanks?.name ??
-                        'Unknown Bank',
-                    status: selectedBank?.status ?? 'Poor Network',
-                    percentage:
-                        '${selectedBank?.strength ?? localBanks?.strength ?? 0}%',
-                    actNumber: 'N/A',
-                    actName: 'N/A',
-                    onTap: () => _showAddBankDetailsSheet(context),
+                    name: bankDetails.bankName ?? 'Unknown Bank',
+                    percentage: '${selectedBank?.strength ?? 0}%',
+                    actNumber: bankDetails.accountNumber ?? 'N/A',
+                    actName: bankDetails.accountName ?? 'N/A',
+                    onTap: () {},
                   ),
                   const SizedBox(height: 28),
                   CustomTextField(
@@ -103,7 +103,7 @@ class AddNewBankScreen extends HookConsumerWidget {
                               .read(transactionControllerProvider.notifier)
                               .acctName(
                                 acctNo: value.trim(),
-                                bankCode: selectedBank?.code ?? '',
+                                bankCode: bankDetails.bankCode ?? '',
                               );
 
                           if (result == true) {
@@ -193,12 +193,8 @@ class AddNewBankScreen extends HookConsumerWidget {
                             .addBanks(
                               acctName: acctNameController.text.trim(),
                               acctNo: acctNumberController.text.trim(),
-                              bankName: selectedBank?.name ??
-                                  localBanks?.name ??
-                                  'Unknown Bank',
-                              bankCode: selectedBank?.code ??
-                                  localBanks?.code ??
-                                  'Unknown Bank',
+                              bankName: bankDetails.bankName ?? '',
+                              bankCode: bankDetails.bankCode ?? '',
                             );
                         if (result == true) {
                           await ref

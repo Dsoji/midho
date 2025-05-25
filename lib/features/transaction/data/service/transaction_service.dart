@@ -257,6 +257,33 @@ class TransactionService {
     );
   }
 
+  Future<ResultValue<String>> editBanks({
+    String? acctNo,
+    String? acctName,
+    String? bankName,
+    String? bankCode,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/profile/addBank',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "accountName": acctName,
+          "accountNumber": acctNo,
+          "bankName": bankName,
+          "bankCode": bankCode,
+        },
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
   Future<ResultValue<AcctNameModel>> getAcctName({
     String? acctNo,
     String? bankCode,
@@ -457,6 +484,38 @@ class TransactionService {
             .map((e) => AirtimeElectricModel.fromMap(e))
             .toList();
       },
+    );
+  }
+
+  Future<ResultValue<String>> withdrawal({
+    String? acctNo,
+    int? amount,
+    bool? referall,
+    String? accountName,
+    String? bankName,
+    String? bankCode,
+    required String pin,
+  }) async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post('user/profile/addBank', header: {
+        'Authorization': 'Bearer $accessToken',
+        'pin': pin,
+      }, data: {
+        "accountNumber": acctNo,
+        "amount": amount,
+        "accountName": accountName,
+        "bankName": bankName,
+        "bankCode": bankCode,
+        "origination": {
+          "referral":
+              referall // pass true when withdrawing from referral balance
+        }
+      }),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
     );
   }
 }

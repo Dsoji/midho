@@ -1499,12 +1499,24 @@ class TransactionPinRoute extends _i49.PageRouteInfo<TransactionPinRouteArgs> {
   TransactionPinRoute({
     _i50.Key? key,
     required bool isHome,
+    required String acctNo,
+    required int amount,
+    required bool referall,
+    required String accountName,
+    required String bankName,
+    required String bankCode,
     List<_i49.PageRouteInfo>? children,
   }) : super(
           TransactionPinRoute.name,
           args: TransactionPinRouteArgs(
             key: key,
             isHome: isHome,
+            acctNo: acctNo,
+            amount: amount,
+            referall: referall,
+            accountName: accountName,
+            bankName: bankName,
+            bankCode: bankCode,
           ),
           initialChildren: children,
         );
@@ -1518,6 +1530,12 @@ class TransactionPinRoute extends _i49.PageRouteInfo<TransactionPinRouteArgs> {
       return _i45.TransactionPinScreen(
         key: args.key,
         isHome: args.isHome,
+        acctNo: args.acctNo,
+        amount: args.amount,
+        referall: args.referall,
+        accountName: args.accountName,
+        bankName: args.bankName,
+        bankCode: args.bankCode,
       );
     },
   );
@@ -1527,15 +1545,33 @@ class TransactionPinRouteArgs {
   const TransactionPinRouteArgs({
     this.key,
     required this.isHome,
+    required this.acctNo,
+    required this.amount,
+    required this.referall,
+    required this.accountName,
+    required this.bankName,
+    required this.bankCode,
   });
 
   final _i50.Key? key;
 
   final bool isHome;
 
+  final String acctNo;
+
+  final int amount;
+
+  final bool referall;
+
+  final String accountName;
+
+  final String bankName;
+
+  final String bankCode;
+
   @override
   String toString() {
-    return 'TransactionPinRouteArgs{key: $key, isHome: $isHome}';
+    return 'TransactionPinRouteArgs{key: $key, isHome: $isHome, acctNo: $acctNo, amount: $amount, referall: $referall, accountName: $accountName, bankName: $bankName, bankCode: $bankCode}';
   }
 }
 

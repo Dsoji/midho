@@ -74,12 +74,14 @@ class ChangeUsernameScreen extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Email Field
-                    CustomTextField(
-                      controller: usernameController,
-                      label: "Current Username",
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) => Validators.requiredField(
-                          value, "old userName"), // ✅ CORRECT
+                    AbsorbPointer(
+                      child: CustomTextField(
+                        controller: usernameController,
+                        label: "Current Username",
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) => Validators.requiredField(
+                            value, "old userName"), // ✅ CORRECT
+                      ),
                     ),
                     const Gap(28),
                     CustomTextField(

@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_textfield.dart';
+import '../../crypto/presentation/crypto_screen.dart';
 import '../../profile/data/controller/profile_controller.dart';
 import '../../withdrawal/presentation/widget/bank_info_card.dart';
 import '../data/model/response/bank_list/bank_list.dart';
@@ -27,7 +28,18 @@ class BankNetworkScreen extends HookConsumerWidget {
       return null;
     }, [banks]);
 
-    if (banks == null) return const Center(child: CircularProgressIndicator());
+    if (banks == null)
+      return SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 16,
+          ),
+          itemCount: 6,
+          separatorBuilder: (_, __) => const Gap(8),
+          itemBuilder: (_, __) => const CryptoCardShimmer(),
+        ),
+      );
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -58,21 +70,26 @@ class BankNetworkScreen extends HookConsumerWidget {
             ),
             const Gap(16),
             Expanded(
-              child: ListView.separated(
-                itemCount: filteredBanks.value.length,
-                physics: const BouncingScrollPhysics(),
-                separatorBuilder: (context, index) => const Gap(10),
-                itemBuilder: (context, index) {
-                  final bank = filteredBanks.value[index];
-
-                  return BankInfoCard2(
-                    name: bank.name ?? "Unknown Bank",
-                    status: bank.status ?? "No Status",
-                    percentage: '${bank.strength ?? 0}%',
-                    showBorder: false,
-                    onTap: () {},
-                  );
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await ref.read(profileControllerProvider.notifier).getBanks();
                 },
+                child: ListView.separated(
+                  itemCount: filteredBanks.value.length,
+                  physics: const BouncingScrollPhysics(),
+                  separatorBuilder: (context, index) => const Gap(10),
+                  itemBuilder: (context, index) {
+                    final bank = filteredBanks.value[index];
+
+                    return BankInfoCard2(
+                      name: bank.name ?? "Unknown Bank",
+                      status: bank.status ?? "No Status",
+                      percentage: '${bank.strength ?? 0}%',
+                      showBorder: false,
+                      onTap: () {},
+                    );
+                  },
+                ),
               ),
             ),
           ],

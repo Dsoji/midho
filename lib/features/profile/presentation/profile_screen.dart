@@ -115,13 +115,11 @@ class ProfileScreen extends HookConsumerWidget {
                             ],
                           ),
                         ),
-                        error: (error, _) => Column(
+                        error: (error, _) => const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Error loading profile",
+                            Text("Error loading profile",
                                 style: TextStyle(color: Colors.red)),
-                            Text(error.toString(),
-                                style: const TextStyle(fontSize: 12)),
                           ],
                         ),
                         data: (userInfo) => Column(

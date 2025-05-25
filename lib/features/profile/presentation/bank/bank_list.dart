@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:mdiho/features/profile/presentation/bank/edit_bank.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 
 import '../../../../common/res/app_colors.dart';
@@ -103,7 +104,17 @@ class LinkedBanksScreen extends HookConsumerWidget {
                               showBorder: false,
                               icon: Icons.more_horiz,
                               showStrength: false,
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditBankScreen(
+                                      bankDetails: bank,
+                                      isverif: true,
+                                    ),
+                                  ),
+                                );
+                              },
                               delete: () async {
                                 final result = await ref
                                     .read(

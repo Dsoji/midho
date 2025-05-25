@@ -12,6 +12,7 @@ import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../bottomNav/app_router.gr.dart';
 import '../../profile/presentation/security_settings/change_pin_screen.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 
 class PinState {
   final String pin;
@@ -48,8 +49,20 @@ class TransactionPinScreen extends HookConsumerWidget {
   const TransactionPinScreen({
     super.key,
     required this.isHome,
+    required this.acctNo,
+    required this.amount,
+    required this.referall,
+    required this.accountName,
+    required this.bankName,
+    required this.bankCode,
   });
   final bool isHome;
+  final String acctNo;
+  final int amount;
+  final bool referall;
+  final String accountName;
+  final String bankName;
+  final String bankCode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -173,8 +186,28 @@ class TransactionPinScreen extends HookConsumerWidget {
                     text: "Next",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () => showWithdrawSuccessDialog(context),
-                    doublePressed: () => showWithdrawalFailedDialog(context),
+                    isLoading: ref
+                        .watch(transactionControllerProvider)
+                        .withdrawal
+                        .isLoading,
+                    onPressed: () async {
+                      final result = await ref
+                          .read(transactionControllerProvider.notifier)
+                          .withdraw(
+                            acctNo: acctNo,
+                            amount: amount,
+                            referall: referall,
+                            pin: pinController.text,
+                            accountName: accountName,
+                            bankName: bankName,
+                            bankCode: bankCode,
+                          );
+                      if (result) {
+                        showWithdrawSuccessDialog(context);
+                      } else {
+                        showWithdrawalFailedDialog(context);
+                      }
+                    },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
                   ),

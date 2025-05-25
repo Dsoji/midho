@@ -673,4 +673,41 @@ class TransactionRepository {
       return Error(failure);
     }
   }
+
+  Future<Result<FailureHandler, String>> withdraw({
+    String? acctNo,
+    int? amount,
+    bool? referall,
+    String? accountName,
+    String? bankName,
+    String? bankCode,
+    required String pin,
+  }) async {
+    try {
+      final data = await transactionService.withdrawal(
+        acctNo: acctNo,
+        amount: amount,
+        referall: referall,
+        pin: pin,
+        accountName: accountName,
+        bankName: bankName,
+        bankCode: bankCode,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to process withdrawal',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to process withdrawal'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
 }
