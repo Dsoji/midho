@@ -1,11 +1,9 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../bottomNav/app_router.gr.dart';
 
 class BankInfoCard extends HookConsumerWidget {
   BankInfoCard({
@@ -171,11 +169,7 @@ class BankInfoCard extends HookConsumerWidget {
                 ? PopupMenuButton<int>(
                     itemBuilder: (context) => [
                       PopupMenuItem(
-                        onTap: () {
-                          context.router.push(
-                            AddNewBankRoute(isverif: true),
-                          );
-                        },
+                        onTap: onTap,
                         value: 1,
                         child: const Row(
                           children: [

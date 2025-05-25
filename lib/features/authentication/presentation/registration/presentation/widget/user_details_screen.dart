@@ -30,335 +30,273 @@ class UserDetailsStep extends HookConsumerWidget {
     final lastNameController = useTextEditingController();
     final phoneController = useTextEditingController();
     final selectedCountry = useState("Nigeria");
+    final formattedPhoneNumber = useState('');
+    final country = useState('');
     final theme = Theme.of(context);
     final authService = ref.read(authenticationControllerProvider.notifier);
-    var box = Hive.box('data');
-    String? deviceId = box.get('device_id');
     final formKey = GlobalKey<FormState>();
-    final country = useState('');
-    String formattedPhoneNumber = '';
+    final box = Hive.box('data');
+    final deviceId = box.get('device_id');
 
-    return SingleChildScrollView(
-      child: Form(
-        key: formKey,
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 18),
-              decoration: ShapeDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? const Color(0xFF151515)
-                    : AppColors.whiteColor.shade100,
-                shape: const RoundedRectangleBorder(),
-                shadows: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Light shadow color
-                    blurRadius: 3, // Soft shadow effect
-                    spreadRadius: 1, // Spread of the shadow
-                    offset: const Offset(0, 2), // Moves shadow slightly down
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SingleChildScrollView(
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                decoration: ShapeDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade600
+                      : AppColors.whiteColor.shade100,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                ],
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Let's Set Up Your Account",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                  shadows: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Provide the following details to set up your account",
-                    style: TextStyle(
-                      fontSize: 14,
+                  ],
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Let's Set Up Your Account",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // First Name Field
-                  CustomTextField(
-                    controller: firstNameController,
-                    label: "First Name",
-                    hintText: "eg. John",
-                    validator: (value) =>
-                        Validators.requiredField(value, "First name"),
-                  ),
-                  const SizedBox(height: 15),
-
-                  // Last Name Field
-                  CustomTextField(
-                    controller: lastNameController,
-                    label: "Last Name",
-                    hintText: "eg. Doe",
-                    validator: (value) => Validators.requiredField(
-                        value, "Last name"), // ✅ CORRECT
-                  ),
-                  const SizedBox(height: 15),
-
-                  // Country Dropdown
-                  Text("Select Country",
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Provide the following details to set up your account",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextField(
+                      controller: firstNameController,
+                      label: "First Name",
+                      hintText: "eg. John",
+                      validator: (value) =>
+                          Validators.requiredField(value, "First name"),
+                    ),
+                    const SizedBox(height: 15),
+                    CustomTextField(
+                      controller: lastNameController,
+                      label: "Last Name",
+                      hintText: "eg. Doe",
+                      validator: (value) =>
+                          Validators.requiredField(value, "Last name"),
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      "Select Country",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: theme.brightness == Brightness.dark
                             ? Colors.white
                             : AppColors.greyColor.shade700,
-                      )),
-                  const SizedBox(height: 8),
-                  CustomDropdown(
-                    onChanged: (value) {
-                      country.value = value!;
-                      print(country.value);
-                    },
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // Phone Number Field with Country Code
-                  Text(
-                    "Phone",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : AppColors.greyColor.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  IntlPhoneField(
-                    controller: phoneController,
-                    decoration: InputDecoration(
-                      labelText: "Enter phone number",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          width: 0.5,
-                          color: theme.brightness == Brightness.light
-                              ? AppColors.greyColor.shade50
-                              : AppColors.secondaryColor.shade400,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          width: 0.5,
-                          color: Colors.red.shade100,
-                        ),
                       ),
                     ),
-                    initialCountryCode: "NG",
-                    onChanged: (phone) {
-                      selectedCountry.value = phone.countryCode;
-
-                      // Keep the phone number as entered by the user in the controller
-                      String enteredPhone = phone.number;
-
-                      // If the phone number starts with '0', replace it with the country code
-                      if (enteredPhone.startsWith('0')) {
-                        enteredPhone =
-                            enteredPhone.replaceFirst('0', phone.countryCode);
-                      } else {
-                        // If the number doesn't start with '0', prepend the country code
-                        enteredPhone = phone.countryCode + enteredPhone;
-                      }
-
-                      // Store the final formatted phone number without affecting the text field
-                      formattedPhoneNumber = enteredPhone;
-                    },
-                    disableLengthCheck: true,
-                    validator: (phone) {
-                      if (phone == null || phone.number.isEmpty) {
-                        return 'Phone number is required'; // Custom validation message
-                      }
-                      // Optionally check if the country code and phone number are valid
-                      if (phone.number.length < 10) {
-                        return 'Please enter a valid phone number';
-                      }
-                      return null; // If phone is valid, return null
-                    },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Terms and Conditions
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      text: "By pressing Sign up securely, you agree to our ",
+                    const SizedBox(height: 8),
+                    Builder(
+                      builder: (_) => CustomDropdown(
+                        key: const Key("countryDropdown"),
+                        onChanged: (value) {
+                          country.value = value!;
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      "Phone",
                       style: TextStyle(
                         fontSize: 14,
+                        fontWeight: FontWeight.w500,
                         color: theme.brightness == Brightness.dark
                             ? Colors.white
                             : AppColors.greyColor.shade700,
-                        height: 16.8 / 12,
                       ),
-                      children: [
-                        TextSpan(
-                          text: "Terms & Conditions",
-                          style: TextStyle(
-                            color: AppColors.primaryColor.shade500,
-                            height: 16.8 / 12,
-                          ),
-                        ),
-                        const TextSpan(text: " and "),
-                        TextSpan(
-                          text: "Privacy Policy",
-                          style: TextStyle(
-                            color: AppColors.primaryColor.shade500,
-                            height: 16.8 / 12,
-                          ),
-                        ),
-                        TextSpan(
-                          text:
-                              ". Digital-only support available 24/7 via the in-app chat. Your data will be securely encrypted with TLS 🔒",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.greyColor.shade700,
-                            height: 16.8 / 12,
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  FullButton(
-                    isLoading: ref
-                        .watch(authenticationControllerProvider)
-                        .signUp
-                        .isLoading,
-                    text: "Sign Up",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () async {
-                      if (!formKey.currentState!.validate()) {
-                        return;
-                      }
-                      if (country.value != '') {
-                        if (phoneController.text.isNotEmpty) {
-                          var box = Hive.box('data');
-                          final String email = box.get('email');
-                          final String password = box.get('password');
-                          final String referral = box.get('referral');
-                          final String storedToken = box.get('fcm_token');
-                          logger.d(email);
-                          logger.d(password);
-                          logger.d(referral);
-                          logger.d(storedToken);
-                          authService.updateProfileDetails(ProfilePayload(
-                            firstname: firstNameController.text.trim(),
-                            lastname: lastNameController.text.trim(),
-                            phone: phoneController.text.trim(),
-                          ));
-                          final result = await authService.signUp(
-                            SignUpPayload(
-                              email: email,
-                              password: password,
-                              referral: referral,
-                              firstname: firstNameController.text.trim(),
-                              lastname: lastNameController.text.trim(),
-                              country: 'NG',
-                              phone: formattedPhoneNumber,
-                              device: deviceId,
-                              fcmToken: storedToken,
+                    const SizedBox(height: 8),
+                    Builder(
+                      builder: (_) => IntlPhoneField(
+                        key: const Key("intlPhoneField"),
+                        controller: phoneController,
+                        initialCountryCode: "NG",
+                        disableLengthCheck: true,
+                        decoration: InputDecoration(
+                          labelText: "Enter phone number",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.red.shade100),
+                          ),
+                        ),
+                        onChanged: (phone) {
+                          selectedCountry.value = phone.countryCode;
+                          String enteredPhone = phone.number;
+                          if (enteredPhone.startsWith('0')) {
+                            enteredPhone = enteredPhone.replaceFirst(
+                                '0', phone.countryCode);
+                          } else {
+                            enteredPhone = phone.countryCode + enteredPhone;
+                          }
+                          formattedPhoneNumber.value = enteredPhone;
+                        },
+                        validator: (phone) {
+                          if (phone == null || phone.number.trim().isEmpty) {
+                            return 'Phone number is required';
+                          }
+                          if (phone.number.length < 10) {
+                            return 'Please enter a valid phone number';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: "By pressing Sign up securely, you agree to our ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.greyColor.shade700,
+                          height: 1.4,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Terms & Conditions",
+                            style: TextStyle(
+                                color: AppColors.primaryColor.shade500),
+                          ),
+                          const TextSpan(text: " and "),
+                          TextSpan(
+                            text: "Privacy Policy",
+                            style: TextStyle(
+                                color: AppColors.primaryColor.shade500),
+                          ),
+                          TextSpan(
+                            text:
+                                ". Digital-only support available 24/7 via the in-app chat. Your data will be securely encrypted with TLS 🔒",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : AppColors.greyColor.shade700,
+                              height: 1.4,
                             ),
-                          );
-                          if (result == true) {
-                            final localAuth = LocalAuthentication();
-                            final canAuthenticate =
-                                await localAuth.canCheckBiometrics ||
-                                    await localAuth.isDeviceSupported();
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FullButton(
+                      isLoading: ref
+                          .watch(authenticationControllerProvider)
+                          .signUp
+                          .isLoading,
+                      text: "Sign Up",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) return;
+                        if (country.value.isEmpty) {
+                          ToastService().showToast(NotificationType.info,
+                              message: 'Select a country');
+                          return;
+                        }
+                        if (phoneController.text.isEmpty) {
+                          ToastService().showToast(NotificationType.info,
+                              message: 'Fill all fields');
+                          return;
+                        }
 
-                            if (canAuthenticate) {
-                              final availableBiometrics =
-                                  await localAuth.getAvailableBiometrics();
-                              if (availableBiometrics.isNotEmpty) {
-                                try {
-                                  final authenticated =
-                                      await localAuth.authenticate(
-                                    localizedReason:
-                                        "Authenticate to complete registration",
-                                    options: const AuthenticationOptions(
-                                        biometricOnly: true),
-                                  );
+                        final email = box.get('email');
+                        final password = box.get('password');
+                        final referral = box.get('referral');
+                        final fcmToken = box.get('fcm_token');
 
-                                  var box = Hive.box('data');
-                                  box.put('biometric_auth', authenticated);
+                        authService.updateProfileDetails(ProfilePayload(
+                          firstname: firstNameController.text.trim(),
+                          lastname: lastNameController.text.trim(),
+                          phone: phoneController.text.trim(),
+                        ));
 
-                                  if (authenticated) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const CreatePinScreen()),
-                                    );
-                                  }
-                                } catch (e) {
-                                  debugPrint(
-                                      "Biometric authentication failed: $e");
-                                  var box = Hive.box('data');
-                                  box.put('biometric_auth', false);
+                        final result = await authService.signUp(SignUpPayload(
+                          email: email,
+                          password: password,
+                          referral: referral,
+                          firstname: firstNameController.text.trim(),
+                          lastname: lastNameController.text.trim(),
+                          country: 'NG',
+                          phone: formattedPhoneNumber.value,
+                          device: deviceId,
+                          fcmToken: fcmToken,
+                        ));
 
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const CreatePinScreen()),
-                                  );
-                                }
-                              } else {
-                                debugPrint(
-                                    "Biometric authentication is not available on this device.");
-                                var box = Hive.box('data');
-                                box.put('biometric_auth', false);
+                        if (result == true) {
+                          final localAuth = LocalAuthentication();
+                          final canAuthenticate =
+                              await localAuth.canCheckBiometrics ||
+                                  await localAuth.isDeviceSupported();
 
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CreatePinScreen()),
-                                );
-                              }
-                            } else {
-                              debugPrint(
-                                  "Biometric authentication is not available on this device.");
-                              var box = Hive.box('data');
-                              box.put('biometric_auth', false);
-
+                          if (canAuthenticate) {
+                            try {
+                              final authenticated =
+                                  await localAuth.authenticate(
+                                localizedReason:
+                                    "Authenticate to complete registration",
+                                options: const AuthenticationOptions(
+                                    biometricOnly: true),
+                              );
+                              box.put('biometric_auth', authenticated);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CreatePinScreen()),
+                                  builder: (_) => const CreatePinScreen(),
+                                ),
+                              );
+                            } catch (e) {
+                              box.put('biometric_auth', false);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CreatePinScreen(),
+                                ),
                               );
                             }
+                          } else {
+                            box.put('biometric_auth', false);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const CreatePinScreen(),
+                              ),
+                            );
                           }
-                        } else {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Fill all fields',
-                          );
                         }
-                      } else {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message: 'Select a country',
-                        );
-                      }
-                    },
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                ],
+                      },
+                      textColor: Colors.white,
+                      color: AppColors.primaryColor.shade500,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

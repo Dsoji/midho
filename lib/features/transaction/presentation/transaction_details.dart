@@ -33,7 +33,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> transactionDetails =
+    Map<dynamic, dynamic> transactionDetails =
         _getTransactionDetails(type, status, transaction);
     final screenshotController = useMemoized(() => ScreenshotController());
     final isProcessing = useState(false);
@@ -171,7 +171,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
   }
 
   Widget _buildTransactionSummary(
-      Map<String, dynamic> details, BuildContext context) {
+      Map<dynamic, dynamic> details, BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

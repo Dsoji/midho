@@ -12,6 +12,7 @@ import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../bottomNav/app_router.gr.dart';
 import '../../profile/presentation/security_settings/change_pin_screen.dart';
+import '../../transaction/data/controller/transaction_controller.dart';
 
 class PinState {
   final String pin;
@@ -48,8 +49,20 @@ class TransactionPinScreen extends HookConsumerWidget {
   const TransactionPinScreen({
     super.key,
     required this.isHome,
+    required this.acctNo,
+    required this.amount,
+    required this.referall,
+    required this.accountName,
+    required this.bankName,
+    required this.bankCode,
   });
   final bool isHome;
+  final String acctNo;
+  final int amount;
+  final bool referall;
+  final String accountName;
+  final String bankName;
+  final String bankCode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -173,77 +186,98 @@ class TransactionPinScreen extends HookConsumerWidget {
                 ),
                 const Gap(24),
 
-                // Next Button
-                FullButton(
-                  text: "Next",
-                  width: double.infinity,
-                  height: 48,
-                  onPressed: () => showWithdrawSuccessDialog(context),
-                  doublePressed: () => showWithdrawalFailedDialog(context),
-                  textColor: Colors.white,
-                  color: AppColors.primaryColor.shade500,
-                ),
-                const Gap(24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Forgot PIN?",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ChangePinScreen(),
-                          ),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: theme.brightness == Brightness.dark
-                            ? AppColors.secondaryColor.shade400
-                            : Colors.transparent,
-                        side: BorderSide(
-                          color: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade300
-                              : Colors.grey.shade300,
-                        ), // Border color
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(8), // Matches the image
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                      ),
-                      child: Text(
-                        "Reset PIN",
+                  // Next Button
+                  FullButton(
+                    text: "Next",
+                    width: double.infinity,
+                    height: 48,
+                    isLoading: ref
+                        .watch(transactionControllerProvider)
+                        .withdrawal
+                        .isLoading,
+                    onPressed: () async {
+                      final result = await ref
+                          .read(transactionControllerProvider.notifier)
+                          .withdraw(
+                            acctNo: acctNo,
+                            amount: amount,
+                            referall: referall,
+                            pin: pinController.text,
+                            accountName: accountName,
+                            bankName: bankName,
+                            bankCode: bankCode,
+                          );
+                      if (result) {
+                        showWithdrawSuccessDialog(context);
+                      } else {
+                        showWithdrawalFailedDialog(context);
+                      }
+                    },
+                    textColor: Colors.white,
+                    color: AppColors.primaryColor.shade500,
+                  ),
+                  const Gap(24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Forgot PIN?",
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const Gap(24),
-                InfoWidget(
-                  theme: theme,
-                  text:
-                      'Select a bank with good network status for faster processing.',
-                ),
-              ],
+                      OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ChangePinScreen(),
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : Colors.transparent,
+                          side: BorderSide(
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.secondaryColor.shade300
+                                : Colors.grey.shade300,
+                          ), // Border color
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(8), // Matches the image
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        ),
+                        child: Text(
+                          "Reset PIN",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Gap(24),
+                  InfoWidget(
+                    theme: theme,
+                    text:
+                        'Select a bank with good network status for faster processing.',
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
+    )
   }
 
   void showWithdrawSuccessDialog(BuildContext context) {

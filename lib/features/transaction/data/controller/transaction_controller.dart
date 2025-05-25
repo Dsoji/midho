@@ -625,4 +625,42 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
     );
   }
+
+  Future<bool> withdraw({
+    String? acctNo,
+    int? amount,
+    bool? referall,
+    String? accountName,
+    required String pin,
+    String? bankName,
+    String? bankCode,
+  }) async {
+    state = state.copyWith(withdrawal: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.withdraw(
+      acctNo: acctNo,
+      amount: amount,
+      referall: referall,
+      pin: pin,
+      accountName: accountName,
+      bankName: bankName,
+      bankCode: bankCode,
+    );
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          withdrawal:
+              AsyncValue.error(result.getError() ?? '', StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          withdrawal: AsyncValue.data(result.getSuccess() ?? ''),
+        );
+        return true;
+      },
+    );
+  }
 }

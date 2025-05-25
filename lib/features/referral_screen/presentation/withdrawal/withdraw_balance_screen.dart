@@ -10,6 +10,7 @@ import '../../../../common/res/assets.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../withdrawal/presentation/widget/bank_info_card.dart';
 import '../../../withdrawal/presentation/withdraw_funds_screen.dart';
 
@@ -24,7 +25,10 @@ class WithdrawReferallScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final selectedBank = ref.watch(selectedBankProvider);
     final amountController = useTextEditingController();
-
+    final userProfileAsync =
+        ref.watch(authenticationControllerProvider).userDetails;
+    final localBanks = userProfileAsync.valueOrNull?.banks?.first;
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Withdraw Referral Balance",
@@ -35,78 +39,100 @@ class WithdrawReferallScreen extends HookConsumerWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const Text(
-              'Transfer referral earnings to your local bank.',
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
-            const Gap(16),
-            Container(
-              padding: const EdgeInsets.all(24),
-              width: double.infinity,
-              decoration: ShapeDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade500
-                    : Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              const Text(
+                'Transfer referral earnings to your local bank.',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Bank Account',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
+              const Gap(16),
+              Container(
+                padding: const EdgeInsets.all(24),
+                width: double.infinity,
+                decoration: ShapeDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Select Bank Account',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
                     ),
-                  ),
-                  const Gap(8),
-                  BankInfoCard(
-                    image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
-                    name: selectedBank?["name"] ?? 'GT Bank',
-                    status: selectedBank?["status"] ?? 'Poor Network',
-                    percentage: selectedBank?["percentage"] ?? '90',
-                    actNumber: selectedBank?["actNumber"] ?? '1210125678',
-                    actName: selectedBank?["actName"] ?? 'John Doe',
-                    onTap: () => _showAddBankDetailsSheet(context),
-                  ),
-                  const Gap(24),
-                  CustomTextField(
-                    controller: amountController,
-                    label: "Amount",
-                    // Optional
-                    keyboardType: TextInputType.number,
-                  ),
-                  const Gap(24),
-                  FullButton(
-                    text: "Continue",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const TransactionPinScreen(
-                                    isHome: false,
-                                  )));
-                    },
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                ],
+                    const Gap(8),
+                    BankInfoCard(
+                      image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
+                      name: selectedBank?["name"] ??
+                          localBanks?.bankName ??
+                          'Unknown Bank',
+                      status: selectedBank?["status"] ?? 'Poor Network',
+                      percentage: selectedBank?["percentage"] ?? '90',
+                      actNumber: selectedBank?["actNumber"] ??
+                          localBanks?.accountNumber ??
+                          'N/A',
+                      actName: selectedBank?["actName"] ??
+                          localBanks?.accountName ??
+                          'N/A',
+                      onTap: () => _showAddBankDetailsSheet(context),
+                    ),
+                    const Gap(24),
+                    CustomTextField(
+                      controller: amountController,
+                      label: "Amount",
+                      // Optional
+                      keyboardType: TextInputType.number,
+                    ),
+                    const Gap(24),
+                    FullButton(
+                      text: "Continue",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TransactionPinScreen(
+                                      isHome: false,
+                                      acctNo: selectedBank?["actNumber"] ?? '',
+                                      amount: int.parse(
+                                          amountController.text.trim()),
+                                      referall: false,
+                                      accountName: selectedBank?["actName"] ??
+                                          localBanks?.accountName ??
+                                          'N/A',
+                                      bankName: selectedBank?["name"] ??
+                                          localBanks?.bankName ??
+                                          'N/A',
+                                      bankCode: selectedBank?["bankCode"] ??
+                                          localBanks?.bankCode ??
+                                          'N/A',
+                                    )));
+                      },
+                      textColor: Colors.white,
+                      color: AppColors.primaryColor.shade500,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Gap(150),
-          ],
+              const Gap(150),
+            ],
+          ),
         ),
       ),
     );

@@ -77,7 +77,8 @@ class TransactionHistoryScreen extends HookConsumerWidget {
               itemBuilder: (_, __) => const CryptoCardShimmer(),
             ),
             error: (error, _) => Center(
-              child: Center(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

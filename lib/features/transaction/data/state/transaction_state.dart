@@ -30,6 +30,7 @@ class TransactionState {
   final AsyncValue<List<DataTvModel>> cableTvPlans;
   final AsyncValue<List<AirtimeElectricModel>> airtimePlans;
   final AsyncValue<List<AirtimeElectricModel>> electricityPlans;
+  final AsyncValue<String> withdrawal;
   const TransactionState({
     required this.transactions,
     required this.sellCrypto,
@@ -49,6 +50,7 @@ class TransactionState {
     required this.cableTvPlans,
     required this.airtimePlans,
     required this.electricityPlans,
+    required this.withdrawal,
   });
 
   factory TransactionState.initial() {
@@ -71,6 +73,7 @@ class TransactionState {
       cableTvPlans: const AsyncValue.data([]),
       airtimePlans: const AsyncValue.data([]),
       electricityPlans: const AsyncValue.data([]),
+      withdrawal: const AsyncValue.data(''),
     );
   }
 
@@ -93,6 +96,7 @@ class TransactionState {
     AsyncValue<List<DataTvModel>>? cableTvPlans,
     AsyncValue<List<AirtimeElectricModel>>? airtimePlans,
     AsyncValue<List<AirtimeElectricModel>>? electricityPlans,
+    AsyncValue<String>? withdrawal,
   }) {
     return TransactionState(
       transactions: transactions ?? this.transactions,
@@ -113,6 +117,7 @@ class TransactionState {
       cableTvPlans: cableTvPlans ?? this.cableTvPlans,
       airtimePlans: airtimePlans ?? this.airtimePlans,
       electricityPlans: electricityPlans ?? this.electricityPlans,
+      withdrawal: withdrawal ?? this.withdrawal,
     );
   }
 
@@ -142,7 +147,8 @@ class TransactionState {
         other.dataPlans == dataPlans &&
         other.cableTvPlans == cableTvPlans &&
         other.airtimePlans == airtimePlans &&
-        other.electricityPlans == electricityPlans;
+        other.electricityPlans == electricityPlans &&
+        other.withdrawal == withdrawal;
   }
 
   @override
@@ -164,6 +170,7 @@ class TransactionState {
         dataPlans.hashCode ^
         cableTvPlans.hashCode ^
         airtimePlans.hashCode ^
-        electricityPlans.hashCode;
+        electricityPlans.hashCode ^
+        withdrawal.hashCode;
   }
 }

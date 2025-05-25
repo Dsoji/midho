@@ -26,7 +26,7 @@ class CustomDropdown extends HookWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                width: 0.1,
+                width: 0.5,
                 color: theme.brightness == Brightness.light
                     ? AppColors.greyColor.shade50
                     : AppColors.secondaryColor.shade400,
