@@ -1,9 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/res/assets.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../bottomNav/app_router.gr.dart';
 
 class WelcomeHeader extends HookConsumerWidget {
   const WelcomeHeader({super.key});
@@ -74,21 +76,26 @@ class WelcomeHeader extends HookConsumerWidget {
           ),
 
           // Right: Bell Icon
-          Container(
-            height: 36,
-            width: 36,
-            decoration: BoxDecoration(
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade400
-                  : const Color(0xFFF6F8FE), // light icon background
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.notifications_none,
-              color: theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : const Color(0xFF001E91),
-              size: 20,
+          GestureDetector(
+            onTap: () {
+              context.navigateTo(const NotificationRoute());
+            },
+            child: Container(
+              height: 36,
+              width: 36,
+              decoration: BoxDecoration(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade400
+                    : const Color(0xFFF6F8FE), // light icon background
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.notifications_none,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : const Color(0xFF001E91),
+                size: 20,
+              ),
             ),
           ),
         ],

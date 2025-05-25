@@ -105,54 +105,61 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               Column(
                 children: [
                   const Gap(16),
-                  FullButton(
-                    text:
-                        status == 'Failed' ? 'Retry Trade' : "Download Reciept",
-                    width: double.infinity,
-                    height: 60,
-                    onPressed: isProcessing.value == true
-                        ? () {}
-                        : () async {
-                            // if (status != 'Failed') {
-                            //   isProcessing.value = true;
-                            //   await screenshotController
-                            //       .captureFromWidget(
-                            //         MediaQuery(
-                            //           data: MediaQueryData.fromView(
-                            //               WidgetsBinding.instance.window),
-                            //           child: InheritedTheme.captureAll(
-                            //             context,
-                            //             TransactionDetailsScreen(
-                            //               type: type,
-                            //               status: status,
-                            //               showAppBar: false,
-                            //             ),
-                            //           ),
-                            //         ),
-                            //       )
-                            //       .then(processAndSaveImage)
-                            //       .catchError((onError) {
-                            //     // Handle error
-                            //     debugPrint('Screenshot error: $onError');
-                            //   });
-                            //   isProcessing.value = false;
-                            // }
-                          },
-                    textColor: AppColors.whiteColor,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.primaryColor.shade500
-                        : Colors.black,
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: FullButton(
+                      text: status == 'Failed'
+                          ? 'Retry Trade'
+                          : "Download Reciept",
+                      width: double.infinity,
+                      height: 60,
+                      onPressed: isProcessing.value == true
+                          ? () {}
+                          : () async {
+                              // if (status != 'Failed') {
+                              //   isProcessing.value = true;
+                              //   await screenshotController
+                              //       .captureFromWidget(
+                              //         MediaQuery(
+                              //           data: MediaQueryData.fromView(
+                              //               WidgetsBinding.instance.window),
+                              //           child: InheritedTheme.captureAll(
+                              //             context,
+                              //             TransactionDetailsScreen(
+                              //               type: type,
+                              //               status: status,
+                              //               showAppBar: false,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       )
+                              //       .then(processAndSaveImage)
+                              //       .catchError((onError) {
+                              //     // Handle error
+                              //     debugPrint('Screenshot error: $onError');
+                              //   });
+                              //   isProcessing.value = false;
+                              // }
+                            },
+                      textColor: AppColors.whiteColor,
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.primaryColor.shade500
+                          : Colors.black,
+                    ),
                   ),
                   const Gap(4),
-                  FullButton(
-                    text: "Contact Support",
-                    width: double.infinity,
-                    height: 60,
-                    onPressed: () {},
-                    textColor: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                    color: Colors.transparent,
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: FullButton(
+                      text: "Contact Support",
+                      width: double.infinity,
+                      height: 60,
+                      onPressed: () {},
+                      textColor: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                      color: Colors.transparent,
+                    ),
                   ),
                 ],
               ),
