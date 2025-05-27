@@ -109,7 +109,7 @@ void showSuccessDialog({
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   onButtonPressed();
 
                   Navigator.pop(context);

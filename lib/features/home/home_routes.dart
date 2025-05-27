@@ -40,8 +40,8 @@ final homeRoutes = AutoRoute(
     AutoRoute(
       page: AddNewBankRoute.page,
     ),
-    // AutoRoute(
-    //   page: WithdrawalSuccessDialogRoute.page,
-    // ),
+    AutoRoute(
+      page: BillTransactionDetailsRoute.page,
+    ),
   ],
 );
