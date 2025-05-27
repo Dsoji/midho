@@ -25,7 +25,8 @@ class SummaryCards extends HookConsumerWidget {
         children: [
           _buildCard(
             title: "Total In-Flow",
-            amount: "${userInfo?.wallet?.currency} ${userInfo?.wallet?.inFlow}",
+            amount:
+                "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}",
             iconImage: ImageAssets.logo,
             context: context, // use your preferred icon
           ),
@@ -33,7 +34,7 @@ class SummaryCards extends HookConsumerWidget {
           _buildCard(
               title: "Total Withdrawal",
               amount:
-                  "${userInfo?.wallet?.currency} ${userInfo?.wallet?.outFlow}",
+                  "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.outFlow ?? 0}",
               icon: HugeIcons.strokeRoundedArrowUp03,
               context: context),
         ],
