@@ -422,78 +422,77 @@ class TransactionPinScreen extends HookConsumerWidget {
                 ),
                 const Gap(24),
 
-                  // Next Button
-                  FullButton(
-                    text: "Confirm",
-                    width: double.infinity,
-                    height: 48,
-                    isLoading: isLoading,
-                    onPressed: () => handleDialog(),
-                    doublePressed: () => showWithdrawalFailedDialog(context),
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                  const Gap(24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Forgot PIN?",
+                // Next Button
+                FullButton(
+                  text: "Confirm",
+                  width: double.infinity,
+                  height: 48,
+                  isLoading: isLoading,
+                  onPressed: () => handleDialog(),
+                  doublePressed: () => showWithdrawalFailedDialog(context),
+                  textColor: Colors.white,
+                  color: AppColors.primaryColor.shade500,
+                ),
+                const Gap(24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Forgot PIN?",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChangePinScreen(),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade400
+                            : Colors.transparent,
+                        side: BorderSide(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade300
+                              : Colors.grey.shade300,
+                        ), // Border color
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8), // Matches the image
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                      ),
+                      child: Text(
+                        "Reset PIN",
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ChangePinScreen(),
-                            ),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade400
-                              : Colors.transparent,
-                          side: BorderSide(
-                            color: theme.brightness == Brightness.dark
-                                ? AppColors.secondaryColor.shade300
-                                : Colors.grey.shade300,
-                          ), // Border color
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8), // Matches the image
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                        ),
-                        child: Text(
-                          "Reset PIN",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Gap(24),
-                  InfoWidget(
-                    theme: theme,
-                    text: info,
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                const Gap(24),
+                InfoWidget(
+                  theme: theme,
+                  text: info,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    )
+    );
   }
 
   void showWithdrawalFailedDialog(BuildContext context) {
