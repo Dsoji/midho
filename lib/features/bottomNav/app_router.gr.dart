@@ -42,6 +42,8 @@ import 'package:mdiho/features/crypto/presentation/widget/standalone_transaction
     as _i42;
 import 'package:mdiho/features/gift_card/data/model/response/gift_card_model/datum.dart'
     as _i54;
+import 'package:mdiho/features/gift_card/data/model/response/gift_cart_transaction/gift_cart_transaction.dart'
+    as _i56;
 import 'package:mdiho/features/gift_card/presentation/card_details_proof.dart'
     as _i9;
 import 'package:mdiho/features/gift_card/presentation/enter_card_details_screen.dart'
@@ -97,9 +99,9 @@ import 'package:mdiho/features/support_faq/presentation/faq_screen.dart'
 import 'package:mdiho/features/support_faq/presentation/support_faq_screen.dart'
     as _i44;
 import 'package:mdiho/features/transaction/data/model/response/rates_model/datum.dart'
-    as _i57;
+    as _i58;
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart'
-    as _i56;
+    as _i57;
 import 'package:mdiho/features/transaction/presentation/transaction_details.dart'
     as _i45;
 import 'package:mdiho/features/transaction/presentation/transaction_history.dart'
@@ -900,7 +902,7 @@ class GiftStandAloneTransactionDetailsRoute
     _i52.Key? key,
     required String type,
     required String status,
-    required _i56.TransactionData transaction,
+    required _i56.GiftCartTransaction transaction,
     List<_i51.PageRouteInfo>? children,
   }) : super(
           GiftStandAloneTransactionDetailsRoute.name,
@@ -943,7 +945,7 @@ class GiftStandAloneTransactionDetailsRouteArgs {
 
   final String status;
 
-  final _i56.TransactionData transaction;
+  final _i56.GiftCartTransaction transaction;
 
   @override
   String toString() {
@@ -960,7 +962,7 @@ class GiftTransactionDetailsRoute
     required String type,
     required String status,
     bool? showAppBar = true,
-    required _i56.TransactionData transaction,
+    required _i57.TransactionData transaction,
     List<_i51.PageRouteInfo>? children,
   }) : super(
           GiftTransactionDetailsRoute.name,
@@ -1008,7 +1010,7 @@ class GiftTransactionDetailsRouteArgs {
 
   final bool? showAppBar;
 
-  final _i56.TransactionData transaction;
+  final _i57.TransactionData transaction;
 
   @override
   String toString() {
@@ -1250,7 +1252,7 @@ class QrCryptoRoute extends _i51.PageRouteInfo<QrCryptoRouteArgs> {
   QrCryptoRoute({
     _i52.Key? key,
     required String amount,
-    required _i57.RateData crypto,
+    required _i58.RateData crypto,
     List<_i51.PageRouteInfo>? children,
   }) : super(
           QrCryptoRoute.name,
@@ -1288,7 +1290,7 @@ class QrCryptoRouteArgs {
 
   final String amount;
 
-  final _i57.RateData crypto;
+  final _i58.RateData crypto;
 
   @override
   String toString() {
@@ -1358,7 +1360,7 @@ class SecurtiySettingsRoute extends _i51.PageRouteInfo<void> {
 class SellCryptoRoute extends _i51.PageRouteInfo<SellCryptoRouteArgs> {
   SellCryptoRoute({
     _i52.Key? key,
-    required _i57.RateData rates,
+    required _i58.RateData rates,
     List<_i51.PageRouteInfo>? children,
   }) : super(
           SellCryptoRoute.name,
@@ -1391,7 +1393,7 @@ class SellCryptoRouteArgs {
 
   final _i52.Key? key;
 
-  final _i57.RateData rates;
+  final _i58.RateData rates;
 
   @override
   String toString() {
@@ -1445,7 +1447,7 @@ class StandAloneTransactionDetailsRoute
     _i52.Key? key,
     required String type,
     required String status,
-    required _i56.TransactionData transaction,
+    required _i56.GiftCartTransaction transaction,
     List<_i51.PageRouteInfo>? children,
   }) : super(
           StandAloneTransactionDetailsRoute.name,
@@ -1488,7 +1490,7 @@ class StandAloneTransactionDetailsRouteArgs {
 
   final String status;
 
-  final _i56.TransactionData transaction;
+  final _i56.GiftCartTransaction transaction;
 
   @override
   String toString() {
@@ -1543,7 +1545,7 @@ class TransactionDetailsRoute
     required String type,
     required String status,
     bool? showAppBar = true,
-    required _i56.TransactionData transaction,
+    required _i57.TransactionData transaction,
     List<_i51.PageRouteInfo>? children,
   }) : super(
           TransactionDetailsRoute.name,
@@ -1591,7 +1593,7 @@ class TransactionDetailsRouteArgs {
 
   final bool? showAppBar;
 
-  final _i56.TransactionData transaction;
+  final _i57.TransactionData transaction;
 
   @override
   String toString() {

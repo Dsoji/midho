@@ -8,15 +8,15 @@ import '../../../bank_network/data/model/response/acct_name_model/acct_name_mode
 import '../../../bills/data/model/response/airtime_electric_model/airtime_electric_model.dart';
 import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../../bills/data/model/response/data_tv_model/data_tv_model.dart';
+import '../../../gift_card/data/model/response/gift_cart_transaction/gift_cart_transaction.dart';
 import '../model/response/currencies_model.dart';
-import '../model/response/transaction_history/datum.dart';
 
 class TransactionState {
   final AsyncValue<TransactionHistory> transactions;
   final AsyncValue<TransactionHistory> transactionList;
 
-  final AsyncValue<TransactionData> sellCrypto;
-  final AsyncValue<TransactionData> sellGiftCards;
+  final AsyncValue<GiftCartTransaction> sellCrypto;
+  final AsyncValue<GiftCartTransaction> sellGiftCards;
   final AsyncValue<RatesModel> rates;
   final AsyncValue<CurrenciesModel> currency;
   final AsyncValue<RewardsModel> rewards;
@@ -57,8 +57,8 @@ class TransactionState {
   factory TransactionState.initial() {
     return TransactionState(
       transactions: AsyncValue.data(TransactionHistory()),
-      sellCrypto: AsyncValue.data(TransactionData()),
-      sellGiftCards: AsyncData(TransactionData()),
+      sellCrypto: AsyncValue.data(GiftCartTransaction()),
+      sellGiftCards: AsyncData(GiftCartTransaction()),
       rates: AsyncData(RatesModel()),
       currency: AsyncData(CurrenciesModel()),
       rewards: AsyncValue.data(RewardsModel()),
@@ -80,8 +80,8 @@ class TransactionState {
 
   TransactionState copyWith({
     AsyncValue<TransactionHistory>? transactions,
-    AsyncValue<TransactionData>? sellCrypto,
-    AsyncValue<TransactionData>? sellGiftCards,
+    AsyncValue<GiftCartTransaction>? sellCrypto,
+    AsyncValue<GiftCartTransaction>? sellGiftCards,
     AsyncValue<RatesModel>? rates,
     AsyncValue<CurrenciesModel>? currency,
     AsyncValue<RewardsModel>? rewards,

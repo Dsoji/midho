@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/success_dialogue.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -255,10 +254,10 @@ class TransactionPinScreen extends HookConsumerWidget {
           buttonText: "View Details",
           onButtonPressed: () {
             context.router.replaceAll([
-              StandAloneTransactionDetailsRoute(
+              BillTransactionDetailsRoute(
                   type: 'Bill Payment',
                   status: 'Completed',
-                  transaction: TransactionData()),
+                  transaction: AirtimeTransaction()),
             ]);
             Navigator.pop(context);
           },
