@@ -8,8 +8,8 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 
 import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
 import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
+import '../../../gift_card/data/model/response/gift_cart_transaction/gift_cart_transaction.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
-import '../model/response/transaction_history/datum.dart';
 import '../repository/transaction_repository.dart';
 import '../state/transaction_state.dart';
 
@@ -202,7 +202,8 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          sellCrypto: AsyncValue.data(result.getSuccess() ?? TransactionData()),
+          sellCrypto:
+              AsyncValue.data(result.getSuccess() ?? GiftCartTransaction()),
         );
         return true;
       },
@@ -242,7 +243,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       (success) {
         state = state.copyWith(
           sellGiftCards:
-              AsyncValue.data(result.getSuccess() ?? TransactionData()),
+              AsyncValue.data(result.getSuccess() ?? GiftCartTransaction()),
         );
         return true;
       },

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'asset.dart';
+import 'metadata.dart';
 import 'origination.dart';
 import 'user.dart';
 
@@ -22,9 +23,12 @@ class TransactionData {
   String? comment;
   Asset? asset;
   Origination? origination;
+  bool? deleted;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
+  String? accountNumber;
+  Metadata? metadata;
 
   TransactionData({
     this.id,
@@ -44,14 +48,17 @@ class TransactionData {
     this.comment,
     this.asset,
     this.origination,
+    this.deleted,
     this.createdAt,
     this.updatedAt,
     this.v,
+    this.accountNumber,
+    this.metadata,
   });
 
   @override
   String toString() {
-    return 'Datum(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)';
+    return 'Datum(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, deleted: $deleted, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, accountNumber: $accountNumber, metadata: $metadata)';
   }
 
   factory TransactionData.fromMap(Map<String, dynamic> data) => TransactionData(
@@ -78,6 +85,7 @@ class TransactionData {
         origination: data['origination'] == null
             ? null
             : Origination.fromMap(data['origination'] as Map<String, dynamic>),
+        deleted: data['deleted'] as bool?,
         createdAt: data['createdAt'] == null
             ? null
             : DateTime.parse(data['createdAt'] as String),
@@ -85,6 +93,10 @@ class TransactionData {
             ? null
             : DateTime.parse(data['updatedAt'] as String),
         v: data['__v'] as int?,
+        accountNumber: data['accountNumber'] as String?,
+        metadata: data['metadata'] == null
+            ? null
+            : Metadata.fromMap(data['metadata'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toMap() => {
@@ -105,9 +117,12 @@ class TransactionData {
         'comment': comment,
         'asset': asset?.toMap(),
         'origination': origination?.toMap(),
+        'deleted': deleted,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         '__v': v,
+        'accountNumber': accountNumber,
+        'metadata': metadata?.toMap(),
       };
 
   /// `dart:convert`
@@ -140,9 +155,12 @@ class TransactionData {
     String? comment,
     Asset? asset,
     Origination? origination,
+    bool? deleted,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? v,
+    String? accountNumber,
+    Metadata? metadata,
   }) {
     return TransactionData(
       id: id ?? this.id,
@@ -162,9 +180,12 @@ class TransactionData {
       comment: comment ?? this.comment,
       asset: asset ?? this.asset,
       origination: origination ?? this.origination,
+      deleted: deleted ?? this.deleted,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       v: v ?? this.v,
+      accountNumber: accountNumber ?? this.accountNumber,
+      metadata: metadata ?? this.metadata,
     );
   }
 }

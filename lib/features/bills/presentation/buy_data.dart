@@ -11,6 +11,7 @@ import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
 import '../../transaction/data/controller/transaction_controller.dart';
 import '../../transaction_pin/transaction_pin.dart';
 import '../data/model/response/data_tv_model/product.dart';
@@ -101,6 +102,9 @@ class BuyDataScreen extends HookConsumerWidget {
       error: (error, stackTrace) => [],
       loading: () => [],
     );
+
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Buy Data",
@@ -163,7 +167,8 @@ class BuyDataScreen extends HookConsumerWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: "NGN 10,000.00",
+                              text:
+                                  "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.mainBalance ?? 0}",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -257,6 +262,15 @@ class DataPlanBottomSheet extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
     final theme = Theme.of(context);
+    final query = useListenable(searchController).text.toLowerCase();
+
+    final filteredProducts = useMemoized(() {
+      if (query.isEmpty) return products;
+      return products
+          .where(
+              (product) => product.name?.toLowerCase().contains(query) == true)
+          .toList();
+    }, [products, query]);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -289,34 +303,39 @@ class DataPlanBottomSheet extends HookConsumerWidget {
           ),
           const SizedBox(height: 12),
           Container(
-            height: 300,
+            height: 400,
             decoration: BoxDecoration(
               color: theme.brightness == Brightness.dark
                   ? AppColors.secondaryColor.shade500
                   : Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: ListView.separated(
-              itemCount: products.length,
-              shrinkWrap: true,
-              separatorBuilder: (context, index) =>
-                  Divider(color: Colors.grey.shade100),
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return ListTile(
-                  title: Center(
-                    child: Text(
-                      "${product.name} - NGN ${product.amount}",
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
+            child: RawScrollbar(
+              thumbColor: Colors.grey.shade400,
+              radius: const Radius.circular(20),
+              thickness: 5,
+              child: ListView.separated(
+                itemCount: filteredProducts.length,
+                shrinkWrap: true,
+                separatorBuilder: (context, index) =>
+                    Divider(color: Colors.grey.shade100),
+                itemBuilder: (context, index) {
+                  final product = filteredProducts[index];
+                  return ListTile(
+                    title: Center(
+                      child: Text(
+                        "${product.name} - NGN ${product.amount}",
+                        style: const TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    selectedPlan.value = product;
-                  },
-                );
-              },
+                    onTap: () {
+                      Navigator.pop(context);
+                      selectedPlan.value = product;
+                    },
+                  );
+                },
+              ),
             ),
           ),
           const Gap(130),

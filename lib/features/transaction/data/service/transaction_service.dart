@@ -12,10 +12,10 @@ import '../../../../common/api/dio_api_client.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
 import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
+import '../../../gift_card/data/model/response/gift_cart_transaction/gift_cart_transaction.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
 import '../../../referral_screen/data/model/response/rewards_model/rewards_model.dart';
 import '../model/response/rates_model/rates_model.dart';
-import '../model/response/transaction_history/datum.dart';
 
 final logger = Logger();
 final transactionServiceProvider = Provider<TransactionService>((ref) {
@@ -121,7 +121,7 @@ class TransactionService {
     );
   }
 
-  Future<ResultValue<TransactionData>> sellCrypto({
+  Future<ResultValue<GiftCartTransaction>> sellCrypto({
     String? id,
     String? name,
     int? amount,
@@ -145,14 +145,14 @@ class TransactionService {
         },
       ),
       parser: (data) {
-        return TransactionData.fromMap(data);
+        return GiftCartTransaction.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: false,
     );
   }
 
-  Future<ResultValue<TransactionData>> sellGiftCards({
+  Future<ResultValue<GiftCartTransaction>> sellGiftCards({
     String? id,
     String? name,
     int? amount,
@@ -182,7 +182,7 @@ class TransactionService {
         },
       ),
       parser: (data) {
-        return TransactionData.fromMap(data);
+        return GiftCartTransaction.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: false,

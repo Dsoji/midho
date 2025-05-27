@@ -11,13 +11,13 @@ import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
-import '../../../transaction/data/model/response/transaction_history/datum.dart';
+import '../../data/model/response/gift_cart_transaction/gift_cart_transaction.dart';
 
 @RoutePage()
 class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
   final String type;
   final String status;
-  final TransactionData transaction;
+  final GiftCartTransaction transaction;
 
   const GiftStandAloneTransactionDetailsScreen({
     super.key,
@@ -261,7 +261,7 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
   Map<String, dynamic> _getTransactionDetails(
     String type,
     String status,
-    TransactionData transaction,
+    GiftCartTransaction transaction,
   ) {
     Map<String, dynamic> details = {};
 

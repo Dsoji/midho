@@ -11,8 +11,8 @@ import '../../../bank_network/data/model/response/acct_name_model/acct_name_mode
 import '../../../bills/data/model/response/airtime_electric_model/airtime_electric_model.dart';
 import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../../bills/data/model/response/data_tv_model/data_tv_model.dart';
+import '../../../gift_card/data/model/response/gift_cart_transaction/gift_cart_transaction.dart';
 import '../model/response/rates_model/rates_model.dart';
-import '../model/response/transaction_history/datum.dart';
 import '../service/transaction_service.dart';
 
 final transactionRepositoryProvider = Provider((ref) {
@@ -127,7 +127,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, TransactionData>> sellCrypto({
+  Future<Result<FailureHandler, GiftCartTransaction>> sellCrypto({
     String? id,
     String? name,
     int? amount,
@@ -144,7 +144,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? TransactionData());
+        return Success(data.value ?? GiftCartTransaction());
       } else {
         return Error(
           data.error ??
@@ -160,7 +160,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, TransactionData>> sellGiftCards({
+  Future<Result<FailureHandler, GiftCartTransaction>> sellGiftCards({
     String? id,
     String? name,
     int? amount,
@@ -183,7 +183,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? TransactionData());
+        return Success(data.value ?? GiftCartTransaction());
       } else {
         return Error(
           data.error ??

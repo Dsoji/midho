@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/success_dialogue.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -12,6 +12,7 @@ import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/success_dialog.dart';
+import '../authentication/data/controller/authentication_controller.dart';
 import '../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../bottomNav/app_router.gr.dart';
 import '../profile/presentation/security_settings/change_pin_screen.dart';
@@ -63,12 +64,17 @@ class TransactionPinScreen extends HookConsumerWidget {
   final String? assetId;
   final String? amount;
   final String? accountNumber;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinController = useTextEditingController();
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final biometricEnabled = userInfo?.biometrics ?? false;
+
     void handleDialog() async {
       if (selectedType == "Airtime") {
         final result =
@@ -76,7 +82,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                   assetId: assetId ?? '',
                   amount: amount != null ? int.parse(amount!) : 0,
                   accountNumber: accountNumber ?? '',
-                  pin: pinController.text,
+                  pin: biometricEnabled ? "biometrics" : pinController.text,
                 );
 
         if (result == true) {
@@ -118,7 +124,7 @@ class TransactionPinScreen extends HookConsumerWidget {
             await ref.read(transactionControllerProvider.notifier).buyData(
                   assetId: assetId ?? '',
                   accountNumber: accountNumber ?? '',
-                  pin: pinController.text,
+                  pin: biometricEnabled ? "biometrics" : pinController.text,
                 );
         final airtimeTransactions =
             ref.watch(transactionControllerProvider).buyData.valueOrNull;
@@ -251,10 +257,10 @@ class TransactionPinScreen extends HookConsumerWidget {
           buttonText: "View Details",
           onButtonPressed: () {
             context.router.replaceAll([
-              StandAloneTransactionDetailsRoute(
+              BillTransactionDetailsRoute(
                   type: 'Bill Payment',
                   status: 'Completed',
-                  transaction: TransactionData()),
+                  transaction: AirtimeTransaction()),
             ]);
             Navigator.pop(context);
           },
@@ -283,6 +289,37 @@ class TransactionPinScreen extends HookConsumerWidget {
         // );
       }
     }
+
+    useEffect(() {
+      Future<void> authenticateWithBiometrics() async {
+        if (biometricEnabled) {
+          final localAuth = LocalAuthentication();
+          bool canAuthenticate = await localAuth.canCheckBiometrics ||
+              await localAuth.isDeviceSupported();
+
+          if (canAuthenticate) {
+            try {
+              final authenticated = await localAuth.authenticate(
+                localizedReason: "Authenticate to proceed with transaction",
+                options: const AuthenticationOptions(biometricOnly: true),
+              );
+
+              if (authenticated) {
+                handleDialog();
+              }
+            } catch (e) {
+              debugPrint("Biometric authentication failed: $e");
+            }
+          }
+        }
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        authenticateWithBiometrics();
+      });
+
+      return null;
+    }, []);
 
     final isLoading = selectedType == "Airtime"
         ? ref.watch(transactionControllerProvider).buyAirtime.isLoading

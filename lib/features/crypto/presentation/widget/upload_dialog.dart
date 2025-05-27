@@ -6,12 +6,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
-import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/toast/toast.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../gift_card/data/model/response/gift_cart_transaction/gift_cart_transaction.dart';
 import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
 import '../../../transaction/data/controller/transaction_controller.dart';
 import '../../../transaction/data/model/response/rates_model/datum.dart';
@@ -318,7 +318,7 @@ void showTransactionDialog(
   BuildContext context,
   VoidCallback onTap,
   VoidCallback onDone,
-  TransactionData? transaction,
+  GiftCartTransaction? transaction,
 ) {
   Navigator.pop(context);
   showDialog(
