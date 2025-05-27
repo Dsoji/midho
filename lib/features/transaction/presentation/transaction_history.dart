@@ -173,7 +173,7 @@ class FilterBottomSheet extends HookConsumerWidget {
         case "Crypto":
           return "CRYPTOSALE";
         case "Utilities":
-          return "UTILITIES"; // let backend interpret this
+          return "AIRTIMEBUY, INTERNETBUY, ELECTRICITYBUY, BETTINGBUY, CABLEBUY"; // let backend interpret this
         case "All":
         default:
           return null;
