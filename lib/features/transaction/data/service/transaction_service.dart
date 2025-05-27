@@ -11,6 +11,7 @@ import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
+import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
 import '../../../referral_screen/data/model/response/rewards_model/rewards_model.dart';
 import '../model/response/rates_model/rates_model.dart';
@@ -328,13 +329,13 @@ class TransactionService {
     );
   }
 
-  Future<ResultValue<String>> buyAirtime({
+  Future<ResultValue<AirtimeTransaction>> buyAirtime({
     String? assetId,
     int? amount,
     String? accountNumber,
     required String pin,
   }) async {
-    return apiRequestHelper.handleApiRequest(
+    return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyAirtime', header: {
         'Authorization': 'Bearer $accessToken',
         'pin': pin,
@@ -344,19 +345,19 @@ class TransactionService {
         "accountNumber": accountNumber,
       }),
       parser: (data) {
-        return BaseModel.toRawString(data);
+        return AirtimeTransaction.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: false,
     );
   }
 
-  Future<ResultValue<String>> buyData({
+  Future<ResultValue<AirtimeTransaction>> buyData({
     String? assetId,
     String? accountNumber,
     required String pin,
   }) async {
-    return apiRequestHelper.handleApiRequest(
+    return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyMobileData', header: {
         'Authorization': 'Bearer $accessToken',
         'pin': pin,
@@ -365,20 +366,20 @@ class TransactionService {
         "accountNumber": accountNumber,
       }),
       parser: (data) {
-        return BaseModel.toRawString(data);
+        return AirtimeTransaction.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: false,
     );
   }
 
-  Future<ResultValue<String>> buyElectricity({
+  Future<ResultValue<AirtimeTransaction>> buyElectricity({
     String? assetId,
     int? amount,
     String? accountNumber,
     required String pin,
   }) async {
-    return apiRequestHelper.handleApiRequest(
+    return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyElectricity', header: {
         'Authorization': 'Bearer $accessToken',
         'pin': pin,
@@ -388,19 +389,19 @@ class TransactionService {
         "accountNumber": accountNumber,
       }),
       parser: (data) {
-        return BaseModel.toRawString(data);
+        return AirtimeTransaction.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: false,
     );
   }
 
-  Future<ResultValue<String>> buyCableTv({
+  Future<ResultValue<AirtimeTransaction>> buyCableTv({
     String? assetId,
     String? accountNumber,
     required String pin,
   }) async {
-    return apiRequestHelper.handleApiRequest(
+    return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyCableTv', header: {
         'Authorization': 'Bearer $accessToken',
         'pin': pin,
@@ -409,7 +410,7 @@ class TransactionService {
         "accountNumber": accountNumber,
       }),
       parser: (data) {
-        return BaseModel.toRawString(data);
+        return AirtimeTransaction.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: false,

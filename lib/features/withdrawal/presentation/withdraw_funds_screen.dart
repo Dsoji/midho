@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
@@ -23,6 +24,8 @@ import 'widget/info_widget.dart';
 
 final selectedBankProvider =
     StateProvider<Map<String, dynamic>?>((ref) => null);
+
+final logger = Logger();
 
 @RoutePage()
 class WithdrawFundsScreen extends HookConsumerWidget {
@@ -221,13 +224,15 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                         if (!formKey.currentState!.validate()) {
                           return;
                         }
-                        print('bank code: ${selectedBank?["bankCode"] ?? ''}');
+
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => TransactionPinScreen(
                                       isHome: true,
-                                      acctNo: selectedBank?["actNumber"] ?? '',
+                                      acctNo: selectedBank?["actNumber"] ??
+                                          localBanks?.accountNumber ??
+                                          'N/A',
                                       amount: int.parse(
                                           amountController.text.trim()),
                                       referall: false,

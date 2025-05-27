@@ -33,7 +33,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
 
   @override
   Widget build(BuildContext context) {
-    Map<dynamic, dynamic> transactionDetails =
+    Map<String, dynamic> transactionDetails =
         _getTransactionDetails(type, status, transaction);
     final screenshotController = useMemoized(() => ScreenshotController());
     final isProcessing = useState(false);
@@ -171,7 +171,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
   }
 
   Widget _buildTransactionSummary(
-      Map<dynamic, dynamic> details, BuildContext context) {
+      Map<String, dynamic> details, BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,7 +372,183 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           };
         }
         break;
-      case "Bill Payment":
+      case "INTERNETBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "BETTINGBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "CABLEBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "ELECTRICITYBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "AIRTIMEBUY":
         if (transaction.status == "Completed") {
           details = {
             "transactionId": transaction.id,

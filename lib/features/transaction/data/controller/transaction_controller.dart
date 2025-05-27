@@ -7,6 +7,7 @@ import 'package:mdiho/features/transaction/data/model/response/rates_model/rates
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/transaction_history.dart';
 
 import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
+import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../../referral_screen/data/model/response/referall_model/referall_model.dart';
 import '../model/response/transaction_history/datum.dart';
 import '../repository/transaction_repository.dart';
@@ -446,7 +447,8 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          buyAirtime: AsyncValue.data(result.getSuccess() ?? ''),
+          buyAirtime:
+              AsyncValue.data(result.getSuccess() ?? AirtimeTransaction()),
         );
         return true;
       },
@@ -475,7 +477,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          buyData: AsyncValue.data(result.getSuccess() ?? ''),
+          buyData: AsyncValue.data(result.getSuccess() ?? AirtimeTransaction()),
         );
         return true;
       },
@@ -506,7 +508,8 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          buyElectricity: AsyncValue.data(result.getSuccess() ?? ''),
+          buyElectricity:
+              AsyncValue.data(result.getSuccess() ?? AirtimeTransaction()),
         );
         return true;
       },
@@ -535,7 +538,8 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          buyCableTv: AsyncValue.data(result.getSuccess() ?? ''),
+          buyCableTv:
+              AsyncValue.data(result.getSuccess() ?? AirtimeTransaction()),
         );
         return true;
       },

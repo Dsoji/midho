@@ -9,6 +9,7 @@ import '../../../../common/utils/multiple_results.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
 import '../../../bills/data/model/response/airtime_electric_model/airtime_electric_model.dart';
+import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../../bills/data/model/response/data_tv_model/data_tv_model.dart';
 import '../model/response/rates_model/rates_model.dart';
 import '../model/response/transaction_history/datum.dart';
@@ -365,7 +366,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, String>> buyAirtime({
+  Future<Result<FailureHandler, AirtimeTransaction>> buyAirtime({
     required String assetId,
     required int amount,
     required String accountNumber,
@@ -380,7 +381,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? '');
+        return Success(data.value ?? AirtimeTransaction());
       } else {
         return Error(
           data.error ??
@@ -396,7 +397,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, String>> buyData({
+  Future<Result<FailureHandler, AirtimeTransaction>> buyData({
     required String assetId,
     required String accountNumber,
     required String pin,
@@ -409,7 +410,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? '');
+        return Success(data.value ?? AirtimeTransaction());
       } else {
         return Error(
           data.error ??
@@ -425,7 +426,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, String>> buyElectricity({
+  Future<Result<FailureHandler, AirtimeTransaction>> buyElectricity({
     required String assetId,
     required int amount,
     required String accountNumber,
@@ -440,7 +441,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? '');
+        return Success(data.value ?? AirtimeTransaction());
       } else {
         return Error(
           data.error ??
@@ -456,7 +457,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, String>> buyCableTv({
+  Future<Result<FailureHandler, AirtimeTransaction>> buyCableTv({
     required String assetId,
     required String accountNumber,
     required String pin,
@@ -469,7 +470,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? '');
+        return Success(data.value ?? AirtimeTransaction());
       } else {
         return Error(
           data.error ??
