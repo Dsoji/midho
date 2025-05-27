@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
@@ -366,32 +367,32 @@ class ChangePinScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      // if (otpController.text.isNotEmpty &&
-                      //     newPinController.text.isNotEmpty &&
-                      //     confirmPinController.text.isNotEmpty) {
-                      //   if (newPinController.text ==
-                      //       confirmPinController.text) {
-                      //     final result = await authService.changePin(
-                      //       userInfo?.email ?? '',
-                      //       otpController.text.trim(),
-                      //       newPinController.text.trim(),
-                      //     );
-                      //     if (result == true) {
-                      //       Navigator.pop(context);
-                      //     }
-                      //   } else {
-                      //     ToastService().showToast(
-                      //       NotificationType.info,
-                      //       message: 'New PIN and Confirm PIN do not match',
-                      //     );
-                      //   }
-                      // } else {
-                      //   ToastService().showToast(
-                      //     NotificationType.info,
-                      //     message: 'Please fill in all fields',
-                      //   );
-                      // }
-                      Navigator.pop(context);
+                      if (otpController.text.isNotEmpty &&
+                          newPinController.text.isNotEmpty &&
+                          confirmPinController.text.isNotEmpty) {
+                        if (newPinController.text ==
+                            confirmPinController.text) {
+                          final result = await authService.changePin(
+                            userInfo?.email ?? '',
+                            otpController.text.trim(),
+                            newPinController.text.trim(),
+                          );
+                          if (result == true) {
+                            Navigator.pop(context);
+                          }
+                        } else {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'New PIN and Confirm PIN do not match',
+                          );
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Please fill in all fields',
+                        );
+                      }
+                      // Navigator.pop(context);
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,

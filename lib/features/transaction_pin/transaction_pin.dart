@@ -105,8 +105,7 @@ class TransactionPinScreen extends HookConsumerWidget {
               );
             },
             onSecondaryAction: () {
-              context.router.popUntil(
-                  (route) => route.settings.name == BuyAirtimeRoute.name);
+              context.router.push(const BuyAirtimeRoute());
               Navigator.of(context).pop;
             },
             primaryButtonColor: Colors.orange,
