@@ -10,17 +10,17 @@ import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
-import '../../../../common/res/app_colors.dart';
-import '../../../../common/widgets/custom_app_bar.dart';
-import '../../../transaction/data/model/response/transaction_history/datum.dart';
+import '../../../common/res/app_colors.dart';
+import '../../../common/widgets/custom_app_bar.dart';
+import '../data/model/response/airtime_transaction/airtime_transaction.dart';
 
 @RoutePage()
-class StandAloneTransactionDetailsScreen extends StatelessWidget {
+class BillTransactionDetailsScreen extends StatelessWidget {
   final String type;
   final String status;
-  final TransactionData transaction;
+  final AirtimeTransaction transaction;
 
-  const StandAloneTransactionDetailsScreen({
+  const BillTransactionDetailsScreen({
     super.key,
     required this.type,
     required this.status,
@@ -262,98 +262,11 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
   Map<String, dynamic> _getTransactionDetails(
     String type,
     String status,
-    TransactionData transaction,
+    AirtimeTransaction transaction,
   ) {
     Map<String, dynamic> details = {};
 
     switch (transaction.type) {
-      case "CRYPTOSALE":
-        details = {
-          "transactionId": transaction.id,
-          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount":
-              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
-                  .commaFormat(),
-          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
-              .commaFormat(),
-          "breakdown": {
-            "Crypto Sold":
-                "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
-            "Rate":
-                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
-                    .commaFormat(),
-            "Amount Sold":
-                "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
-                    .commaFormat(),
-            "Total Received":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
-                    .commaFormat(),
-          }
-        };
-        break;
-      case "GIFTCARDSALE":
-        if (transaction.status == "Completed") {
-          details = {
-            "transactionId": transaction.id,
-            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
-                    .commaFormat(),
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
-                .commaFormat(),
-            "breakdown": {
-              "Gift Card Sold": transaction.asset?.name ?? '',
-              "Rate":
-                  "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
-                      .commaFormat(),
-              "Amount Sold":
-                  "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
-                      .commaFormat(),
-              "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
-                      .commaFormat(),
-            }
-          };
-        } else if (transaction.status == "Failed") {
-          details = {
-            "transactionId": transaction.id,
-            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
-                    .commaFormat(),
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
-                .commaFormat(),
-            "breakdown": {
-              "Gift Card Sold": "STEAM 10-200",
-              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
-              "Amount Sold": "\$50",
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
-              "Proof of Failure": "View Screenshot",
-            }
-          };
-        } else {
-          details = {
-            "transactionId": transaction.id,
-            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
-                    .commaFormat(),
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
-                .commaFormat(),
-            "breakdown": {
-              "Gift Card Sold": transaction.asset?.name ?? '',
-              "Rate":
-                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}"
-                      .commaFormat(),
-              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
-                  .commaFormat(),
-              "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
-                      .commaFormat(),
-            }
-          };
-        }
-        break;
       case "INTERNETBUY":
         if (transaction.status == "Completed") {
           details = {
@@ -407,9 +320,9 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         } else if (transaction.status == "Failed") {
@@ -451,9 +364,9 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         } else if (transaction.status == "Failed") {
@@ -479,9 +392,9 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }
@@ -495,9 +408,9 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         } else if (transaction.status == "Failed") {
@@ -523,9 +436,9 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }
@@ -539,9 +452,9 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         } else if (transaction.status == "Failed") {
@@ -567,9 +480,9 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }

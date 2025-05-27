@@ -6,6 +6,7 @@ import 'package:mdiho/features/transaction/data/model/response/transaction_histo
 
 import '../../../bank_network/data/model/response/acct_name_model/acct_name_model.dart';
 import '../../../bills/data/model/response/airtime_electric_model/airtime_electric_model.dart';
+import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../../bills/data/model/response/data_tv_model/data_tv_model.dart';
 import '../model/response/currencies_model.dart';
 import '../model/response/transaction_history/datum.dart';
@@ -22,10 +23,10 @@ class TransactionState {
   final AsyncValue<ReferallModel> referals;
   final AsyncValue<String> addBank;
   final AsyncValue<AcctNameModel> acctName;
-  final AsyncValue<String> buyAirtime;
-  final AsyncValue<String> buyData;
-  final AsyncValue<String> buyElectricity;
-  final AsyncValue<String> buyCableTv;
+  final AsyncValue<AirtimeTransaction> buyAirtime;
+  final AsyncValue<AirtimeTransaction> buyData;
+  final AsyncValue<AirtimeTransaction> buyElectricity;
+  final AsyncValue<AirtimeTransaction> buyCableTv;
   final AsyncValue<List<DataTvModel>> dataPlans;
   final AsyncValue<List<DataTvModel>> cableTvPlans;
   final AsyncValue<List<AirtimeElectricModel>> airtimePlans;
@@ -65,10 +66,10 @@ class TransactionState {
       transactionList: AsyncValue.data(TransactionHistory()),
       addBank: const AsyncValue.data(''),
       acctName: AsyncValue.data(AcctNameModel()),
-      buyAirtime: const AsyncValue.data(''),
-      buyData: const AsyncValue.data(''),
-      buyElectricity: const AsyncValue.data(''),
-      buyCableTv: const AsyncValue.data(''),
+      buyAirtime: AsyncValue.data(AirtimeTransaction()),
+      buyData: AsyncValue.data(AirtimeTransaction()),
+      buyElectricity: AsyncValue.data(AirtimeTransaction()),
+      buyCableTv: AsyncValue.data(AirtimeTransaction()),
       dataPlans: const AsyncValue.data([]),
       cableTvPlans: const AsyncValue.data([]),
       airtimePlans: const AsyncValue.data([]),
@@ -88,10 +89,10 @@ class TransactionState {
     AsyncValue<TransactionHistory>? transactionList,
     AsyncValue<String>? addBank,
     AsyncValue<AcctNameModel>? acctName,
-    AsyncValue<String>? buyAirtime,
-    AsyncValue<String>? buyData,
-    AsyncValue<String>? buyElectricity,
-    AsyncValue<String>? buyCableTv,
+    AsyncValue<AirtimeTransaction>? buyAirtime,
+    AsyncValue<AirtimeTransaction>? buyData,
+    AsyncValue<AirtimeTransaction>? buyElectricity,
+    AsyncValue<AirtimeTransaction>? buyCableTv,
     AsyncValue<List<DataTvModel>>? dataPlans,
     AsyncValue<List<DataTvModel>>? cableTvPlans,
     AsyncValue<List<AirtimeElectricModel>>? airtimePlans,

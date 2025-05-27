@@ -6,30 +6,34 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
+import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:screenshot/screenshot.dart';
 
 import '../../../common/mixin/share_mixin.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../transaction/data/model/response/transaction_history/datum.dart';
 
 @RoutePage()
 class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
   final String type;
   final String status;
   final bool? showAppBar;
+  final TransactionData transaction;
 
   const GiftTransactionDetailsScreen({
     super.key,
     required this.type,
     required this.status,
     this.showAppBar = true,
+    required this.transaction,
   });
 
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> transactionDetails =
-        _getTransactionDetails(type, status);
+        _getTransactionDetails(type, status, transaction);
     final screenshotController = useMemoized(() => ScreenshotController());
     final isProcessing = useState(false);
     final theme = Theme.of(context);
@@ -256,47 +260,70 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
     }
   }
 
-  Map<String, dynamic> _getTransactionDetails(String type, String status) {
+  Map<String, dynamic> _getTransactionDetails(
+      String type, String status, TransactionData transaction) {
     Map<String, dynamic> details = {};
 
-    switch (type) {
-      case "Crypto Sale":
+    switch (transaction.type) {
+      case "CRYPTOSALE":
         details = {
-          "transactionId": "#TRX123456",
-          "dateTime": "Jan 15, 2025, 10:30 AM",
-          "amount": "500,000.00",
-          "fee": "5,000.00",
+          "transactionId": transaction.id,
+          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+          "amount":
+              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                  .commaFormat(),
+          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+              .commaFormat(),
           "breakdown": {
-            "Crypto Sold": "Bitcoin (BTC)",
-            "Rate": "₦25,000,000/BTC",
-            "Amount Sold": "0.02 BTC",
-            "Total Received": "500000",
+            "Crypto Sold":
+                "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
+            "Rate":
+                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                    .commaFormat(),
+            "Amount Sold":
+                "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                    .commaFormat(),
+            "Total Received":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                    .commaFormat(),
           }
         };
         break;
-      case "Gift Card Purchase":
-        if (status == "Completed") {
+      case "GIFTCARDSALE":
+        if (transaction.status == "Completed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
-            "amount": "37,500.00",
-            "fee": "500.00",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
-              "Gift Card Sold": "STEAM 50-500",
-              "Rate": "₦750/USD",
-              "Amount Sold": "\$50",
-              "Total Received": "37,000.00",
+              "Gift Card Sold": transaction.asset?.name ?? '',
+              "Rate":
+                  "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold":
+                  "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Total Received":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
-        } else if (status == "Failed") {
+        } else if (transaction.status == "Failed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
-            "amount": "37,500.00",
-            "fee": "500.00",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": "STEAM 10-200",
-              "Rate": "₦750/USD",
+              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
               "Amount Sold": "\$50",
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
@@ -304,38 +331,48 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
           };
         } else {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
-            "amount": "37,500.00",
-            "fee": "500.00",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
-              "Gift Card Sold": "STEAM 50-500",
-              "Rate": "₦750/USD",
-              "Amount Sold": "\$50",
-              "Total Received": "37000",
+              "Gift Card Sold": transaction.asset?.name ?? '',
+              "Rate":
+                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}"
+                      .commaFormat(),
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
+                  .commaFormat(),
+              "Total Received":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
         }
         break;
-      case "Bill Payment":
-        if (status == "Completed") {
+      case "INTERNETBUY":
+        if (transaction.status == "Completed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": "500.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
               "Total Charged": "10500",
             }
           };
-        } else if (status == "Failed") {
+        } else if (transaction.status == "Failed") {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": "500.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -346,10 +383,187 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
           };
         } else {
           details = {
-            "transactionId": "#TRX123456",
-            "dateTime": "Jan 15, 2025, 10:30 AM",
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount": "10,000.00",
-            "fee": "500.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "BETTINGBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "CABLEBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "ELECTRICITYBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        }
+        break;
+      case "AIRTIMEBUY":
+        if (transaction.status == "Completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10500",
+            }
+          };
+        } else if (transaction.status == "Failed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Provider": "Ikeja Electric",
+              "Account Number": "1234567890",
+              "Total Charged": "10,500.00",
+              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount": "10,000.00",
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": "1234567890",
@@ -360,8 +574,8 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
         break;
       case "Withdrawal":
         details = {
-          "transactionId": "#TRX123456",
-          "dateTime": "Jan 15, 2025, 10:30 AM",
+          "transactionId": transaction.id,
+          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
           "amount": "100,000.00",
           "fee": "1,000.00",
           "breakdown": {
