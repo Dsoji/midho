@@ -107,7 +107,8 @@ class BillTransactionDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 60,
                 onPressed: () {
-                  context.router.replaceAll([const CryptoRoute()]);
+                  context.router.popUntil(
+                      (route) => route.settings.name == HomeRoute.name);
 
                   final tabsRouter = AutoTabsRouter.of(
                     context,
