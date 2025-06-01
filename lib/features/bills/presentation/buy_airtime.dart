@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -51,16 +52,19 @@ class BuyAirtimeScreen extends HookConsumerWidget {
 
     // Initialize selectedProvider with a default value
     final selectedProvider =
-        useState<({String name, String logo, String id})>(airtimePlans.when(
+        useState<({String name, String logo, String id, int min, int max})>(
+            airtimePlans.when(
       data: (plans) => plans.isNotEmpty
           ? (
               name: plans.first.name ?? '',
               logo: plans.first.logo ?? '',
-              id: plans.first.id ?? ''
+              id: plans.first.id ?? '',
+              min: plans.first.min ?? 0,
+              max: plans.first.max ?? 0,
             )
-          : (name: '', logo: '', id: ''),
-      loading: () => (name: '', logo: '', id: ''),
-      error: (_, __) => (name: '', logo: '', id: ''),
+          : (name: '', logo: '', id: '', min: 0, max: 0),
+      loading: () => (name: '', logo: '', id: '', min: 0, max: 0),
+      error: (_, __) => (name: '', logo: '', id: '', min: 0, max: 0),
     ));
 
     // Update the providers list handling
@@ -72,6 +76,8 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                   name: e.name ?? "Unknown",
                   logo: e.logo ?? "assets/default_provider.png",
                   id: e.id ?? "",
+                  min: e.min ?? 0,
+                  max: e.max ?? 0,
                 ))
             .toList();
       },
@@ -140,7 +146,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                                 : AppColors.greyColor.shade700,
                           )),
                       Text(
-                        "Limit: NGN 500.00 - NGN 10,000.00",
+                        "Limit: NGN ${selectedProvider.value.min} - NGN ${selectedProvider.value.max}",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w400,
@@ -264,7 +270,8 @@ class BuyAirtimeScreen extends HookConsumerWidget {
 }
 
 class ProviderPhoneInput extends HookConsumerWidget {
-  final ValueNotifier<({String name, String logo, String id})> selectedProvider;
+  final ValueNotifier<({String name, String logo, String id, int min, int max})>
+      selectedProvider;
   final TextEditingController controller;
   final List<AirtimeElectricModel> providers;
 
@@ -322,7 +329,8 @@ class ProviderPhoneInput extends HookConsumerWidget {
 
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(provider.logo ?? ''),
+                          backgroundImage:
+                              CachedNetworkImageProvider(provider.logo ?? ''),
                           backgroundColor: Colors.transparent,
                           onBackgroundImageError: (_, __) =>
                               const Icon(Icons.error),
@@ -330,18 +338,21 @@ class ProviderPhoneInput extends HookConsumerWidget {
                         title: Text(
                           provider.name ?? 'Unknown',
                           style: TextStyle(
-                            color: isSelected ? Colors.orange : null,
+                            color: isSelected ? AppColors.primaryColor : null,
                             fontWeight: isSelected ? FontWeight.bold : null,
                           ),
                         ),
                         trailing: isSelected
-                            ? const Icon(Icons.check, color: Colors.orange)
+                            ? const Icon(Icons.check,
+                                color: AppColors.primaryColor)
                             : null,
                         onTap: () {
                           selectedProvider.value = (
                             name: provider.name ?? '',
                             logo: provider.logo ?? '',
                             id: provider.id ?? '',
+                            min: provider.min ?? 0,
+                            max: provider.max ?? 0,
                           );
                           Navigator.pop(context);
                         },
@@ -378,7 +389,8 @@ class ProviderPhoneInput extends HookConsumerWidget {
               children: [
                 CircleAvatar(
                   radius: 15,
-                  backgroundImage: NetworkImage(selectedProvider.value.logo),
+                  backgroundImage:
+                      CachedNetworkImageProvider(selectedProvider.value.logo),
                   backgroundColor: Colors.transparent,
                 ),
                 const SizedBox(width: 6),

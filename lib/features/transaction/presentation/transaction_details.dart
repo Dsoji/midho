@@ -381,7 +381,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": "1234567890",
               "Total Charged": "10500",
             }

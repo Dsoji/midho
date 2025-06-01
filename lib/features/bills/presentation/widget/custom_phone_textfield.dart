@@ -26,66 +26,98 @@ class DataProviderPhoneInput extends HookConsumerWidget {
     //
     void showProviderMenu(BuildContext context) {
       final theme = Theme.of(context);
-      showMenu(
+      showModalBottomSheet(
         context: context,
-        position: const RelativeRect.fromLTRB(0, 100, 0, 0),
-        color: theme.brightness == Brightness.dark
+        backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade700
             : const Color(0xFFF7F7F7),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        items: dataPlans.when(
-          data: (plans) => plans.map((provider) {
-            final isSelected = provider.name == selectedProvider.value.name;
+        builder: (context) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 50,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD9D9D9),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  "Select Provider",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                dataPlans.when(
+                  data: (plans) => ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: plans.length,
+                    separatorBuilder: (context, index) =>
+                        Divider(color: Colors.grey.shade100),
+                    itemBuilder: (context, index) {
+                      final provider = plans[index];
+                      final isSelected =
+                          provider.name == selectedProvider.value.name;
 
-            return PopupMenuItem(
-              onTap: () {
-                selectedProvider.value = (
-                  name: provider.name ?? '',
-                  logo: provider.logo ?? '',
-                  products: provider.products ?? [],
-                );
-              },
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: isSelected
-                          ? Border.all(color: Colors.orange, width: 2)
-                          : null,
-                    ),
-                    child: ClipOval(
-                      child: Image.network(
-                        provider.logo ?? '',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.error),
-                      ),
-                    ),
+                      return ListTile(
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: isSelected
+                                ? Border.all(
+                                    color: AppColors.primaryColor, width: 2)
+                                : null,
+                          ),
+                          child: ClipOval(
+                            child: Image.network(
+                              provider.logo ?? '',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          provider.name ?? '',
+                          style: TextStyle(
+                            color: isSelected ? AppColors.primaryColor : null,
+                            fontWeight: isSelected ? FontWeight.bold : null,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? const Icon(Icons.check,
+                                color: AppColors.primaryColor)
+                            : null,
+                        onTap: () {
+                          selectedProvider.value = (
+                            name: provider.name ?? '',
+                            logo: provider.logo ?? '',
+                            products: provider.products ?? [],
+                          );
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    provider.name ?? '',
-                    style: TextStyle(
-                      color: isSelected ? Colors.orange : null,
-                      fontWeight: isSelected ? FontWeight.bold : null,
-                    ),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
                   ),
-                  if (isSelected) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, color: Colors.orange, size: 16)
-                  ],
-                ],
-              ),
-            );
-          }).toList(),
-          loading: () => [],
-          error: (_, __) => [],
-        ),
+                  error: (error, stack) => Center(
+                    child: Text('Error: $error'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       );
     }
 

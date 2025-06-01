@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -59,6 +60,12 @@ class CableBillScreen extends HookConsumerWidget {
         error: (_, __) => null,
       ),
     );
+
+    // Reset subscription plan when provider changes
+    useEffect(() {
+      subPlan.value = selectedPlan.value.products?.first;
+      return null;
+    }, [selectedPlan.value]);
 
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
@@ -183,8 +190,8 @@ class CableBillScreen extends HookConsumerWidget {
                         children: [
                           CircleAvatar(
                             radius: 14,
-                            backgroundImage:
-                                NetworkImage(selectedPlan.value.logo),
+                            backgroundImage: CachedNetworkImageProvider(
+                                selectedPlan.value.logo),
                             backgroundColor: Colors.transparent,
                           ),
                           const SizedBox(width: 12),
@@ -377,7 +384,8 @@ class ProviderBottomSheet extends HookConsumerWidget {
                     final provider = filteredPlans[index];
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(provider.logo ?? ''),
+                        backgroundImage:
+                            CachedNetworkImageProvider(provider.logo ?? ''),
                         backgroundColor: Colors.transparent,
                       ),
                       title: Text(

@@ -63,6 +63,12 @@ class BuyDataScreen extends HookConsumerWidget {
       ),
     );
 
+    // Reset selected plan when provider changes
+    useEffect(() {
+      selectedPlan.value = selectedProvider.value.products?.first;
+      return null;
+    }, [selectedProvider.value]);
+
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
         isScrollControlled: true,
