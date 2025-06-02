@@ -81,8 +81,9 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
                 children: [
                   const Gap(16),
                   FullButton(
-                    text:
-                        status == 'Failed' ? 'Retry Trade' : "Download Reciept",
+                    text: status.toLowerCase() == 'failed'
+                        ? 'Retry Trade'
+                        : "Download Reciept",
                     width: double.infinity,
                     height: 60,
                     onPressed: isProcessing.value == true

@@ -123,6 +123,7 @@ void showSuccessDialog({
               TextButton(
                 onPressed: () {
                   onSecondaryAction();
+
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -132,7 +133,7 @@ void showSuccessDialog({
                         ? Colors.white
                         : Colors.black,
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

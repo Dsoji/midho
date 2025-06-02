@@ -43,7 +43,7 @@ class WithdrawFundsScreen extends HookConsumerWidget {
     final formKey = GlobalKey<FormState>();
     final userProfileAsync =
         ref.watch(authenticationControllerProvider).userDetails;
-    final localBanks = userProfileAsync.valueOrNull?.banks?.first;
+    final localBanks = userProfileAsync.valueOrNull?.banks;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -182,16 +182,19 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                       showStrength: false,
                       image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
                       name: selectedBank?["name"] ??
-                          localBanks?.bankName ??
-                          'Select Bank',
+                          (localBanks?.isNotEmpty == true
+                              ? localBanks?.first.bankName
+                              : 'Select Bank'),
                       status: selectedBank?["status"] ?? 'Poor Network',
                       percentage: selectedBank?["percentage"] ?? '90',
                       actNumber: selectedBank?["actNumber"] ??
-                          localBanks?.accountNumber ??
-                          'N/A',
+                          (localBanks?.isNotEmpty == true
+                              ? localBanks?.first.accountNumber
+                              : 'N/A'),
                       actName: selectedBank?["actName"] ??
-                          localBanks?.accountName ??
-                          'N/A',
+                          (localBanks?.isNotEmpty == true
+                              ? localBanks?.first.accountName
+                              : 'N/A'),
                       onTap: () => _showAddBankDetailsSheet(context),
                     ),
                     const Gap(24),
@@ -231,19 +234,19 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                                 builder: (context) => TransactionPinScreen(
                                       isHome: true,
                                       acctNo: selectedBank?["actNumber"] ??
-                                          localBanks?.accountNumber ??
+                                          localBanks?.first.accountNumber ??
                                           'N/A',
                                       amount: int.parse(
                                           amountController.text.trim()),
                                       referall: false,
                                       accountName: selectedBank?["actName"] ??
-                                          localBanks?.accountName ??
+                                          localBanks?.first.accountName ??
                                           'N/A',
                                       bankName: selectedBank?["name"] ??
-                                          localBanks?.bankName ??
+                                          localBanks?.first.bankName ??
                                           'N/A',
                                       bankCode: selectedBank?["bankCode"] ??
-                                          localBanks?.bankCode ??
+                                          localBanks?.first.bankCode ??
                                           'N/A',
                                     )));
                       },

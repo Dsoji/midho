@@ -48,8 +48,15 @@ class NotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _logger.d("📥 Foreground FCM message: ${message.notification?.title}");
 
-      _logger.i('📩 FCM Message received: ${message.notification?.title}');
+      // Only show local notification if the app is in foreground
       if (message.notification != null) {
+        // Check if the notification is from FCM
+        if (message.notification?.android != null ||
+            message.notification?.apple != null) {
+          // Skip showing local notification as FCM will handle it
+          return;
+        }
+
         showLocalNotification(
           title: message.notification?.title,
           body: message.notification?.body,

@@ -116,7 +116,7 @@ class TransactionPinScreen extends HookConsumerWidget {
             },
             primaryButtonColor: Colors.orange,
             backgroundColor: Colors.blue.shade900,
-            secondaryButtonText: '',
+            secondaryButtonText: 'Buy More Airtime',
           );
         }
       } else if (selectedType == "Data") {
@@ -144,6 +144,12 @@ class TransactionPinScreen extends HookConsumerWidget {
             ],
             buttonText: "View Details",
             onButtonPressed: () {
+              ref
+                  .read(transactionControllerProvider.notifier)
+                  .fetchTransactions();
+              ref
+                  .read(transactionControllerProvider.notifier)
+                  .getTransactions();
               context.router.push(
                 BillTransactionDetailsRoute(
                     type: airtimeTransactions?.type ?? '',
@@ -152,13 +158,19 @@ class TransactionPinScreen extends HookConsumerWidget {
               );
             },
             onSecondaryAction: () {
+              ref
+                  .read(transactionControllerProvider.notifier)
+                  .fetchTransactions();
+              ref
+                  .read(transactionControllerProvider.notifier)
+                  .getTransactions();
               context.router.popUntil(
                   (route) => route.settings.name == BuyAirtimeRoute.name);
               Navigator.of(context).pop;
             },
             primaryButtonColor: Colors.orange,
             backgroundColor: Colors.blue.shade900,
-            secondaryButtonText: '',
+            secondaryButtonText: 'Buy More Data',
           );
         }
       } else if (selectedType == "Electricity") {
@@ -200,9 +212,9 @@ class TransactionPinScreen extends HookConsumerWidget {
                   (route) => route.settings.name == BuyDataRoute.name);
               Navigator.of(context).pop;
             },
-            primaryButtonColor: Colors.orange,
+            primaryButtonColor: AppColors.primaryColor,
             backgroundColor: Colors.blue.shade900,
-            secondaryButtonText: '',
+            secondaryButtonText: 'Buy More Electricity',
           );
         }
       } else if (selectedType == "DSTV") {
@@ -244,9 +256,9 @@ class TransactionPinScreen extends HookConsumerWidget {
                   (route) => route.settings.name == CableBillRoute.name);
               Navigator.of(context).pop;
             },
-            primaryButtonColor: Colors.orange,
+            primaryButtonColor: AppColors.primaryColor,
             backgroundColor: Colors.white,
-            secondaryButtonText: '',
+            secondaryButtonText: 'Buy More Subscription',
           );
         }
       } else if (selectedType == "Betting") {

@@ -36,7 +36,8 @@ class BillTransactionDetailsScreen extends StatelessWidget {
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
         if (!didPop) {
-          context.router.replaceAll([const CryptoRoute()]);
+          context.router
+              .popUntil((route) => route.settings.name == HomeRoute.name);
 
           final tabsRouter = AutoTabsRouter.of(
             context,

@@ -285,7 +285,7 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
         };
         break;
       case "GIFTCARDSALE":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -294,12 +294,14 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
-              "Rate": "${transaction.exchangeCurrency}  750/USD",
-              "Amount Sold": "\$50",
-              "Total Received": "37,000.00",
+              "Rate":
+                  "${transaction.exchangeCurrency}  ${transaction.rate}/${transaction.baseCurrency}",
+              "Amount Sold": "\$${transaction.amount}",
+              "Total Received":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -307,9 +309,10 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
                 "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
             "breakdown": {
-              "Gift Card Sold": "STEAM 10-200",
-              "Rate": "${transaction.exchangeCurrency}  750/USD",
-              "Amount Sold": "\$50",
+              "Gift Card Sold": transaction.asset?.name ?? '',
+              "Rate":
+                  "${transaction.exchangeCurrency}  ${transaction.rate}/${transaction.baseCurrency}",
+              "Amount Sold": "\$${transaction.amount}",
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
             }
@@ -327,49 +330,6 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
                   "${transaction.exchangeCurrency}  ${transaction.rate}/${transaction.baseCurrency}",
               "Amount Sold": "\$${transaction.amount}",
               "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
-            }
-          };
-        }
-        break;
-      case "Bill Payment":
-        if (transaction.status == "Completed") {
-          details = {
-            "transactionId": transaction.id,
-            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
-            "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
-            }
-          };
-        } else if (transaction.status == "Failed") {
-          details = {
-            "transactionId": transaction.id,
-            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
-            "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
-              "Proof of Failure": "View Screenshot",
-            }
-          };
-        } else {
-          details = {
-            "transactionId": transaction.id,
-            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
-            "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged":
                   "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
             }
           };

@@ -237,7 +237,7 @@ class ReferralsCard extends HookConsumerWidget {
             ),
             balanceState.when(
               data: (userData) => Text(
-                '${userData.wallet?.currency ?? '₦'}${userData.wallet?.referralBalance ?? '0.00'}',
+                '${userData.wallet?.currency ?? '₦'} ${userData.wallet?.referralBalance ?? '0.00'}',
                 style: TextStyle(
                   fontSize: 16,
                   color: theme.brightness == Brightness.dark

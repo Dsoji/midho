@@ -409,7 +409,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": "1234567890",
               "Total Charged": "10500",
             }
@@ -461,7 +461,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         }
         break;
       case "CABLEBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -469,12 +469,12 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -482,9 +482,9 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
             }
@@ -497,15 +497,15 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }
         break;
       case "ELECTRICITYBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -513,12 +513,12 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -526,9 +526,9 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
             }
@@ -541,38 +541,39 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }
         break;
       case "AIRTIMEBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": transaction.metadata?.amount ?? '',
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": transaction.metadata?.amount ?? '',
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
             }
@@ -581,13 +582,13 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": transaction.metadata?.amount ?? '',
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }
@@ -599,9 +600,9 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           "amount": "100,000.00",
           "fee": "1,000.00",
           "breakdown": {
-            "Bank Name": "Access Bank",
-            "Account Number": "1234567890",
-            "Total Deducted": "101,000.00",
+            "Bank Name": transaction.metadata?.vendor?.name ?? '',
+            "Account Number": transaction.accountNumber ?? '',
+            "Total Deducted": transaction.metadata?.amount ?? '',
           }
         };
         break;

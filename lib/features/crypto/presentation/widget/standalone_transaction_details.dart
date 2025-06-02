@@ -355,7 +355,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         }
         break;
       case "INTERNETBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -368,7 +368,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               "Total Charged": "10500",
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -399,7 +399,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         }
         break;
       case "BETTINGBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -412,7 +412,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               "Total Charged": "10500",
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -443,7 +443,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         }
         break;
       case "CABLEBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -456,7 +456,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               "Total Charged": "10500",
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -487,7 +487,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         }
         break;
       case "ELECTRICITYBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -500,7 +500,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               "Total Charged": "10500",
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -531,7 +531,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
         }
         break;
       case "AIRTIMEBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -544,7 +544,8 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
               "Total Charged": "10500",
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
