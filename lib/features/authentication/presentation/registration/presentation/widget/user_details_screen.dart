@@ -28,7 +28,6 @@ class UserDetailsStep extends HookConsumerWidget {
     final firstNameController = useTextEditingController();
     final lastNameController = useTextEditingController();
     final phoneController = useTextEditingController();
-    final formattedPhoneNumber = useState('');
     final selectedCountry = useState("Nigeria");
     final theme = Theme.of(context);
     final authService = ref.read(authenticationControllerProvider.notifier);
@@ -109,10 +108,7 @@ class UserDetailsStep extends HookConsumerWidget {
                     ),
                     validator: (value) =>
                         Validators.requiredField(value, "Phone number"),
-                    onChanged: (value) {
-                      formattedPhoneNumber.value =
-                          '+234${value.replaceAll(RegExp(r'^0+'), '')}';
-                    },
+                    onChanged: (_) {}, // Prevent state rebuild
                   ),
                   const SizedBox(height: 15),
                   Text(
@@ -221,6 +217,10 @@ class UserDetailsStep extends HookConsumerWidget {
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) return;
 
+                      final rawPhone = phoneController.text.trim();
+                      final formattedPhone =
+                          '+234${rawPhone.replaceAll(RegExp(r'^0+'), '')}';
+
                       final email = box.get('email');
                       final password = box.get('password');
                       final referral = box.get('referral');
@@ -229,7 +229,7 @@ class UserDetailsStep extends HookConsumerWidget {
                       authService.updateProfileDetails(ProfilePayload(
                         firstname: firstNameController.text.trim(),
                         lastname: lastNameController.text.trim(),
-                        phone: phoneController.text.trim(),
+                        phone: rawPhone,
                       ));
 
                       final result = await authService.signUp(SignUpPayload(
@@ -239,7 +239,7 @@ class UserDetailsStep extends HookConsumerWidget {
                         firstname: firstNameController.text.trim(),
                         lastname: lastNameController.text.trim(),
                         country: countryCodeMap[selectedCountry.value] ?? 'NG',
-                        phone: formattedPhoneNumber.value,
+                        phone: formattedPhone,
                         device: deviceId,
                         fcmToken: fcmToken,
                       ));
