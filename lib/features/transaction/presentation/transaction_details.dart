@@ -310,7 +310,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         };
         break;
       case "GIFTCARDSALE":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -332,7 +332,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                       .commaFormat(),
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
@@ -342,9 +343,10 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Gift Card Sold": "STEAM 10-200",
+              "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
-              "Amount Sold": "\$50",
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
+                  .commaFormat(),
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
             }
@@ -373,30 +375,34 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         }
         break;
       case "INTERNETBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
               "Provider": transaction.metadata?.vendor?.name ?? '',
-              "Account Number": "1234567890",
+              "Account Number": transaction.accountNumber ?? '',
               "Total Charged": "10500",
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
             }
@@ -405,42 +411,46 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
               "Provider": transaction.metadata?.vendor?.name ?? '',
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }
         break;
       case "BETTINGBUY":
-        if (transaction.status == "Completed") {
+        if (transaction.status?.toLowerCase() == "completed") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10500",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
-        } else if (transaction.status == "Failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
-              "Total Charged": "10,500.00",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Charged": transaction.metadata?.amount ?? '',
               "Reason for Failure": "Invalid Card - Card has been redeemed",
               "Proof of Failure": "View Screenshot",
             }
@@ -449,12 +459,13 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
               "Provider": "Ikeja Electric",
-              "Account Number": "1234567890",
+              "Account Number": transaction.accountNumber ?? '',
               "Total Charged": "10500",
             }
           };
@@ -465,7 +476,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
@@ -474,11 +486,13 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
-        } else if (transaction.status?.toLowerCase() == "failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
@@ -493,7 +507,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
@@ -509,7 +524,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
@@ -518,11 +534,13 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
-        } else if (transaction.status?.toLowerCase() == "failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
@@ -537,7 +555,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-            "amount": "10,000.00",
+            "amount": "${transaction.baseCurrency} ${transaction.amount}"
+                .commaFormat(),
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
@@ -597,8 +616,11 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         details = {
           "transactionId": transaction.id,
           "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount": "100,000.00",
-          "fee": "1,000.00",
+          "amount":
+              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                  .commaFormat(),
+          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+              .commaFormat(),
           "breakdown": {
             "Bank Name": transaction.metadata?.vendor?.name ?? '',
             "Account Number": transaction.accountNumber ?? '',

@@ -662,7 +662,8 @@ class TransactionController extends StateNotifier<TransactionState> {
       },
       (success) {
         state = state.copyWith(
-          withdrawal: AsyncValue.data(result.getSuccess() ?? ''),
+          withdrawal:
+              AsyncValue.data(result.getSuccess() ?? AirtimeTransaction()),
         );
         return true;
       },

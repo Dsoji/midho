@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/step_progress_indicator.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -242,7 +243,11 @@ class EmailPasswordStep extends HookConsumerWidget {
                 CustomTextField(
                   controller: emailController,
                   label: "Email",
-                  prefixIcon: Icons.email_outlined, // Optional
+                  prefixIcon: const Icon(
+                    Icons.email_outlined,
+                    color: Colors.grey,
+                    size: 21,
+                  ), // Optional
                   keyboardType: TextInputType.emailAddress,
                   validator: Validators.emailValidator,
                 ),
@@ -508,7 +513,11 @@ class UserDetailsStep extends HookConsumerWidget {
                 CustomTextField(
                   controller: passwordController,
                   label: "Password",
-                  prefixIcon: Icons.lock_outline, // Optional
+                  prefixIcon: const Icon(
+                    IconsaxPlusLinear.lock,
+                    color: Colors.grey,
+                    size: 21,
+                  ), // Optional
                   isPassword: true,
                 ),
                 const SizedBox(height: 15),

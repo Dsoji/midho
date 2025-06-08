@@ -9,7 +9,9 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../bottomNav/app_router.gr.dart';
 import '../../profile/presentation/security_settings/change_pin_screen.dart';
 import '../../transaction/data/controller/transaction_controller.dart';
@@ -45,8 +47,8 @@ final pinProvider = StateNotifierProvider<PinNotifier, PinState>(
 );
 
 @RoutePage()
-class TransactionPinScreen extends HookConsumerWidget {
-  const TransactionPinScreen({
+class TransactinScreen extends HookConsumerWidget {
+  const TransactinScreen({
     super.key,
     required this.isHome,
     required this.acctNo,
@@ -196,6 +198,13 @@ class TransactionPinScreen extends HookConsumerWidget {
                       .withdrawal
                       .isLoading,
                   onPressed: () async {
+                    if (pinController.text.isEmpty) {
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Enter your 4-digit PIN.',
+                      );
+                      return;
+                    }
                     final result = await ref
                         .read(transactionControllerProvider.notifier)
                         .withdraw(
@@ -207,8 +216,16 @@ class TransactionPinScreen extends HookConsumerWidget {
                           bankName: bankName,
                           bankCode: bankCode,
                         );
+
                     if (result) {
-                      showWithdrawSuccessDialog(context);
+                      final transaction = ref
+                          .watch(transactionControllerProvider)
+                          .withdrawal
+                          .valueOrNull;
+                      showWithdrawSuccessDialog(
+                        context,
+                        transaction ?? AirtimeTransaction(),
+                      );
                     } else {
                       showWithdrawalFailedDialog(context);
                     }
@@ -279,14 +296,26 @@ class TransactionPinScreen extends HookConsumerWidget {
     );
   }
 
-  void showWithdrawSuccessDialog(BuildContext context) {
+  void showWithdrawSuccessDialog(
+      BuildContext context, AirtimeTransaction transaction) {
     showWithdrawalSuccessDialog(
-        context: context,
-        isHome: true,
-        onSecondaryAction: () {
-          context.router
-              .popUntil((route) => route.settings.name == HomeRoute.name);
-        });
+      context: context,
+      isHome: true,
+      onSecondaryAction: () {
+        context.router
+            .popUntil((route) => route.settings.name == HomeRoute.name);
+      },
+      transaction: transaction,
+      onPressed: () {
+        context.router.push(
+          BillTransactionDetailsRoute(
+            type: transaction.type ?? '',
+            status: transaction.status ?? '',
+            transaction: transaction,
+          ),
+        );
+      },
+    );
   }
 
   void showWithdrawalFailedDialog(BuildContext context) {

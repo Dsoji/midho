@@ -8,7 +8,6 @@ import 'package:mdiho/features/authentication/presentation/registration/presenta
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../pin_creation/presentation/create_pin.dart';
-import 'widget/email_password_step.dart';
 import 'widget/otp_verification_step.dart';
 import 'widget/user_details_screen.dart';
 
@@ -179,12 +178,12 @@ class RegistrationScreen extends HookConsumerWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (index) => pageIndex.value = index,
                   children: [
-                    EmailPasswordStep(
+                    UserDetailsStep(
                       // isLoading: ref
                       //     .watch(authenticationControllerProvider)
                       //     .emailVerification
                       //     .isLoading,
-                      onNext: () {
+                      onFinish: () {
                         pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut);

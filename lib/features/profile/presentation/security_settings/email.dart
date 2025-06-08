@@ -69,7 +69,11 @@ class VerifyEmailScreen extends HookConsumerWidget {
                   CustomTextField(
                     controller: emailController,
                     label: "Email",
-                    prefixIcon: Icons.email_outlined, // Optional
+                    prefixIcon: const Icon(
+                      Icons.email_outlined,
+                      color: Colors.grey,
+                      size: 21,
+                    ), // Optional
                     keyboardType: TextInputType.emailAddress,
                   ),
 

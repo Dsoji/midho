@@ -8,9 +8,10 @@ import 'package:logger/logger.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
-import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/utils/validator.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
@@ -228,27 +229,39 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                           return;
                         }
 
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TransactionPinScreen(
-                                      isHome: true,
-                                      acctNo: selectedBank?["actNumber"] ??
-                                          localBanks?.first.accountNumber ??
-                                          'N/A',
-                                      amount: int.parse(
-                                          amountController.text.trim()),
-                                      referall: false,
-                                      accountName: selectedBank?["actName"] ??
-                                          localBanks?.first.accountName ??
-                                          'N/A',
-                                      bankName: selectedBank?["name"] ??
-                                          localBanks?.first.bankName ??
-                                          'N/A',
-                                      bankCode: selectedBank?["bankCode"] ??
-                                          localBanks?.first.bankCode ??
-                                          'N/A',
-                                    )));
+                        final acctNo = selectedBank?["actNumber"] ??
+                            localBanks?.first.accountNumber ??
+                            '';
+                        final acctName = selectedBank?["actName"] ??
+                            localBanks?.first.accountName ??
+                            '';
+                        final bankName = selectedBank?["name"] ??
+                            localBanks?.first.bankName ??
+                            '';
+                        final bankCode = selectedBank?["bankCode"] ??
+                            localBanks?.first.bankCode ??
+                            '';
+
+                        if (bankName.isEmpty ||
+                            acctNo.isEmpty ||
+                            acctName.isEmpty ||
+                            bankCode.isEmpty) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Please select valid bank details.',
+                          );
+                          return;
+                        }
+
+                        context.router.push(TransactinRoute(
+                          isHome: true,
+                          acctNo: acctNo,
+                          referall: false,
+                          accountName: acctName,
+                          bankName: bankName,
+                          bankCode: bankCode,
+                          amount: int.parse(amountController.text.trim()),
+                        ));
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

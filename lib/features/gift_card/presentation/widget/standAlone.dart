@@ -335,19 +335,7 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
           };
         }
         break;
-      case "Withdrawal":
-        details = {
-          "transactionId": transaction.id,
-          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount": "100,000.00",
-          "fee": "1,000.00",
-          "breakdown": {
-            "Bank Name": "Access Bank",
-            "Account Number": "1234567890",
-            "Total Deducted": "101,000.00",
-          }
-        };
-        break;
+
       default:
         details = {
           "transactionId": "N/A",

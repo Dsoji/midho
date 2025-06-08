@@ -105,7 +105,11 @@ class LoginScreen extends HookConsumerWidget {
                       CustomTextField(
                         controller: emailController,
                         label: "Email",
-                        prefixIcon: Icons.email_outlined, // Optional
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: Colors.grey,
+                          size: 21,
+                        ), // Optional
                         keyboardType: TextInputType.emailAddress,
                         validator: Validators.emailValidator,
                       ),
@@ -116,7 +120,11 @@ class LoginScreen extends HookConsumerWidget {
                       CustomTextField(
                         controller: passwordController,
                         label: "Password",
-                        prefixIcon: IconsaxPlusLinear.lock, // Optional
+                        prefixIcon: const Icon(
+                          IconsaxPlusLinear.lock,
+                          color: Colors.grey,
+                          size: 21,
+                        ), // Optional
                         isPassword: true,
                         validator: Validators.passwordValidator,
                       ),

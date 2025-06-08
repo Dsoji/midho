@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/withdrawal/presentation/enter_pin.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/res/assets.dart';
@@ -11,6 +10,7 @@ import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
+import '../../../bottomNav/app_router.gr.dart';
 import '../../../withdrawal/presentation/widget/bank_info_card.dart';
 import '../../../withdrawal/presentation/withdraw_funds_screen.dart';
 
@@ -104,25 +104,21 @@ class WithdrawReferallScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TransactionPinScreen(
-                                      isHome: false,
-                                      acctNo: selectedBank?["actNumber"] ?? '',
-                                      amount: int.parse(
-                                          amountController.text.trim()),
-                                      referall: false,
-                                      accountName: selectedBank?["actName"] ??
-                                          localBanks?.accountName ??
-                                          'N/A',
-                                      bankName: selectedBank?["name"] ??
-                                          localBanks?.bankName ??
-                                          'N/A',
-                                      bankCode: selectedBank?["bankCode"] ??
-                                          localBanks?.bankCode ??
-                                          'N/A',
-                                    )));
+                        context.router.push(TransactinRoute(
+                          isHome: false,
+                          acctNo: selectedBank?["actNumber"] ?? '',
+                          amount: int.parse(amountController.text.trim()),
+                          referall: false,
+                          accountName: selectedBank?["actName"] ??
+                              localBanks?.accountName ??
+                              'N/A',
+                          bankName: selectedBank?["name"] ??
+                              localBanks?.bankName ??
+                              'N/A',
+                          bankCode: selectedBank?["bankCode"] ??
+                              localBanks?.bankCode ??
+                              'N/A',
+                        ));
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,

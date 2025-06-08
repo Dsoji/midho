@@ -14,6 +14,9 @@ final homeRoutes = AutoRoute(
       page: TransactionPinRoute.page,
     ),
     AutoRoute(
+      page: TransactinRoute.page,
+    ),
+    AutoRoute(
       page: BuyAirtimeRoute.page,
     ),
     AutoRoute(

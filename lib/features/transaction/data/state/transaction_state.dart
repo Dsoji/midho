@@ -31,7 +31,7 @@ class TransactionState {
   final AsyncValue<List<DataTvModel>> cableTvPlans;
   final AsyncValue<List<AirtimeElectricModel>> airtimePlans;
   final AsyncValue<List<AirtimeElectricModel>> electricityPlans;
-  final AsyncValue<String> withdrawal;
+  final AsyncValue<AirtimeTransaction> withdrawal;
   const TransactionState({
     required this.transactions,
     required this.sellCrypto,
@@ -74,7 +74,7 @@ class TransactionState {
       cableTvPlans: const AsyncValue.data([]),
       airtimePlans: const AsyncValue.data([]),
       electricityPlans: const AsyncValue.data([]),
-      withdrawal: const AsyncValue.data(''),
+      withdrawal: AsyncValue.data(AirtimeTransaction()),
     );
   }
 
@@ -97,7 +97,7 @@ class TransactionState {
     AsyncValue<List<DataTvModel>>? cableTvPlans,
     AsyncValue<List<AirtimeElectricModel>>? airtimePlans,
     AsyncValue<List<AirtimeElectricModel>>? electricityPlans,
-    AsyncValue<String>? withdrawal,
+    AsyncValue<AirtimeTransaction>? withdrawal,
   }) {
     return TransactionState(
       transactions: transactions ?? this.transactions,

@@ -675,7 +675,7 @@ class TransactionRepository {
     }
   }
 
-  Future<Result<FailureHandler, String>> withdraw({
+  Future<Result<FailureHandler, AirtimeTransaction>> withdraw({
     String? acctNo,
     int? amount,
     bool? referall,
@@ -696,7 +696,7 @@ class TransactionRepository {
       );
 
       if (data.isSuccess) {
-        return Success(data.value ?? '');
+        return Success(data.value ?? AirtimeTransaction());
       } else {
         return Error(
           data.error ??

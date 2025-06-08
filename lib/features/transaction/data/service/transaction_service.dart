@@ -488,7 +488,7 @@ class TransactionService {
     );
   }
 
-  Future<ResultValue<String>> withdrawal({
+  Future<ResultValue<AirtimeTransaction>> withdrawal({
     String? acctNo,
     int? amount,
     bool? referall,
@@ -497,8 +497,8 @@ class TransactionService {
     String? bankCode,
     required String pin,
   }) async {
-    return apiRequestHelper.handleApiRequest(
-      () => apiClient.post('user/profile/addBank', header: {
+    return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
+      () => apiClient.post('user/tx/withdraw', header: {
         'Authorization': 'Bearer $accessToken',
         'pin': pin,
       }, data: {
@@ -513,7 +513,7 @@ class TransactionService {
         }
       }),
       parser: (data) {
-        return BaseModel.toRawString(data);
+        return AirtimeTransaction.fromMap(data);
       },
       showErrorToast: true,
       showSuccessToast: false,

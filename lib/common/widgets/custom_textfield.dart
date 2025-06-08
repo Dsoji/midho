@@ -7,7 +7,7 @@ class CustomTextField extends HookWidget {
   final TextEditingController controller;
   final String? label;
   final String? hintText;
-  final IconData? prefixIcon;
+  final Widget? prefixIcon;
   final Widget? suffixIcon; // Now supports any widget, not just IconData
   final bool isPassword;
   final bool isOptional;
@@ -70,13 +70,7 @@ class CustomTextField extends HookWidget {
           onChanged: onChanged, // ✅ Wire it here
 
           decoration: InputDecoration(
-            prefixIcon: prefixIcon != null
-                ? Icon(
-                    prefixIcon,
-                    color: Colors.grey,
-                    size: 21,
-                  )
-                : null,
+            prefixIcon: prefixIcon,
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(

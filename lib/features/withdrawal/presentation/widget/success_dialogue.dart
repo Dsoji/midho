@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:mdiho/common/utils/date_utils.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
+import '../../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import 'info_widget.dart';
 
 void showWithdrawalSuccessDialog({
   required BuildContext context,
   bool? isHome,
   required VoidCallback onSecondaryAction,
+  required AirtimeTransaction transaction,
+  required VoidCallback onPressed,
 }) {
   showDialog(
     context: context,
@@ -77,10 +81,10 @@ void showWithdrawalSuccessDialog({
               const SizedBox(height: 8),
 
               // Description
-              const Text(
-                "Your withdrawal of ₦50,000.00 to GTBank - ****5678 has been processed successfully!",
+              Text(
+                "Your withdrawal of ₦${transaction.amount ?? 0} to ${transaction.metadata?.vendor?.name ?? ''} - ****${transaction.accountNumber?.substring(transaction.accountNumber?.length ?? 0 - 4) ?? ''} has been processed successfully!",
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontFamily: '',
                 ),
@@ -88,12 +92,18 @@ void showWithdrawalSuccessDialog({
               const Gap(16),
 
               // Transaction Details
-              buildDetailRow("Transaction ID", "#TRX123456", context),
-              buildDetailRow("Date & Time", "Jan 27, 2025, 11:00 AM", context),
-              buildDetailRow("Bank Account", "GTBank\n****5678", context),
-              buildDetailRow("Withdrawal Amount", "₦50,000.00", context),
-              buildDetailRow("Fee", "₦500.00", context),
-              buildDetailRow("Total Amount Sent", "₦49,500.00", context),
+              buildDetailRow("Transaction ID", transaction.id ?? "", context),
+              buildDetailRow(
+                  "Date & Time",
+                  transaction.createdAt?.formatToReadableDateTime() ?? "",
+                  context),
+              buildDetailRow(
+                  "Bank Account", transaction.accountNumber ?? "", context),
+              buildDetailRow(
+                  "Withdrawal Amount", "₦${transaction.amount ?? 0}", context),
+              buildDetailRow("Fee", "₦${transaction.fee ?? 0}", context),
+              buildDetailRow(
+                  "Total Amount Sent", "₦${transaction.amount ?? 0}", context),
 
               const Gap(16),
 
@@ -111,13 +121,8 @@ void showWithdrawalSuccessDialog({
                 width: double.infinity,
                 height: 48,
                 onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => const TransactionDetailsScreen(
-                  //               type: 'Crypto Sale',
-                  //               status: 'Completed',
-                  //             )));
+                  onPressed();
+                  Navigator.pop(context);
                 },
                 textColor: Colors.white,
                 color: AppColors.primaryColor.shade500,

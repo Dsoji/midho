@@ -11,8 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
 import '../../../common/widgets/custom_buttons.dart';
-import '../../authentication/presentation/login/presentation/login_screen.dart';
-import '../../authentication/presentation/registration/presentation/registration_screen.dart';
+import '../../bottomNav/app_router.gr.dart';
 
 @RoutePage()
 class OnboardingScreen extends HookConsumerWidget {
@@ -184,12 +183,13 @@ class OnboardingScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegistrationScreen(),
-                        ),
-                      );
+                      context.router.push(const RegistrationRoute());
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const RegistrationScreen(),
+                      //   ),
+                      // );
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
@@ -200,12 +200,13 @@ class OnboardingScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
+                      context.router.push(const LoginRoute());
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const LoginScreen(),
+                      //   ),
+                      // );
                     },
                     textColor: theme.brightness == Brightness.dark
                         ? Colors.white

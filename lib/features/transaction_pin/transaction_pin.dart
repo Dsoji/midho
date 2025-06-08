@@ -5,7 +5,6 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
-import 'package:mdiho/features/withdrawal/presentation/widget/success_dialogue.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
@@ -284,13 +283,42 @@ class TransactionPinScreen extends HookConsumerWidget {
           primaryButtonColor: Colors.black,
           backgroundColor: Colors.white,
         );
-      } else if (selectedType == null) {
-        showWithdrawalSuccessDialog(
+      } else if (selectedType == "Withdrawal") {
+        final transaction =
+            ref.watch(transactionControllerProvider).withdrawal.valueOrNull;
+        showSuccessDialog(
           context: context,
+          title: "Withdrawal Successful",
+          details: [
+            {"Bank Account": transaction?.accountNumber ?? ''},
+            {"Withdrawal Amount": "₦${transaction?.amount ?? 0}"},
+            {"Fee": "₦${transaction?.fee ?? 0}"},
+            {"Total Amount Sent": "₦${transaction?.amount ?? 0}"},
+          ],
+          buttonText: "View Details",
+          onButtonPressed: () {
+            context.router.push(const HomeRoute());
+          },
           onSecondaryAction: () {
             context.router.root.replaceAll([const ProfileRoute()]);
             Navigator.of(context).pop;
           },
+          secondaryButtonText: 'Go to Home',
+        );
+      } else if (selectedType == null) {
+        showSuccessDialog(
+          context: context,
+          title: "Withdrawal Successful",
+          details: [],
+          buttonText: "View Details",
+          onButtonPressed: () {
+            context.router.push(const HomeRoute());
+          },
+          onSecondaryAction: () {
+            context.router.root.replaceAll([const ProfileRoute()]);
+            Navigator.of(context).pop;
+          },
+          secondaryButtonText: 'Go to Home',
         );
 
         // showDialog(

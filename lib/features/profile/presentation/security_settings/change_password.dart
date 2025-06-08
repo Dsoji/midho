@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
@@ -59,7 +60,11 @@ class ChangePasswordScreen extends HookConsumerWidget {
                   CustomTextField(
                     controller: pswrdController,
                     label: "Current Password",
-                    prefixIcon: Icons.lock_outline, // Optional
+                    prefixIcon: const Icon(
+                      IconsaxPlusLinear.lock,
+                      color: Colors.grey,
+                      size: 21,
+                    ), // Optional
                     isPassword: true,
                   ),
                   const Gap(28),
@@ -72,14 +77,22 @@ class ChangePasswordScreen extends HookConsumerWidget {
                   CustomTextField(
                     controller: newPswrdController,
                     label: "New Password",
-                    prefixIcon: Icons.lock_outline, // Optional
+                    prefixIcon: const Icon(
+                      IconsaxPlusLinear.lock,
+                      color: Colors.grey,
+                      size: 21,
+                    ), // Optional
                     isPassword: true,
                   ),
                   const Gap(28),
                   CustomTextField(
                     controller: confirmPswrdController,
                     label: "Confirm New Password",
-                    prefixIcon: Icons.lock_outline, // Optional
+                    prefixIcon: const Icon(
+                      IconsaxPlusLinear.lock,
+                      color: Colors.grey,
+                      size: 21,
+                    ), // Optional
                     isPassword: true,
                   ),
                   const Gap(28),
