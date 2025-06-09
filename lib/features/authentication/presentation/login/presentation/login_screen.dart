@@ -12,7 +12,6 @@ import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
 import '../../../../bottomNav/app_router.gr.dart';
-import '../../registration/presentation/registration_screen.dart';
 
 @RoutePage()
 class LoginScreen extends HookConsumerWidget {
@@ -183,12 +182,7 @@ class LoginScreen extends HookConsumerWidget {
                       // Already have an account?
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegistrationScreen(),
-                            ),
-                          );
+                          context.router.push(const RegistrationRoute());
                         },
                         child: Center(
                           child: RichText(

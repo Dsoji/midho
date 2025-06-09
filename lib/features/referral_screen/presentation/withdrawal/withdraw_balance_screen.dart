@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/res/assets.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
@@ -104,20 +105,36 @@ class WithdrawReferallScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () {
+                        final acctNo = selectedBank?["actNumber"] ??
+                            localBanks?.accountNumber ??
+                            '';
+                        final acctName = selectedBank?["actName"] ??
+                            localBanks?.accountName ??
+                            '';
+                        final bankName =
+                            selectedBank?["name"] ?? localBanks?.bankName ?? '';
+                        final bankCode = selectedBank?["bankCode"] ??
+                            localBanks?.bankCode ??
+                            '';
+
+                        if (bankName.isEmpty ||
+                            acctNo.isEmpty ||
+                            acctName.isEmpty ||
+                            bankCode.isEmpty) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Please select valid bank details.',
+                          );
+                          return;
+                        }
                         context.router.push(TransactinRoute(
                           isHome: false,
-                          acctNo: selectedBank?["actNumber"] ?? '',
+                          acctNo: acctNo,
                           amount: int.parse(amountController.text.trim()),
-                          referall: false,
-                          accountName: selectedBank?["actName"] ??
-                              localBanks?.accountName ??
-                              'N/A',
-                          bankName: selectedBank?["name"] ??
-                              localBanks?.bankName ??
-                              'N/A',
-                          bankCode: selectedBank?["bankCode"] ??
-                              localBanks?.bankCode ??
-                              'N/A',
+                          referall: true,
+                          accountName: acctName,
+                          bankName: bankName,
+                          bankCode: bankCode,
                         ));
                       },
                       textColor: Colors.white,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/success_dialogue.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -11,6 +12,7 @@ import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
 import '../../bottomNav/app_router.gr.dart';
 import '../../profile/presentation/security_settings/change_pin_screen.dart';
@@ -72,6 +74,65 @@ class TransactinScreen extends HookConsumerWidget {
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final biometricEnabled = userInfo?.biometrics ?? false;
+
+    void handleDialog() async {
+      final result =
+          await ref.read(transactionControllerProvider.notifier).withdraw(
+                acctNo: acctNo,
+                amount: amount,
+                referall: referall,
+                pin: biometricEnabled ? "biometrics" : pinController.text,
+                accountName: accountName,
+                bankName: bankName,
+                bankCode: bankCode,
+              );
+
+      if (result) {
+        final transaction =
+            ref.watch(transactionControllerProvider).withdrawal.valueOrNull;
+        showWithdrawSuccessDialog(
+          context,
+          transaction ?? AirtimeTransaction(),
+        );
+      } else {
+        showWithdrawalFailedDialog(context);
+      }
+    }
+
+    useEffect(() {
+      Future<void> authenticateWithBiometrics() async {
+        if (biometricEnabled) {
+          final localAuth = LocalAuthentication();
+          bool canAuthenticate = await localAuth.canCheckBiometrics ||
+              await localAuth.isDeviceSupported();
+
+          if (canAuthenticate) {
+            try {
+              final authenticated = await localAuth.authenticate(
+                localizedReason: "Authenticate to proceed with transaction",
+                options: const AuthenticationOptions(biometricOnly: true),
+              );
+
+              if (authenticated) {
+                handleDialog();
+              }
+            } catch (e) {
+              debugPrint("Biometric authentication failed: $e");
+            }
+          }
+        }
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        authenticateWithBiometrics();
+      });
+
+      return null;
+    }, []);
+
     return Scaffold(
       appBar: const CustomAppBar(
         showAction: false,
@@ -205,30 +266,6 @@ class TransactinScreen extends HookConsumerWidget {
                       );
                       return;
                     }
-                    final result = await ref
-                        .read(transactionControllerProvider.notifier)
-                        .withdraw(
-                          acctNo: acctNo,
-                          amount: amount,
-                          referall: referall,
-                          pin: pinController.text,
-                          accountName: accountName,
-                          bankName: bankName,
-                          bankCode: bankCode,
-                        );
-
-                    if (result) {
-                      final transaction = ref
-                          .watch(transactionControllerProvider)
-                          .withdrawal
-                          .valueOrNull;
-                      showWithdrawSuccessDialog(
-                        context,
-                        transaction ?? AirtimeTransaction(),
-                      );
-                    } else {
-                      showWithdrawalFailedDialog(context);
-                    }
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,
@@ -357,7 +394,7 @@ class WithdrawalFailedDialog extends StatelessWidget {
 
           // Description
           const Text(
-            "₦50,000.00 has been refunded to your wallet.",
+            "Transaction Failed, please check back and try again.",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,

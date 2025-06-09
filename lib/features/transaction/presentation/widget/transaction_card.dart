@@ -132,7 +132,10 @@ class TransactionCard extends StatelessWidget {
                             ? Colors.green
                             : transactions.status!.toLowerCase() == 'failed'
                                 ? Colors.red
-                                : Colors.grey,
+                                : transactions.status!.toLowerCase() ==
+                                        'rejected'
+                                    ? Colors.red
+                                    : Colors.grey,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
