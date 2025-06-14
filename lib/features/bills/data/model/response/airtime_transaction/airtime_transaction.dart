@@ -24,6 +24,7 @@ class AirtimeTransaction {
   String? id;
   DateTime? createdAt;
   DateTime? updatedAt;
+  String? bankName;
 
   AirtimeTransaction({
     this.user,
@@ -45,6 +46,7 @@ class AirtimeTransaction {
     this.id,
     this.createdAt,
     this.updatedAt,
+    this.bankName,
   });
 
   @override
@@ -83,6 +85,7 @@ class AirtimeTransaction {
       updatedAt: data['updatedAt'] == null
           ? null
           : DateTime.parse(data['updatedAt'] as String),
+      bankName: data['bankName'] as String?,
     );
   }
 
@@ -106,6 +109,7 @@ class AirtimeTransaction {
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         'id': id,
+        'bankName': bankName,
       };
 
   /// `dart:convert`
@@ -141,6 +145,8 @@ class AirtimeTransaction {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? bankName,
+    String? accountName,
   }) {
     return AirtimeTransaction(
       user: user ?? this.user,
@@ -162,6 +168,7 @@ class AirtimeTransaction {
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      bankName: bankName ?? this.bankName,
     );
   }
 }

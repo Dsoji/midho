@@ -30,6 +30,9 @@ class WithdrawReferallScreen extends HookConsumerWidget {
         ref.watch(authenticationControllerProvider).userDetails;
     final localBanks = userProfileAsync.valueOrNull?.banks?.first;
     final formKey = GlobalKey<FormState>();
+    final userInfo =
+        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final referralBalance = userInfo?.wallet?.referralBalance;
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Withdraw Referral Balance",
@@ -105,6 +108,28 @@ class WithdrawReferallScreen extends HookConsumerWidget {
                       width: double.infinity,
                       height: 48,
                       onPressed: () {
+                        if (!formKey.currentState!.validate()) {
+                          return;
+                        }
+
+                        if (int.parse(amountController.text.trim()) >
+                            (referralBalance ?? 0)) {
+                          ToastService().showToast(
+                            NotificationType.error,
+                            message: 'Insufficient balance',
+                          );
+                          return;
+                        }
+
+                        if (int.parse(amountController.text.trim()) < 50 ||
+                            int.parse(amountController.text.trim()) > 5000000) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message:
+                                'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
+                          );
+                          return;
+                        }
                         final acctNo = selectedBank?["actNumber"] ??
                             localBanks?.accountNumber ??
                             '';

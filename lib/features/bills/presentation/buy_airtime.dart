@@ -8,6 +8,7 @@ import 'package:mdiho/features/bills/data/model/response/airtime_electric_model/
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
@@ -168,7 +169,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                   ),
                   const Gap(16),
                   SizedBox(
-                    height: 84,
+                    height: 120,
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -177,7 +178,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                         crossAxisCount: 4, // 4 items per row
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        childAspectRatio: 2.5, // Adjust for button shape
+                        childAspectRatio: 1.5, // Adjust for button shape
                       ),
                       itemCount: amounts.length,
                       itemBuilder: (context, index) {
@@ -240,6 +241,33 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                     height: 48,
                     onPressed: () {
                       logger.d(selectedProvider.value);
+                      if (amountController.text.trim().isEmpty) {
+                        ToastService().showToast(
+                          NotificationType.error,
+                          message: 'Please enter an amount',
+                        );
+                        return;
+                      }
+
+                      if (numberController.text.trim().isEmpty) {
+                        ToastService().showToast(
+                          NotificationType.error,
+                          message: 'Please enter a phone number',
+                        );
+                        return;
+                      }
+
+                      if (int.parse(amountController.text.trim()) <
+                              selectedProvider.value.min ||
+                          int.parse(amountController.text.trim()) >
+                              selectedProvider.value.max) {
+                        ToastService().showToast(
+                          NotificationType.error,
+                          message:
+                              'Please enter an amount greater than ${selectedProvider.value.min} and less than ${selectedProvider.value.max}',
+                        );
+                        return;
+                      }
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -248,7 +276,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                                     info:
                                         'This is your 4-digit PIN set during registration or in settings.',
                                     assetId: selectedProvider.value.id,
-                                    amount: '10',
+                                    amount: amountController.text.trim(),
                                     accountNumber: numberController.text,
                                   ))).then((value) {
                         numberController.clear();

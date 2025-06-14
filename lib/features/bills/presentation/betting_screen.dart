@@ -189,7 +189,7 @@ class BettingScreen extends HookConsumerWidget {
                   ),
                   const Gap(16),
                   SizedBox(
-                    height: 84,
+                    height: 120,
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -198,7 +198,7 @@ class BettingScreen extends HookConsumerWidget {
                         crossAxisCount: 4, // 4 items per row
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        childAspectRatio: 2.5, // Adjust for button shape
+                        childAspectRatio: 1.5, // Adjust for button shape
                       ),
                       itemCount: amounts.length,
                       itemBuilder: (context, index) {

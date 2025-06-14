@@ -77,14 +77,15 @@ class TransactinScreen extends HookConsumerWidget {
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final biometricEnabled = userInfo?.biometrics ?? false;
-
-    void handleDialog() async {
+    final bioenabled = useState(biometricEnabled);
+    void handleDialog(bool isBiometric) async {
+      ref.read(authenticationControllerProvider.notifier).fetchProfile();
       final result =
           await ref.read(transactionControllerProvider.notifier).withdraw(
                 acctNo: acctNo,
                 amount: amount,
                 referall: referall,
-                pin: biometricEnabled ? "biometrics" : pinController.text,
+                pin: isBiometric ? "biometrics" : pinController.text,
                 accountName: accountName,
                 bankName: bankName,
                 bankCode: bankCode,
@@ -117,7 +118,7 @@ class TransactinScreen extends HookConsumerWidget {
               );
 
               if (authenticated) {
-                handleDialog();
+                handleDialog(bioenabled.value);
               }
             } catch (e) {
               debugPrint("Biometric authentication failed: $e");
@@ -266,6 +267,7 @@ class TransactinScreen extends HookConsumerWidget {
                       );
                       return;
                     }
+                    handleDialog(false);
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,
@@ -417,7 +419,9 @@ class WithdrawalFailedDialog extends StatelessWidget {
             text: "Retry",
             width: double.infinity,
             height: 48,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             textColor: Colors.white,
             color: AppColors.primaryColor.shade500,
           ),

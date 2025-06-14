@@ -4,5 +4,5 @@ flutter_native_splash:
   web: false
 
   color: "#F55825"
-  image: "assets/placeholders/mdiho_logo.png"
-  branding: "assets/placeholders/m_diho.png"
+
+  image: "assets/images/logo.png"

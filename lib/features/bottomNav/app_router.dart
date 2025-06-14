@@ -9,6 +9,8 @@ import 'package:mdiho/features/transaction/transaction_route.dart';
 import '../home/home_routes.dart';
 import 'app_router.gr.dart';
 
+final appRouter = AppRouter();
+
 @AutoRouterConfig()
 class AppRouter extends RootStackRouter {
   @override

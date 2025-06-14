@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -47,6 +48,7 @@ void showCryptoDialog({
 }) {
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return _CryptoDialogContent(
         ref: ref,
@@ -139,10 +141,10 @@ class _CryptoDialogContent extends HookConsumerWidget {
                     ],
                   ),
                   const Gap(8),
-                  const Text(
-                    "Once you've sent the BTC, upload your proof of payment below:",
+                  Text(
+                    "Once you've sent the ${crypto.symbol}, upload your proof of payment below:",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                     ),
                   ),
@@ -193,6 +195,7 @@ void showTransactionDialog(
   Navigator.pop(context);
   showDialog(
     context: context,
+    barrierDismissible: false, // Prevent dismissing by tapping outside
     builder: (BuildContext context) {
       final theme = Theme.of(context);
       return Dialog(
@@ -301,6 +304,13 @@ class ImageUploadWidget extends HookConsumerWidget {
     final theme = Theme.of(context);
     final imageFiles = ref.watch(imageUploadStateProvider);
     final picker = ImagePicker();
+
+    useEffect(() {
+      return () {
+        // Clear images when widget is disposed
+        ref.read(imageUploadStateProvider.notifier).clearImages();
+      };
+    }, []);
 
     Future<void> pickImage() async {
       if (imageFiles.length >= 3) return;
@@ -459,6 +469,7 @@ class ImageUploadWidget extends HookConsumerWidget {
                     .valueOrNull;
                 List<String> paths = getPathsFromUploadResponse(uploadedFiles);
                 onImagesUploaded(paths);
+                ref.read(imageUploadStateProvider.notifier).clearImages();
               }
             } else {
               ToastService().showToast(
@@ -469,6 +480,24 @@ class ImageUploadWidget extends HookConsumerWidget {
           },
           textColor: Colors.white,
           color: AppColors.primaryColor.shade500,
+        ),
+        const SizedBox(height: 10),
+        Center(
+          child: TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              "Go Back",
+              style: TextStyle(
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ),
       ],
     );

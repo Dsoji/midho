@@ -8,9 +8,11 @@ import 'package:logger/logger.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
+import '../../../../bottomNav/app_router.gr.dart';
 import '../../../data/controller/authentication_controller.dart';
-import '../../login/presentation/login_screen.dart';
+import '../../../data/model/payload/profile_payload.dart';
 
 class PinState {
   final String pin;
@@ -188,37 +190,37 @@ class ConfirmPinScreen extends HookConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                    // if (pin == pinController.text) {
-                    //   logger.d('clicked');
-                    //   authService.updateProfileDetails(ProfilePayload(
-                    //     pin: pin,
-                    //   ));
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => const LoginScreen(),
+                    //   ),
+                    // );
+                    if (pin == pinController.text) {
+                      logger.d('clicked');
+                      authService.updateProfileDetails(ProfilePayload(
+                        pin: pin,
+                      ));
 
-                    //   final profileDetails = ref
-                    //       .watch(authenticationControllerProvider)
-                    //       .profilePayload
-                    //       .valueOrNull;
+                      final profileDetails = ref
+                          .watch(authenticationControllerProvider)
+                          .profilePayload
+                          .valueOrNull;
 
-                    //   logger.d("hete is profile details : $profileDetails");
+                      logger.d("hete is profile details : $profileDetails");
 
-                    //   final result =
-                    //       await authService.updateProfile(profileDetails!);
-                    //   if (result == true && context.mounted) {
-                    //     context.router.replace(const NaviBarRoute());
-                    //   }
-                    // } else {
-                    //   Navigator.pop(context);
-                    //   ToastService().showToast(
-                    //     NotificationType.info,
-                    //     message: 'Pin does not match. Try again',
-                    //   );
-                    // }
+                      final result =
+                          await authService.updateProfile(profileDetails!);
+                      if (result == true && context.mounted) {
+                        context.router.replace(const NaviBarRoute());
+                      }
+                    } else {
+                      Navigator.pop(context);
+                      ToastService().showToast(
+                        NotificationType.info,
+                        message: 'Pin does not match. Try again',
+                      );
+                    }
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor.shade500,

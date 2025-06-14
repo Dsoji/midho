@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/common/api/dio_api_interceptor.dart';
 
 import '../utils/exceptions.dart';
 import 'api_client.dart';
@@ -36,19 +37,19 @@ class DioApiClient implements IApiClient {
 
     _dio.options.headers = presetHeaders;
 
-    // final dioApiInterceptor = ref.read(dioApiInterceptorProvider);
+    final dioApiInterceptor = ref.read(dioApiInterceptorProvider);
 
-    // _dio.interceptors.addAll(
-    //   [
-    //     // if (kDebugMode)
-    //     //   LogInterceptor(
-    //     //     requestHeader: false,
-    //     //     requestBody: true,
-    //     //     responseBody: true,
-    //     //   ),
-    //     dioApiInterceptor,
-    //   ],
-    // );
+    _dio.interceptors.addAll(
+      [
+        // if (kDebugMode)
+        //   LogInterceptor(
+        //     requestHeader: false,
+        //     requestBody: true,
+        //     responseBody: true,
+        //   ),
+        dioApiInterceptor,
+      ],
+    );
   }
   final Ref ref;
 

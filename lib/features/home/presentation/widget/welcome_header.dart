@@ -13,8 +13,7 @@ class WelcomeHeader extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final userInfo =
-        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final userInfo = ref.watch(authenticationControllerProvider).userDetails;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -60,14 +59,39 @@ class WelcomeHeader extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    '${userInfo?.firstname} ${userInfo?.lastname}',
-                    style: TextStyle(
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : AppColors.primaryColor.shade700, // deep navy
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  userInfo.when(
+                    data: (data) => Text(
+                      '${data.firstname} ${data.lastname}',
+                      style: TextStyle(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.primaryColor.shade700, // deep navy
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    loading: () => userInfo.maybeWhen(
+                      data: (data) => Text(
+                        '${data.firstname} ${data.lastname}',
+                        style: TextStyle(
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.primaryColor.shade700,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      orElse: () => const SizedBox.shrink(),
+                    ),
+                    error: (error, stack) => Text(
+                      'Error loading name',
+                      style: TextStyle(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.primaryColor.shade700,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

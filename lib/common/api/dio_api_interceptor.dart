@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/utils/locator.dart';
@@ -12,6 +13,9 @@ import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import '../toast/taost_service.dart';
 import '../toast/type.dart';
 
+final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
+  return GlobalKey<NavigatorState>();
+});
 final dioApiInterceptorProvider = Provider<DioApiInterceptor>((ref) {
   // final authLocalService = ref.read(authenticationLocalServiceProvider);
   // final appRouter = ref.read(appRouteProvider);

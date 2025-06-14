@@ -16,6 +16,7 @@ void showWithdrawalSuccessDialog({
 }) {
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       final theme = Theme.of(context);
 
@@ -82,7 +83,7 @@ void showWithdrawalSuccessDialog({
 
               // Description
               Text(
-                "Your withdrawal of ₦${transaction.amount ?? 0} to ${transaction.metadata?.vendor?.name ?? ''} - ****${transaction.accountNumber?.substring(transaction.accountNumber?.length ?? 0 - 4) ?? ''} has been processed successfully!",
+                "Your withdrawal of ₦${transaction.amount ?? 0} to ${transaction.bankName ?? ''} - ${transaction.accountNumber?.substring(transaction.accountNumber?.length ?? 0 - 4) ?? ''} has been processed successfully!",
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 14,

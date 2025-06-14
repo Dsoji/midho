@@ -68,20 +68,37 @@ class CryptoScreen extends HookConsumerWidget {
                 );
               },
             ),
-            error: (error, _) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.warning_amber_outlined,
-                      size: 48, color: Colors.red),
-                  const Gap(12),
-                  Text('Failed to load crypto rates.',
-                      style: TextStyle(color: Colors.red[600], fontSize: 16)),
-                  const Gap(6),
-                  Text(error.toString(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12)),
-                ],
+            error: (error, _) => state.maybeWhen(
+              data: (rates) {
+                final cryptoRates =
+                    rates.data!.where((rate) => rate.type == "CRYPTO").toList();
+                return ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: cryptoRates.length,
+                  separatorBuilder: (context, index) => const Gap(8),
+                  itemBuilder: (context, index) {
+                    final data = cryptoRates[index];
+                    return CryptoCard(rates: data);
+                  },
+                );
+              },
+              orElse: () => Center(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Gap(52),
+                      const Icon(Icons.info_outline,
+                          color: Colors.grey, size: 48),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Failed to load available crypto.",
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             data: (rates) {

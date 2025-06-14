@@ -229,6 +229,25 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                           return;
                         }
 
+                        if (int.parse(amountController.text.trim()) >
+                            (userInfo?.wallet?.mainBalance ?? 0)) {
+                          ToastService().showToast(
+                            NotificationType.error,
+                            message: 'Insufficient balance',
+                          );
+                          return;
+                        }
+
+                        if (int.parse(amountController.text.trim()) < 50 ||
+                            int.parse(amountController.text.trim()) > 5000000) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message:
+                                'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
+                          );
+                          return;
+                        }
+
                         final acctNo = selectedBank?["actNumber"] ??
                             localBanks?.first.accountNumber ??
                             '';

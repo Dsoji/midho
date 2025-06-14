@@ -48,19 +48,292 @@ class TransactionCard extends HookConsumerWidget {
           ),
           const Gap(16),
           state.when(
-            loading: () => ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 16,
+            loading: () => state.maybeWhen(
+              data: (data) {
+                final transactions = data.data ?? [];
+                if (transactions.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No transactions yet.",
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                    ),
+                  );
+                }
+
+                final displayTransactions = transactions.length > 5
+                    ? transactions.take(5).toList()
+                    : transactions;
+
+                return Column(
+                  children: List.generate(
+                    displayTransactions.length,
+                    (index) {
+                      return Column(
+                        children: List.generate(
+                          displayTransactions.length,
+                          (index) {
+                            final txn = displayTransactions[index];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        TransactionDetailsScreen(
+                                      transaction: txn,
+                                      status: txn.status ?? 'Unknown',
+                                      type: txn.type ?? '',
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: theme.brightness == Brightness.dark
+                                          ? AppColors.secondaryColor.shade600
+                                          : const Color(0xFFF9F9FB),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: theme.brightness ==
+                                                Brightness.dark
+                                            ? AppColors.secondaryColor.shade400
+                                            : Colors.transparent,
+                                        width: 0.5,
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                          IconsaxPlusLinear.arrow_down_1,
+                                          size: 18),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: theme.brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: "${txn.type}   ",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    "${(txn.amount ?? 0) * (txn.rate ?? 0) - (txn.fee ?? 0)}"
+                                                        .formatAsNaira(),
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                  fontFamily: '',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          txn.createdAt?.getFormattedDate() ??
+                                              '',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: theme.brightness ==
+                                                    Brightness.dark
+                                                ? AppColors
+                                                    .secondaryColor.shade100
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    "${txn.status}",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          txn.status!.toLowerCase() == 'pending'
+                                              ? Colors.orange
+                                              : txn.status!.toLowerCase() ==
+                                                      'completed'
+                                                  ? Colors.green
+                                                  : txn.status!.toLowerCase() ==
+                                                          'failed'
+                                                      ? Colors.red
+                                                      : Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+              orElse: () => ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
+                itemCount: 3,
+                separatorBuilder: (_, __) => const Gap(8),
+                itemBuilder: (_, __) => const CryptoCardShimmer(),
               ),
-              itemCount: 3,
-              separatorBuilder: (_, __) => const Gap(8),
-              itemBuilder: (_, __) => const CryptoCardShimmer(),
             ),
-            error: (error, _) => const Center(
-              child: Text(
-                "Failed to load transactions",
-                style: TextStyle(color: Colors.red, fontSize: 14),
+            error: (error, _) => state.maybeWhen(
+              data: (data) {
+                final transactions = data.data ?? [];
+                if (transactions.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No transactions yet.",
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                    ),
+                  );
+                }
+
+                final displayTransactions = transactions.length > 5
+                    ? transactions.take(5).toList()
+                    : transactions;
+
+                return Column(
+                  children: List.generate(
+                    displayTransactions.length,
+                    (index) {
+                      final txn = displayTransactions[index];
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TransactionDetailsScreen(
+                                transaction: txn,
+                                status: txn.status ?? 'Unknown',
+                                type: txn.type ?? '',
+                              ),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: theme.brightness == Brightness.dark
+                                    ? AppColors.secondaryColor.shade600
+                                    : const Color(0xFFF9F9FB),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: theme.brightness == Brightness.dark
+                                      ? AppColors.secondaryColor.shade400
+                                      : Colors.transparent,
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: const Center(
+                                child: Icon(IconsaxPlusLinear.arrow_down_1,
+                                    size: 18),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color:
+                                            theme.brightness == Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: "${txn.type}   ",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                              "${(txn.amount ?? 0) * (txn.rate ?? 0) - (txn.fee ?? 0)}"
+                                                  .formatAsNaira(),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            fontFamily: '',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    txn.createdAt?.getFormattedDate() ?? '',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: theme.brightness == Brightness.dark
+                                          ? AppColors.secondaryColor.shade100
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              "${txn.status}",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: txn.status!.toLowerCase() == 'pending'
+                                    ? Colors.orange
+                                    : txn.status!.toLowerCase() == 'completed'
+                                        ? Colors.green
+                                        : txn.status!.toLowerCase() == 'failed'
+                                            ? Colors.red
+                                            : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+              orElse: () => const Center(
+                child: Text(
+                  "Failed to load transactions",
+                  style: TextStyle(color: Colors.red, fontSize: 14),
+                ),
               ),
             ),
             data: (data) {

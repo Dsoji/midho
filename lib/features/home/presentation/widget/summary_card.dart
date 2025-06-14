@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/res/assets.dart';
@@ -26,7 +27,8 @@ class SummaryCards extends HookConsumerWidget {
           _buildCard(
             title: "Total In-Flow",
             amount:
-                "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}",
+                "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}"
+                    .commaFormat(),
             iconImage: ImageAssets.logo,
             context: context, // use your preferred icon
           ),
@@ -34,7 +36,8 @@ class SummaryCards extends HookConsumerWidget {
           _buildCard(
               title: "Total Withdrawal",
               amount:
-                  "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.outFlow ?? 0}",
+                  "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.outFlow ?? 0}"
+                      .commaFormat(),
               icon: HugeIcons.strokeRoundedArrowUp03,
               context: context),
         ],

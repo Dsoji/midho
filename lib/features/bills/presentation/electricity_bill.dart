@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../common/res/app_colors.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
@@ -253,6 +254,33 @@ class ElectricityBillScreen extends HookConsumerWidget {
                     width: double.infinity,
                     height: 48,
                     onPressed: () {
+                      if (amountController.text.trim().isEmpty) {
+                        ToastService().showToast(
+                          NotificationType.error,
+                          message: 'Please enter an amount',
+                        );
+                        return;
+                      }
+
+                      if (meterNoController.text.trim().isEmpty) {
+                        ToastService().showToast(
+                          NotificationType.error,
+                          message: 'Please enter a meter number',
+                        );
+                        return;
+                      }
+
+                      if (int.parse(amountController.text.trim()) <
+                              int.parse(selectedPlan.value.min) ||
+                          int.parse(amountController.text.trim()) >
+                              int.parse(selectedPlan.value.max)) {
+                        ToastService().showToast(
+                          NotificationType.error,
+                          message:
+                              'Please enter an amount greater than ${selectedPlan.value.min} and less than ${selectedPlan.value.max}',
+                        );
+                        return;
+                      }
                       Navigator.push(
                           context,
                           MaterialPageRoute(

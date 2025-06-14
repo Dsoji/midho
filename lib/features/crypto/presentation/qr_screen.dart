@@ -114,16 +114,17 @@ class QrCryptoScreen extends HookConsumerWidget {
                                       ? Colors.white
                                       : Colors.black,
                                 ),
-                                children: const [
-                                  TextSpan(
+                                children: [
+                                  const TextSpan(
                                       text:
                                           "To proceed with this transaction, send\n"),
                                   TextSpan(
-                                    text: "0.01 BTC",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600),
+                                    text:
+                                        "$amount USD worth of ${crypto.symbol}",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600),
                                   ),
-                                  TextSpan(
+                                  const TextSpan(
                                       text: " to the wallet address below"),
                                 ],
                               ),

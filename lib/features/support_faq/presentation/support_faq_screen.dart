@@ -78,18 +78,26 @@ class SupportFaqScreen extends HookConsumerWidget {
                       PlaceholderAssets.whatsapp,
                       height: 18,
                     ),
-                    onTap: () {},
+                    onTap: () async {
+                      final Uri whatsappUrl =
+                          Uri.parse('https://wa.me/message/DN7YSXNWSZN3G1');
+                      if (await canLaunchUrl(whatsappUrl)) {
+                        await launchUrl(whatsappUrl);
+                      }
+                    },
                   ),
                   SupportTile(
                     title: "Email Support",
-                    subtitle: "support@ Swift Swap.com",
+                    subtitle: "support@swiftswapexchange.com",
                     trailing: const Icon(
                       IconsaxPlusLinear.sms,
                       size: 18,
                     ),
                     onTap: () async {
                       final Uri emailUri = Uri(
-                          scheme: 'mailto', path: 'support@ Swift Swap.com');
+                          scheme: 'mailto',
+                          path: 'support@swiftswapexchange.com',
+                          queryParameters: {'subject': '', 'body': ''});
                       if (await canLaunchUrl(emailUri)) {
                         await launchUrl(emailUri);
                       }
@@ -103,7 +111,7 @@ class SupportFaqScreen extends HookConsumerWidget {
                       size: 18,
                     ),
                     onTap: () async {
-                      final Uri url = Uri.parse("tel:+2348001234567");
+                      final Uri url = Uri.parse("tel:+23 8104830641");
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url);
                       }

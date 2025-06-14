@@ -99,6 +99,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               child: _buildBreakdown(
                 transactionDetails["breakdown"],
                 context,
+                proofs: transactionDetails[
+                    "proofs"], // Passes any proof screenshots from the transaction details to the breakdown widget
               ),
             ),
             if (showAppBar == true)
@@ -195,7 +197,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     );
   }
 
-  Widget _buildBreakdown(Map<String, dynamic> breakdown, BuildContext context) {
+  Widget _buildBreakdown(Map<String, dynamic> breakdown, BuildContext context,
+      {List<String>? proofs}) {
     final theme = Theme.of(context);
 
     return Column(
@@ -203,7 +206,12 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
       children: [
         ...breakdown.entries.map(
           (entry) => _buildDetailRow(
-              entry.key, entry.value.toString(), context, false),
+            entry.key,
+            entry.value.toString(),
+            context,
+            false,
+            proofs: proofs,
+          ),
         ),
       ],
     );
@@ -213,8 +221,9 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     String title,
     String value,
     BuildContext context,
-    bool isCopyable,
-  ) {
+    bool isCopyable, {
+    List<String>? proofs,
+  }) {
     final theme = Theme.of(context);
 
     return Container(
@@ -236,6 +245,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               ? ViewScreenshotButton(
                   type: type,
                   status: status,
+                  proofs: proofs,
                 )
               : Flexible(
                   child: InkWell(
@@ -290,28 +300,49 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
 
     switch (transaction.type) {
       case "CRYPTOSALE":
-        details = {
-          "transactionId": transaction.id,
-          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount":
-              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+        if (transaction.status?.toLowerCase() == "completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Crypto Sold":
+                  "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
+              "Rate":
+                  "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold":
+                  "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Total Received":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
+            }
+          };
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "CryptoSold": transaction.asset?.name ?? '',
+              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
                   .commaFormat(),
-          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
-              .commaFormat(),
-          "breakdown": {
-            "Crypto Sold":
-                "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
-            "Rate":
-                "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
-                    .commaFormat(),
-            "Amount Sold":
-                "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
-                    .commaFormat(),
-            "Total Received":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
-                    .commaFormat(),
-          }
-        };
+              "Reason for Failure": transaction.reason ?? '',
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        }
         break;
       case "GIFTCARDSALE":
         if (transaction.status?.toLowerCase() == "completed") {
@@ -351,7 +382,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
               "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
                   .commaFormat(),
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
             }
           };
@@ -407,7 +438,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
               "Total Charged": transaction.metadata?.amount ?? '',
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
             }
           };
@@ -455,7 +486,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
               "Total Charged": transaction.metadata?.amount ?? '',
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
             }
           };
@@ -503,7 +534,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
               "Total Charged": transaction.metadata?.amount ?? '',
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
             }
           };
@@ -551,7 +582,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
               "Total Charged": transaction.metadata?.amount ?? '',
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
             }
           };
@@ -597,7 +628,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
               "Total Charged": transaction.metadata?.amount ?? '',
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
             }
           };
@@ -616,21 +647,40 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           };
         }
         break;
-      case "Withdrawal":
-        details = {
-          "transactionId": transaction.id,
-          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount":
-              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
-                  .commaFormat(),
-          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
-              .commaFormat(),
-          "breakdown": {
-            "Bank Name": transaction.metadata?.vendor?.name ?? '',
-            "Account Number": transaction.accountNumber ?? '',
-            "Total Deducted": transaction.metadata?.amount ?? '',
-          }
-        };
+      case "WITHDRAWAL":
+        if (transaction.status?.toLowerCase() == "completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Bank Name": transaction.bankName ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Deducted": transaction.metadata?.amount ?? '',
+            }
+          };
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Bank Name": transaction.bankName ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Reason for Failure": transaction.reason ?? '',
+              "Proof of Failure": "View Screenshot",
+            }
+          };
+        }
         break;
       default:
         details = {
@@ -651,10 +701,11 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
     super.key,
     required this.type,
     required this.status,
+    this.proofs,
   });
   final String type;
   final String status;
-
+  final List<String>? proofs;
   @override
   Widget build(BuildContext context) {
     final screenshotController = useMemoized(() => ScreenshotController());
@@ -665,34 +716,58 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
       onPressed: isProcessing.value == true
           ? () {}
           : () async {
-              // isProcessing.value = true;
-              // await screenshotController
-              //     .captureFromWidget(
-              //   MediaQuery(
-              //     data: MediaQueryData.fromView(WidgetsBinding.instance.window),
-              //     child: InheritedTheme.captureAll(
-              //       context,
-              //       TransactionDetailsScreen(
-              //         type: type,
-              //         status: status,
-              //         showAppBar: false,
-              //       ),
-              //     ),
-              //   ),
-              // )
-              //     .then((image) {
-              //   showDialog(
-              //     context: context,
-              //     builder: (_) => AlertDialog(
-              //       backgroundColor: Colors.white,
-              //       content: Image.memory(image),
-              //     ),
-              //   );
-              // }).catchError((onError) {
-              //   // Handle error
-              //   debugPrint('Screenshot error: $onError');
-              // });
-              // isProcessing.value = false;
+              if (proofs == null || proofs!.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('No screenshots available'),
+                  ),
+                );
+                return;
+              }
+
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Transaction Screenshots',
+                          style: theme.textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 16),
+                        Flexible(
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: proofs!.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 12),
+                            itemBuilder: (context, index) {
+                              return Image.network(
+                                proofs![index],
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Text('Failed to load image'),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
             },
       style: OutlinedButton.styleFrom(
         backgroundColor: theme.brightness == Brightness.dark

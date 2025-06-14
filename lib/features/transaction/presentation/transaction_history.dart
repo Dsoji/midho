@@ -67,30 +67,61 @@ class TransactionHistoryScreen extends HookConsumerWidget {
                 .getTransactions();
           },
           child: state.transactions.when(
-            loading: () => ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 16,
+            loading: () => state.transactions.maybeWhen(
+              data: (transactions) => ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
+                itemCount: transactions.data?.length ?? 6,
+                separatorBuilder: (_, __) => const Gap(8),
+                itemBuilder: (context, index) {
+                  if (transactions.data != null) {
+                    final transaction = transactions.data![index];
+                    return TransactionCard(transactions: transaction);
+                  }
+                  return const CryptoCardShimmer();
+                },
               ),
-              itemCount: 6,
-              separatorBuilder: (_, __) => const Gap(8),
-              itemBuilder: (_, __) => const CryptoCardShimmer(),
+              orElse: () => ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
+                itemCount: 6,
+                separatorBuilder: (_, __) => const Gap(8),
+                itemBuilder: (_, __) => const CryptoCardShimmer(),
+              ),
             ),
-            error: (error, _) => Center(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Gap(52),
-                    const Icon(Icons.info_outline,
-                        color: Colors.grey, size: 48),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Failed to load transactions.",
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                    ),
-                  ],
+            error: (error, _) => state.transactions.maybeWhen(
+              data: (transactions) => ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
+                itemCount: transactions.data?.length ?? 0,
+                separatorBuilder: (_, __) => const Gap(8),
+                itemBuilder: (context, index) {
+                  final transaction = transactions.data![index];
+                  return TransactionCard(transactions: transaction);
+                },
+              ),
+              orElse: () => Center(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Gap(52),
+                      const Icon(Icons.info_outline,
+                          color: Colors.grey, size: 48),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Failed to load transactions.",
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

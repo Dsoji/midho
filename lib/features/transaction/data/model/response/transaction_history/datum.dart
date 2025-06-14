@@ -29,6 +29,8 @@ class TransactionData {
   int? v;
   String? accountNumber;
   Metadata? metadata;
+  String? bankName;
+  String? reason;
 
   TransactionData({
     this.id,
@@ -54,11 +56,13 @@ class TransactionData {
     this.v,
     this.accountNumber,
     this.metadata,
+    this.bankName,
+    this.reason,
   });
 
   @override
   String toString() {
-    return 'Datum(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, deleted: $deleted, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, accountNumber: $accountNumber, metadata: $metadata)';
+    return 'Datum(id: $id, user: $user, type: $type, status: $status, baseCurrency: $baseCurrency, exchangeCurrency: $exchangeCurrency, fee: $fee, rate: $rate, amount: $amount, files: $files, proofs: $proofs, ecode: $ecode, code: $code, pin: $pin, comment: $comment, asset: $asset, origination: $origination, deleted: $deleted, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, accountNumber: $accountNumber, metadata: $metadata, bankName: $bankName, reason: $reason)';
   }
 
   factory TransactionData.fromMap(Map<String, dynamic> data) => TransactionData(
@@ -97,6 +101,8 @@ class TransactionData {
         metadata: data['metadata'] == null
             ? null
             : Metadata.fromMap(data['metadata'] as Map<String, dynamic>),
+        bankName: data['bankName'] as String?,
+        reason: data['reason'] as String?,
       );
 
   Map<String, dynamic> toMap() => {
@@ -123,6 +129,8 @@ class TransactionData {
         '__v': v,
         'accountNumber': accountNumber,
         'metadata': metadata?.toMap(),
+        'bankName': bankName,
+        'reason': reason,
       };
 
   /// `dart:convert`
@@ -161,6 +169,8 @@ class TransactionData {
     int? v,
     String? accountNumber,
     Metadata? metadata,
+    String? bankName,
+    String? reason,
   }) {
     return TransactionData(
       id: id ?? this.id,
@@ -186,6 +196,8 @@ class TransactionData {
       v: v ?? this.v,
       accountNumber: accountNumber ?? this.accountNumber,
       metadata: metadata ?? this.metadata,
+      bankName: bankName ?? this.bankName,
+      reason: reason ?? this.reason,
     );
   }
 }

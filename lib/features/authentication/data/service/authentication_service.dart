@@ -294,7 +294,8 @@ class AuthenticationService {
         },
       ),
       parser: (data) {
-        logger.d(data);
+        logger.d(accessToken);
+
         return NotifcationList.fromMap(data);
       },
       showErrorToast: true,

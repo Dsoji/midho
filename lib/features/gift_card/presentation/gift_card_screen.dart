@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -138,22 +139,52 @@ class GiftCardGrid extends HookConsumerWidget {
           itemBuilder: (_, __) => const GiftCardShimmerItem(),
         ),
       ),
-      error: (error, _) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.warning_amber_outlined,
-                size: 48, color: Colors.red),
-            const Gap(12),
-            Text(
-              'Failed to load gift cards.',
-              style: TextStyle(color: Colors.red[600], fontSize: 16),
+      error: (error, _) => state.maybeWhen(
+        data: (giftCards) => Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: theme.brightness == Brightness.dark
+                ? AppColors.darkBorder
+                : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 4,
+              mainAxisSpacing: 4,
+              childAspectRatio: 1.6,
             ),
-            const Gap(6),
-            Text(error.toString(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12)),
-          ],
+            itemCount: giftCards.data?.length ?? 0,
+            itemBuilder: (context, index) {
+              final card = giftCards.data![index];
+              return GestureDetector(
+                onTap: () {
+                  context.router.push(EnterCardDetailsRoute(giftCard: card));
+                },
+                child: GiftCardItem(giftCard: card),
+              );
+            },
+          ),
+        ),
+        orElse: () => Center(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Gap(52),
+                const Icon(Icons.info_outline, color: Colors.grey, size: 48),
+                const SizedBox(height: 8),
+                Text(
+                  "Failed to load gift cards.",
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       data: (giftCards) {
@@ -245,8 +276,8 @@ class GiftCardItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.network(
-                    giftCard.icon ?? '',
+                  CachedNetworkImage(
+                    imageUrl: giftCard.icon ?? '',
                     height: 28,
                     fit: BoxFit.contain,
                   ),
