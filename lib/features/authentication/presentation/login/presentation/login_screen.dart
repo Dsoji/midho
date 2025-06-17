@@ -2,12 +2,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
 
 import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/services/session_timer_service.dart';
 import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
@@ -15,30 +17,47 @@ import '../../../../bottomNav/app_router.gr.dart';
 
 @RoutePage()
 class LoginScreen extends HookConsumerWidget {
-  const LoginScreen({
-    super.key,
-  });
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authentication = ref.read(authenticationControllerProvider.notifier);
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
-
-    useState("Weak");
+    final rememberMe = useState<bool>(false);
 
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();
 
+    // Load saved email and rememberMe status
+    useEffect(() {
+      final box = Hive.box('data');
+      rememberMe.value = box.get('remember_me') == true;
+      final savedEmail = box.get('saved_email');
+      if (rememberMe.value && savedEmail != null) {
+        emailController.text = savedEmail;
+      }
+      return null;
+    }, []);
+
+    final savedEmail = Hive.box('data').get('saved_email');
+    final showBiometric = useMemoized(() {
+      final box = Hive.box('data');
+      final biometricEnabled = box.get('biometric') ?? false;
+      return emailController.text.isNotEmpty &&
+          savedEmail != null &&
+          emailController.text.trim() == savedEmail &&
+          biometricEnabled;
+    }, [emailController.text]);
+    logger.d(showBiometric);
+
     return PopScope(
-      canPop: false, // Prevent default back navigation
+      canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => const OnboardingScreen(),
-            ),
+            MaterialPageRoute(builder: (_) => const OnboardingScreen()),
           );
         }
       },
@@ -52,20 +71,17 @@ class LoginScreen extends HookConsumerWidget {
             onTap: () {
               Navigator.pop(context);
             },
-            child: const Icon(
-              IconsaxPlusLinear.arrow_left_1,
-              size: 20,
-            ),
+            child: const Icon(IconsaxPlusLinear.arrow_left_1, size: 20),
           ),
         ),
         body: SingleChildScrollView(
           child: Form(
             key: formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 18),
+                  padding: const EdgeInsets.all(16),
                   decoration: ShapeDecoration(
                     color: theme.brightness == Brightness.dark
                         ? const Color(0xFF151515)
@@ -73,82 +89,76 @@ class LoginScreen extends HookConsumerWidget {
                     shape: const RoundedRectangleBorder(),
                     shadows: [
                       BoxShadow(
-                        color:
-                            Colors.black.withOpacity(0.1), // Light shadow color
-                        blurRadius: 3, // Soft shadow effect
-                        spreadRadius: 1, // Spread of the shadow
-                        offset:
-                            const Offset(0, 2), // Moves shadow slightly down
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 3,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Welcome back boss!",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      const Text("Welcome back boss!",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      const Text(
-                        "Sign in to  Swift Swap",
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
+                      const Text("Sign in to Swift Swap",
+                          style: TextStyle(fontSize: 14, color: Colors.grey)),
                       const SizedBox(height: 20),
 
                       // Email Field
                       CustomTextField(
                         controller: emailController,
                         label: "Email",
-                        prefixIcon: const Icon(
-                          Icons.email_outlined,
-                          color: Colors.grey,
-                          size: 21,
-                        ), // Optional
+                        prefixIcon: const Icon(Icons.email_outlined,
+                            color: Colors.grey, size: 21),
                         keyboardType: TextInputType.emailAddress,
                         validator: Validators.emailValidator,
                       ),
-
                       const SizedBox(height: 15),
 
                       // Password Field
                       CustomTextField(
                         controller: passwordController,
                         label: "Password",
-                        prefixIcon: const Icon(
-                          IconsaxPlusLinear.lock,
-                          color: Colors.grey,
-                          size: 21,
-                        ), // Optional
+                        prefixIcon: const Icon(IconsaxPlusLinear.lock,
+                            color: Colors.grey, size: 21),
                         isPassword: true,
                         validator: Validators.passwordValidator,
                       ),
                       const Gap(8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) =>
-                            //             const ForgotPasswordScreen()));
-                          },
-                          child: Text(
-                            "Forgot Password",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: theme.brightness == Brightness.dark
-                                  ? AppColors.blueColor
-                                  : AppColors.primaryColor,
+
+                      // Remember Me + Forgot Password
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: rememberMe.value,
+                            onChanged: (value) {
+                              rememberMe.value = value ?? false;
+                            },
+                            activeColor: AppColors.primaryColor,
+                          ),
+                          const Text("Remember Me",
+                              style: TextStyle(fontSize: 14)),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              // TODO: Navigate to ForgotPasswordScreen
+                            },
+                            child: Text(
+                              "Forgot Password",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: theme.brightness == Brightness.dark
+                                    ? AppColors.blueColor
+                                    : AppColors.primaryColor,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
+
                       const Gap(28),
 
                       // Continue Button
@@ -161,16 +171,31 @@ class LoginScreen extends HookConsumerWidget {
                         width: double.infinity,
                         height: 48,
                         onPressed: () async {
-                          // context.router.replace(const NaviBarRoute());
-                          if (!formKey.currentState!.validate()) {
-                            return;
-                          }
+                          if (!formKey.currentState!.validate()) return;
+
                           final result = await authentication.signIn(
                             emailController.text.trim(),
                             passwordController.text.trim(),
                           );
+
                           if (result == true) {
-                            context.router.replace(const NaviBarRoute());
+                            final box = Hive.box('data');
+                            await box.put('remember_me', rememberMe.value);
+
+                            if (rememberMe.value) {
+                              await box.put(
+                                  'saved_email', emailController.text.trim());
+                            } else {
+                              await box.delete('saved_email');
+                            }
+
+                            ref.read(sessionTimerProvider).startTimer(() {
+                              context.router.replaceAll([const LoginRoute()]);
+                            });
+                            await box.put('login_time',
+                                DateTime.now().millisecondsSinceEpoch);
+
+                            context.router.replaceAll([const NaviBarRoute()]);
                           }
                         },
                         textColor: Colors.white,
@@ -179,7 +204,7 @@ class LoginScreen extends HookConsumerWidget {
 
                       const SizedBox(height: 20),
 
-                      // Already have an account?
+                      // Register Text
                       GestureDetector(
                         onTap: () {
                           context.router.push(const RegistrationRoute());
@@ -198,10 +223,11 @@ class LoginScreen extends HookConsumerWidget {
                                 TextSpan(
                                   text: "Sign Up",
                                   style: TextStyle(
-                                      color: theme.brightness == Brightness.dark
-                                          ? AppColors.blueColor
-                                          : AppColors.primaryColor,
-                                      fontWeight: FontWeight.bold),
+                                    color: theme.brightness == Brightness.dark
+                                        ? AppColors.blueColor
+                                        : AppColors.primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),
@@ -211,6 +237,73 @@ class LoginScreen extends HookConsumerWidget {
                     ],
                   ),
                 ),
+                // if (showBiometric) ...[
+                //   const Gap(12),
+                //   Align(
+                //     alignment: Alignment.center,
+                //     child: IconButton(
+                //       icon: const Icon(Icons.fingerprint, size: 36),
+                //       tooltip: 'Login with biometrics',
+                //       color: AppColors.primaryColor.shade400,
+                //       onPressed: () async {
+                //         final localAuth = LocalAuthentication();
+                //         final canCheck = await localAuth.canCheckBiometrics;
+
+                //         if (!canCheck) {
+                //           ScaffoldMessenger.of(context).showSnackBar(
+                //             const SnackBar(
+                //                 content: Text(
+                //                     "Biometric not available on this device.")),
+                //           );
+                //           return;
+                //         }
+
+                //         final didAuthenticate = await localAuth.authenticate(
+                //           localizedReason: 'Please authenticate to continue',
+                //           options:
+                //               const AuthenticationOptions(biometricOnly: true),
+                //         );
+
+                //         if (didAuthenticate) {
+                //           if (emailController.text.isEmpty) {
+                //             ToastService().showToast(
+                //               NotificationType.info,
+                //               message:
+                //                   'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
+                //             );
+                //             return;
+                //           }
+
+                //           final result = await authentication.signIn(
+                //             emailController.text.trim(),
+                //             '',
+                //             biometric: true,
+                //           );
+
+                //           if (result == true) {
+                //             final box = Hive.box('data');
+                //             await box.put('remember_me', rememberMe.value);
+
+                //             if (rememberMe.value) {
+                //               await box.put(
+                //                   'saved_email', emailController.text.trim());
+                //             } else {
+                //               await box.delete('saved_email');
+                //             }
+
+                //             ref.read(sessionTimerProvider).startTimer(() {
+                //               context.router.replaceAll([const LoginRoute()]);
+                //             });
+                //             await box.put('login_time',
+                //                 DateTime.now().millisecondsSinceEpoch);
+
+                //             context.router.replaceAll([const NaviBarRoute()]);
+                //           }
+                //         }
+                //       },
+                //     ),
+                //   ),
+                // ]
               ],
             ),
           ),

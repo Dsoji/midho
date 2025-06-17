@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -182,7 +183,9 @@ class OnboardingScreen extends HookConsumerWidget {
                     text: "Get Started",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
+                    onPressed: () async {
+                      final box = Hive.box('data');
+                      await box.put('onboarding_seen', true);
                       context.router.push(const RegistrationRoute());
                       // Navigator.push(
                       //   context,
@@ -199,7 +202,9 @@ class OnboardingScreen extends HookConsumerWidget {
                     text: "Sign In",
                     width: double.infinity,
                     height: 48,
-                    onPressed: () {
+                    onPressed: () async {
+                      final box = Hive.box('data');
+                      await box.put('onboarding_seen', true);
                       context.router.push(const LoginRoute());
                       // Navigator.push(
                       //   context,

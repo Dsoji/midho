@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
+import '../../../../common/services/session_service.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../notification/data/model/response/notifcation_list/notifcation_list.dart';
 import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
@@ -40,6 +41,7 @@ class AuthenticationService {
   Future<ResultValue<UserModel>> signInUser({
     required String email,
     required String password,
+    required bool biometric,
   }) async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post(
@@ -47,6 +49,7 @@ class AuthenticationService {
         data: {
           'emailorusername': email,
           'password': password,
+          'biometrics': biometric,
           'device': deviceId,
           'fcmToken': storedToken,
         },
@@ -55,7 +58,8 @@ class AuthenticationService {
         final token = data['token'];
         var box = Hive.box('data');
         box.put('accessToken', token);
-
+// Token already saved
+        SessionService().saveLoginSessionTimeOnly();
         return UserModel.fromMap(data);
       },
       showErrorToast: true,

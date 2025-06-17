@@ -47,12 +47,14 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
     String email,
     String password, {
     bool isLoggingIn = true,
+    bool biometric = false,
   }) async {
     state = state.copyWith(login: const AsyncValue.loading());
 
     final result = await _authenticationRepository.authSignIn(
       email: email,
       pswrd: password,
+      biometric: biometric,
     );
     return result.when(
       (error) {

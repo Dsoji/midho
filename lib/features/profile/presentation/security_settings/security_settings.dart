@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:local_auth/local_auth.dart';
@@ -25,6 +26,12 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final biometricEnabled = useState(userInfo?.biometrics ?? false);
+    useEffect(() {
+      final box = Hive.box('data');
+      box.put('biometric', userInfo?.biometrics ?? false);
+      return null;
+    }, [userInfo?.biometrics]);
+
     final localAuth = LocalAuthentication();
     final profileService = ref.read(profileControllerProvider.notifier);
 
@@ -47,6 +54,12 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
             await ref
                 .read(authenticationControllerProvider.notifier)
                 .fetchProfile();
+            final box = Hive.box('data');
+            final userInfo = ref
+                .watch(authenticationControllerProvider)
+                .userDetails
+                .valueOrNull;
+            box.put('biometric', userInfo?.biometrics ?? false);
           }
         } catch (e) {
           debugPrint("Biometric authentication failed: $e");

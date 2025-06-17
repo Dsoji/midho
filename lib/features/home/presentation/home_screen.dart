@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
@@ -76,6 +77,12 @@ class HomeScreen extends HookConsumerWidget {
     DateTime? lastBackPressTime;
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+
+    useEffect(() {
+      final box = Hive.box('data');
+      box.put('biometric', userInfo?.biometrics ?? false);
+      return null;
+    }, [userInfo?.biometrics]);
 
 // Automatically sync theme once userInfo is available
     useEffect(() {

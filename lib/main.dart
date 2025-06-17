@@ -29,6 +29,7 @@ void main() async {
 
   await _getAndSaveDeviceId();
   await NotificationService.initializeFCM();
+  WidgetsBinding.instance.addObserver(AppLifecycleHandler());
   setUpLocator();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -87,6 +88,20 @@ class MyApp extends HookConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class AppLifecycleHandler extends WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    final box = Hive.box('data');
+    if (state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
+      // App is being closed/killed (may vary by platform)
+      await box.delete('accessToken');
+      await box.delete('login_time');
+      await box.put('app_open', false);
+    }
   }
 }
 

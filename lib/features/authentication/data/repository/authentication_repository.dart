@@ -28,11 +28,13 @@ class AuthenticationRepository {
   Future<Result<FailureHandler, UserModel>> authSignIn({
     required String email,
     required String pswrd,
+    required bool biometric,
   }) async {
     try {
       final data = await authService.signInUser(
         email: email,
         password: pswrd,
+        biometric: biometric,
       );
 
       if (data.isSuccess) {
