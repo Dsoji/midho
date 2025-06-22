@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
+import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../bottomNav/app_router.gr.dart';
 
@@ -35,7 +36,12 @@ class OnboardingScreen extends HookConsumerWidget {
           // Handle denied permission (show dialog, snackbar, etc.)
         } else if (notificationPermission.isPermanentlyDenied) {
           // Show settings prompt
-          openAppSettings();
+          // openAppSettings();
+          ToastService().showToast(
+            NotificationType.info,
+            message:
+                'Please enable notification permission from settings to receive notifications',
+          );
         }
       });
       return null;
@@ -125,106 +131,108 @@ class OnboardingScreen extends HookConsumerWidget {
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade600
             : const Color(0xFFF7F7F7),
-        body: Column(
-          children: [
-            const Gap(100),
-            Container(
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.secondaryColor.shade600
-                    : Colors.white, // Dynamic Background
-                borderRadius: BorderRadius.circular(20),
-              ),
-              width: containerWidth,
-              height: 500,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: PageView.builder(
-                      controller: pageController,
-                      itemCount: pages.length,
-                      onPageChanged: (index) => currentPage.value = index,
-                      itemBuilder: (context, index) => pages[index],
+        body: SafeArea(
+          child: Column(
+            children: [
+              const Gap(50),
+              Container(
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade600
+                      : Colors.white, // Dynamic Background
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                width: containerWidth,
+                height: 500,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: PageView.builder(
+                        controller: pageController,
+                        itemCount: pages.length,
+                        onPageChanged: (index) => currentPage.value = index,
+                        itemBuilder: (context, index) => pages[index],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        pages.length,
-                        (index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                          width: currentPage.value == index ? 28.0 : 11.0,
-                          height: 8.0,
-                          decoration: BoxDecoration(
-                            color: currentPage.value == index
-                                ? AppColors.primaryColor.shade500
-                                : theme.brightness == Brightness.dark
-                                    ? AppColors.whiteColor.shade800
-                                    : AppColors.whiteColor.shade600,
-                            borderRadius: BorderRadius.circular(4.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          pages.length,
+                          (index) => Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                            width: currentPage.value == index ? 28.0 : 11.0,
+                            height: 8.0,
+                            decoration: BoxDecoration(
+                              color: currentPage.value == index
+                                  ? AppColors.primaryColor.shade500
+                                  : theme.brightness == Brightness.dark
+                                      ? AppColors.whiteColor.shade800
+                                      : AppColors.whiteColor.shade600,
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const Gap(50),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              child: Column(
-                children: [
-                  FullButton(
-                    text: "Get Started",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () async {
-                      final box = Hive.box('data');
-                      await box.put('onboarding_seen', true);
-                      context.router.push(const RegistrationRoute());
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const RegistrationScreen(),
-                      //   ),
-                      // );
-                    },
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                  const SizedBox(height: 10),
-                  FullButton(
-                    text: "Sign In",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () async {
-                      final box = Hive.box('data');
-                      await box.put('onboarding_seen', true);
-                      context.router.push(const LoginRoute());
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const LoginScreen(),
-                      //   ),
-                      // );
-                    },
-                    textColor: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.secondaryColor.shade400
-                        : const Color(0xFFFAFAFA),
-                  ),
-                  const Gap(24),
-                ],
+              const Gap(20),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 16.0),
+                child: Column(
+                  children: [
+                    FullButton(
+                      text: "Get Started",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () async {
+                        final box = Hive.box('data');
+                        await box.put('onboarding_seen', true);
+                        context.router.push(const RegistrationRoute());
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => const RegistrationScreen(),
+                        //   ),
+                        // );
+                      },
+                      textColor: Colors.white,
+                      color: AppColors.primaryColor.shade500,
+                    ),
+                    const SizedBox(height: 10),
+                    FullButton(
+                      text: "Sign In",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () async {
+                        final box = Hive.box('data');
+                        await box.put('onboarding_seen', true);
+                        context.router.push(const LoginRoute());
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => const LoginScreen(),
+                        //   ),
+                        // );
+                      },
+                      textColor: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor.shade400
+                          : const Color(0xFFFAFAFA),
+                    ),
+                    const Gap(24),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

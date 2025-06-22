@@ -369,8 +369,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                           );
                         }
                       } else {
-                        if (codeController.text.isNotEmpty &&
-                            pinController.text.isNotEmpty) {
+                        if (codeController.text.isNotEmpty) {
                           final result = await transactionService.sellGiftCards(
                               id: rates ?? '',
                               name: giftCard.name ?? '',
@@ -418,7 +417,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                         } else {
                           ToastService().showToast(
                             NotificationType.info,
-                            message: 'You need to fill all fields.',
+                            message: 'You need to fill the code field.',
                           );
                         }
                       }

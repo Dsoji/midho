@@ -41,6 +41,11 @@ class LoginScreen extends HookConsumerWidget {
       return null;
     }, []);
 
+    useEffect(() {
+      LifecycleGuard.shouldForceSplashOnResume = true;
+      return null;
+    }, []);
+
     final showBiometric = rememberMe.value;
 
     return PopScope(

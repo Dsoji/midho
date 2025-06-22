@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/step_progress_indicator.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
+import '../../../../../main.dart';
 import 'widget/email_password_step.dart';
 import 'widget/otp_verification_step.dart';
 import 'widget/user_details_screen.dart';
@@ -92,6 +93,11 @@ class RegistrationScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageController = ref.watch(pageControllerProvider);
     final pageIndex = useState(0);
+
+    useEffect(() {
+      LifecycleGuard.shouldForceSplashOnResume = false;
+      return null; // Don't re-enable here
+    }, []);
 
     useState(false);
     void goBack() {
