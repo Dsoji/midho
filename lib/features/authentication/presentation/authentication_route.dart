@@ -11,6 +11,9 @@ final authenticationRoutes = AutoRoute(
       page: LoginRoute.page,
     ),
     AutoRoute(
+      page: StayLoginRoute.page,
+    ),
+    AutoRoute(
       page: RegistrationRoute.page,
     ),
     AutoRoute(

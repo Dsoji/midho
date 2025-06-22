@@ -29,7 +29,7 @@ class SummaryCards extends HookConsumerWidget {
             amount:
                 "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}"
                     .commaFormat(),
-            iconImage: ImageAssets.logo,
+            iconImage: ImageAssets.logo2,
             context: context, // use your preferred icon
           ),
           const SizedBox(width: 16),

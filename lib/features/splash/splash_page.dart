@@ -41,17 +41,28 @@ class SplashScreen extends HookConsumerWidget {
     try {
       final box = Hive.box('data');
       final hasSeenOnboarding = box.get('onboarding_seen') == true;
+      final accessToken = box.get('accessToken');
+      final rememberMe = box.get('remember_me') == true;
 
       _logger.d("📦 onboarding_seen = $hasSeenOnboarding");
+      _logger.d("📦 accessToken = $accessToken");
+      _logger.d("📦 rememberMe = $rememberMe");
 
+      // Add a post frame callback to ensure navigation happens after the widget is mounted
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!context.mounted) return;
+        if (!context.mounted) {
+          _logger.d("🚫 Context is not mounted. Returning...");
+          return;
+        }
 
         if (!hasSeenOnboarding) {
           _logger.d("🔰 Navigating to Onboarding...");
           context.router.replaceAll([const OnboardingRoute()]);
+        } else if (accessToken != null && rememberMe) {
+          _logger.d("🔐 Navigating to StayLogin...");
+          context.router.replaceAll([const StayLoginRoute()]);
         } else {
-          _logger.d("🔐 Navigating to Login...");
+          _logger.d("🔓 Navigating to Login...");
           context.router.replaceAll([const LoginRoute()]);
         }
       });
@@ -59,6 +70,7 @@ class SplashScreen extends HookConsumerWidget {
       _logger.e("🔥 Error during onboarding check: $e");
       _logger.e(st.toString());
 
+      // Ensure to navigate to onboarding if error occurs
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) {
           context.router.replaceAll([const OnboardingRoute()]);

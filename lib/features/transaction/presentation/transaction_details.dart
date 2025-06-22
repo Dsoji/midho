@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
@@ -15,6 +16,8 @@ import 'package:screenshot/screenshot.dart';
 import '../../../common/mixin/share_mixin.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+
+final logger = Logger();
 
 @RoutePage()
 class TransactionDetailsScreen extends HookWidget with ShareMixin {
@@ -37,7 +40,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
         _getTransactionDetails(type, status, transaction);
     final screenshotController = useMemoized(() => ScreenshotController());
     final isProcessing = useState(false);
-
+    final proofs = transaction.proofs;
+    logger.d(proofs);
     final theme = Theme.of(context);
     return Scaffold(
       appBar: showAppBar == true
@@ -97,10 +101,8 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                     : Colors.white,
               ),
               child: _buildBreakdown(
-                transactionDetails["breakdown"],
-                context,
-                proofs: transactionDetails[
-                    "proofs"], // Passes any proof screenshots from the transaction details to the breakdown widget
+                transactionDetails["breakdown"], context,
+                proofs, // Passes any proof screenshots from the transaction details to the breakdown widget
               ),
             ),
             if (showAppBar == true)
@@ -197,8 +199,11 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     );
   }
 
-  Widget _buildBreakdown(Map<String, dynamic> breakdown, BuildContext context,
-      {List<String>? proofs}) {
+  Widget _buildBreakdown(
+    Map<String, dynamic> breakdown,
+    BuildContext context,
+    List<dynamic>? proofs,
+  ) {
     final theme = Theme.of(context);
 
     return Column(
@@ -222,7 +227,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
     String value,
     BuildContext context,
     bool isCopyable, {
-    List<String>? proofs,
+    List<dynamic>? proofs,
   }) {
     final theme = Theme.of(context);
 
@@ -705,12 +710,13 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
   });
   final String type;
   final String status;
-  final List<String>? proofs;
+  final List<dynamic>? proofs;
   @override
   Widget build(BuildContext context) {
     final screenshotController = useMemoized(() => ScreenshotController());
     final isProcessing = useState(false);
-
+    final scrollController = useMemoized(() => ScrollController());
+    final scrollController2 = useMemoized(() => ScrollController());
     final theme = Theme.of(context);
     return OutlinedButton(
       onPressed: isProcessing.value == true
@@ -733,35 +739,100 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          'Transaction Screenshots',
-                          style: theme.textTheme.titleLarge,
+                        Row(
+                          children: [
+                            Text(
+                              'Transaction Screenshots',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(Icons.close),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
-                        Flexible(
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            itemCount: proofs!.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              return Image.network(
-                                proofs![index],
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Center(
-                                    child: Text('Failed to load image'),
-                                  );
-                                },
-                              );
-                            },
-                          ),
+                        Stack(
+                          children: [
+                            SizedBox(
+                              height:
+                                  200, // Fixed height for the horizontal list
+                              child: Builder(builder: (context) {
+                                return ListView.separated(
+                                  controller: scrollController2,
+                                  scrollDirection: Axis.horizontal,
+                                  shrinkWrap: true,
+                                  itemCount: proofs!.length,
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(width: 12),
+                                  itemBuilder: (context, index) {
+                                    return Image.network(
+                                      proofs![index].toString(),
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Center(
+                                          child: Text('Failed to load image'),
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              }),
+                            ),
+                            Positioned.fill(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    color: Colors.black26,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.arrow_back_ios),
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        final currentPosition =
+                                            scrollController2.position.pixels;
+                                        scrollController2.animateTo(
+                                          currentPosition - 200,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Container(
+                                    color: Colors.black26,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.arrow_forward_ios),
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        final currentPosition =
+                                            scrollController2.position.pixels;
+                                        scrollController2.animateTo(
+                                          currentPosition + 200,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

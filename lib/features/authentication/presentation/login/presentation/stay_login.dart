@@ -5,18 +5,20 @@ import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/main.dart';
 
 import '../../../../../common/res/app_colors.dart';
+import '../../../../../common/toast/toast.dart';
 import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
 import '../../../../bottomNav/app_router.gr.dart';
 
 @RoutePage()
-class LoginScreen extends HookConsumerWidget {
-  const LoginScreen({super.key});
+class StayLoginScreen extends HookConsumerWidget {
+  const StayLoginScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -98,21 +100,26 @@ class LoginScreen extends HookConsumerWidget {
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      const Text("Sign in to Swift Swap",
-                          style: TextStyle(fontSize: 14, color: Colors.grey)),
-                      const SizedBox(height: 20),
-
-                      // Email Field
-                      CustomTextField(
-                        controller: emailController,
-                        label: "Email",
-                        prefixIcon: const Icon(Icons.email_outlined,
-                            color: Colors.grey, size: 21),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: Validators.emailValidator,
+                      RichText(
+                        text: TextSpan(
+                          text: "Sign in to Swift Swap with your email: \n",
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
+                          children: [
+                            TextSpan(
+                              text: emailController.text,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 15),
-
+                      const SizedBox(height: 20),
                       // Password Field
                       CustomTextField(
                         controller: passwordController,
@@ -207,20 +214,18 @@ class LoginScreen extends HookConsumerWidget {
                         child: Center(
                           child: RichText(
                             text: TextSpan(
-                              text: "Don't Have An Account? ",
+                              text: "Not your account? ",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: theme.brightness == Brightness.dark
                                     ? Colors.white
                                     : AppColors.greyColor.shade700,
                               ),
-                              children: [
+                              children: const [
                                 TextSpan(
-                                  text: "Sign Up",
+                                  text: "Log Out",
                                   style: TextStyle(
-                                    color: theme.brightness == Brightness.dark
-                                        ? AppColors.blueColor
-                                        : AppColors.primaryColor,
+                                    color: Colors.red,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -231,6 +236,70 @@ class LoginScreen extends HookConsumerWidget {
                       ),
                     ],
                   ),
+                ),
+                const Gap(12),
+                Align(
+                  alignment: Alignment.center,
+                  child: IconButton(
+                      icon: const Icon(Icons.fingerprint, size: 36),
+                      tooltip: 'Login with biometrics',
+                      color: AppColors.primaryColor.shade400,
+                      onPressed: () async {
+                        final localAuth = LocalAuthentication();
+                        final canCheck = await localAuth.canCheckBiometrics;
+
+                        if (!canCheck) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  "Biometric not available on this device."),
+                            ),
+                          );
+                          return;
+                        }
+
+                        // 🛡️ Disable splash redirect during biometric auth
+                        LifecycleGuard.shouldForceSplashOnResume = false;
+
+                        final didAuthenticate = await localAuth.authenticate(
+                          localizedReason: 'Please authenticate to continue',
+                          options:
+                              const AuthenticationOptions(biometricOnly: true),
+                        );
+
+                        // ✅ Re-enable splash after biometric completes
+                        LifecycleGuard.shouldForceSplashOnResume = true;
+
+                        if (didAuthenticate) {
+                          if (emailController.text.isEmpty) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message: 'Please enter your email',
+                            );
+                            return;
+                          }
+
+                          final result = await authentication.signIn(
+                            emailController.text.trim(),
+                            '',
+                            biometric: true,
+                          );
+
+                          if (result == true) {
+                            final box = Hive.box('data');
+                            await box.put('remember_me', rememberMe.value);
+
+                            if (rememberMe.value) {
+                              await box.put(
+                                  'saved_email', emailController.text.trim());
+                            } else {
+                              await box.delete('saved_email');
+                            }
+
+                            context.router.replaceAll([const NaviBarRoute()]);
+                          }
+                        }
+                      }),
                 ),
               ],
             ),
