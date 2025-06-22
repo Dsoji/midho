@@ -74,6 +74,7 @@ class ImageAssets {
   static const donboard3 = '$_base/onboard3_dark.png';
   static const donboard4 = '$_base/onboard4_dark.png';
   static const logo = '$_base/logo.png';
+  static const logo2 = '$_base/logo_2.png';
 }
 
 class SvgAssets {

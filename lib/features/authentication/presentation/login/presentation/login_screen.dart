@@ -5,11 +5,12 @@ import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
-import 'package:mdiho/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:mdiho/main.dart';
 
 import '../../../../../common/res/app_colors.dart';
-import '../../../../../common/services/session_timer_service.dart';
+import '../../../../../common/toast/toast.dart';
 import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
@@ -40,25 +41,13 @@ class LoginScreen extends HookConsumerWidget {
       return null;
     }, []);
 
-    final savedEmail = Hive.box('data').get('saved_email');
-    final showBiometric = useMemoized(() {
-      final box = Hive.box('data');
-      final biometricEnabled = box.get('biometric') ?? false;
-      return emailController.text.isNotEmpty &&
-          savedEmail != null &&
-          emailController.text.trim() == savedEmail &&
-          biometricEnabled;
-    }, [emailController.text]);
-    logger.d(showBiometric);
+    final showBiometric = rememberMe.value;
 
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-          );
+          context.router.replaceAll([const OnboardingRoute()]);
         }
       },
       child: Scaffold(
@@ -69,7 +58,7 @@ class LoginScreen extends HookConsumerWidget {
           automaticallyImplyLeading: false,
           leading: InkWell(
             onTap: () {
-              Navigator.pop(context);
+              context.router.replaceAll([const OnboardingRoute()]);
             },
             child: const Icon(IconsaxPlusLinear.arrow_left_1, size: 20),
           ),
@@ -189,9 +178,9 @@ class LoginScreen extends HookConsumerWidget {
                               await box.delete('saved_email');
                             }
 
-                            ref.read(sessionTimerProvider).startTimer(() {
-                              context.router.replaceAll([const LoginRoute()]);
-                            });
+                            // ref.read(sessionTimerProvider).startTimer(() {
+                            context.router.replaceAll([const LoginRoute()]);
+                            // });
                             await box.put('login_time',
                                 DateTime.now().millisecondsSinceEpoch);
 
@@ -237,73 +226,72 @@ class LoginScreen extends HookConsumerWidget {
                     ],
                   ),
                 ),
-                // if (showBiometric) ...[
-                //   const Gap(12),
-                //   Align(
-                //     alignment: Alignment.center,
-                //     child: IconButton(
-                //       icon: const Icon(Icons.fingerprint, size: 36),
-                //       tooltip: 'Login with biometrics',
-                //       color: AppColors.primaryColor.shade400,
-                //       onPressed: () async {
-                //         final localAuth = LocalAuthentication();
-                //         final canCheck = await localAuth.canCheckBiometrics;
+                if (showBiometric) ...[
+                  const Gap(12),
+                  Align(
+                    alignment: Alignment.center,
+                    child: IconButton(
+                        icon: const Icon(Icons.fingerprint, size: 36),
+                        tooltip: 'Login with biometrics',
+                        color: AppColors.primaryColor.shade400,
+                        onPressed: () async {
+                          final localAuth = LocalAuthentication();
+                          final canCheck = await localAuth.canCheckBiometrics;
 
-                //         if (!canCheck) {
-                //           ScaffoldMessenger.of(context).showSnackBar(
-                //             const SnackBar(
-                //                 content: Text(
-                //                     "Biometric not available on this device.")),
-                //           );
-                //           return;
-                //         }
+                          if (!canCheck) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    "Biometric not available on this device."),
+                              ),
+                            );
+                            return;
+                          }
 
-                //         final didAuthenticate = await localAuth.authenticate(
-                //           localizedReason: 'Please authenticate to continue',
-                //           options:
-                //               const AuthenticationOptions(biometricOnly: true),
-                //         );
+                          // 🛡️ Disable splash redirect during biometric auth
+                          LifecycleGuard.shouldForceSplashOnResume = false;
 
-                //         if (didAuthenticate) {
-                //           if (emailController.text.isEmpty) {
-                //             ToastService().showToast(
-                //               NotificationType.info,
-                //               message:
-                //                   'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
-                //             );
-                //             return;
-                //           }
+                          final didAuthenticate = await localAuth.authenticate(
+                            localizedReason: 'Please authenticate to continue',
+                            options: const AuthenticationOptions(
+                                biometricOnly: true),
+                          );
 
-                //           final result = await authentication.signIn(
-                //             emailController.text.trim(),
-                //             '',
-                //             biometric: true,
-                //           );
+                          // ✅ Re-enable splash after biometric completes
+                          LifecycleGuard.shouldForceSplashOnResume = true;
 
-                //           if (result == true) {
-                //             final box = Hive.box('data');
-                //             await box.put('remember_me', rememberMe.value);
+                          if (didAuthenticate) {
+                            if (emailController.text.isEmpty) {
+                              ToastService().showToast(
+                                NotificationType.info,
+                                message: 'Please enter your email',
+                              );
+                              return;
+                            }
 
-                //             if (rememberMe.value) {
-                //               await box.put(
-                //                   'saved_email', emailController.text.trim());
-                //             } else {
-                //               await box.delete('saved_email');
-                //             }
+                            final result = await authentication.signIn(
+                              emailController.text.trim(),
+                              '',
+                              biometric: true,
+                            );
 
-                //             ref.read(sessionTimerProvider).startTimer(() {
-                //               context.router.replaceAll([const LoginRoute()]);
-                //             });
-                //             await box.put('login_time',
-                //                 DateTime.now().millisecondsSinceEpoch);
+                            if (result == true) {
+                              final box = Hive.box('data');
+                              await box.put('remember_me', rememberMe.value);
 
-                //             context.router.replaceAll([const NaviBarRoute()]);
-                //           }
-                //         }
-                //       },
-                //     ),
-                //   ),
-                // ]
+                              if (rememberMe.value) {
+                                await box.put(
+                                    'saved_email', emailController.text.trim());
+                              } else {
+                                await box.delete('saved_email');
+                              }
+
+                              context.router.replaceAll([const NaviBarRoute()]);
+                            }
+                          }
+                        }),
+                  ),
+                ]
               ],
             ),
           ),

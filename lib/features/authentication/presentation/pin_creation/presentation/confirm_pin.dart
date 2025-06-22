@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
@@ -11,6 +12,7 @@ import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../bottomNav/app_router.gr.dart';
+import '../../../../profile/data/controller/profile_controller.dart';
 import '../../../data/controller/authentication_controller.dart';
 import '../../../data/model/payload/profile_payload.dart';
 
@@ -51,8 +53,17 @@ class ConfirmPinScreen extends HookConsumerWidget {
   const ConfirmPinScreen({
     super.key,
     required this.pin,
+    required this.firstname,
+    required this.lastname,
+    required this.phone,
+    required this.biometric,
   });
   final String pin;
+  final String firstname;
+  final String lastname;
+
+  final String phone;
+  final bool biometric;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinController = useTextEditingController();
@@ -60,6 +71,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
     final authService = ref.read(authenticationControllerProvider.notifier);
+    final profileService = ref.read(profileControllerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -183,35 +195,31 @@ class ConfirmPinScreen extends HookConsumerWidget {
                 // Next Button
                 FullButton(
                   isLoading: ref
-                      .watch(authenticationControllerProvider)
+                      .watch(profileControllerProvider)
                       .forgotPassword
                       .isLoading,
                   text: "Next",
                   width: double.infinity,
                   height: 48,
                   onPressed: () async {
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const LoginScreen(),
-                    //   ),
-                    // );
                     if (pin == pinController.text) {
-                      logger.d('clicked');
-                      authService.updateProfileDetails(ProfilePayload(
-                        pin: pin,
-                      ));
+                      logger.d(pinController.text);
 
-                      final profileDetails = ref
-                          .watch(authenticationControllerProvider)
-                          .profilePayload
-                          .valueOrNull;
+                      // Create the profile payload directly
+                      final profilePayload = ProfilePayload(
+                        pin: pinController.text.trim(),
+                      );
 
-                      logger.d("hete is profile details : $profileDetails");
+                      // Update the state with the new profile payload
+                      authService.updateProfileDetails(profilePayload);
 
+                      // Use the profile payload directly instead of getting it from state
                       final result =
-                          await authService.updateProfile(profileDetails!);
+                          await profileService.updateProfile(profilePayload);
+
                       if (result == true && context.mounted) {
+                        final box = Hive.box('data');
+                        await box.put('remember_me', false);
                         context.router.replace(const NaviBarRoute());
                       }
                     } else {
@@ -220,6 +228,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
                         NotificationType.info,
                         message: 'Pin does not match. Try again',
                       );
+                      return;
                     }
                   },
                   textColor: Colors.white,

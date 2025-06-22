@@ -46,6 +46,32 @@ class ProfileRepository {
     }
   }
 
+  Future<Result<FailureHandler, String>> createPin({
+    required String pin,
+  }) async {
+    logger.d("here is pin in repository: $pin");
+    try {
+      final data = await authService.updatePin(
+        pin: pin,
+      );
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to create PIN',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to create PIN'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
   Future<Result<FailureHandler, UserProfileModel>> fetchProfileDetails({
     ProfilePayload? payload,
   }) async {

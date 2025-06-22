@@ -1,10 +1,12 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 
 import '../repository/profile_repository.dart';
 import '../state/profile_state.dart';
 
+final logger = Logger();
 final profileControllerProvider =
     StateNotifierProvider<ProfileController, ProfileState>((ref) {
   final profileRepository = ref.watch(profileRepositoryProvider);
@@ -35,6 +37,31 @@ class ProfileController extends StateNotifier<ProfileState> {
 
     final result = await _authenticationRepository.updateProfile(
       payload: payload,
+    );
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          forgotPassword: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          forgotPassword: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> createPin({
+    required String pin,
+  }) async {
+    state = state.copyWith(forgotPassword: const AsyncValue.loading());
+    logger.d("here is pin in controller: $pin");
+    final result = await _authenticationRepository.createPin(
+      pin: pin,
     );
 
     return result.when(

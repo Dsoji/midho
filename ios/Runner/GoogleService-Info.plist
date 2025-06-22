@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.swiftswap.app</string>
+	<string>com.opensaucery.swiftswapp</string>
 	<key>PROJECT_ID</key>
 	<string>swiftswap-59406</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1026709119955:ios:5cb9749e0e1e6f0da90526</string>
+	<string>1:1026709119955:ios:f5b42bd7c8ec8f5da90526</string>
 </dict>
 </plist>

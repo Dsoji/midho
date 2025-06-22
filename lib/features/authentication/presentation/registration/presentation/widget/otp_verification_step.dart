@@ -83,9 +83,9 @@ class OtpVerificationStep extends HookConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Enter the 6-digit code we just sent to john@gmail.com",
-                  style: TextStyle(
+                Text(
+                  "Enter the 6-digit code we just sent to $email",
+                  style: const TextStyle(
                     fontSize: 14,
                   ),
                 ),

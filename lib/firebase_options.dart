@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCnc86_E15Ct7w368B22jzNB126B9BiyPo',
-    appId: '1:1026709119955:android:2feaa6ae8c02c983a90526',
+    appId: '1:1026709119955:android:cde80838c10f4028a90526',
     messagingSenderId: '1026709119955',
     projectId: 'swiftswap-59406',
     storageBucket: 'swiftswap-59406.firebasestorage.app',
@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyArrF5cNz1tW9bxddAjWjI7w0-cnIl3KOE',
-    appId: '1:1026709119955:ios:5cb9749e0e1e6f0da90526',
+    appId: '1:1026709119955:ios:f5b42bd7c8ec8f5da90526',
     messagingSenderId: '1026709119955',
     projectId: 'swiftswap-59406',
     storageBucket: 'swiftswap-59406.firebasestorage.app',
-    iosBundleId: 'com.swiftswap.app',
+    iosBundleId: 'com.opensaucery.swiftswapp',
   );
+
 }

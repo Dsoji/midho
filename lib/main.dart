@@ -5,11 +5,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/common/theme_notifier.dart';
 import 'package:mdiho/common/utils/locator.dart';
 import 'package:mdiho/features/bottomNav/app_router.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/firebase_options.dart';
 import 'package:mdiho/notification_service.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -20,6 +23,7 @@ import 'common/toast/toast_warpper.dart';
 import 'common/utils/dimesnsion.dart';
 import 'features/bottomNav/route_observer.dart';
 
+final logger = Logger();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -29,7 +33,7 @@ void main() async {
 
   await _getAndSaveDeviceId();
   await NotificationService.initializeFCM();
-  WidgetsBinding.instance.addObserver(AppLifecycleHandler());
+  // WidgetsBinding.instance.addObserver(AppLifecycleHandler());
   setUpLocator();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -41,17 +45,30 @@ void main() async {
 class MyApp extends HookConsumerWidget {
   MyApp({super.key});
   final appRouter = AppRouter();
-  final toastKey = GlobalKey<ToastWrapperState>(); // ✅ Move this here
+  final toastKey = GlobalKey<ToastWrapperState>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.watch(themeProvider);
-    ToastService().initialize(toastKey); // ✅ Initialize once
+
+    // ⬇️ App resume listener using the guard
+    useEffect(() {
+      final listener = AppLifecycleListener(
+        onResume: () {
+          if (LifecycleGuard.shouldForceSplashOnResume) {
+            appRouter.replaceAll([const SplashRoute()]);
+          } else {
+            logger.d("⏭ Resume detected — splash skipped (guard disabled).");
+          }
+        },
+      );
+      return listener.dispose;
+    }, []);
+
+    ToastService().initialize(toastKey);
 
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarBrightness: Brightness.light,
-      ),
+      const SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
     );
 
     final mediaQuery = MediaQuery.of(context);
@@ -70,7 +87,7 @@ class MyApp extends HookConsumerWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         home: ToastWrapper(
-          key: toastKey, // ✅ Attach key here
+          key: toastKey,
           child: Builder(builder: (context) {
             final media = MediaQuery.of(context);
             Dims.setSize(media);
@@ -88,20 +105,6 @@ class MyApp extends HookConsumerWidget {
         ),
       ),
     );
-  }
-}
-
-class AppLifecycleHandler extends WidgetsBindingObserver {
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    final box = Hive.box('data');
-    if (state == AppLifecycleState.detached ||
-        state == AppLifecycleState.inactive) {
-      // App is being closed/killed (may vary by platform)
-      await box.delete('accessToken');
-      await box.delete('login_time');
-      await box.put('app_open', false);
-    }
   }
 }
 
@@ -134,4 +137,8 @@ Future<void> _getAndSaveDeviceId() async {
   } else {
     debugPrint("Retrieved Device ID from Hive: $deviceId");
   }
+}
+
+class LifecycleGuard {
+  static bool shouldForceSplashOnResume = true;
 }

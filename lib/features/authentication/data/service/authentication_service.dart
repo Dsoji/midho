@@ -5,7 +5,6 @@ import 'package:logger/logger.dart';
 import '../../../../common/api/api_client.dart';
 import '../../../../common/api/api_request_helper.dart';
 import '../../../../common/api/dio_api_client.dart';
-import '../../../../common/services/session_service.dart';
 import '../../../../common/utils/utils.dart';
 import '../../../notification/data/model/response/notifcation_list/notifcation_list.dart';
 import '../../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
@@ -59,7 +58,7 @@ class AuthenticationService {
         var box = Hive.box('data');
         box.put('accessToken', token);
 // Token already saved
-        SessionService().saveLoginSessionTimeOnly();
+        // SessionService().saveLoginSessionTimeOnly();
         return UserModel.fromMap(data);
       },
       showErrorToast: true,
@@ -76,8 +75,11 @@ class AuthenticationService {
       ),
       parser: (data) {
         final token = data['token'];
+        logger.d("here is token: $token");
         var box = Hive.box('data');
         box.put('accessToken', token);
+        final accessToken = box.get('accessToken');
+        logger.d("here is access token: $accessToken");
         return UserModel.fromMap(data);
       },
       showErrorToast: true,

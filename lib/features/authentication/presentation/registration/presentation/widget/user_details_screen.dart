@@ -11,6 +11,7 @@ import '../../../../../../common/toast/toast.dart';
 import '../../../../../../common/utils/validator.dart';
 import '../../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../../common/widgets/custom_textfield.dart';
+import '../../../../../../main.dart';
 import '../../../../data/controller/authentication_controller.dart';
 import '../../../../data/model/payload/profile_payload.dart';
 import '../../../../data/model/payload/sign_up_payload.dart';
@@ -36,6 +37,7 @@ class UserDetailsStep extends HookConsumerWidget {
     final deviceId = box.get('device_id');
 
     const countryCodeMap = {'Nigeria': 'NG'};
+    final isBio = useState(false);
 
     return SingleChildScrollView(
       child: Form(
@@ -245,30 +247,46 @@ class UserDetailsStep extends HookConsumerWidget {
                       ));
 
                       if (result == true) {
+                        // 🛡 Temporarily disable splash redirect
+                        LifecycleGuard.shouldForceSplashOnResume = false;
+
                         final localAuth = LocalAuthentication();
-                        final canAuthenticate =
-                            await localAuth.canCheckBiometrics ||
-                                await localAuth.isDeviceSupported();
+                        bool isBiometricEnabled = false;
 
                         try {
-                          final authenticated = canAuthenticate
-                              ? await localAuth.authenticate(
-                                  localizedReason:
-                                      "Authenticate to complete registration",
-                                  options: const AuthenticationOptions(
-                                      biometricOnly: true),
-                                )
-                              : false;
+                          final canCheck = await localAuth.canCheckBiometrics;
+                          final isSupported =
+                              await localAuth.isDeviceSupported();
 
-                          box.put('biometric_auth', authenticated);
-                        } catch (_) {
-                          box.put('biometric_auth', false);
+                          if (canCheck && isSupported) {
+                            final authenticated = await localAuth.authenticate(
+                              localizedReason:
+                                  "Authenticate to enable biometric login",
+                              options: const AuthenticationOptions(
+                                  biometricOnly: true),
+                            );
+                            isBiometricEnabled = authenticated;
+                          }
+                        } catch (e) {
+                          logger.e("Biometric auth failed: $e");
                         }
+
+                        // ✅ Delay re-enabling to allow smooth nav
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          LifecycleGuard.shouldForceSplashOnResume = true;
+                        });
+
+                        await box.put('biometric', isBiometricEnabled);
 
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const CreatePinScreen(),
+                            builder: (_) => CreatePinScreen(
+                              firstname: firstNameController.text.trim(),
+                              lastname: lastNameController.text.trim(),
+                              phone: formattedPhone,
+                              biometric: isBiometricEnabled,
+                            ),
                           ),
                         );
                       } else {

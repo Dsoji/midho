@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1026709119955:android:cde80838c10f4028a90526",
+        "android_client_info": {
+          "package_name": "com.opensaucery.swiftswapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnc86_E15Ct7w368B22jzNB126B9BiyPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1026709119955:android:2feaa6ae8c02c983a90526",
         "android_client_info": {
           "package_name": "com.swiftswap.app"

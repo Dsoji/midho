@@ -99,7 +99,7 @@ class NaviBarScreen extends HookConsumerWidget {
                       'label': 'Crypto',
                     },
                     {
-                      'imagePath': ImageAssets.logo,
+                      'imagePath': ImageAssets.logo2,
                       'label': 'Transactions',
                     },
                     {

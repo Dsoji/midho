@@ -511,12 +511,20 @@ class ConfirmPinRoute extends _i52.PageRouteInfo<ConfirmPinRouteArgs> {
   ConfirmPinRoute({
     _i53.Key? key,
     required String pin,
+    required String firstname,
+    required String lastname,
+    required String phone,
+    required bool biometric,
     List<_i52.PageRouteInfo>? children,
   }) : super(
           ConfirmPinRoute.name,
           args: ConfirmPinRouteArgs(
             key: key,
             pin: pin,
+            firstname: firstname,
+            lastname: lastname,
+            phone: phone,
+            biometric: biometric,
           ),
           initialChildren: children,
         );
@@ -530,6 +538,10 @@ class ConfirmPinRoute extends _i52.PageRouteInfo<ConfirmPinRouteArgs> {
       return _i14.ConfirmPinScreen(
         key: args.key,
         pin: args.pin,
+        firstname: args.firstname,
+        lastname: args.lastname,
+        phone: args.phone,
+        biometric: args.biometric,
       );
     },
   );
@@ -539,24 +551,49 @@ class ConfirmPinRouteArgs {
   const ConfirmPinRouteArgs({
     this.key,
     required this.pin,
+    required this.firstname,
+    required this.lastname,
+    required this.phone,
+    required this.biometric,
   });
 
   final _i53.Key? key;
 
   final String pin;
 
+  final String firstname;
+
+  final String lastname;
+
+  final String phone;
+
+  final bool biometric;
+
   @override
   String toString() {
-    return 'ConfirmPinRouteArgs{key: $key, pin: $pin}';
+    return 'ConfirmPinRouteArgs{key: $key, pin: $pin, firstname: $firstname, lastname: $lastname, phone: $phone, biometric: $biometric}';
   }
 }
 
 /// generated route for
 /// [_i15.CreatePinScreen]
-class CreatePinRoute extends _i52.PageRouteInfo<void> {
-  const CreatePinRoute({List<_i52.PageRouteInfo>? children})
-      : super(
+class CreatePinRoute extends _i52.PageRouteInfo<CreatePinRouteArgs> {
+  CreatePinRoute({
+    _i53.Key? key,
+    required String firstname,
+    required String lastname,
+    required String phone,
+    required bool biometric,
+    List<_i52.PageRouteInfo>? children,
+  }) : super(
           CreatePinRoute.name,
+          args: CreatePinRouteArgs(
+            key: key,
+            firstname: firstname,
+            lastname: lastname,
+            phone: phone,
+            biometric: biometric,
+          ),
           initialChildren: children,
         );
 
@@ -565,9 +602,41 @@ class CreatePinRoute extends _i52.PageRouteInfo<void> {
   static _i52.PageInfo page = _i52.PageInfo(
     name,
     builder: (data) {
-      return const _i15.CreatePinScreen();
+      final args = data.argsAs<CreatePinRouteArgs>();
+      return _i15.CreatePinScreen(
+        key: args.key,
+        firstname: args.firstname,
+        lastname: args.lastname,
+        phone: args.phone,
+        biometric: args.biometric,
+      );
     },
   );
+}
+
+class CreatePinRouteArgs {
+  const CreatePinRouteArgs({
+    this.key,
+    required this.firstname,
+    required this.lastname,
+    required this.phone,
+    required this.biometric,
+  });
+
+  final _i53.Key? key;
+
+  final String firstname;
+
+  final String lastname;
+
+  final String phone;
+
+  final bool biometric;
+
+  @override
+  String toString() {
+    return 'CreatePinRouteArgs{key: $key, firstname: $firstname, lastname: $lastname, phone: $phone, biometric: $biometric}';
+  }
 }
 
 /// generated route for

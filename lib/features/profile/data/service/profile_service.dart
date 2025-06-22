@@ -38,8 +38,7 @@ class ProfileeService {
   Future<ResultValue<String>> updateProfile({
     ProfilePayload? payload,
   }) async {
-    final String accessToken = await box.get('accessToken');
-
+    logger.d("here is   access token: $accessToken");
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post(
         'user/profile/updateProfile',
@@ -47,6 +46,30 @@ class ProfileeService {
           'Authorization': 'Bearer $accessToken',
         },
         data: payload,
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<String>> updatePin({
+    required String pin,
+  }) async {
+    logger.d("here is pin in service: $pin");
+
+    logger.d("here is   access token: $accessToken");
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/profile/updateProfile',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: {
+          "pin": pin,
+        },
       ),
       parser: (data) {
         return BaseModel.toRawString(data);

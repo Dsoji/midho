@@ -44,7 +44,17 @@ final pinProvider = StateNotifierProvider<PinNotifier, PinState>(
 class CreatePinScreen extends HookConsumerWidget {
   const CreatePinScreen({
     super.key,
+    required this.firstname,
+    required this.lastname,
+    required this.phone,
+    required this.biometric,
   });
+
+  final String firstname;
+  final String lastname;
+
+  final String phone;
+  final bool biometric;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -183,6 +193,10 @@ class CreatePinScreen extends HookConsumerWidget {
                       MaterialPageRoute(
                         builder: (context) => ConfirmPinScreen(
                           pin: pinController.text,
+                          firstname: firstname,
+                          lastname: lastname,
+                          phone: phone,
+                          biometric: biometric,
                         ),
                       ),
                     );
