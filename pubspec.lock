@@ -483,6 +483,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_foreground_plugin:
+    dependency: "direct main"
+    description:
+      name: flutter_foreground_plugin
+      sha256: "640ce980401eece566441b867400e137357d2331a564f1670d6d5c46fa12d8d4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   flutter_hooks:
     dependency: "direct main"
     description:

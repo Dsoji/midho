@@ -159,7 +159,10 @@ class OtpVerificationStep extends HookConsumerWidget {
 
                 // Verify Button
                 FullButton(
-                  isLoading: isLoading,
+                  isLoading: ref
+                      .watch(authenticationControllerProvider)
+                      .emailConfirmation
+                      .isLoading,
                   text: "Verify",
                   width: double.infinity,
                   height: 48,

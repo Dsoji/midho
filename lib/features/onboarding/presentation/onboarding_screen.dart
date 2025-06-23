@@ -11,7 +11,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
-import '../../../common/toast/toast.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../bottomNav/app_router.gr.dart';
 
@@ -29,20 +28,7 @@ class OnboardingScreen extends HookConsumerWidget {
     // Get the current theme mode
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        PermissionStatus notificationPermission =
-            await Permission.notification.request();
-
-        if (notificationPermission.isDenied) {
-          // Handle denied permission (show dialog, snackbar, etc.)
-        } else if (notificationPermission.isPermanentlyDenied) {
-          // Show settings prompt
-          // openAppSettings();
-          ToastService().showToast(
-            NotificationType.info,
-            message:
-                'Please enable notification permission from settings to receive notifications',
-          );
-        }
+        await Permission.notification.request();
       });
       return null;
     }, []);

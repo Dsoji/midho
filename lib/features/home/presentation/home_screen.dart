@@ -12,6 +12,7 @@ import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/home/presentation/widget/welcome_header.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
+import 'package:mdiho/main.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/theme_notifier.dart';
@@ -83,6 +84,11 @@ class HomeScreen extends HookConsumerWidget {
       box.put('biometric', userInfo?.biometrics ?? false);
       return null;
     }, [userInfo?.biometrics]);
+
+    useEffect(() {
+      LifecycleGuard.shouldForceSplashOnResume = true;
+      return null;
+    }, []);
 
 // Automatically sync theme once userInfo is available
     useEffect(() {

@@ -42,7 +42,7 @@ class StayLoginScreen extends HookConsumerWidget {
     }, []);
 
     useEffect(() {
-      LifecycleGuard.shouldForceSplashOnResume = true;
+      LifecycleGuard.shouldForceSplashOnResume = false;
       return null;
     }, []);
 
@@ -191,9 +191,6 @@ class StayLoginScreen extends HookConsumerWidget {
                               await box.delete('saved_email');
                             }
 
-                            // ref.read(sessionTimerProvider).startTimer(() {
-                            context.router.replaceAll([const LoginRoute()]);
-                            // });
                             await box.put('login_time',
                                 DateTime.now().millisecondsSinceEpoch);
 
@@ -268,7 +265,6 @@ class StayLoginScreen extends HookConsumerWidget {
                         );
 
                         // ✅ Re-enable splash after biometric completes
-                        LifecycleGuard.shouldForceSplashOnResume = true;
 
                         if (didAuthenticate) {
                           if (emailController.text.isEmpty) {
