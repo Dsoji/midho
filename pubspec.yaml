@@ -74,7 +74,6 @@ dependencies:
   awesome_notifications: ^0.10.1
   intl: ^0.20.2
   hugeicons: ^0.0.10
-  flutter_foreground_plugin: ^0.8.0
 
 dev_dependencies:
   flutter_test:
