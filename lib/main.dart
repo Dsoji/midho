@@ -63,7 +63,3 @@ Future<void> _getAndSaveDeviceId() async {
     debugPrint("Retrieved Device ID from Hive: $deviceId");
   }
 }
-
-class LifecycleGuard {
-  static bool shouldForceSplashOnResume = true;
-}

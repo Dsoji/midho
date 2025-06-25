@@ -26,6 +26,9 @@ class AppRouter extends RootStackRouter {
           page: OnboardingRoute.page,
         ),
         AutoRoute(
+          page: StayLogin2Route.page,
+        ),
+        AutoRoute(
           page: MdihoShellRoute.page,
           children: [
             AutoRoute(page: LoginRoute.page),

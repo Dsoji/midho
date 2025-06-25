@@ -19,5 +19,8 @@ final authenticationRoutes = AutoRoute(
     AutoRoute(
       page: ForgotPasswordRoute.page,
     ),
+    AutoRoute(
+      page: StayLogin2Route.page,
+    ),
   ],
 );

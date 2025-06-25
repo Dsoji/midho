@@ -11,7 +11,6 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/toast/toast.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
-import '../../../../../main.dart';
 import '../../../../bottomNav/app_router.gr.dart';
 import '../../../../profile/data/controller/profile_controller.dart';
 import '../../../data/controller/authentication_controller.dart';
@@ -221,7 +220,7 @@ class ConfirmPinScreen extends HookConsumerWidget {
                       if (result == true && context.mounted) {
                         final box = Hive.box('data');
                         await box.put('remember_me', false);
-                        LifecycleGuard.shouldForceSplashOnResume = true;
+                        // LifecycleGuard.shouldForceSplashOnResume = true;
                         context.router.replace(const NaviBarRoute());
                       }
                     } else {

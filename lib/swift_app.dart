@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/common/app_theme.dart';
 import 'package:mdiho/common/theme_notifier.dart';
+import 'package:mdiho/common/toast/taost_service.dart';
 import 'package:mdiho/common/toast/toast_warpper.dart';
 import 'package:mdiho/common/utils/dimesnsion.dart';
 import 'package:mdiho/features/bottomNav/app_router.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/bottomNav/route_observer.dart';
 import 'package:overlay_support/overlay_support.dart';
+
+final logger = Logger();
 
 class MyApp extends HookConsumerWidget {
   MyApp({super.key});
@@ -18,54 +24,72 @@ class MyApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.watch(themeProvider);
 
-    return _MyAppStatefulWidget(
-      appRouter: appRouter,
-      toastKey: toastKey,
-      themeNotifier: themeNotifier,
-    );
-  }
-}
+    // Using useRef to store timestamps and useEffect to observe lifecycle state
+    final lastPausedTime = useRef<int?>(null);
+    final lastHiddenTime = useRef<int?>(null);
+    final lastInactiveTime = useRef<int?>(null);
 
-class _MyAppStatefulWidget extends StatefulWidget {
-  final AppRouter appRouter;
-  final GlobalKey<ToastWrapperState> toastKey;
-  final ThemeMode themeNotifier;
+    useEffect(() {
+      // Register the observer to listen to lifecycle events
+      WidgetsBinding.instance.addObserver(AppLifecycleObserver(
+        onResume: (currentTime) {
+          logger.d("onResume called at $currentTime");
+          if (lastPausedTime.value != null) {
+            final elapsedPauseTime = currentTime - lastPausedTime.value!;
+            logger.d("Time since onPause: $elapsedPauseTime ms");
+            if (elapsedPauseTime >= 30 * 1000) {
+              logger.d("30 seconds elapsed since onPause, triggering action");
+              appRouter.push(const StayLogin2Route());
+            }
+          }
+          if (lastHiddenTime.value != null) {
+            final elapsedHideTime = currentTime - lastHiddenTime.value!;
+            logger.d("Time since onHide: $elapsedHideTime ms");
+            if (elapsedHideTime >= 30 * 1000) {
+              logger.d("30 seconds elapsed since onHide, triggering action");
+              appRouter.push(const StayLogin2Route());
+            }
+          }
+          if (lastInactiveTime.value != null) {
+            final elapsedInactiveTime = currentTime - lastInactiveTime.value!;
+            logger.d("Time since onInactive: $elapsedInactiveTime ms");
+            if (elapsedInactiveTime >= 90 * 1000) {
+              logger
+                  .d("90 seconds elapsed since onInactive, triggering action");
+              appRouter.push(const StayLogin2Route());
+            }
+          }
+        },
+        onPause: (currentTime) {
+          logger.d("onPause called at $currentTime");
+          lastPausedTime.value = currentTime;
+        },
+        onInactive: (currentTime) {
+          logger.d("onInactive called at $currentTime");
+          lastInactiveTime.value = currentTime;
+        },
+        onHide: (currentTime) {
+          logger.d("onHide called at $currentTime");
+          lastHiddenTime.value = currentTime;
+        },
+      ));
 
-  const _MyAppStatefulWidget({
-    required this.appRouter,
-    required this.toastKey,
-    required this.themeNotifier,
-  });
+      // Unregister the observer when the widget is disposed
+      return () {
+        WidgetsBinding.instance.removeObserver(AppLifecycleObserver(
+          onResume: (currentTime) {},
+          onPause: (currentTime) {},
+          onInactive: (currentTime) {},
+          onHide: (currentTime) {},
+        ));
+      };
+    }, []);
 
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<_MyAppStatefulWidget>
-    with WidgetsBindingObserver {
-  int? lastPausedTime;
-  int? lastHiddenTime;
-  int? lastInactiveTime;
-
-  @override
-  void initState() {
-    super.initState();
-    // Register the observer to listen to lifecycle events
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    // Unregister the observer when the widget is disposed
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final scale =
         mediaQuery.textScaler.clamp(minScaleFactor: 0.8, maxScaleFactor: 1.2);
+    Animate.restartOnHotReload = true;
+    ToastService().initialize(toastKey);
 
     return OverlaySupport.global(
       child: MaterialApp(
@@ -74,22 +98,22 @@ class _MyAppState extends State<_MyAppStatefulWidget>
           child: child!,
         ),
         debugShowCheckedModeBanner: false,
-        themeMode: widget.themeNotifier,
+        themeMode: themeNotifier,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         home: ToastWrapper(
-          key: widget.toastKey,
+          key: toastKey,
           child: Builder(builder: (context) {
             final media = MediaQuery.of(context);
             Dims.setSize(media);
             return MediaQuery(
               data: MediaQuery.of(context).copyWith(),
               child: Router(
-                routerDelegate: widget.appRouter.delegate(
+                routerDelegate: appRouter.delegate(
                   navigatorObservers: () => [AppRouterObserver()],
                 ),
-                routeInformationParser: widget.appRouter.defaultRouteParser(),
-                routeInformationProvider: widget.appRouter.routeInfoProvider(),
+                routeInformationParser: appRouter.defaultRouteParser(),
+                routeInformationProvider: appRouter.routeInfoProvider(),
               ),
             );
           }),
@@ -97,55 +121,40 @@ class _MyAppState extends State<_MyAppStatefulWidget>
       ),
     );
   }
+}
+
+// Observer class for managing app lifecycle state
+class AppLifecycleObserver extends WidgetsBindingObserver {
+  final void Function(int) onResume;
+  final void Function(int) onPause;
+  final void Function(int) onInactive;
+  final void Function(int) onHide;
+
+  AppLifecycleObserver({
+    required this.onResume,
+    required this.onPause,
+    required this.onInactive,
+    required this.onHide,
+  });
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final currentTime = DateTime.now().millisecondsSinceEpoch;
-
-    print("AppLifecycleState changed to $state at $currentTime");
-
     switch (state) {
       case AppLifecycleState.resumed:
-        print("onResume called at $currentTime");
-        if (lastPausedTime != null) {
-          final elapsedPauseTime = currentTime - lastPausedTime!;
-          print("Time since onPause: $elapsedPauseTime ms");
-          if (elapsedPauseTime >= 30 * 1000) {
-            print("30 seconds elapsed since onPause, triggering action");
-            widget.appRouter.replaceAll([const SplashRoute()]);
-          }
-        }
-        if (lastHiddenTime != null) {
-          final elapsedHideTime = currentTime - lastHiddenTime!;
-          print("Time since onHide: $elapsedHideTime ms");
-          if (elapsedHideTime >= 30 * 1000) {
-            print("30 seconds elapsed since onHide, triggering action");
-            widget.appRouter.replaceAll([const SplashRoute()]);
-          }
-        }
-        if (lastInactiveTime != null) {
-          final elapsedInactiveTime = currentTime - lastInactiveTime!;
-          print("Time since onInactive: $elapsedInactiveTime ms");
-          if (elapsedInactiveTime >= 90 * 1000) {
-            print("90 seconds elapsed since onInactive, triggering action");
-            widget.appRouter.replaceAll([const SplashRoute()]);
-          }
-        }
+        onResume(currentTime);
         break;
       case AppLifecycleState.paused:
-        print("onPause called at $currentTime");
-        lastPausedTime = currentTime;
+        onPause(currentTime);
         break;
       case AppLifecycleState.inactive:
-        print("onInactive called at $currentTime");
-        lastInactiveTime = currentTime;
+        onInactive(currentTime);
         break;
       case AppLifecycleState.detached:
-        print("onHide called at $currentTime");
-        lastHiddenTime = currentTime;
+        onHide(currentTime);
         break;
       case AppLifecycleState.hidden:
-        print("onHidden called at $currentTime");
+        onHide(currentTime);
         break;
     }
   }

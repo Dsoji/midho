@@ -8,7 +8,6 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/profile/presentation/security_settings/change_password.dart';
 import 'package:mdiho/features/profile/presentation/security_settings/change_pin_screen.dart';
-import 'package:mdiho/main.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
@@ -38,7 +37,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
 
     Future<void> authenticateAndToggle(bool value) async {
       // 🔐 Guard: prevent auto-logout during biometrics
-      LifecycleGuard.shouldForceSplashOnResume = false;
+      // LifecycleGuard.shouldForceSplashOnResume = false;
       bool canAuthenticate = await localAuth.canCheckBiometrics ||
           await localAuth.isDeviceSupported();
       bool biometricSuccess = false;
@@ -77,7 +76,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
         }
       }
       // ✅ Re-enable lifecycle resume behavior
-      LifecycleGuard.shouldForceSplashOnResume = true;
+      // LifecycleGuard.shouldForceSplashOnResume = true;
       if (biometricSuccess) {
         biometricEnabled.value = value;
       }

@@ -6,7 +6,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
-import 'package:mdiho/main.dart';
 
 import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/utils/validator.dart';
@@ -39,10 +38,10 @@ class LoginScreen extends HookConsumerWidget {
       return null;
     }, []);
 
-    useEffect(() {
-      LifecycleGuard.shouldForceSplashOnResume = true;
-      return null;
-    }, []);
+    // useEffect(() {
+    //   LifecycleGuard.shouldForceSplashOnResume = true;
+    //   return null;
+    // }, []);
 
     final showBiometric = rememberMe.value;
 

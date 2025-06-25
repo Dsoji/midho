@@ -16,8 +16,8 @@ import '../../../../../common/widgets/custom_textfield.dart';
 import '../../../../bottomNav/app_router.gr.dart';
 
 @RoutePage()
-class StayLoginScreen extends HookConsumerWidget {
-  const StayLoginScreen({super.key});
+class StayLogin2Screen extends HookConsumerWidget {
+  const StayLogin2Screen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -177,7 +177,7 @@ class StayLoginScreen extends HookConsumerWidget {
                             await box.put('login_time',
                                 DateTime.now().millisecondsSinceEpoch);
 
-                            context.router.replaceAll([const NaviBarRoute()]);
+                            Navigator.pop(context);
                           }
                         },
                         textColor: Colors.white,
@@ -189,7 +189,7 @@ class StayLoginScreen extends HookConsumerWidget {
                       // Register Text
                       GestureDetector(
                         onTap: () {
-                          context.router.push(const RegistrationRoute());
+                          context.router.push(const LoginRoute());
                         },
                         child: Center(
                           child: RichText(
@@ -275,7 +275,7 @@ class StayLoginScreen extends HookConsumerWidget {
                           // Ensure the navigation happens after the widget is fully mounted and built
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (context.mounted) {
-                              context.router.replaceAll([const NaviBarRoute()]);
+                              Navigator.pop(context);
                             }
                           });
                         }
