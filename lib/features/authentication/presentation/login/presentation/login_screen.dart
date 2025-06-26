@@ -138,7 +138,7 @@ class LoginScreen extends HookConsumerWidget {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              // TODO: Navigate to ForgotPasswordScreen
+                              context.router.push(const ForgotPasswordRoute());
                             },
                             child: Text(
                               "Forgot Password",

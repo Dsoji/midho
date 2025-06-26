@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/swift_app.dart';
 
 import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/toast/toast.dart';
@@ -25,7 +26,7 @@ class StayLoginScreen extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final rememberMe = useState<bool>(false);
-
+    var box = Hive.box('data');
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();
 
@@ -40,13 +41,12 @@ class StayLoginScreen extends HookConsumerWidget {
       return null;
     }, []);
 
+    int backPressCounter = 0;
+    DateTime? lastBackPressTime;
+
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        if (!didPop) {
-          context.router.replaceAll([const OnboardingRoute()]);
-        }
-      },
+      onPopInvoked: (didPop) async {},
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
@@ -129,7 +129,7 @@ class StayLoginScreen extends HookConsumerWidget {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              // TODO: Navigate to ForgotPasswordScreen
+                              context.router.push(const ForgotPasswordRoute());
                             },
                             child: Text(
                               "Forgot Password",
@@ -227,7 +227,7 @@ class StayLoginScreen extends HookConsumerWidget {
                     onPressed: () async {
                       final localAuth = LocalAuthentication();
                       final canCheck = await localAuth.canCheckBiometrics;
-
+                      LifecycleGuard.isBiometricActive = true;
                       if (!canCheck) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -235,6 +235,7 @@ class StayLoginScreen extends HookConsumerWidget {
                                 Text("Biometric not available on this device."),
                           ),
                         );
+                        LifecycleGuard.isBiometricActive = false;
                         return;
                       }
 
@@ -276,6 +277,7 @@ class StayLoginScreen extends HookConsumerWidget {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (context.mounted) {
                               context.router.replaceAll([const NaviBarRoute()]);
+                              LifecycleGuard.isBiometricActive = false;
                             }
                           });
                         }

@@ -11,6 +11,7 @@ import '../../../../../../common/toast/toast.dart';
 import '../../../../../../common/utils/validator.dart';
 import '../../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../../common/widgets/custom_textfield.dart';
+import '../../../../../../swift_app.dart';
 import '../../../../data/controller/authentication_controller.dart';
 import '../../../../data/model/payload/profile_payload.dart';
 import '../../../../data/model/payload/sign_up_payload.dart';
@@ -248,7 +249,7 @@ class UserDetailsStep extends HookConsumerWidget {
                       if (result == true) {
                         // 🛡 Temporarily disable splash redirect
                         // LifecycleGuard.shouldForceSplashOnResume = false;
-
+                        LifecycleGuard.isBiometricActive = true;
                         final localAuth = LocalAuthentication();
                         bool isBiometricEnabled = false;
 
@@ -276,7 +277,7 @@ class UserDetailsStep extends HookConsumerWidget {
                         });
 
                         await box.put('biometric', isBiometricEnabled);
-
+                        LifecycleGuard.isBiometricActive = false;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -289,6 +290,7 @@ class UserDetailsStep extends HookConsumerWidget {
                           ),
                         );
                       } else {
+                        LifecycleGuard.isBiometricActive = false;
                         ToastService().showToast(NotificationType.error,
                             message: 'Sign-up failed. Please try again.');
                       }

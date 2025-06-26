@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/common/app_theme.dart';
@@ -23,6 +24,9 @@ class MyApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.watch(themeProvider);
+    var box = Hive.box('data');
+    final rememberMe = box.get('remember_me');
+    final accessToken = box.get('accessToken');
 
     // Using useRef to store timestamps and useEffect to observe lifecycle state
     final lastPausedTime = useRef<int?>(null);
@@ -39,7 +43,11 @@ class MyApp extends HookConsumerWidget {
             logger.d("Time since onPause: $elapsedPauseTime ms");
             if (elapsedPauseTime >= 30 * 1000) {
               logger.d("30 seconds elapsed since onPause, triggering action");
-              appRouter.push(const StayLogin2Route());
+              if (accessToken == null && rememberMe == false) {
+                appRouter.push(const SplashRoute());
+              } else {
+                appRouter.push(const StayLogin2Route());
+              }
             }
           }
           if (lastHiddenTime.value != null) {
@@ -47,7 +55,11 @@ class MyApp extends HookConsumerWidget {
             logger.d("Time since onHide: $elapsedHideTime ms");
             if (elapsedHideTime >= 30 * 1000) {
               logger.d("30 seconds elapsed since onHide, triggering action");
-              appRouter.push(const StayLogin2Route());
+              if (accessToken == null && rememberMe == false) {
+                appRouter.push(const SplashRoute());
+              } else {
+                appRouter.push(const StayLogin2Route());
+              }
             }
           }
           if (lastInactiveTime.value != null) {
@@ -56,7 +68,11 @@ class MyApp extends HookConsumerWidget {
             if (elapsedInactiveTime >= 90 * 1000) {
               logger
                   .d("90 seconds elapsed since onInactive, triggering action");
-              appRouter.push(const StayLogin2Route());
+              if (accessToken == null && rememberMe == false) {
+                appRouter.push(const SplashRoute());
+              } else {
+                appRouter.push(const StayLogin2Route());
+              }
             }
           }
         },
@@ -114,6 +130,7 @@ class MyApp extends HookConsumerWidget {
                 ),
                 routeInformationParser: appRouter.defaultRouteParser(),
                 routeInformationProvider: appRouter.routeInfoProvider(),
+                backButtonDispatcher: RootBackButtonDispatcher(),
               ),
             );
           }),
@@ -158,4 +175,10 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
         break;
     }
   }
+}
+
+class LifecycleGuard {
+  static bool shouldForceSplashOnResume = true;
+  static bool wasNotificationPulledDown = false;
+  static bool isBiometricActive = false; // Flag for biometric authentication
 }

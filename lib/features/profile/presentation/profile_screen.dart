@@ -41,35 +41,96 @@ class ProfileScreen extends HookConsumerWidget {
           showTitle: true,
           showAction: false,
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  "Manage your personal information, security settings, and linked accounts all in one place.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+        body: RefreshIndicator.adaptive(
+          onRefresh: () async {
+            await ref
+                .read(authenticationControllerProvider.notifier)
+                .fetchProfile();
+          },
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "Manage your personal information, security settings, and linked accounts all in one place.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
-              ),
 
-              // User Info Card
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.darkBorder
-                      : Colors.white,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: userDetails.when(
-                        loading: () => userDetails.maybeWhen(
+                // User Info Card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.darkBorder
+                        : Colors.white,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: userDetails.when(
+                          loading: () => userDetails.maybeWhen(
+                            data: (userInfo) => Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${userInfo.firstname ?? ''} ${userInfo.lastname ?? ''}",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  userInfo.email ?? '',
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            orElse: () => Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Shimmer.fromColors(
+                                  baseColor: AppColors.primaryColor.shade50,
+                                  highlightColor:
+                                      AppColors.primaryColor.shade100,
+                                  child: Container(
+                                    height: 12,
+                                    width: 120,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Shimmer.fromColors(
+                                  baseColor: AppColors.primaryColor.shade50,
+                                  highlightColor:
+                                      AppColors.primaryColor.shade100,
+                                  child: Container(
+                                    height: 10,
+                                    width: 160,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          error: (error, _) => const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Error loading profile",
+                                  style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
                           data: (userInfo) => Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -90,96 +151,46 @@ class ProfileScreen extends HookConsumerWidget {
                               ),
                             ],
                           ),
-                          orElse: () => Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Shimmer.fromColors(
-                                baseColor: AppColors.primaryColor.shade50,
-                                highlightColor: AppColors.primaryColor.shade100,
-                                child: Container(
-                                  height: 12,
-                                  width: 120,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Shimmer.fromColors(
-                                baseColor: AppColors.primaryColor.shade50,
-                                highlightColor: AppColors.primaryColor.shade100,
-                                child: Container(
-                                  height: 10,
-                                  width: 160,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        error: (error, _) => const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Error loading profile",
-                                style: TextStyle(color: Colors.red)),
-                          ],
-                        ),
-                        data: (userInfo) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${userInfo.firstname ?? ''} ${userInfo.lastname ?? ''}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                            Text(
-                              userInfo.email ?? '',
-                              style: const TextStyle(
-                                  color: Colors.grey, fontSize: 14),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                    const ReferralButton(),
-                  ],
+                      const ReferralButton(),
+                    ],
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Profile Options List (Fixed: Using SizedBox instead of Expanded)
-              // Adjust height as needed
-              const ProfileOption(),
-              const Gap(20),
+                // Profile Options List (Fixed: Using SizedBox instead of Expanded)
+                // Adjust height as needed
+                const ProfileOption(),
+                const Gap(20),
 
-              // Sign Out Section in a Separate Container
-              Container(
-                height: 54,
-                padding: const EdgeInsets.only(bottom: 4),
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.darkBorder
-                      : Colors.white,
+                // Sign Out Section in a Separate Container
+                Container(
+                  height: 54,
+                  padding: const EdgeInsets.only(bottom: 4),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.darkBorder
+                        : Colors.white,
+                  ),
+                  child: buildProfileOption(
+                    IconsaxPlusLinear.logout,
+                    "Sign Out",
+                    context,
+                    () async {
+                      await box.delete('accessToken').then((_) async {
+                        await box.put('remember_me', false);
+
+                        context.router.replaceAll([const OnboardingRoute()]);
+                      });
+                    },
+                    isDestructive: true,
+                  ),
                 ),
-                child: buildProfileOption(
-                  IconsaxPlusLinear.logout,
-                  "Sign Out",
-                  context,
-                  () async {
-                    await box.delete('accessToken').then((_) {
-                      context.router.replaceAll([const OnboardingRoute()]);
-                    });
-                  },
-                  isDestructive: true,
-                ),
-              ),
-              const Gap(150),
-            ],
+                const Gap(150),
+              ],
+            ),
           ),
         ),
       ),

@@ -6,14 +6,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 
 import '../../../../../common/res/app_colors.dart';
-import '../../../../../common/toast/toast.dart';
 import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
+import '../../../../../swift_app.dart';
 import '../../../../bottomNav/app_router.gr.dart';
+
+final logger = Logger();
 
 @RoutePage()
 class StayLogin2Screen extends HookConsumerWidget {
@@ -25,7 +28,7 @@ class StayLogin2Screen extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final rememberMe = useState<bool>(false);
-
+    var box = Hive.box('data');
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();
 
@@ -40,13 +43,39 @@ class StayLogin2Screen extends HookConsumerWidget {
       return null;
     }, []);
 
+    Future<void> signIn(
+      BuildContext context,
+      WidgetRef ref,
+      bool isBiometric,
+    ) async {
+      logger.d("🟡 Signing in with biometric: $isBiometric");
+      final result = await authentication.signIn(
+        emailController.text.trim(),
+        isBiometric ? '' : passwordController.text.trim(),
+        biometric: isBiometric,
+      );
+
+      if (result == true) {
+        final box = Hive.box('data');
+        await box.put('remember_me', rememberMe.value);
+
+        if (rememberMe.value) {
+          await box.put('saved_email', emailController.text.trim());
+        } else {
+          await box.delete('saved_email');
+        }
+
+        await box.put('login_time', DateTime.now().millisecondsSinceEpoch);
+
+        context.router.popUntilRoot();
+      }
+    }
+
+    int backPressCounter = 0;
+    DateTime? lastBackPressTime;
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        if (!didPop) {
-          context.router.replaceAll([const OnboardingRoute()]);
-        }
-      },
+      onPopInvoked: (didPop) async {},
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
@@ -129,7 +158,7 @@ class StayLogin2Screen extends HookConsumerWidget {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              // TODO: Navigate to ForgotPasswordScreen
+                              context.router.push(const ForgotPasswordRoute());
                             },
                             child: Text(
                               "Forgot Password",
@@ -157,28 +186,7 @@ class StayLogin2Screen extends HookConsumerWidget {
                         height: 48,
                         onPressed: () async {
                           if (!formKey.currentState!.validate()) return;
-
-                          final result = await authentication.signIn(
-                            emailController.text.trim(),
-                            passwordController.text.trim(),
-                          );
-
-                          if (result == true) {
-                            final box = Hive.box('data');
-                            await box.put('remember_me', rememberMe.value);
-
-                            if (rememberMe.value) {
-                              await box.put(
-                                  'saved_email', emailController.text.trim());
-                            } else {
-                              await box.delete('saved_email');
-                            }
-
-                            await box.put('login_time',
-                                DateTime.now().millisecondsSinceEpoch);
-
-                            Navigator.pop(context);
-                          }
+                          signIn(context, ref, false);
                         },
                         textColor: Colors.white,
                         color: AppColors.primaryColor.shade500,
@@ -227,7 +235,7 @@ class StayLogin2Screen extends HookConsumerWidget {
                     onPressed: () async {
                       final localAuth = LocalAuthentication();
                       final canCheck = await localAuth.canCheckBiometrics;
-
+                      LifecycleGuard.isBiometricActive = true;
                       if (!canCheck) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -235,6 +243,7 @@ class StayLogin2Screen extends HookConsumerWidget {
                                 Text("Biometric not available on this device."),
                           ),
                         );
+                        LifecycleGuard.isBiometricActive = false;
                         return;
                       }
 
@@ -246,40 +255,9 @@ class StayLogin2Screen extends HookConsumerWidget {
                       );
 
                       if (didAuthenticate) {
-                        if (emailController.text.isEmpty) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Please enter your email',
-                          );
-                          return;
-                        }
-
-                        // Perform the sign-in logic with empty password for biometric authentication
-                        final result = await authentication.signIn(
-                          emailController.text.trim(),
-                          '',
-                          biometric: true,
-                        );
-
-                        if (result == true) {
-                          final box = Hive.box('data');
-                          await box.put('remember_me', rememberMe.value);
-
-                          if (rememberMe.value) {
-                            await box.put(
-                                'saved_email', emailController.text.trim());
-                          } else {
-                            await box.delete('saved_email');
-                          }
-
-                          // Ensure the navigation happens after the widget is fully mounted and built
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                            }
-                          });
-                        }
+                        signIn(context, ref, true);
                       }
+                      LifecycleGuard.isBiometricActive = false;
                     },
                   ),
                 ),
