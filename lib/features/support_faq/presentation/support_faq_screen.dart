@@ -87,25 +87,34 @@ class SupportFaqScreen extends HookConsumerWidget {
                     },
                   ),
                   SupportTile(
-                    title: "Email Support",
-                    subtitle: "support@swiftswapexchange.com",
-                    trailing: const Icon(
-                      IconsaxPlusLinear.sms,
-                      size: 18,
-                    ),
-                    onTap: () async {
-                      final Uri emailUri = Uri(
-                          scheme: 'mailto',
-                          path: 'support@swiftswapexchange.com',
-                          queryParameters: {'subject': '', 'body': ''});
-                      if (await canLaunchUrl(emailUri)) {
-                        await launchUrl(emailUri);
-                      }
-                    },
-                  ),
+                      title: "Email Support",
+                      subtitle: "support@swiftswapexchange.com",
+                      trailing: const Icon(
+                        IconsaxPlusLinear.sms,
+                        size: 18,
+                      ),
+                      onTap: () async {
+                        const String email = 'support@swiftswapexchange.com';
+                        const String subject = 'I have a question';
+                        const String body = 'Hello, Swiftswap';
+
+                        final String emailUrl =
+                            'mailto:$email?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
+
+                        final Uri emailUri = Uri.parse(emailUrl);
+
+                        if (await canLaunchUrl(emailUri)) {
+                          await launchUrl(
+                            emailUri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          print('Could not launch email client');
+                        }
+                      }),
                   SupportTile(
                     title: "Call Support",
-                    subtitle: "+234 800 123 4567",
+                    subtitle: "+2348104830641",
                     trailing: const Icon(
                       IconsaxPlusLinear.call,
                       size: 18,
