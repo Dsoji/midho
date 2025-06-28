@@ -3,6 +3,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -24,6 +25,9 @@ class NaviBarScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
 
     useEffect(() {
+      final box = Hive.box('data');
+      box.put('is_auth', false);
+
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         AwesomeNotifications().createNotification(
           content: NotificationContent(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
@@ -290,30 +291,40 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency}  ${transaction.rate}/${transaction.baseCurrency}",
-              "Amount Sold": "\$${transaction.amount}",
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold":
+                  "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
               "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
-        } else if (transaction.status?.toLowerCase() == "failed") {
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
           details = {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency}  ${transaction.rate}/${transaction.baseCurrency}",
-              "Amount Sold": "\$${transaction.amount}",
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
+                  .commaFormat(),
               "Proof of Failure": "View Screenshot",
             }
           };
@@ -322,15 +333,20 @@ class GiftStandAloneTransactionDetailsScreen extends StatelessWidget {
             "transactionId": transaction.id,
             "dateTime": transaction.createdAt!.formatToReadableDateTime(),
             "amount":
-                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}",
-            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}',
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency}  ${transaction.rate}/${transaction.baseCurrency}",
-              "Amount Sold": "\$${transaction.amount}",
+                  "${transaction.exchangeCurrency} ${transaction.rate}/${transaction.baseCurrency}"
+                      .commaFormat(),
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
+                  .commaFormat(),
               "Total Received":
-                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}",
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
         }

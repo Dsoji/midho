@@ -468,7 +468,8 @@ class UserDetailsStep extends HookConsumerWidget {
     final theme = Theme.of(context);
     final authService = ref.read(authenticationControllerProvider.notifier);
     final formKey = GlobalKey<FormState>();
-
+    final currentScreen = useState<String>("login");
+    box.put('is_auth', true);
     return Form(
       key: formKey,
       child: Column(
@@ -563,6 +564,7 @@ class UserDetailsStep extends HookConsumerWidget {
                       passwordController.text.trim(),
                     );
                     if (result == true) {
+                      currentScreen.value = "app";
                       onFinish();
                     }
                   },

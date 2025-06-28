@@ -169,7 +169,7 @@ class BuyAirtimeScreen extends HookConsumerWidget {
                   ),
                   const Gap(16),
                   SizedBox(
-                    height: 120,
+                    height: 135,
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),

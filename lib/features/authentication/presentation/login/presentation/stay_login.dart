@@ -7,7 +7,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
-import 'package:mdiho/swift_app.dart';
 
 import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/toast/toast.dart';
@@ -40,9 +39,12 @@ class StayLoginScreen extends HookConsumerWidget {
       }
       return null;
     }, []);
+    final currentScreen = useState<String>("login");
 
     int backPressCounter = 0;
     DateTime? lastBackPressTime;
+
+    box.put('is_auth', true);
 
     return PopScope(
       canPop: false,
@@ -176,7 +178,7 @@ class StayLoginScreen extends HookConsumerWidget {
 
                             await box.put('login_time',
                                 DateTime.now().millisecondsSinceEpoch);
-
+                            box.put('is_auth', false);
                             context.router.replaceAll([const NaviBarRoute()]);
                           }
                         },
@@ -188,8 +190,14 @@ class StayLoginScreen extends HookConsumerWidget {
 
                       // Register Text
                       GestureDetector(
-                        onTap: () {
-                          context.router.push(const RegistrationRoute());
+                        onTap: () async {
+                          await box.put('remember_me', false);
+                          await box.delete('accessToken').then((_) async {
+                            currentScreen.value = "onboarding";
+                            box.put('is_auth', false);
+                            context.router
+                                .replaceAll([const OnboardingRoute()]);
+                          });
                         },
                         child: Center(
                           child: RichText(
@@ -227,7 +235,7 @@ class StayLoginScreen extends HookConsumerWidget {
                     onPressed: () async {
                       final localAuth = LocalAuthentication();
                       final canCheck = await localAuth.canCheckBiometrics;
-                      LifecycleGuard.isBiometricActive = true;
+                      // // LifecycleGuard.isBiometricActive = true;
                       if (!canCheck) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -235,7 +243,7 @@ class StayLoginScreen extends HookConsumerWidget {
                                 Text("Biometric not available on this device."),
                           ),
                         );
-                        LifecycleGuard.isBiometricActive = false;
+                        // // LifecycleGuard.isBiometricActive = false;
                         return;
                       }
 
@@ -276,8 +284,9 @@ class StayLoginScreen extends HookConsumerWidget {
                           // Ensure the navigation happens after the widget is fully mounted and built
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (context.mounted) {
+                              box.put('is_auth', false);
                               context.router.replaceAll([const NaviBarRoute()]);
-                              LifecycleGuard.isBiometricActive = false;
+                              // LifecycleGuard.isBiometricActive = false;
                             }
                           });
                         }

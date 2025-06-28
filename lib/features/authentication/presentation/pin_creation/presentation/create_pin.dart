@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/authentication/presentation/pin_creation/presentation/confirm_pin.dart';
@@ -62,6 +63,9 @@ class CreatePinScreen extends HookConsumerWidget {
     final pinState = ref.watch(pinProvider);
     final pinNotifier = ref.read(pinProvider.notifier);
     final theme = Theme.of(context);
+    final currentScreen = useState<String>("login");
+    final box = Hive.box('data');
+    box.put('is_auth', true);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.brightness == Brightness.dark

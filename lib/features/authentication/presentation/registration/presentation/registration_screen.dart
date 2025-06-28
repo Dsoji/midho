@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/presentation/registration/presentation/widget/step_progress_indicator.dart';
@@ -93,10 +94,8 @@ class RegistrationScreen extends HookConsumerWidget {
     final pageController = ref.watch(pageControllerProvider);
     final pageIndex = useState(0);
 
-    useEffect(() {
-      // LifecycleGuard.shouldForceSplashOnResume = false;
-      return null; // Don't re-enable here
-    }, []);
+    final box = Hive.box('data');
+    box.put('is_auth', true);
 
     useState(false);
     void goBack() {

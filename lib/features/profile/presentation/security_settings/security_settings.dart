@@ -11,7 +11,6 @@ import 'package:mdiho/features/profile/presentation/security_settings/change_pin
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
-import '../../../../swift_app.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../authentication/data/model/payload/profile_payload.dart';
 import '../../data/controller/profile_controller.dart';
@@ -39,7 +38,7 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
     Future<void> authenticateAndToggle(bool value) async {
       // 🔐 Guard: prevent auto-logout during biometrics
       // LifecycleGuard.shouldForceSplashOnResume = false;
-      LifecycleGuard.isBiometricActive = true;
+      // LifecycleGuard.isBiometricActive = true;
       bool canAuthenticate = await localAuth.canCheckBiometrics ||
           await localAuth.isDeviceSupported();
       bool biometricSuccess = false;
@@ -64,20 +63,20 @@ class SecurtiySettingsScreen extends HookConsumerWidget {
                 .userDetails
                 .valueOrNull;
             box.put('biometric', userInfo?.biometrics ?? false);
-            LifecycleGuard.isBiometricActive = false;
+            // LifecycleGuard.isBiometricActive = false;
           } else if (result == false) {
             await ref
                 .read(authenticationControllerProvider.notifier)
                 .fetchProfile();
             debugPrint("Biometric authentication failed");
-            LifecycleGuard.isBiometricActive = false;
+            // LifecycleGuard.isBiometricActive = false;
           }
         } catch (e) {
           await ref
               .read(authenticationControllerProvider.notifier)
               .fetchProfile();
           debugPrint("Biometric authentication failed: $e");
-          LifecycleGuard.isBiometricActive = false;
+          // LifecycleGuard.isBiometricActive = false;
         }
       }
       // ✅ Re-enable lifecycle resume behavior

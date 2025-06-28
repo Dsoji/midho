@@ -23,6 +23,7 @@ class LoginScreen extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final rememberMe = useState<bool>(false);
+    final box = Hive.box('data');
 
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();
@@ -30,6 +31,7 @@ class LoginScreen extends HookConsumerWidget {
     // Load saved email and rememberMe status
     useEffect(() {
       final box = Hive.box('data');
+      box.put('is_auth', true);
       rememberMe.value = box.get('remember_me') == true;
       final savedEmail = box.get('saved_email');
       if (rememberMe.value && savedEmail != null) {
@@ -44,7 +46,7 @@ class LoginScreen extends HookConsumerWidget {
     // }, []);
 
     final showBiometric = rememberMe.value;
-
+    final currentScreen = useState<String>("login");
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -138,6 +140,8 @@ class LoginScreen extends HookConsumerWidget {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
+                              final box = Hive.box('data');
+                              box.put('is_auth', true);
                               context.router.push(const ForgotPasswordRoute());
                             },
                             child: Text(
@@ -182,13 +186,11 @@ class LoginScreen extends HookConsumerWidget {
                             } else {
                               await box.delete('saved_email');
                             }
+                            currentScreen.value = "app";
 
-                            // ref.read(sessionTimerProvider).startTimer(() {
-                            context.router.replaceAll([const LoginRoute()]);
-                            // });
                             await box.put('login_time',
                                 DateTime.now().millisecondsSinceEpoch);
-
+                            box.put('is_auth', false);
                             context.router.replaceAll([const NaviBarRoute()]);
                           }
                         },
@@ -201,6 +203,7 @@ class LoginScreen extends HookConsumerWidget {
                       // Register Text
                       GestureDetector(
                         onTap: () {
+                          box.put('is_auth', true);
                           context.router.push(const RegistrationRoute());
                         },
                         child: Center(

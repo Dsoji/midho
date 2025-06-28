@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -23,10 +25,11 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.watch(themeProvider);
     var box = Hive.box('data');
     final rememberMe = box.get('remember_me');
-    final accessToken = box.get('accessToken');
+    final isAuth = box.get('is_auth');
+    logger.d("rememberMe: $rememberMe");
+    logger.d("isAuth: $isAuth");
 
     // Using useRef to store timestamps and useEffect to observe lifecycle state
     final lastPausedTime = useRef<int?>(null);
@@ -38,47 +41,55 @@ class MyApp extends HookConsumerWidget {
       WidgetsBinding.instance.addObserver(AppLifecycleObserver(
         onResume: (currentTime) {
           logger.d("onResume called at $currentTime");
+
+          // Check elapsed time since onPause and trigger actions
           if (lastPausedTime.value != null) {
             final elapsedPauseTime = currentTime - lastPausedTime.value!;
-            logger.d("Time since onPause: $elapsedPauseTime ms");
-            if (elapsedPauseTime >= 30 * 1000) {
-              logger.d("30 seconds elapsed since onPause, triggering action");
-              if (accessToken == null && rememberMe == false) {
-                appRouter.push(const SplashRoute());
+            logger.d("Time since onPause: $elapsedPauseTime seconds");
+
+            if (elapsedPauseTime >= 30) {
+              logger.d(
+                  "30 seconds elapsed since onPause, checking conditions before navigation");
+
+              // Get current values from Hive box
+              final currentIsAuth = box.get('is_auth');
+              final currentRememberMe = box.get('remember_me');
+
+              logger.d(
+                  "Current isAuth: $currentIsAuth, rememberMe: $currentRememberMe");
+
+              // Check conditions before navigating
+              if (currentIsAuth == false) {
+                logger.d("isAuth is false, checking rememberMe status");
+                if (currentRememberMe == false) {
+                  logger.d(
+                      "Navigating to SplashRoute - user not authenticated and rememberMe is false");
+                  appRouter.push(const SplashRoute());
+                } else {
+                  logger.d(
+                      "Navigating to StayLogin2Route - user not authenticated but rememberMe is true");
+                  appRouter.push(const StayLogin2Route());
+                }
               } else {
-                appRouter.push(const StayLogin2Route());
+                logger.d(
+                    "User is authenticated (isAuth: true), no navigation needed");
               }
+            } else {
+              logger.d("Less than 30 seconds elapsed, no action needed");
             }
+          } else {
+            logger.d("No lastPausedTime found, timer not started");
           }
-          if (lastHiddenTime.value != null) {
-            final elapsedHideTime = currentTime - lastHiddenTime.value!;
-            logger.d("Time since onHide: $elapsedHideTime ms");
-            if (elapsedHideTime >= 30 * 1000) {
-              logger.d("30 seconds elapsed since onHide, triggering action");
-              if (accessToken == null && rememberMe == false) {
-                appRouter.push(const SplashRoute());
-              } else {
-                appRouter.push(const StayLogin2Route());
-              }
-            }
-          }
-          if (lastInactiveTime.value != null) {
-            final elapsedInactiveTime = currentTime - lastInactiveTime.value!;
-            logger.d("Time since onInactive: $elapsedInactiveTime ms");
-            if (elapsedInactiveTime >= 90 * 1000) {
-              logger
-                  .d("90 seconds elapsed since onInactive, triggering action");
-              if (accessToken == null && rememberMe == false) {
-                appRouter.push(const SplashRoute());
-              } else {
-                appRouter.push(const StayLogin2Route());
-              }
-            }
-          }
+
+          // Reset the timer to zero when app resumes
+          lastPausedTime.value = null;
+          lastHiddenTime.value = null;
+          lastInactiveTime.value = null;
+          logger.d("Timer reset to zero on resume");
         },
         onPause: (currentTime) {
-          logger.d("onPause called at $currentTime");
-          lastPausedTime.value = currentTime;
+          logger.d("onPause called at $currentTime - Timer started from zero");
+          lastPausedTime.value = currentTime; // Start timer from zero
         },
         onInactive: (currentTime) {
           logger.d("onInactive called at $currentTime");
@@ -100,12 +111,12 @@ class MyApp extends HookConsumerWidget {
         ));
       };
     }, []);
-
     final mediaQuery = MediaQuery.of(context);
     final scale =
         mediaQuery.textScaler.clamp(minScaleFactor: 0.8, maxScaleFactor: 1.2);
     Animate.restartOnHotReload = true;
     ToastService().initialize(toastKey);
+    final themeNotifier = ref.watch(themeProvider);
 
     return OverlaySupport.global(
       child: MaterialApp(
@@ -156,7 +167,9 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    final currentTime =
+        DateTime.now().millisecondsSinceEpoch ~/ 1000; // Convert to seconds
+    logger.d("Lifecycle state changed to: $state at time: $currentTime");
     switch (state) {
       case AppLifecycleState.resumed:
         onResume(currentTime);
@@ -181,4 +194,26 @@ class LifecycleGuard {
   static bool shouldForceSplashOnResume = true;
   static bool wasNotificationPulledDown = false;
   static bool isBiometricActive = false; // Flag for biometric authentication
+  static Timer? backgroundTimer;
+  static int backgroundStartTime = 0;
+  static int totalBackgroundTime = 0;
+
+  static void startBackgroundTimer() {
+    backgroundStartTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    backgroundTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      totalBackgroundTime = currentTime - backgroundStartTime;
+      logger.d("Background timer: $totalBackgroundTime seconds");
+
+      if (totalBackgroundTime >= 30) {
+        logger.d("30 seconds in background reached!");
+        // Handle your logic here
+      }
+    });
+  }
+
+  static void stopBackgroundTimer() {
+    backgroundTimer?.cancel();
+    backgroundTimer = null;
+  }
 }

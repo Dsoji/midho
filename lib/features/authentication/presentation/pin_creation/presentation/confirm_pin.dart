@@ -72,7 +72,9 @@ class ConfirmPinScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final authService = ref.read(authenticationControllerProvider.notifier);
     final profileService = ref.read(profileControllerProvider.notifier);
-
+    final currentScreen = useState<String>("login");
+    final box = Hive.box('data');
+    box.put('is_auth', true);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.brightness == Brightness.dark
@@ -220,7 +222,8 @@ class ConfirmPinScreen extends HookConsumerWidget {
                       if (result == true && context.mounted) {
                         final box = Hive.box('data');
                         await box.put('remember_me', false);
-                        // LifecycleGuard.shouldForceSplashOnResume = true;
+                        currentScreen.value = "app";
+                        box.put('is_auth', false);
                         context.router.replace(const NaviBarRoute());
                       }
                     } else {

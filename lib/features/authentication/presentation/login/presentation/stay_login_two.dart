@@ -13,7 +13,6 @@ import '../../../../../common/res/app_colors.dart';
 import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
-import '../../../../../swift_app.dart';
 import '../../../../bottomNav/app_router.gr.dart';
 
 final logger = Logger();
@@ -31,7 +30,7 @@ class StayLogin2Screen extends HookConsumerWidget {
     var box = Hive.box('data');
     final theme = Theme.of(context);
     final formKey = GlobalKey<FormState>();
-
+    final currentScreen = useState<String>("login");
     // Load saved email and rememberMe status
     useEffect(() {
       final box = Hive.box('data');
@@ -66,7 +65,8 @@ class StayLogin2Screen extends HookConsumerWidget {
         }
 
         await box.put('login_time', DateTime.now().millisecondsSinceEpoch);
-
+        currentScreen.value = "app";
+        box.put('is_auth', false);
         context.router.popUntilRoot();
       }
     }
@@ -196,8 +196,14 @@ class StayLogin2Screen extends HookConsumerWidget {
 
                       // Register Text
                       GestureDetector(
-                        onTap: () {
-                          context.router.push(const LoginRoute());
+                        onTap: () async {
+                          currentScreen.value = "onboarding";
+                          await box.put('remember_me', false);
+                          await box.delete('accessToken').then((_) async {
+                            box.put('is_auth', false);
+                            context.router
+                                .replaceAll([const OnboardingRoute()]);
+                          });
                         },
                         child: Center(
                           child: RichText(
@@ -235,7 +241,7 @@ class StayLogin2Screen extends HookConsumerWidget {
                     onPressed: () async {
                       final localAuth = LocalAuthentication();
                       final canCheck = await localAuth.canCheckBiometrics;
-                      LifecycleGuard.isBiometricActive = true;
+                      // LifecycleGuard.isBiometricActive = true;
                       if (!canCheck) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -243,7 +249,7 @@ class StayLogin2Screen extends HookConsumerWidget {
                                 Text("Biometric not available on this device."),
                           ),
                         );
-                        LifecycleGuard.isBiometricActive = false;
+                        // LifecycleGuard.isBiometricActive = false;
                         return;
                       }
 
@@ -257,7 +263,7 @@ class StayLogin2Screen extends HookConsumerWidget {
                       if (didAuthenticate) {
                         signIn(context, ref, true);
                       }
-                      LifecycleGuard.isBiometricActive = false;
+                      // LifecycleGuard.isBiometricActive = false;
                     },
                   ),
                 ),

@@ -318,7 +318,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Crypto Sold":
                   "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
               "Rate":
-                  "${transaction.exchangeCurrency} ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
                       .commaFormat(),
               "Amount Sold":
                   "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
@@ -340,11 +340,36 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                 .commaFormat(),
             "breakdown": {
               "CryptoSold": transaction.asset?.name ?? '',
-              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
+              "Rate":
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
               "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
                   .commaFormat(),
               "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Crypto Sold":
+                  "${transaction.asset?.name ?? ''} (${transaction.asset?.baseCurrency ?? ''})",
+              "Rate":
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold":
+                  "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Total Received":
+                  "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) + (transaction.fee ?? 0)}"
+                      .commaFormat(),
             }
           };
         }
@@ -362,7 +387,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
                       .commaFormat(),
               "Amount Sold":
                   "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
@@ -384,7 +409,9 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                 .commaFormat(),
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
-              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
+              "Rate":
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
               "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
                   .commaFormat(),
               "Reason for Failure": transaction.reason ?? '',
@@ -504,9 +531,9 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Provider": "Ikeja Electric",
+              "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
-              "Total Charged": "10500",
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }
@@ -742,7 +769,7 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
                         Row(
                           children: [
                             Text(
-                              'Transaction Screenshots',
+                              'Proof of failure',
                               style: theme.textTheme.bodyLarge,
                             ),
                             const Spacer(),

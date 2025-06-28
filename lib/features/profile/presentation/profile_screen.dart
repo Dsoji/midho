@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -23,6 +24,7 @@ class ProfileScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     var box = Hive.box('data'); // Replace 'data' with your box name
     final cached = box.get('userProfile');
+    final currentScreen = useState<String>("app");
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -34,6 +36,7 @@ class ProfileScreen extends HookConsumerWidget {
           tabsRouter.setActiveIndex(0);
         }
       },
+
       child: Scaffold(
         appBar: const CustomAppBar(
           title: "Profile",
@@ -179,9 +182,9 @@ class ProfileScreen extends HookConsumerWidget {
                     "Sign Out",
                     context,
                     () async {
+                      await box.put('remember_me', false);
                       await box.delete('accessToken').then((_) async {
-                        await box.put('remember_me', false);
-
+                        currentScreen.value = "onboarding";
                         context.router.replaceAll([const OnboardingRoute()]);
                       });
                     },

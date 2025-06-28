@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
@@ -61,6 +62,35 @@ class SellCryptoScreen extends HookConsumerWidget {
       return null;
     }, [conversionRate]);
 
+    final FocusNode nodeText1 = FocusNode();
+    final FocusNode nodeText2 = FocusNode();
+
+    /// Creates the [KeyboardActionsConfig] to hook up the fields
+    /// and their focus nodes to our [FormKeyboardActions].
+    KeyboardActionsConfig buildConfig(BuildContext context) {
+      return KeyboardActionsConfig(
+        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardBarColor: AppColors.secondaryColor.shade600,
+        nextFocus: true,
+        actions: [
+          KeyboardActionsItem(
+            focusNode: nodeText1,
+          ),
+          KeyboardActionsItem(focusNode: nodeText2, toolbarButtons: [
+            (node) {
+              return GestureDetector(
+                onTap: () => node.unfocus(),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.close),
+                ),
+              );
+            }
+          ]),
+        ],
+      );
+    }
+
     final theme = Theme.of(context);
     return Scaffold(
         appBar: const CustomAppBar(
@@ -69,112 +99,116 @@ class SellCryptoScreen extends HookConsumerWidget {
           showTitle: true,
           showAction: false,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.darkBorder
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0x14F8A036),
-                        borderRadius: BorderRadius.circular(16),
+        body: KeyboardActions(
+          config: buildConfig(context),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.darkBorder
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        spreadRadius: 1,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 24,
-                                backgroundColor: Colors.transparent,
-                                child: CachedNetworkImage(
-                                  imageUrl: rates.icon ?? '',
-                                  placeholder: (context, url) =>
-                                      Shimmer.fromColors(
-                                    baseColor: Colors.grey[300]!,
-                                    highlightColor: Colors.grey[100]!,
-                                    child: CircleAvatar(
-                                      radius: 24,
-                                      backgroundColor: Colors.grey[300],
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0x14F8A036),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: Colors.transparent,
+                                  child: CachedNetworkImage(
+                                    imageUrl: rates.icon ?? '',
+                                    placeholder: (context, url) =>
+                                        Shimmer.fromColors(
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      child: CircleAvatar(
+                                        radius: 24,
+                                        backgroundColor: Colors.grey[300],
+                                      ),
                                     ),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      const CircleAvatar(
-                                    radius: 24,
-                                    backgroundColor: Colors.grey,
-                                    child: Icon(
-                                      Icons.error,
-                                      color: Colors.white,
+                                    errorWidget: (context, url, error) =>
+                                        const CircleAvatar(
+                                      radius: 24,
+                                      backgroundColor: Colors.grey,
+                                      child: Icon(
+                                        Icons.error,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    rates.name ?? '',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      color: theme.brightness == Brightness.dark
-                                          ? Colors.white
-                                          : Colors.black,
+                                const SizedBox(width: 8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      rates.name ?? '',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        color:
+                                            theme.brightness == Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    rates.symbol ?? '',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: theme.brightness == Brightness.dark
-                                          ? AppColors.secondaryColor.shade200
-                                          : Colors.grey,
+                                    Text(
+                                      rates.symbol ?? '',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: theme.brightness ==
+                                                Brightness.dark
+                                            ? AppColors.secondaryColor.shade200
+                                            : Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Text(
-                            '${rates.rate ?? ''}/1 USD',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
+                                  ],
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                            Text(
+                              '${rates.rate ?? ''}/1 USD',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    SizedBox(
-                      child: Stack(
-                        children: [
-                          Column(
-                            children: [
-                              _buildCurrencyField(
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        child: Stack(
+                          children: [
+                            Column(
+                              children: [
+                                _buildCurrencyField(
                                   "You Pay",
                                   usdController,
                                   rates.baseCurrency ?? '',
@@ -182,9 +216,11 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   convertUSDToNGN,
                                   "${rates.baseCurrency} ",
                                   context,
-                                  true),
-                              const Gap(4),
-                              _buildCurrencyField(
+                                  true,
+                                  nodeText1,
+                                ),
+                                const Gap(4),
+                                _buildCurrencyField(
                                   "You Receive",
                                   ngnController,
                                   rates.exchangeCurrency ?? '',
@@ -192,83 +228,87 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   convertNGNToUSD,
                                   "${rates.exchangeCurrency} ",
                                   context,
-                                  false),
-                            ],
-                          ),
-                          Positioned(
-                              top: 0,
-                              bottom: 0,
-                              right: 0,
-                              left: 0,
-                              child: CircleAvatar(
-                                radius: 22, // Adjust size as needed
-                                backgroundColor: Colors
-                                    .transparent, // Transparent background
-                                child: Container(
-                                  padding: const EdgeInsets.all(
-                                      8), // Space around the icon
-                                  decoration: BoxDecoration(
-                                    color: theme.brightness == Brightness.dark
-                                        ? AppColors.primaryColor.shade500
-                                        : const Color(0xFFE6ECFC),
-                                    shape: BoxShape.circle, // Makes it circular
-                                    // Grey border
-                                  ),
-                                  child: Icon(
-                                    Icons.arrow_downward,
-                                    size: 12,
-                                    color: theme.brightness == Brightness.dark
-                                        ? Colors.white
-                                        : AppColors.primaryColor.shade500,
-                                  ),
+                                  false,
+                                  nodeText1,
                                 ),
-                              )),
-                        ],
+                              ],
+                            ),
+                            Positioned(
+                                top: 0,
+                                bottom: 0,
+                                right: 0,
+                                left: 0,
+                                child: CircleAvatar(
+                                  radius: 22, // Adjust size as needed
+                                  backgroundColor: Colors
+                                      .transparent, // Transparent background
+                                  child: Container(
+                                    padding: const EdgeInsets.all(
+                                        8), // Space around the icon
+                                    decoration: BoxDecoration(
+                                      color: theme.brightness == Brightness.dark
+                                          ? AppColors.primaryColor.shade500
+                                          : const Color(0xFFE6ECFC),
+                                      shape:
+                                          BoxShape.circle, // Makes it circular
+                                      // Grey border
+                                    ),
+                                    child: Icon(
+                                      Icons.arrow_downward,
+                                      size: 12,
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : AppColors.primaryColor.shade500,
+                                    ),
+                                  ),
+                                )),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    InfoWidget(
-                      theme: theme,
-                      text:
-                          "Enter the exact amount of USD you'd like to sell. Ensure it matches the amount you will send later.",
-                    ),
-                    const SizedBox(height: 16),
-                    FullButton(
-                      text: "Next",
-                      width: double.infinity,
-                      height: 48,
-                      onPressed: () {
-                        if (usdController.text.isEmpty) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Input your amount.',
+                      const SizedBox(height: 16),
+                      InfoWidget(
+                        theme: theme,
+                        text:
+                            "Enter the exact amount of USD you'd like to sell. Ensure it matches the amount you will send later.",
+                      ),
+                      const SizedBox(height: 16),
+                      FullButton(
+                        text: "Next",
+                        width: double.infinity,
+                        height: 48,
+                        onPressed: () {
+                          if (usdController.text.isEmpty) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message: 'Input your amount.',
+                            );
+                            return;
+                          }
+                          if (usdController.text.isEmpty ||
+                              (num.tryParse(usdController.text) ?? 0) <
+                                  (rates.moq ?? 0)) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message:
+                                  'Input your amount greater than or equal to ${rates.moq ?? 0}',
+                            );
+                            return;
+                          }
+                          context.router.push(
+                            QrCryptoRoute(
+                              amount: usdController.text.trim(),
+                              crypto: rates,
+                            ),
                           );
-                          return;
-                        }
-                        if (usdController.text.isEmpty ||
-                            (num.tryParse(usdController.text) ?? 0) <
-                                (rates.moq ?? 0)) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message:
-                                'Input your amount greater than or equal to ${rates.moq ?? 0}',
-                          );
-                          return;
-                        }
-                        context.router.push(
-                          QrCryptoRoute(
-                            amount: usdController.text.trim(),
-                            crypto: rates,
-                          ),
-                        );
-                      },
-                      textColor: Colors.white,
-                      color: AppColors.primaryColor.shade500,
-                    ),
-                  ],
+                        },
+                        textColor: Colors.white,
+                        color: AppColors.primaryColor.shade500,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ));
   }
@@ -282,6 +322,7 @@ class SellCryptoScreen extends HookConsumerWidget {
     String currencySign,
     BuildContext context,
     bool? isTop,
+    FocusNode? focusNode,
   ) {
     final theme = Theme.of(context);
     return Container(
@@ -332,6 +373,7 @@ class SellCryptoScreen extends HookConsumerWidget {
             children: [
               Expanded(
                 child: TextField(
+                  focusNode: focusNode,
                   controller: controller,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(

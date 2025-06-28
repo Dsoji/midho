@@ -7,6 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
@@ -168,6 +169,35 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       return () => tabController.removeListener(listener);
     }, [tabController]);
 
+    final FocusNode nodeText1 = FocusNode();
+    final FocusNode nodeText2 = FocusNode();
+
+    /// Creates the [KeyboardActionsConfig] to hook up the fields
+    /// and their focus nodes to our [FormKeyboardActions].
+    KeyboardActionsConfig buildConfig(BuildContext context) {
+      return KeyboardActionsConfig(
+        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardBarColor: AppColors.secondaryColor.shade600,
+        nextFocus: true,
+        actions: [
+          KeyboardActionsItem(
+            focusNode: nodeText1,
+          ),
+          KeyboardActionsItem(focusNode: nodeText2, toolbarButtons: [
+            (node) {
+              return GestureDetector(
+                onTap: () => node.unfocus(),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.close),
+                ),
+              );
+            }
+          ]),
+        ],
+      );
+    }
+
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Enter Gift Card Details",
@@ -176,108 +206,26 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.darkBorder
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade600
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.transparent
-                            : AppColors.whiteColor.shade600,
-                        width: 0.3,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              giftCard.name ?? '',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Gift Card',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            imageUrl: giftCard.icon ?? '',
-                            height: 28,
-                            fit: BoxFit.contain,
-                            placeholder: (context, url) => Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Container(
-                                height: 28,
-                                width: 28,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Image.asset(
-                              'assets/default_icon.png',
-                              height: 28,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Gap(16),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Currency',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : AppColors.greyColor.shade700,
-                        )),
-                  ),
-                  const Gap(8),
-                  GestureDetector(
-                    onTap: () => showDataPlanSheet(context),
-                    child: Container(
+      body: KeyboardActions(
+        config: buildConfig(context),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.darkBorder
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
@@ -293,381 +241,470 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                         ),
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Space between icon and text
-                          Expanded(
-                            child: Text(
-                              selectedPlan.value,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black, // Ensures dark text
-                              ),
-                            ),
-                          ),
-                          const Icon(
-                            IconsaxPlusLinear.arrow_down,
-                            size: 16, // Slightly larger for better visibility
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Gap(24),
-                  Container(
-                    height: 48,
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade700
-                          : const Color(0xFFF7F7F7),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: SegmentedTabControl(
-                        tabPadding: const EdgeInsets.all(0),
-                        controller: tabController,
-                        indicatorPadding: const EdgeInsets.all(0),
-                        barDecoration: BoxDecoration(
-                          color: theme.brightness == Brightness.dark
-                              ? AppColors.secondaryColor.shade500
-                              : AppColors.greyColor.shade600,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        indicatorDecoration: BoxDecoration(
-                          color: theme.brightness == Brightness.dark
-                              ? AppColors.darkBorder
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        tabs: [
-                          SegmentTab(
-                            label: 'E-Code',
-                            backgroundColor: Colors.transparent,
-                            selectedTextColor:
-                                theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
-                            textColor: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black54,
-                          ),
-                          SegmentTab(
-                            label: 'Physical Card',
-                            backgroundColor: Colors.transparent,
-                            selectedTextColor:
-                                theme.brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
-                            textColor: theme.brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black54,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Gap(24),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Sub-Category',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : AppColors.greyColor.shade700,
-                        )),
-                  ),
-                  const Gap(8),
-                  itemRates.value.isEmpty
-                      ? GestureDetector(
-                          onTap: () {
-                            ToastService().showToast(
-                              NotificationType.info,
-                              message:
-                                  "No sub-category avalaible for the currency selected",
-                            );
-                          },
-                          child: AbsorbPointer(
-                            // Prevent interaction with the underlying dropdown
-                            child: DropdownButtonFormField2<RateData>(
-                              value: null,
-                              isExpanded: true,
-                              hint: Text(
-                                selectedCategory.value,
-                                style: const TextStyle(
-                                    fontSize: 14, color: Colors.grey),
-                              ),
-                              onChanged: (_) {}, // required but won't be called
-                              items: const [], // empty
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    width: 0.3,
-                                    color: AppColors.greyColor.shade50,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    width: 0.3,
-                                    color: AppColors.greyColor.shade50,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    width: 0.3,
-                                    color: AppColors.greyColor.shade50,
-                                  ),
-                                ),
-                                disabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    width: 0.3,
-                                    color: AppColors.greyColor.shade50,
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Colors.transparent,
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 14),
-                              ),
-                              iconStyleData: IconStyleData(
-                                icon: Icon(
-                                  IconsaxPlusLinear.arrow_down,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                giftCard.name ?? '',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
                                   color: theme.brightness == Brightness.dark
                                       ? Colors.white
                                       : Colors.black,
-                                  size: 16,
                                 ),
                               ),
-                              dropdownStyleData: DropdownStyleData(
-                                maxHeight: 250,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: theme.brightness == Brightness.dark
-                                      ? AppColors.secondaryColor.shade400
-                                      : Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
+                              const SizedBox(height: 4),
+                              Text(
+                                'Gift Card',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
                                 ),
-                                elevation: 3,
                               ),
-                            ),
+                            ],
                           ),
-                        )
-                      : DropdownButtonFormField2<RateData>(
-                          value: selectedRate.value,
-                          isExpanded: true,
-                          hint: Text(
-                            selectedCategory.value,
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.grey),
-                          ),
-                          onChanged: (value) {
-                            selectedRate.value = value;
-                          },
-                          items: itemRates.value.map((rate) {
-                            return DropdownMenuItem<RateData>(
-                              value: rate,
-                              child: Text(rate.name ?? ''),
-                            );
-                          }).toList(),
-                          selectedItemBuilder: (context) {
-                            return itemRates.value.map((rate) {
-                              return Text(rate.name ?? '');
-                            }).toList();
-                          },
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                width: 0.3,
-                                color: AppColors.greyColor.shade50,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                width: 0.3,
-                                color: AppColors.greyColor.shade50,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                width: 0.3,
-                                color: AppColors.greyColor.shade50,
-                              ),
-                            ),
-                            disabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                width: 0.3,
-                                color: AppColors.greyColor.shade50,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 14),
-                          ),
-                          iconStyleData: IconStyleData(
-                            icon: Icon(
-                              IconsaxPlusLinear.arrow_down,
-                              color: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
-                              size: 16,
-                            ),
-                          ),
-                          dropdownStyleData: DropdownStyleData(
-                            maxHeight: 250,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: theme.brightness == Brightness.dark
-                                  ? AppColors.secondaryColor.shade400
-                                  : Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              imageUrl: giftCard.icon ?? '',
+                              height: 28,
+                              fit: BoxFit.contain,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: Colors.grey.shade300,
+                                highlightColor: Colors.grey.shade100,
+                                child: Container(
+                                  height: 28,
+                                  width: 28,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
                                 ),
-                              ],
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                'assets/default_icon.png',
+                                height: 28,
+                                fit: BoxFit.contain,
+                              ),
                             ),
-                            elevation: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(16),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Currency',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : AppColors.greyColor.shade700,
+                          )),
+                    ),
+                    const Gap(8),
+                    GestureDetector(
+                      onTap: () => showDataPlanSheet(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade600
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.transparent
+                                : AppColors.whiteColor.shade600,
+                            width: 0.3,
                           ),
                         ),
-                  const Gap(24),
-                  SizedBox(
-                    child: Stack(
-                      children: [
-                        Column(
+                        child: Row(
                           children: [
-                            _buildCurrencyField(
-                              "Amount",
-                              usdController,
-                              "USD",
-                              PlaceholderAssets.us,
-                              convertUSDToNGN,
-                              selectedPlan.value,
-                              true,
-                              context,
-                              selectedPlan.value == "USD" ? "\$" : "₦",
-                              selectedRate.value?.moq?.toString() ?? 'N/A',
-                              conversionRate.value?.toString() ?? 'N/A',
+                            // Space between icon and text
+                            Expanded(
+                              child: Text(
+                                selectedPlan.value,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black, // Ensures dark text
+                                ),
+                              ),
                             ),
-                            const Gap(4),
-                            _buildCurrencyField(
-                              "You Will Receive",
-                              ngnController,
-                              "NGN",
-                              PlaceholderAssets.ng,
-                              convertNGNToUSD,
-                              exchangeCurrency.value,
-                              false,
-                              context,
-                              selectedPlan.value,
-                              selectedRate.value?.moq?.toString() ?? 'N/A',
-                              conversionRate.value?.toString() ?? 'N/A',
+                            const Icon(
+                              IconsaxPlusLinear.arrow_down,
+                              size: 16, // Slightly larger for better visibility
                             ),
                           ],
                         ),
-                        Positioned(
-                            top: 0,
-                            bottom: 0,
-                            right: 0,
-                            left: 0,
-                            child: CircleAvatar(
-                              radius: 22, // Adjust size as needed
-                              backgroundColor:
-                                  Colors.transparent, // Transparent background
-                              child: Container(
-                                padding: const EdgeInsets.all(
-                                    8), // Space around the icon
-                                decoration: BoxDecoration(
-                                  color: theme.brightness == Brightness.dark
-                                      ? AppColors.primaryColor.shade500
-                                      : const Color(0xFFE6ECFC),
-                                  shape: BoxShape.circle, // Makes it circular
-                                  // Grey border
-                                ),
-                                child: Icon(
-                                  Icons.arrow_downward,
-                                  size: 12,
-                                  color: theme.brightness == Brightness.dark
+                      ),
+                    ),
+                    const Gap(24),
+                    Container(
+                      height: 48,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: theme.brightness == Brightness.dark
+                            ? AppColors.secondaryColor.shade700
+                            : const Color(0xFFF7F7F7),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: SegmentedTabControl(
+                          tabPadding: const EdgeInsets.all(0),
+                          controller: tabController,
+                          indicatorPadding: const EdgeInsets.all(0),
+                          barDecoration: BoxDecoration(
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.secondaryColor.shade500
+                                : AppColors.greyColor.shade600,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          indicatorDecoration: BoxDecoration(
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.darkBorder
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          tabs: [
+                            SegmentTab(
+                              label: 'E-Code',
+                              backgroundColor: Colors.transparent,
+                              selectedTextColor:
+                                  theme.brightness == Brightness.dark
                                       ? Colors.white
-                                      : AppColors.primaryColor.shade500,
+                                      : Colors.black,
+                              textColor: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black54,
+                            ),
+                            SegmentTab(
+                              label: 'Physical Card',
+                              backgroundColor: Colors.transparent,
+                              selectedTextColor:
+                                  theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                              textColor: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black54,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Gap(24),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Sub-Category',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : AppColors.greyColor.shade700,
+                          )),
+                    ),
+                    const Gap(8),
+                    itemRates.value.isEmpty
+                        ? GestureDetector(
+                            onTap: () {
+                              ToastService().showToast(
+                                NotificationType.info,
+                                message:
+                                    "No sub-category avalaible for the currency selected",
+                              );
+                            },
+                            child: AbsorbPointer(
+                              // Prevent interaction with the underlying dropdown
+                              child: DropdownButtonFormField2<RateData>(
+                                value: null,
+                                isExpanded: true,
+                                hint: Text(
+                                  selectedCategory.value,
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.grey),
+                                ),
+                                onChanged:
+                                    (_) {}, // required but won't be called
+                                items: const [], // empty
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      width: 0.3,
+                                      color: AppColors.greyColor.shade50,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      width: 0.3,
+                                      color: AppColors.greyColor.shade50,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      width: 0.3,
+                                      color: AppColors.greyColor.shade50,
+                                    ),
+                                  ),
+                                  disabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      width: 0.3,
+                                      color: AppColors.greyColor.shade50,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.transparent,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 14),
+                                ),
+                                iconStyleData: IconStyleData(
+                                  icon: Icon(
+                                    IconsaxPlusLinear.arrow_down,
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                    size: 16,
+                                  ),
+                                ),
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 250,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: theme.brightness == Brightness.dark
+                                        ? AppColors.secondaryColor.shade400
+                                        : Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  elevation: 3,
                                 ),
                               ),
-                            )),
-                      ],
+                            ),
+                          )
+                        : DropdownButtonFormField2<RateData>(
+                            value: selectedRate.value,
+                            isExpanded: true,
+                            hint: Text(
+                              selectedCategory.value,
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.grey),
+                            ),
+                            onChanged: (value) {
+                              selectedRate.value = value;
+                            },
+                            items: itemRates.value.map((rate) {
+                              return DropdownMenuItem<RateData>(
+                                value: rate,
+                                child: Text(rate.name ?? ''),
+                              );
+                            }).toList(),
+                            selectedItemBuilder: (context) {
+                              return itemRates.value.map((rate) {
+                                return Text(rate.name ?? '');
+                              }).toList();
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  width: 0.3,
+                                  color: AppColors.greyColor.shade50,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  width: 0.3,
+                                  color: AppColors.greyColor.shade50,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  width: 0.3,
+                                  color: AppColors.greyColor.shade50,
+                                ),
+                              ),
+                              disabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  width: 0.3,
+                                  color: AppColors.greyColor.shade50,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 14),
+                            ),
+                            iconStyleData: IconStyleData(
+                              icon: Icon(
+                                IconsaxPlusLinear.arrow_down,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                                size: 16,
+                              ),
+                            ),
+                            dropdownStyleData: DropdownStyleData(
+                              maxHeight: 250,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: theme.brightness == Brightness.dark
+                                    ? AppColors.secondaryColor.shade400
+                                    : Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              elevation: 3,
+                            ),
+                          ),
+                    const Gap(24),
+                    SizedBox(
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              _buildCurrencyField(
+                                "Amount",
+                                usdController,
+                                "USD",
+                                PlaceholderAssets.us,
+                                convertUSDToNGN,
+                                selectedPlan.value,
+                                true,
+                                context,
+                                selectedPlan.value == "USD" ? "\$" : "₦",
+                                selectedRate.value?.moq?.toString() ?? 'N/A',
+                                conversionRate.value?.toString() ?? 'N/A',
+                                nodeText1,
+                              ),
+                              const Gap(4),
+                              _buildCurrencyField(
+                                "You Will Receive",
+                                ngnController,
+                                "NGN",
+                                PlaceholderAssets.ng,
+                                convertNGNToUSD,
+                                exchangeCurrency.value,
+                                false,
+                                context,
+                                selectedPlan.value,
+                                selectedRate.value?.moq?.toString() ?? 'N/A',
+                                conversionRate.value?.toString() ?? 'N/A',
+                                nodeText1,
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                              top: 0,
+                              bottom: 0,
+                              right: 0,
+                              left: 0,
+                              child: CircleAvatar(
+                                radius: 22, // Adjust size as needed
+                                backgroundColor: Colors
+                                    .transparent, // Transparent background
+                                child: Container(
+                                  padding: const EdgeInsets.all(
+                                      8), // Space around the icon
+                                  decoration: BoxDecoration(
+                                    color: theme.brightness == Brightness.dark
+                                        ? AppColors.primaryColor.shade500
+                                        : const Color(0xFFE6ECFC),
+                                    shape: BoxShape.circle, // Makes it circular
+                                    // Grey border
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_downward,
+                                    size: 12,
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : AppColors.primaryColor.shade500,
+                                  ),
+                                ),
+                              )),
+                        ],
+                      ),
                     ),
-                  ),
-                  const Gap(24),
-                  InfoWidget(
-                    theme: theme,
-                    text:
-                        'Rates are subject to change until the trade is submitted.',
-                  ),
-                  const Gap(16),
-                  FullButton(
-                    isLoading: ref
-                        .watch(authenticationControllerProvider)
-                        .imageUpload
-                        .isLoading,
-                    text: "Next",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () {
-                      if (selectedRate.value == null) {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message: 'Select a sub-category',
-                        );
+                    const Gap(24),
+                    InfoWidget(
+                      theme: theme,
+                      text:
+                          'Rates are subject to change until the trade is submitted.',
+                    ),
+                    const Gap(16),
+                    FullButton(
+                      isLoading: ref
+                          .watch(authenticationControllerProvider)
+                          .imageUpload
+                          .isLoading,
+                      text: "Next",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () {
+                        if (selectedRate.value == null) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Select a sub-category',
+                          );
 
-                        return;
-                      }
-                      if (usdController.text.isEmpty ||
-                          (num.tryParse(usdController.text) ?? 0) <
-                              (selectedRate.value!.moq ?? 0)) {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message:
-                              'Input your amount greater than or equal to ${selectedRate.value?.moq ?? 0}',
-                        );
-                        return;
-                      }
+                          return;
+                        }
+                        if (usdController.text.isEmpty ||
+                            (num.tryParse(usdController.text) ?? 0) <
+                                (selectedRate.value!.moq ?? 0)) {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message:
+                                'Input your amount greater than or equal to ${selectedRate.value?.moq ?? 0}',
+                          );
+                          return;
+                        }
 
-                      context.router.push(
-                        CardDetailsProofRoute(
-                          giftCard: giftCard,
-                          amount: int.tryParse(usdController.text.trim()) ?? 0,
-                          rates: selectedRate.value?.id,
-                          isCode: tabController.index == 0 ? true : false,
-                          currency: selectedPlan.value,
-                        ),
-                      );
-                    },
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                ],
+                        context.router.push(
+                          CardDetailsProofRoute(
+                            giftCard: giftCard,
+                            amount:
+                                int.tryParse(usdController.text.trim()) ?? 0,
+                            rates: selectedRate.value?.id,
+                            isCode: tabController.index == 0 ? true : false,
+                            currency: selectedPlan.value,
+                          ),
+                        );
+                      },
+                      textColor: Colors.white,
+                      color: AppColors.primaryColor.shade500,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Gap(150),
-          ],
+              const Gap(150),
+            ],
+          ),
         ),
       ),
     );
@@ -685,6 +722,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     String sign,
     String rate,
     String conversionRate,
+    FocusNode focusNode,
   ) {
     final theme = Theme.of(context);
     return Container(
@@ -747,6 +785,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
             children: [
               Expanded(
                 child: TextField(
+                  focusNode: focusNode,
                   controller: controller,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(

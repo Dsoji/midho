@@ -304,7 +304,7 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "breakdown": {
               "Gift Card Sold": transaction.asset?.name ?? '',
               "Rate":
-                  "${transaction.exchangeCurrency}  ${transaction.asset?.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
                       .commaFormat(),
               "Amount Sold":
                   "${transaction.amount} ${transaction.asset?.baseCurrency ?? ''}"
@@ -325,10 +325,12 @@ class StandAloneTransactionDetailsScreen extends StatelessWidget {
             "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
                 .commaFormat(),
             "breakdown": {
-              "Gift Card Sold": "STEAM 10-200",
-              "Rate": "${transaction.exchangeCurrency} 750/USD".commaFormat(),
-              "Amount Sold": "\$50",
-              "Reason for Failure": "Invalid Card - Card has been redeemed",
+              "Gift Card Sold": transaction.asset?.name ?? '',
+              "Rate":
+                  "${transaction.exchangeCurrency}  ${transaction.rate ?? ' '}/${transaction.asset?.baseCurrency ?? ''}"
+                      .commaFormat(),
+              "Amount Sold": "${transaction.baseCurrency} ${transaction.amount}"
+                  .commaFormat(),
               "Proof of Failure": "View Screenshot",
             }
           };

@@ -25,8 +25,10 @@ class OnboardingScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final containerWidth = screenWidth * 0.8;
+    final box = Hive.box('data');
     // Get the current theme mode
     useEffect(() {
+      box.put('is_auth', true);
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await Permission.notification.request();
       });
