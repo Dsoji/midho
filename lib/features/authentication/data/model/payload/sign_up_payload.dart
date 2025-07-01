@@ -17,6 +17,7 @@ class SignUpPayload extends MapView<String, dynamic> {
     String? password,
     String? referral,
     String? device,
+    String? medium,
     dynamic fcmToken,
   }) : super({
           'firstname': firstname,
@@ -27,6 +28,7 @@ class SignUpPayload extends MapView<String, dynamic> {
           'password': password,
           'referral': referral,
           'device': device,
+          'medium': medium,
           'fcmToken': storedToken,
         });
 }

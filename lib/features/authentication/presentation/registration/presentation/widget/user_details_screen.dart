@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
@@ -34,7 +35,7 @@ class UserDetailsStep extends HookConsumerWidget {
     final formKey = GlobalKey<FormState>();
     final box = Hive.box('data');
     final deviceId = box.get('device_id');
-
+    final mediumController = useTextEditingController();
     const countryCodeMap = {'Nigeria': 'NG'};
     final isBio = useState(false);
 
@@ -168,6 +169,14 @@ class UserDetailsStep extends HookConsumerWidget {
                             ))
                         .toList(),
                   ),
+                  const Gap(15),
+                  CustomTextField(
+                    controller: mediumController,
+                    label: "How did you hear about us?",
+                    hintText: "eg. Facebook",
+                    validator: (value) =>
+                        Validators.requiredField(value, "Medium"),
+                  ),
                   const SizedBox(height: 20),
                   RichText(
                     textAlign: TextAlign.center,
@@ -243,6 +252,7 @@ class UserDetailsStep extends HookConsumerWidget {
                         phone: formattedPhone,
                         device: deviceId,
                         fcmToken: fcmToken,
+                        medium: mediumController.text.trim(),
                       ));
 
                       if (result == true) {

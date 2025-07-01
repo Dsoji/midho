@@ -760,109 +760,130 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
 
               showDialog(
                 context: context,
+                barrierDismissible: true,
                 builder: (context) => Dialog(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Proof of failure',
-                              style: theme.textTheme.bodyLarge,
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(Icons.close),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Stack(
-                          children: [
-                            SizedBox(
-                              height:
-                                  200, // Fixed height for the horizontal list
-                              child: Builder(builder: (context) {
-                                return ListView.separated(
-                                  controller: scrollController2,
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  itemCount: proofs!.length,
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(width: 12),
-                                  itemBuilder: (context, index) {
-                                    return Image.network(
-                                      proofs![index].toString(),
-                                      loadingBuilder:
-                                          (context, child, loadingProgress) {
-                                        if (loadingProgress == null)
-                                          return child;
-                                        return const Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      },
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return const Center(
-                                          child: Text('Failed to load image'),
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              }),
-                            ),
-                            Positioned.fill(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    color: Colors.black26,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.arrow_back_ios),
-                                      color: Colors.white,
+                  insetPadding: EdgeInsets.zero,
+                  backgroundColor: Colors.black,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = constraints.maxWidth;
+                      final height = constraints.maxHeight;
+                      return Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Proof of failure',
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(color: Colors.white),
+                                    ),
+                                    const Spacer(),
+                                    IconButton(
                                       onPressed: () {
-                                        final currentPosition =
-                                            scrollController2.position.pixels;
-                                        scrollController2.animateTo(
-                                          currentPosition - 200,
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          curve: Curves.easeInOut,
+                                        Navigator.pop(context);
+                                      },
+                                      icon: const Icon(Icons.close,
+                                          color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                Expanded(
+                                  child: Center(
+                                    child: ListView.separated(
+                                      controller: scrollController2,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: proofs!.length,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 12),
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(width: 12),
+                                      itemBuilder: (context, index) {
+                                        return Center(
+                                          child: SizedBox(
+                                            width: width * 0.8,
+                                            height: height * 0.7,
+                                            child: Image.network(
+                                              proofs![index].toString(),
+                                              fit: BoxFit.contain,
+                                              loadingBuilder: (context, child,
+                                                  loadingProgress) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              },
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return const Center(
+                                                  child: Text(
+                                                      'Failed to load image',
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
+                                                );
+                                              },
+                                            ),
+                                          ),
                                         );
                                       },
                                     ),
                                   ),
-                                  Container(
-                                    color: Colors.black26,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.arrow_forward_ios),
-                                      color: Colors.white,
-                                      onPressed: () {
-                                        final currentPosition =
-                                            scrollController2.position.pixels;
-                                        scrollController2.animateTo(
-                                          currentPosition + 200,
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          curve: Curves.easeInOut,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          Positioned.fill(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 48,
+                                  color: Colors.black26,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.arrow_back_ios,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      final currentPosition =
+                                          scrollController2.position.pixels;
+                                      scrollController2.animateTo(
+                                        currentPosition - width * 0.8,
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                  width: 48,
+                                  color: Colors.black26,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.arrow_forward_ios,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      final currentPosition =
+                                          scrollController2.position.pixels;
+                                      scrollController2.animateTo(
+                                        currentPosition + width * 0.8,
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               );
@@ -870,17 +891,16 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
       style: OutlinedButton.styleFrom(
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade400
-            : AppColors.primaryColor.shade50, // Light pink background
-        side: BorderSide.none, // Remove border
+            : AppColors.primaryColor.shade50,
+        side: BorderSide.none,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Rounded corners
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Button Text
           Flexible(
             child: Text(
               "View Screenshot",
@@ -890,17 +910,14 @@ class ViewScreenshotButton extends HookWidget with ShareMixin {
                 color: theme.brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,
-                // Dark text color
               ),
               softWrap: true,
               textAlign: TextAlign.start,
             ),
           ),
           const SizedBox(width: 8),
-
-          // Screenshot Icon
           Icon(
-            IconsaxPlusLinear.image, // Replace with actual screenshot icon
+            IconsaxPlusLinear.image,
             color: theme.brightness == Brightness.dark
                 ? Colors.white
                 : AppColors.primaryColor.shade500,
