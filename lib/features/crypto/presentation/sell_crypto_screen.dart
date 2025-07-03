@@ -29,10 +29,13 @@ class SellCryptoScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final usdController = useTextEditingController();
     final ngnController = useTextEditingController();
+    final isEditingUSD = useState(false);
+    final isEditingNGN = useState(false);
 
     final double conversionRate = rates.rate ?? 0;
 
     void convertUSDToNGN(String value) {
+      if (!isEditingUSD.value) return;
       if (value.isEmpty) {
         ngnController.text = "";
         return;
@@ -42,6 +45,7 @@ class SellCryptoScreen extends HookConsumerWidget {
     }
 
     void convertNGNToUSD(String value) {
+      if (!isEditingNGN.value) return;
       if (value.isEmpty) {
         usdController.text = "";
         return;
@@ -51,6 +55,8 @@ class SellCryptoScreen extends HookConsumerWidget {
     }
 
     useEffect(() {
+      isEditingUSD.value = true;
+      isEditingNGN.value = false;
       final usdText = usdController.text.trim();
       final ngnText = ngnController.text.trim();
 
@@ -218,6 +224,8 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   context,
                                   true,
                                   nodeText1,
+                                  isEditingUSD,
+                                  isEditingNGN,
                                 ),
                                 const Gap(4),
                                 _buildCurrencyField(
@@ -229,7 +237,9 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   "${rates.exchangeCurrency} ",
                                   context,
                                   false,
-                                  nodeText1,
+                                  nodeText2,
+                                  isEditingUSD,
+                                  isEditingNGN,
                                 ),
                               ],
                             ),
@@ -323,6 +333,8 @@ class SellCryptoScreen extends HookConsumerWidget {
     BuildContext context,
     bool? isTop,
     FocusNode? focusNode,
+    ValueNotifier<bool> isEditingUSD,
+    ValueNotifier<bool> isEditingNGN,
   ) {
     final theme = Theme.of(context);
     return Container(
@@ -375,13 +387,23 @@ class SellCryptoScreen extends HookConsumerWidget {
                 child: TextField(
                   focusNode: focusNode,
                   controller: controller,
-                  keyboardType: TextInputType.number,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true, signed: true),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixText: currencySign,
                     hintText: '0',
                     prefixStyle: const TextStyle(fontFamily: '', fontSize: 10),
                   ),
+                  onTap: () {
+                    if (isTop == true) {
+                      isEditingUSD.value = true;
+                      isEditingNGN.value = false;
+                    } else {
+                      isEditingUSD.value = false;
+                      isEditingNGN.value = true;
+                    }
+                  },
                   onChanged: onChanged,
                   style: const TextStyle(
                     fontFamily: '',

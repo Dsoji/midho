@@ -130,7 +130,11 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     final usdController = useTextEditingController();
     final ngnController = useTextEditingController();
 
+    final isEditingUSD = useState(false);
+    final isEditingNGN = useState(false);
+
     void convertUSDToNGN(String value) {
+      if (!isEditingUSD.value) return;
       if (value.isEmpty) {
         ngnController.text = "";
         return;
@@ -141,6 +145,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     }
 
     void convertNGNToUSD(String value) {
+      if (!isEditingNGN.value) return;
       if (value.isEmpty) {
         usdController.text = "";
         return;
@@ -601,6 +606,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                                 selectedRate.value?.moq?.toString() ?? 'N/A',
                                 conversionRate.value?.toString() ?? 'N/A',
                                 nodeText1,
+                                isEditingUSD,
+                                isEditingNGN,
                               ),
                               const Gap(4),
                               _buildCurrencyField(
@@ -615,7 +622,9 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                                 selectedPlan.value,
                                 selectedRate.value?.moq?.toString() ?? 'N/A',
                                 conversionRate.value?.toString() ?? 'N/A',
-                                nodeText1,
+                                nodeText2,
+                                isEditingUSD,
+                                isEditingNGN,
                               ),
                             ],
                           ),
@@ -723,6 +732,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     String rate,
     String conversionRate,
     FocusNode focusNode,
+    ValueNotifier<bool> isEditingUSD,
+    ValueNotifier<bool> isEditingNGN,
   ) {
     final theme = Theme.of(context);
     return Container(
@@ -787,13 +798,23 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                 child: TextField(
                   focusNode: focusNode,
                   controller: controller,
-                  keyboardType: TextInputType.number,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true, signed: true),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     prefixText: isTop == true ? currencySign : '',
                     hintText: '0',
                     prefixStyle: const TextStyle(fontFamily: '', fontSize: 10),
                   ),
+                  onTap: () {
+                    if (isTop == true) {
+                      isEditingUSD.value = true;
+                      isEditingNGN.value = false;
+                    } else {
+                      isEditingUSD.value = false;
+                      isEditingNGN.value = true;
+                    }
+                  },
                   onChanged: onChanged,
                   style: const TextStyle(
                     fontFamily: '',

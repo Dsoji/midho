@@ -108,7 +108,7 @@ class TransactionHistoryScreen extends HookConsumerWidget {
               ),
               orElse: () => Center(
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
