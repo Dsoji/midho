@@ -196,7 +196,8 @@ class GiftCardGrid extends HookConsumerWidget {
         }, [giftCards, query]);
 
         if (filteredCards.isEmpty) {
-          return Center(
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -212,34 +213,40 @@ class GiftCardGrid extends HookConsumerWidget {
           );
         }
 
-        return Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: theme.brightness == Brightness.dark
-                ? AppColors.darkBorder
-                : const Color(0xFFCBD7F8),
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 4,
-              mainAxisSpacing: 4,
-              childAspectRatio: 1,
-            ),
-            itemCount: filteredCards.length,
-            itemBuilder: (context, index) {
-              final card = filteredCards[index];
-              return GestureDetector(
-                onTap: () {
-                  context.router.push(EnterCardDetailsRoute(giftCard: card));
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.darkBorder
+                    : const Color(0xFFCBD7F8),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 4,
+                  mainAxisSpacing: 4,
+                  childAspectRatio: 1,
+                ),
+                itemCount: filteredCards.length,
+                itemBuilder: (context, index) {
+                  final card = filteredCards[index];
+                  return GestureDetector(
+                    onTap: () {
+                      context.router
+                          .push(EnterCardDetailsRoute(giftCard: card));
+                    },
+                    child: GiftCardItem(giftCard: card),
+                  );
                 },
-                child: GiftCardItem(giftCard: card),
-              );
-            },
-          ),
+              ),
+            ),
+            const Gap(90),
+          ],
         );
       },
     );

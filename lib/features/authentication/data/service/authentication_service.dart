@@ -86,6 +86,22 @@ class AuthenticationService {
     );
   }
 
+  Future<ResultValue<String>> deleteAccount() async {
+    return apiRequestHelper.handleApiRequest(
+      () => apiClient.post(
+        'user/auth/deleteAccount',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
+    );
+  }
+
   Future<ResultValue<String>> emailVerification({
     required String email,
     required String? referral,

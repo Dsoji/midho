@@ -41,11 +41,13 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     final itemRates = useState<List<RateData>>([]);
     final conversionRate = useState<num?>(null);
     final rateId = useState<String?>(null);
+    final availableCurrencies = useState<List<String>>([]);
 
     final selectedCategory = useState<String>("Select Sub-Category");
     void showDataPlanSheet(BuildContext context) {
       showModalBottomSheet(
         isScrollControlled: true,
+        useSafeArea: true,
         context: context,
         backgroundColor: theme.brightness == Brightness.dark
             ? AppColors.secondaryColor.shade600
@@ -53,9 +55,13 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.75,
+        ),
         builder: (context) {
           return ProviderBottomSheet(
             selectedProvider: selectedPlan,
+            availableCurrencies: availableCurrencies.value,
           );
         },
       );
@@ -80,10 +86,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         final matchedRates = rates
             .where(
               (rate) =>
-                  rate.name
-                          ?.toLowerCase()
-                          .contains(giftCard.name!.toLowerCase()) ==
-                      true &&
+                  rate.category == giftCard.id &&
                   rate.baseCurrency?.toUpperCase() ==
                       selectedPlan.value.toUpperCase(),
             )
@@ -104,6 +107,26 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
 
       return null;
     }, [selectedPlan.value, currentTab.value, rates]);
+
+    useEffect(() {
+      if (rates != null && rates.isNotEmpty) {
+        // Get all rates for this gift card (regardless of currency)
+        final allGiftCardRates =
+            rates.where((rate) => rate.category == giftCard.id).toList();
+
+        // Extract unique currencies from all rates for this gift card
+        final uniqueCurrencies = allGiftCardRates
+            .map((rate) => rate.baseCurrency ?? '')
+            .where((currency) => currency.isNotEmpty)
+            .toSet() // Remove duplicates
+            .toList();
+
+        availableCurrencies.value = uniqueCurrencies;
+      }
+
+      return null;
+    }, [rates, giftCard.id]);
+
     //
     useEffect(() {
       if (rates != null && rates.isNotEmpty) {
@@ -853,14 +876,17 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
 
 class ProviderBottomSheet extends HookConsumerWidget {
   final ValueNotifier<String> selectedProvider;
-  const ProviderBottomSheet({super.key, required this.selectedProvider});
+  final List<String> availableCurrencies;
+  const ProviderBottomSheet({
+    super.key,
+    required this.selectedProvider,
+    required this.availableCurrencies,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController();
-    final currencies =
-        ref.watch(transactionControllerProvider).currency.valueOrNull?.data ??
-            [];
+    final currencies = availableCurrencies ?? [];
 
     final filteredCurrencies = useState<List<dynamic>>(currencies);
 
@@ -905,41 +931,42 @@ class ProviderBottomSheet extends HookConsumerWidget {
             borderRadius: 12,
           ),
           const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: theme.brightness == Brightness.dark
-                  ? AppColors.secondaryColor.shade700
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(24),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade700
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: filteredCurrencies.value.isEmpty
+                  ? const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text("No match found."),
+                    )
+                  : ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: filteredCurrencies.value.length,
+                      separatorBuilder: (context, index) => Divider(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : Colors.grey.shade100),
+                      itemBuilder: (context, index) {
+                        final provider = filteredCurrencies.value[index];
+                        return ListTile(
+                          title: Text(
+                            provider,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          onTap: () {
+                            selectedProvider.value = provider;
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
             ),
-            child: filteredCurrencies.value.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text("No match found."),
-                  )
-                : ListView.separated(
-                    itemCount: filteredCurrencies.value.length,
-                    shrinkWrap: true,
-                    separatorBuilder: (context, index) => Divider(
-                        color: theme.brightness == Brightness.dark
-                            ? AppColors.secondaryColor.shade400
-                            : Colors.grey.shade100),
-                    itemBuilder: (context, index) {
-                      final provider = filteredCurrencies.value[index];
-                      return ListTile(
-                        title: Text(
-                          provider,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        onTap: () {
-                          selectedProvider.value = provider;
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
-                  ),
           ),
-          const Gap(150),
         ],
       ),
     );

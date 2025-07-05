@@ -32,6 +32,7 @@ class AuthenticationState {
   final AsyncValue<String> resetPin;
   final AsyncValue<UploadResponse> imageUpload;
   final AsyncValue<NotifcationList> notification;
+  final AsyncValue<String> deleteAccount;
 
   const AuthenticationState({
     required this.login,
@@ -48,6 +49,7 @@ class AuthenticationState {
     required this.resetPin,
     required this.imageUpload,
     required this.notification,
+    required this.deleteAccount,
   });
 
   factory AuthenticationState.initial() {
@@ -66,6 +68,7 @@ class AuthenticationState {
       resetPin: const AsyncValue.data(''),
       imageUpload: AsyncValue.data(UploadResponse()),
       notification: AsyncValue.data(NotifcationList()),
+      deleteAccount: const AsyncValue.data(''),
     );
   }
 
@@ -84,6 +87,7 @@ class AuthenticationState {
     AsyncValue<String>? resetPin,
     AsyncValue<UploadResponse>? imageUpload,
     AsyncValue<NotifcationList>? notification,
+    AsyncValue<String>? deleteAccount,
   }) {
     return AuthenticationState(
       login: login ?? this.login,
@@ -100,6 +104,7 @@ class AuthenticationState {
       resetPin: resetPin ?? this.resetPin,
       imageUpload: imageUpload ?? this.imageUpload,
       notification: notification ?? this.notification,
+      deleteAccount: deleteAccount ?? this.deleteAccount,
     );
   }
 
@@ -115,11 +120,15 @@ class AuthenticationState {
     return other.login == login &&
         other.signUp == signUp &&
         other.status == status &&
-        other.notification == notification;
+        other.notification == notification &&
+        other.deleteAccount == deleteAccount;
   }
 
   @override
   int get hashCode {
-    return login.hashCode ^ signUp.hashCode ^ status.hashCode;
+    return login.hashCode ^
+        signUp.hashCode ^
+        status.hashCode ^
+        deleteAccount.hashCode;
   }
 }

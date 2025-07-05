@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../bank_network/presentation/bank_network_screen.dart';
 import '../../../bottomNav/app_router.gr.dart';
 
@@ -14,8 +15,8 @@ class ActionItem {
   final String label;
   final Color color;
   final VoidCallback? onTap; // Accepts context for navigation
-
-  ActionItem(this.icon, this.label, this.color, {this.onTap});
+  final Color? textColor;
+  ActionItem(this.icon, this.label, this.color, {this.onTap, this.textColor});
 }
 
 // Riverpod Provider for Quick Actions List
@@ -81,10 +82,17 @@ class QuickActionsGrid extends ConsumerWidget {
           HugeIcons.strokeRoundedFootball,
           "Betting",
           theme.brightness == Brightness.dark
-              ? const Color(0xFF00BFE1)
-              : AppColors.primaryColor,
+              ? Colors.grey.shade800
+              : Colors.grey.shade400,
+          textColor: theme.brightness == Brightness.dark
+              ? Colors.grey.shade800
+              : Colors.grey.shade400,
           onTap: () {
-            context.router.push(const BettingRoute());
+            // context.router.push(const BettingRoute());
+            ToastService().showToast(
+              NotificationType.info,
+              message: 'Betting Coming Soon!!',
+            );
           },
         ),
         ActionItem(
@@ -186,9 +194,10 @@ class ActionButton extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 height: 1.4, // line-height (140%)
                 letterSpacing: -0.2,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
+                color: action.textColor ??
+                    (theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black),
               ),
               textAlign: TextAlign.center,
             ),

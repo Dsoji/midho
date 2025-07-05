@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class Origination {
   int? rate;
-  int? amount;
+  num? amount;
 
   Origination({this.rate, this.amount});
 
@@ -11,7 +11,7 @@ class Origination {
 
   factory Origination.fromMap(Map<String, dynamic> data) => Origination(
         rate: data['rate'] as int?,
-        amount: data['amount'] as int?,
+        amount: data['amount'] as num?,
       );
 
   Map<String, dynamic> toMap() => {
@@ -33,7 +33,7 @@ class Origination {
 
   Origination copyWith({
     int? rate,
-    int? amount,
+    num? amount,
   }) {
     return Origination(
       rate: rate ?? this.rate,

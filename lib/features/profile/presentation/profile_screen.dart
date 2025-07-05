@@ -10,6 +10,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
+import '../../../common/widgets/custom_buttons.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../home/presentation/home_screen.dart';
 import 'widget/profile_option.dart';
@@ -38,11 +39,103 @@ class ProfileScreen extends HookConsumerWidget {
       },
 
       child: Scaffold(
-        appBar: const CustomAppBar(
+        appBar: CustomAppBar(
           title: "Profile",
           showBackButton: false,
           showTitle: true,
-          showAction: false,
+          showAction: true,
+          actionIcon: IconsaxPlusLinear.trash,
+          actionColor: Colors.red,
+          onActionPressed: () {
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              builder: (BuildContext context) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const Text(
+                          "Delete Account",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Are you sure you want to delete your account?",
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Cancel"),
+                            ),
+                            FullButton(
+                              isLoading: ref
+                                  .watch(authenticationControllerProvider)
+                                  .deleteAccount
+                                  .isLoading,
+                              text: "Yes",
+                              width: 120,
+                              height: 48,
+                              color: Colors.red,
+                              textColor: Colors.white,
+                              onPressed: () async {
+                                final result = await ref
+                                    .read(authenticationControllerProvider
+                                        .notifier)
+                                    .deleteAccount();
+
+                                if (result == true) {
+                                  await box.put('remember_me', false);
+                                  await box.delete('accessToken');
+                                  await box.delete('userProfile');
+                                  await box.delete('userDetails');
+                                  await box.delete('userReferral');
+                                  await box.delete('userReferralCode');
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                    context.router
+                                        .replaceAll([const OnboardingRoute()]);
+                                  }
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        const Gap(100),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
         body: RefreshIndicator.adaptive(
           onRefresh: () async {
@@ -191,6 +284,7 @@ class ProfileScreen extends HookConsumerWidget {
                     isDestructive: true,
                   ),
                 ),
+
                 const Gap(150),
               ],
             ),

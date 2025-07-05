@@ -383,4 +383,25 @@ class AuthenticationRepository {
       return Error(failure);
     }
   }
+
+  Future<Result<FailureHandler, String>> deleteAccount() async {
+    try {
+      final data = await authService.deleteAccount();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to delete account',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to delete account'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
 }

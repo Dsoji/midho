@@ -105,7 +105,8 @@ class CryptoScreen extends HookConsumerWidget {
               final cryptoRates =
                   rates.data!.where((rate) => rate.type == "CRYPTO").toList();
               if (cryptoRates.isEmpty) {
-                return Center(
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -122,14 +123,21 @@ class CryptoScreen extends HookConsumerWidget {
                 );
               }
 
-              return ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: cryptoRates.length,
-                separatorBuilder: (context, index) => const Gap(8),
-                itemBuilder: (context, index) {
-                  final data = cryptoRates[index];
-                  return CryptoCard(rates: data);
-                },
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: cryptoRates.length,
+                      separatorBuilder: (context, index) => const Gap(8),
+                      itemBuilder: (context, index) {
+                        final data = cryptoRates[index];
+                        return CryptoCard(rates: data);
+                      },
+                    ),
+                  ),
+                  const Gap(90),
+                ],
               );
             },
           ),

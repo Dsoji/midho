@@ -39,6 +39,7 @@ class GiftCardService {
           'paginate': false,
           'page': 1,
           'limit': 500,
+          'active': true,
         },
       ),
       parser: (data) {

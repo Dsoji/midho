@@ -427,4 +427,25 @@ class AuthenticationController extends StateNotifier<AuthenticationState> {
       },
     );
   }
+
+  Future<bool> deleteAccount() async {
+    state = state.copyWith(deleteAccount: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.deleteAccount();
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          deleteAccount: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          deleteAccount: AsyncValue.data(success.toString()),
+        );
+        return true;
+      },
+    );
+  }
 }
