@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
@@ -71,32 +71,6 @@ class SellCryptoScreen extends HookConsumerWidget {
     final FocusNode nodeText1 = FocusNode();
     final FocusNode nodeText2 = FocusNode();
 
-    /// Creates the [KeyboardActionsConfig] to hook up the fields
-    /// and their focus nodes to our [FormKeyboardActions].
-    KeyboardActionsConfig buildConfig(BuildContext context) {
-      return KeyboardActionsConfig(
-        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
-        keyboardBarColor: AppColors.secondaryColor.shade600,
-        nextFocus: true,
-        actions: [
-          KeyboardActionsItem(
-            focusNode: nodeText1,
-          ),
-          KeyboardActionsItem(focusNode: nodeText2, toolbarButtons: [
-            (node) {
-              return GestureDetector(
-                onTap: () => node.unfocus(),
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.close),
-                ),
-              );
-            }
-          ]),
-        ],
-      );
-    }
-
     final theme = Theme.of(context);
     return Scaffold(
         appBar: const CustomAppBar(
@@ -105,8 +79,12 @@ class SellCryptoScreen extends HookConsumerWidget {
           showTitle: true,
           showAction: false,
         ),
-        body: KeyboardActions(
-          config: buildConfig(context),
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            SystemChannels.textInput.invokeMethod('TextInput.hide');
+          },
+          behavior: HitTestBehavior.translucent,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(

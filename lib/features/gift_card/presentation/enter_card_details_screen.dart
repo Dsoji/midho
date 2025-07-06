@@ -3,11 +3,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
@@ -185,32 +185,6 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     final FocusNode nodeText1 = FocusNode();
     final FocusNode nodeText2 = FocusNode();
 
-    /// Creates the [KeyboardActionsConfig] to hook up the fields
-    /// and their focus nodes to our [FormKeyboardActions].
-    KeyboardActionsConfig buildConfig(BuildContext context) {
-      return KeyboardActionsConfig(
-        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
-        keyboardBarColor: AppColors.secondaryColor.shade600,
-        nextFocus: true,
-        actions: [
-          KeyboardActionsItem(
-            focusNode: nodeText1,
-          ),
-          KeyboardActionsItem(focusNode: nodeText2, toolbarButtons: [
-            (node) {
-              return GestureDetector(
-                onTap: () => node.unfocus(),
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.close),
-                ),
-              );
-            }
-          ]),
-        ],
-      );
-    }
-
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Enter Gift Card Details",
@@ -219,8 +193,14 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: KeyboardActions(
-        config: buildConfig(context),
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard when tapping outside
+          FocusScope.of(context).unfocus();
+          // Also try to hide the keyboard explicitly
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+        },
+        behavior: HitTestBehavior.translucent,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
