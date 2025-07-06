@@ -39,7 +39,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     final selectedPlan = useState<String>("USD");
     final exchangeCurrency = useState<String>("NGN");
     final itemRates = useState<List<RateData>>([]);
-    final conversionRate = useState<num?>(null);
+    final conversionRate = useState<num?>(0); // Start with 0
     final rateId = useState<String?>(null);
     final availableCurrencies = useState<List<String>>([]);
 
@@ -92,21 +92,29 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
             )
             .toList();
 
-        itemRates.value = matchedRates; // <-- Add this line
+        itemRates.value = matchedRates;
 
-        final matchedRate =
-            matchedRates.isNotEmpty ? matchedRates.first : RateData();
+        // Only update conversion rate if a specific rate is selected
+        if (selectedRate.value != null) {
+          final matchedRate = selectedRate.value!;
 
-        conversionRate.value = currentTab.value == 0
-            ? matchedRate.ecodeRate ?? 0.0
-            : matchedRate.rate ?? 0.0;
+          // Update conversion rate based on current tab
+          conversionRate.value = currentTab.value == 0
+              ? matchedRate.ecodeRate ?? 0.0
+              : matchedRate.rate ?? 0.0;
 
-        rateId.value = matchedRate.id;
-        exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
+          rateId.value = matchedRate.id;
+          exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
+        } else {
+          // Keep conversion rate at 0 if no rate is selected
+          conversionRate.value = 0;
+          rateId.value = null;
+          exchangeCurrency.value = '';
+        }
       }
 
       return null;
-    }, [selectedPlan.value, currentTab.value, rates]);
+    }, [selectedPlan.value, currentTab.value, rates, selectedRate.value]);
 
     useEffect(() {
       if (rates != null && rates.isNotEmpty) {
@@ -126,29 +134,6 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
 
       return null;
     }, [rates, giftCard.id]);
-
-    //
-    useEffect(() {
-      if (rates != null && rates.isNotEmpty) {
-        final matchedRate = rates.firstWhere(
-          (rate) =>
-              rate.name?.toLowerCase().contains(giftCard.name!.toLowerCase()) ==
-                  true &&
-              rate.baseCurrency?.toUpperCase() ==
-                  selectedPlan.value.toUpperCase(),
-          orElse: () => RateData(),
-        );
-
-        conversionRate.value = currentTab.value == 0
-            ? matchedRate.ecodeRate ?? 0.0
-            : matchedRate.rate ?? 0.0;
-
-        rateId.value = matchedRate.id;
-        exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
-      }
-
-      return null;
-    }, [selectedPlan.value, currentTab.value, rates]);
 
     final usdController = useTextEditingController();
     final ngnController = useTextEditingController();
