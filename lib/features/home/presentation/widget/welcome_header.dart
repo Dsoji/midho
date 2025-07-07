@@ -30,17 +30,26 @@ class WelcomeHeader extends HookConsumerWidget {
           Row(
             children: [
               // Avatar
-              Container(
-                height: 48,
-                width: 48,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD1EEFF), // light blue bg
-                  shape: BoxShape.circle,
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    PlaceholderAssets.pfp, // <- replace with your asset
-                    fit: BoxFit.cover,
+              GestureDetector(
+                onTap: () {
+                  final tabsRouter = AutoTabsRouter.of(
+                    context,
+                  );
+
+                  tabsRouter.setActiveIndex(4);
+                },
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFD1EEFF), // light blue bg
+                    shape: BoxShape.circle,
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      PlaceholderAssets.pfp, // <- replace with your asset
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),

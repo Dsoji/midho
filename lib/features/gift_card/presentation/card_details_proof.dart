@@ -108,7 +108,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                     const Gap(16),
                     CustomTextField(
                       controller: pinController,
-                      label: "Pin",
+                      label: "Pin (Optional)",
                       keyboardType: TextInputType.number,
                     ),
                     const Gap(16),
