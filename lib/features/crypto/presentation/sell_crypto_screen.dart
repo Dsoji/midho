@@ -372,8 +372,14 @@ class SellCryptoScreen extends HookConsumerWidget {
                     prefixText: currencySign,
                     hintText: '0',
                     prefixStyle: const TextStyle(fontFamily: '', fontSize: 10),
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
                   ),
                   onTap: () {
+                    controller.selection = TextSelection.fromPosition(
+                      TextPosition(offset: controller.text.length),
+                    );
+
                     if (isTop == true) {
                       isEditingUSD.value = true;
                       isEditingNGN.value = false;
