@@ -15,8 +15,8 @@ import '../../../../../common/toast/toast.dart';
 import '../../../../../common/utils/validator.dart';
 import '../../../../../common/widgets/custom_buttons.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
+import '../../../../bottomNav/app_router.gr.dart';
 import '../../../data/controller/authentication_controller.dart';
-import '../../login/presentation/login_screen.dart';
 
 final pageControllerProvider = Provider<PageController>((ref) {
   return PageController();
@@ -28,6 +28,11 @@ final registrationProvider =
     StateNotifierProvider<RegistrationNotifier, RegistrationState>(
   (ref) => RegistrationNotifier(),
 );
+
+final forgotPasswordProvider =
+    StateNotifierProvider<ForgotPasswordNotifier, ForgotPasswordState>((ref) {
+  return ForgotPasswordNotifier();
+});
 
 class RegistrationNotifier extends StateNotifier<RegistrationState> {
   RegistrationNotifier() : super(RegistrationState());
@@ -94,12 +99,46 @@ class RegistrationState {
   }
 }
 
+class ForgotPasswordNotifier extends StateNotifier<ForgotPasswordState> {
+  ForgotPasswordNotifier() : super(ForgotPasswordState());
+
+  void setEmail(String email) {
+    state = state.copyWith(email: email);
+  }
+
+  void setOtp(String otp) {
+    state = state.copyWith(otp: otp);
+  }
+}
+
+class ForgotPasswordState {
+  final String email;
+  final String otp;
+
+  ForgotPasswordState({
+    this.email = '',
+    this.otp = '',
+  });
+
+  ForgotPasswordState copyWith({
+    String? email,
+    String? otp,
+  }) {
+    return ForgotPasswordState(
+      email: email ?? this.email,
+      otp: otp ?? this.otp,
+    );
+  }
+}
+
 @RoutePage()
 class ForgotPasswordScreen extends HookConsumerWidget {
-  const ForgotPasswordScreen({super.key});
+  const ForgotPasswordScreen({super.key, this.isLoggedIn = false});
+  final bool isLoggedIn;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final email = useState<String>('');
     final pageController = ref.watch(pageControllerProvider);
     final pageIndex = useState(0);
 
@@ -117,6 +156,12 @@ class ForgotPasswordScreen extends HookConsumerWidget {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
+      } else if (pageIndex.value == 0) {
+        // if (isLoggedIn) {
+        context.router.replaceAll([const SplashRoute()]);
+        // } else {
+        //   context.router.replaceAll([const LoginRoute()]);
+        // }
       }
     }
 
@@ -125,13 +170,8 @@ class ForgotPasswordScreen extends HookConsumerWidget {
       onPopInvoked: (didPop) {
         if (!didPop && pageIndex.value > 0) {
           goBack();
-        } else if (!didPop && pageIndex.value > 0) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            ),
-          );
+        } else if (!didPop && pageIndex.value == 0) {
+          context.router.popUntilRoot();
         }
       },
       child: Scaffold(
@@ -140,7 +180,7 @@ class ForgotPasswordScreen extends HookConsumerWidget {
           title: StepProgressIndicator(
             currentStep: pageIndex.value + 1,
             totalSteps: 3,
-            onBack: pageIndex.value > 0 ? goBack : null,
+            onBack: goBack,
           ),
         ),
         body: SafeArea(
@@ -161,13 +201,12 @@ class ForgotPasswordScreen extends HookConsumerWidget {
                         onNext: () => pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut)),
-                    UserDetailsStep(onFinish: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
+                    UserDetailsStep(onFinish: () async {
+                      await box.put('remember_me', false);
+                      await box.delete('accessToken').then((_) async {
+                        box.put('is_auth', false);
+                        context.router.replaceAll([const LoginRoute()]);
+                      });
                     }),
                   ],
                 ),
@@ -270,9 +309,10 @@ class EmailPasswordStep extends HookConsumerWidget {
                       'RESETPASSWORD',
                     );
                     if (result == true) {
-                      await box.put('email', emailController.text.trim());
-
-                      onNext(); // Correctly invoke the function
+                      ref
+                          .read(forgotPasswordProvider.notifier)
+                          .setEmail(emailController.text.trim());
+                      onNext();
                     }
                   },
                   textColor: Colors.white,
@@ -299,6 +339,10 @@ class OtpVerificationStep extends HookConsumerWidget {
     final isOtpFilled = useState(false);
     final countdown = useState(100);
     final isCounting = useState(true);
+
+    final email =
+        ref.watch(forgotPasswordProvider.select((state) => state.email));
+
     ref.read(authenticationControllerProvider.notifier);
 
     useEffect(() {
@@ -354,9 +398,9 @@ class OtpVerificationStep extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "Enter the 6-digit code we just sent to johndoe@gmail.com",
-                style: TextStyle(
+              Text(
+                "Enter the 6-digit code we just sent to $email",
+                style: const TextStyle(
                   fontSize: 14,
                 ),
               ),
@@ -441,8 +485,10 @@ class OtpVerificationStep extends HookConsumerWidget {
                     );
                     return;
                   }
-                  await box.put('otp', otpController.text.trim());
 
+                  ref
+                      .read(forgotPasswordProvider.notifier)
+                      .setOtp(otpController.text.trim());
                   onNext();
                 },
                 textColor: Colors.white,
@@ -466,6 +512,9 @@ class UserDetailsStep extends HookConsumerWidget {
     useState("Nigeria");
     final passwordController = useTextEditingController();
     final theme = Theme.of(context);
+    final email =
+        ref.watch(forgotPasswordProvider.select((state) => state.email));
+    final otp = ref.watch(forgotPasswordProvider.select((state) => state.otp));
     final authService = ref.read(authenticationControllerProvider.notifier);
     final formKey = GlobalKey<FormState>();
     final currentScreen = useState<String>("login");
@@ -520,26 +569,8 @@ class UserDetailsStep extends HookConsumerWidget {
                     size: 21,
                   ), // Optional
                   isPassword: true,
+                  validator: Validators.passwordValidator,
                 ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildCriteriaIcon(passwordController.text.length >= 8,
-                        "8 characters long"),
-                    _buildCriteriaIcon(
-                        RegExp(r'[A-Z]').hasMatch(passwordController.text),
-                        "Uppercase"),
-                    _buildCriteriaIcon(
-                        RegExp(r'[0-9]').hasMatch(passwordController.text),
-                        "Number"),
-                  ],
-                ),
-                const Gap(4),
-                _buildCriteriaIcon(
-                    RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                        .hasMatch(passwordController.text),
-                    "Special character"),
 
                 // Last Name Field
                 const SizedBox(height: 20),
@@ -556,11 +587,9 @@ class UserDetailsStep extends HookConsumerWidget {
                     if (!formKey.currentState!.validate()) {
                       return;
                     }
-                    final String email = box.get('email');
-                    final String code = box.get('otp');
                     final result = await authService.forgotPassword(
                       email,
-                      code,
+                      otp,
                       passwordController.text.trim(),
                     );
                     if (result == true) {

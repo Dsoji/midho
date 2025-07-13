@@ -16,8 +16,10 @@ import '../../../common/utils/validator.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
+import '../../bank_network/data/model/response/bank_list/bank_list.dart';
 import '../../bank_network/presentation/bank_network_screen.dart';
 import '../../home/presentation/widget/wallet_balance_card.dart';
+import '../../profile/data/controller/profile_controller.dart';
 import '../../profile/presentation/bank/add_bank.dart';
 import '../../transaction/data/controller/transaction_controller.dart';
 import 'widget/bank_info_card.dart';
@@ -36,15 +38,33 @@ class WithdrawFundsScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
     final amountController = useTextEditingController();
+    final selectedBank = ref.watch(selectedBankProvider);
+    final banks = ref.watch(profileControllerProvider).banks.valueOrNull;
 
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
 
-    final selectedBank = ref.watch(selectedBankProvider);
     final formKey = GlobalKey<FormState>();
     final userProfileAsync =
         ref.watch(authenticationControllerProvider).userDetails;
     final localBanks = userProfileAsync.valueOrNull?.banks;
+    final filteredBanks = useState<List<BanlList>>(banks ?? []);
+
+    // Update filteredBanks when banks change
+    useEffect(() {
+      filteredBanks.value = banks ?? [];
+      return null;
+    }, [banks]);
+
+    final bank = filteredBanks.value
+        .where((bank) =>
+            bank.name ==
+            (selectedBank?["name"] ??
+                (localBanks?.isNotEmpty == true
+                    ? localBanks?.first.bankName
+                    : 'Select Bank')))
+        .firstOrNull;
+    logger.d(bank);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -186,8 +206,8 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                           (localBanks?.isNotEmpty == true
                               ? localBanks?.first.bankName
                               : 'Select Bank'),
-                      status: selectedBank?["status"] ?? 'Poor Network',
-                      percentage: selectedBank?["percentage"] ?? '90',
+                      status: bank?.status ?? '',
+                      percentage: "${bank?.strength ?? 100}%",
                       actNumber: selectedBank?["actNumber"] ??
                           (localBanks?.isNotEmpty == true
                               ? localBanks?.first.accountNumber
@@ -325,26 +345,36 @@ class AddBankScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final userProfileAsync =
         ref.watch(authenticationControllerProvider).userDetails;
+    final banks = ref.watch(profileControllerProvider).banks.valueOrNull;
     final localBanks = userProfileAsync.valueOrNull?.banks;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final filteredBanks = useState<List<BanlList>>(banks ?? []);
+    useEffect(() {
+      filteredBanks.value = banks ?? [];
+      return null;
+    }, [banks]);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: screenHeight * 0.02, // Adaptive vertical padding
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
             child: Container(
-              width: 48,
-              height: 6,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(2),
                 color: theme.brightness == Brightness.dark
                     ? AppColors.secondaryColor.shade500
                     : Colors.grey.shade300,
               ),
             ),
           ),
-          const Gap(10),
+          Gap(screenHeight * 0.01),
           const Center(
             child: Text(
               "Linked Bank Accounts",
@@ -355,9 +385,9 @@ class AddBankScreen extends HookConsumerWidget {
               ),
             ),
           ),
-          const Gap(23),
+          Gap(screenHeight * 0.02),
           const NetworkStatusIndicator(),
-          const Gap(16),
+          Gap(screenHeight * 0.015),
           RefreshIndicator(
             onRefresh: () async {
               await ref
@@ -367,30 +397,31 @@ class AddBankScreen extends HookConsumerWidget {
             color: AppColors.primaryColor.shade500,
             child: localBanks!.isEmpty
                 ? SizedBox(
-                    height: 200,
+                    height: screenHeight * 0.25,
                     child: ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      children: const [
-                        SizedBox(height: 100),
-                        Center(child: Text("No linked bank accounts.")),
+                      children: [
+                        SizedBox(height: screenHeight * 0.1),
+                        const Center(child: Text("No linked bank accounts.")),
                       ],
                     ),
                   )
                 : SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.5,
+                    height: screenHeight * 0.4,
                     child: ListView(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(screenHeight * 0.015),
                       children: [
                         const Text(
                           "Manage the bank accounts linked to your wallet for withdrawals.",
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w400),
+                              fontSize: 13, fontWeight: FontWeight.w400),
                         ),
-                        const Gap(16),
+                        Gap(screenHeight * 0.015),
                         ...List.generate(localBanks.length, (index) {
                           final bank = localBanks[index];
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
+                            padding:
+                                EdgeInsets.only(bottom: screenHeight * 0.01),
                             child: BankInfoCard(
                               name: bank.bankName ?? "Unknown Bank",
                               actNumber: bank.accountNumber ?? "N/A",
@@ -402,15 +433,17 @@ class AddBankScreen extends HookConsumerWidget {
                                 ref.read(selectedBankProvider.notifier).state =
                                     {
                                   "name": bank.bankName ?? "Unknown Bank",
-                                  "image": PlaceholderAssets
-                                      .gtbank, // or bank.image if available
-                                  "status": "bank.", // or however you derive it
+                                  "image": PlaceholderAssets.gtbank,
+                                  "status": "bank.",
                                   "percentage":
-                                      "92%", // optionally set from your logic
+                                      "${filteredBanks.value.first.strength ?? 100}%",
+                                  "strength":
+                                      filteredBanks.value.first.strength ?? 100,
                                   "actNumber": bank.accountNumber ?? "N/A",
                                   "actName": bank.accountName ?? "N/A",
                                   "bankCode": bank.bankCode ?? "N/A",
                                 };
+
                                 Navigator.pop(context);
                               },
                               delete: () async {
@@ -430,7 +463,7 @@ class AddBankScreen extends HookConsumerWidget {
                     ),
                   ),
           ),
-          const Gap(50),
+          Gap(screenHeight * 0.03),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -444,19 +477,19 @@ class AddBankScreen extends HookConsumerWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor.shade500,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              icon: const Icon(Icons.add, color: Colors.white),
+              icon: const Icon(Icons.add, color: Colors.white, size: 20),
               label: const Text(
                 "Add New Bank Account",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
           ),
-          const Gap(100),
+          const Gap(80),
         ],
       ),
     );
@@ -481,11 +514,11 @@ class AddBankScreen extends HookConsumerWidget {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, color: Colors.blue),
-              SizedBox(width: 12),
+              Icon(Icons.edit, color: Colors.blue, size: 18),
+              SizedBox(width: 8),
               Text(
                 "Edit",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -494,11 +527,11 @@ class AddBankScreen extends HookConsumerWidget {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, color: Colors.red),
-              SizedBox(width: 12),
+              Icon(Icons.delete, color: Colors.red, size: 18),
+              SizedBox(width: 8),
               Text(
                 "Delete",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ],
           ),

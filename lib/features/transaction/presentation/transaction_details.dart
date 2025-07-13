@@ -9,6 +9,7 @@ import 'package:logger/logger.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/transaction/data/model/response/transaction_history/datum.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:screenshot/screenshot.dart';
@@ -160,7 +161,9 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                       text: "Contact Support",
                       width: double.infinity,
                       height: 60,
-                      onPressed: () {},
+                      onPressed: () {
+                        context.router.push(const SupportFaqRoute());
+                      },
                       textColor: theme.brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
@@ -453,7 +456,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
             "breakdown": {
               "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
-              "Total Charged": "10500",
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         } else if (transaction.status?.toLowerCase() == "failed" ||
@@ -710,6 +713,21 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
               "Account Number": transaction.accountNumber ?? '',
               "Reason for Failure": transaction.reason ?? '',
               "Proof of Failure": "View Screenshot",
+            }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Bank Name": transaction.bankName ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Deducted": transaction.metadata?.amount ?? '',
             }
           };
         }

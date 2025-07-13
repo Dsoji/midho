@@ -24,7 +24,7 @@ class DioApiClient implements IApiClient {
       receiveTimeout: 1.minutes,
       contentType: 'application/json',
       validateStatus: _validateStatus,
-      baseUrl: 'https://swiftswapbackend.onrender.com/v1/',
+      baseUrl: 'https://backend.swiftswapexchange.com/',
     );
 
     // set the options

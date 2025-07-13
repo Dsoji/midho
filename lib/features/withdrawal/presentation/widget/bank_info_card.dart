@@ -6,7 +6,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import '../../../../common/res/app_colors.dart';
 
 class BankInfoCard extends HookConsumerWidget {
-  BankInfoCard({
+  const BankInfoCard({
     super.key,
     this.image,
     required this.name,
@@ -27,8 +27,8 @@ class BankInfoCard extends HookConsumerWidget {
   final bool isAddBank;
   final String? image;
   final String name;
-  String? status;
-  String? percentage;
+  final String? status;
+  final String? percentage;
   final String actNumber;
   final String actName;
   final bool showBorder;
@@ -102,9 +102,7 @@ class BankInfoCard extends HookConsumerWidget {
                   ),
                 ),
                 const Gap(12),
-                if (showStrength == true &&
-                    status != null &&
-                    percentage != null) ...[
+                if (percentage != null) ...[
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(

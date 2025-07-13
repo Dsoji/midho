@@ -282,7 +282,7 @@ class BillTransactionDetailsScreen extends StatelessWidget {
             "breakdown": {
               "Provider": transaction.metadata?.vendor?.name ?? '',
               "Account Number": transaction.accountNumber ?? '',
-              "Total Charged": "10500",
+              "Total Charged": transaction.metadata?.amount ?? ''
             }
           };
         } else if (transaction.status?.toLowerCase() == "failed" ||
@@ -362,7 +362,7 @@ class BillTransactionDetailsScreen extends StatelessWidget {
             "breakdown": {
               "Provider": "Ikeja Electric",
               "Account Number": transaction.accountNumber ?? '',
-              "Total Charged": "10500",
+              "Total Charged": transaction.metadata?.amount ?? '',
             }
           };
         }

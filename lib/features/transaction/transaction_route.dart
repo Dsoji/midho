@@ -10,5 +10,8 @@ final transactionRoutes = AutoRoute(
     AutoRoute(
       page: TransactionDetailsRoute.page,
     ),
+    AutoRoute(
+      page: SupportFaqRoute.page,
+    ),
   ],
 );
