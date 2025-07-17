@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 
 import '../../../../common/res/app_colors.dart';
+
+final logger = Logger();
 
 class BankInfoCard extends HookConsumerWidget {
   const BankInfoCard({
@@ -42,12 +45,13 @@ class BankInfoCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    logger.d(percentage);
 
     final int parsedPercentage =
         int.tryParse(percentage?.replaceAll('%', '') ?? '') ?? 0;
-    final Color color = parsedPercentage <= 33
+    final Color color = parsedPercentage <= 49
         ? Colors.red
-        : parsedPercentage <= 66
+        : parsedPercentage <= 79
             ? Colors.amber
             : Colors.green;
 
@@ -237,9 +241,9 @@ class BankInfoCard2 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final color = int.parse(percentage.replaceAll('%', '')) <= 33
+    final color = int.parse(percentage.replaceAll('%', '')) <= 49
         ? Colors.red
-        : int.parse(percentage.replaceAll('%', '')) <= 66
+        : int.parse(percentage.replaceAll('%', '')) <= 79
             ? Colors.amber
             : Colors.green;
     return GestureDetector(
