@@ -46,5 +46,8 @@ final homeRoutes = AutoRoute(
     AutoRoute(
       page: BillTransactionDetailsRoute.page,
     ),
+    AutoRoute(
+      page: SupportFaqRoute.page,
+    ),
   ],
 );

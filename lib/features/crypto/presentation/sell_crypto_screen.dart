@@ -204,6 +204,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   nodeText1,
                                   isEditingUSD,
                                   isEditingNGN,
+                                  false,
                                 ),
                                 const Gap(4),
                                 _buildCurrencyField(
@@ -218,6 +219,7 @@ class SellCryptoScreen extends HookConsumerWidget {
                                   nodeText2,
                                   isEditingUSD,
                                   isEditingNGN,
+                                  true,
                                 ),
                               ],
                             ),
@@ -313,6 +315,7 @@ class SellCryptoScreen extends HookConsumerWidget {
     FocusNode? focusNode,
     ValueNotifier<bool> isEditingUSD,
     ValueNotifier<bool> isEditingNGN,
+    bool readOnly,
   ) {
     final theme = Theme.of(context);
     return Container(
@@ -363,6 +366,7 @@ class SellCryptoScreen extends HookConsumerWidget {
             children: [
               Expanded(
                 child: TextField(
+                  readOnly: readOnly,
                   focusNode: focusNode,
                   controller: controller,
                   keyboardType: const TextInputType.numberWithOptions(

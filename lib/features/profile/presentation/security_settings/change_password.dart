@@ -7,6 +7,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/toast/toast.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
@@ -105,28 +106,28 @@ class ChangePasswordScreen extends HookConsumerWidget {
                   FullButton(
                     isLoading: ref
                         .watch(authenticationControllerProvider)
-                        .resetPin
+                        .forgotPassword
                         .isLoading,
                     text: "Save Changes",
                     width: double.infinity,
                     height: 48,
                     onPressed: () async {
-                      Navigator.pop(context);
-                      // if (confirmPswrdController.text.trim() ==
-                      //     newPswrdController.text.trim()) {
-                      //   final result = await authService.changePassword(
-                      //     newPswrdController.text.trim(),
-                      //     pswrdController.text.trim(),
-                      //   );
-                      //   if (result == true) {
-                      //     Navigator.pop(context);
-                      //   }
-                      // } else {
-                      //   ToastService().showToast(
-                      //     NotificationType.info,
-                      //     message: 'Passwords do not match.',
-                      //   );
-                      // }
+                      // Navigator.pop(context);
+                      if (confirmPswrdController.text.trim() ==
+                          newPswrdController.text.trim()) {
+                        final result = await authService.changePassword(
+                          newPswrdController.text.trim(),
+                          pswrdController.text.trim(),
+                        );
+                        if (result == true) {
+                          Navigator.pop(context);
+                        }
+                      } else {
+                        ToastService().showToast(
+                          NotificationType.info,
+                          message: 'Passwords do not match.',
+                        );
+                      }
                     },
                     textColor: Colors.white,
                     color: AppColors.primaryColor.shade500,
