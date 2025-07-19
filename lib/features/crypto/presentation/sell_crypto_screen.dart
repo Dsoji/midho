@@ -367,7 +367,6 @@ class SellCryptoScreen extends HookConsumerWidget {
               Expanded(
                 child: TextField(
                   readOnly: readOnly,
-                  focusNode: focusNode,
                   controller: controller,
                   keyboardType: const TextInputType.numberWithOptions(
                       decimal: true, signed: true),
