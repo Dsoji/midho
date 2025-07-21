@@ -429,7 +429,9 @@ class WithdrawalFailedDialog extends StatelessWidget {
 
           // Back to Dashboard
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              context.router.push(const SupportFaqRoute());
+            },
             child: Text(
               "Contact Support",
               style: TextStyle(

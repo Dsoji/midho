@@ -16,5 +16,8 @@ final giftCardRoutes = AutoRoute(
     AutoRoute(
       page: GiftStandAloneTransactionDetailsRoute.page,
     ),
+    AutoRoute(
+      page: SupportFaqRoute.page,
+    ),
   ],
 );

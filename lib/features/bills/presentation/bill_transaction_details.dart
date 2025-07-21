@@ -128,7 +128,9 @@ class BillTransactionDetailsScreen extends StatelessWidget {
                 text: "Contact Support",
                 width: double.infinity,
                 height: 60,
-                onPressed: () {},
+                onPressed: () {
+                  context.router.push(const SupportFaqRoute());
+                },
                 textColor: theme.brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,

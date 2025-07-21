@@ -16,5 +16,8 @@ final cryptoRoutes = AutoRoute(
     AutoRoute(
       page: StandAloneTransactionDetailsRoute.page,
     ),
+    AutoRoute(
+      page: SupportFaqRoute.page,
+    ),
   ],
 );
