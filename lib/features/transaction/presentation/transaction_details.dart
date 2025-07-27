@@ -744,6 +744,7 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
 
     return details;
   }
+
 }
 
 class ViewScreenshotButton extends HookWidget with ShareMixin {

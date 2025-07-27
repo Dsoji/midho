@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -74,242 +75,251 @@ class WithdrawFundsScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              const Text(
-                'Transfer your wallet balance securely to your bank account. Check bank network status before proceeding.',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                ),
-              ),
-              const Gap(16),
-              Container(
-                padding: const EdgeInsets.all(24),
-                width: double.infinity,
-                decoration: ShapeDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
-                      : Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+        },
+        behavior: HitTestBehavior.translucent,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                const Text(
+                  'Transfer your wallet balance securely to your bank account. Check bank network status before proceeding.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Available Balance',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
-                      ),
+                const Gap(16),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  width: double.infinity,
+                  decoration: ShapeDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    const Gap(8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        RichText(
-                          text: isBalanceVisible
-                              ? TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          '${userInfo?.wallet?.currency ?? ''} ',
-                                      style: TextStyle(
-                                        color:
-                                            theme.brightness == Brightness.dark
-                                                ? Colors.white
-                                                : Colors.black,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: '',
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          '${userInfo?.wallet?.mainBalance ?? 0}'
-                                              .commaFormat(),
-                                      style: TextStyle(
-                                        color:
-                                            theme.brightness == Brightness.dark
-                                                ? Colors.white
-                                                : Colors.black,
-                                        fontSize: 29,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: '',
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const TextSpan(
-                                  text: "••••••••",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 29,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: '',
-                                  ),
-                                ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Available Balance',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                         ),
-                        const Gap(8),
-                        Container(
-                          width: 21,
-                          height: 21,
-                          decoration: ShapeDecoration(
-                            color: theme.brightness == Brightness.dark
-                                ? AppColors.secondaryColor.shade400
-                                : AppColors.whiteColor.shade50,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
+                      ),
+                      const Gap(8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          RichText(
+                            text: isBalanceVisible
+                                ? TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            '${userInfo?.wallet?.currency ?? ''} ',
+                                        style: TextStyle(
+                                          color: theme.brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: '',
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            '${userInfo?.wallet?.mainBalance ?? 0}'
+                                                .commaFormat(),
+                                        style: TextStyle(
+                                          color: theme.brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 29,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: '',
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : const TextSpan(
+                                    text: "••••••••",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 29,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: '',
+                                    ),
+                                  ),
                           ),
-                          child: GestureDetector(
-                            onTap: () => ref
-                                .read(balanceVisibilityProvider.notifier)
-                                .toggleVisibility(),
-                            child: Icon(
-                              isBalanceVisible
-                                  ? IconsaxPlusLinear.eye
-                                  : IconsaxPlusLinear.eye_slash,
-                              size: 12,
+                          const Gap(8),
+                          Container(
+                            width: 21,
+                            height: 21,
+                            decoration: ShapeDecoration(
                               color: theme.brightness == Brightness.dark
-                                  ? Colors.white54
-                                  : Colors.black,
+                                  ? AppColors.secondaryColor.shade400
+                                  : AppColors.whiteColor.shade50,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5)),
+                            ),
+                            child: GestureDetector(
+                              onTap: () => ref
+                                  .read(balanceVisibilityProvider.notifier)
+                                  .toggleVisibility(),
+                              child: Icon(
+                                isBalanceVisible
+                                    ? IconsaxPlusLinear.eye
+                                    : IconsaxPlusLinear.eye_slash,
+                                size: 12,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white54
+                                    : Colors.black,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const Gap(24),
-                    Text(
-                      'Select Bank Account',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
+                        ],
                       ),
-                    ),
-                    const Gap(8),
-                    BankInfoCard(
-                      showStrength: false,
-                      image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
-                      name: selectedBank?["name"] ??
-                          (localBanks?.isNotEmpty == true
-                              ? localBanks?.first.bankName
-                              : 'Select Bank'),
-                      status: bank?.status ?? '',
-                      percentage: "${bank?.strength ?? 100}%",
-                      actNumber: selectedBank?["actNumber"] ??
-                          (localBanks?.isNotEmpty == true
-                              ? localBanks?.first.accountNumber
-                              : 'N/A'),
-                      actName: selectedBank?["actName"] ??
-                          (localBanks?.isNotEmpty == true
-                              ? localBanks?.first.accountName
-                              : 'N/A'),
-                      onTap: () => _showAddBankDetailsSheet(context),
-                    ),
-                    const Gap(24),
-                    InfoWidget(
-                      theme: theme,
-                      text:
-                          'Select a bank with good network status for faster processing.',
-                    ),
-                    const Gap(24),
-                    CustomTextField(
-                      controller: amountController,
-                      label: "Amount",
-                      // Optional
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          Validators.requiredField(value, "Amount"),
-                    ),
-                    const Gap(24),
-                    InfoWidget(
-                      theme: theme,
-                      text:
-                          'Enter an amount less than or equal to your wallet balance.',
-                    ),
-                    const Gap(24),
-                    FullButton(
-                      text: "Continue",
-                      width: double.infinity,
-                      height: 48,
-                      onPressed: () {
-                        if (!formKey.currentState!.validate()) {
-                          return;
-                        }
+                      const Gap(24),
+                      Text(
+                        'Select Bank Account',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      const Gap(8),
+                      BankInfoCard(
+                        showStrength: false,
+                        image:
+                            selectedBank?["image"] ?? PlaceholderAssets.gtbank,
+                        name: selectedBank?["name"] ??
+                            (localBanks?.isNotEmpty == true
+                                ? localBanks?.first.bankName
+                                : 'Select Bank'),
+                        status: bank?.status ?? '',
+                        percentage: "${bank?.strength ?? 100}%",
+                        actNumber: selectedBank?["actNumber"] ??
+                            (localBanks?.isNotEmpty == true
+                                ? localBanks?.first.accountNumber
+                                : 'N/A'),
+                        actName: selectedBank?["actName"] ??
+                            (localBanks?.isNotEmpty == true
+                                ? localBanks?.first.accountName
+                                : 'N/A'),
+                        onTap: () => _showAddBankDetailsSheet(context),
+                      ),
+                      const Gap(24),
+                      InfoWidget(
+                        theme: theme,
+                        text:
+                            'Select a bank with good network status for faster processing.',
+                      ),
+                      const Gap(24),
+                      CustomTextField(
+                        controller: amountController,
+                        label: "Amount",
+                        // Optional
+                        keyboardType: TextInputType.number,
+                        validator: (value) =>
+                            Validators.requiredField(value, "Amount"),
+                      ),
+                      const Gap(24),
+                      InfoWidget(
+                        theme: theme,
+                        text:
+                            'Enter an amount less than or equal to your wallet balance.',
+                      ),
+                      const Gap(24),
+                      FullButton(
+                        text: "Continue",
+                        width: double.infinity,
+                        height: 48,
+                        onPressed: () {
+                          if (!formKey.currentState!.validate()) {
+                            return;
+                          }
 
-                        if (int.parse(amountController.text.trim()) >
-                            (userInfo?.wallet?.mainBalance ?? 0)) {
-                          ToastService().showToast(
-                            NotificationType.error,
-                            message: 'Insufficient balance',
-                          );
-                          return;
-                        }
+                          if (int.parse(amountController.text.trim()) >
+                              (userInfo?.wallet?.mainBalance ?? 0)) {
+                            ToastService().showToast(
+                              NotificationType.error,
+                              message: 'Insufficient balance',
+                            );
+                            return;
+                          }
 
-                        if (int.parse(amountController.text.trim()) < 50 ||
-                            int.parse(amountController.text.trim()) > 5000000) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message:
-                                'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
-                          );
-                          return;
-                        }
+                          if (int.parse(amountController.text.trim()) < 50 ||
+                              int.parse(amountController.text.trim()) >
+                                  5000000) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message:
+                                  'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
+                            );
+                            return;
+                          }
 
-                        final acctNo = selectedBank?["actNumber"] ??
-                            localBanks?.first.accountNumber ??
-                            '';
-                        final acctName = selectedBank?["actName"] ??
-                            localBanks?.first.accountName ??
-                            '';
-                        final bankName = selectedBank?["name"] ??
-                            localBanks?.first.bankName ??
-                            '';
-                        final bankCode = selectedBank?["bankCode"] ??
-                            localBanks?.first.bankCode ??
-                            '';
+                          final acctNo = selectedBank?["actNumber"] ??
+                              localBanks?.first.accountNumber ??
+                              '';
+                          final acctName = selectedBank?["actName"] ??
+                              localBanks?.first.accountName ??
+                              '';
+                          final bankName = selectedBank?["name"] ??
+                              localBanks?.first.bankName ??
+                              '';
+                          final bankCode = selectedBank?["bankCode"] ??
+                              localBanks?.first.bankCode ??
+                              '';
 
-                        if (bankName.isEmpty ||
-                            acctNo.isEmpty ||
-                            acctName.isEmpty ||
-                            bankCode.isEmpty) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Please select valid bank details.',
-                          );
-                          return;
-                        }
+                          if (bankName.isEmpty ||
+                              acctNo.isEmpty ||
+                              acctName.isEmpty ||
+                              bankCode.isEmpty) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message: 'Please select valid bank details.',
+                            );
+                            return;
+                          }
 
-                        context.router.push(TransactinRoute(
-                          isHome: true,
-                          acctNo: acctNo,
-                          referall: false,
-                          accountName: acctName,
-                          bankName: bankName,
-                          bankCode: bankCode,
-                          amount: int.parse(amountController.text.trim()),
-                        ));
-                      },
-                      textColor: Colors.white,
-                      color: AppColors.primaryColor.shade500,
-                    ),
-                  ],
+                          context.router.push(TransactinRoute(
+                            isHome: true,
+                            acctNo: acctNo,
+                            referall: false,
+                            accountName: acctName,
+                            bankName: bankName,
+                            bankCode: bankCode,
+                            amount: int.parse(amountController.text.trim()),
+                          ));
+                        },
+                        textColor: Colors.white,
+                        color: AppColors.primaryColor.shade500,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Gap(150),
-            ],
+                const Gap(150),
+              ],
+            ),
           ),
         ),
       ),

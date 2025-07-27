@@ -511,20 +511,53 @@ class BillTransactionDetailsScreen extends StatelessWidget {
         }
         break;
       case "WITHDRAWAL":
-        details = {
-          "transactionId": transaction.id,
-          "dateTime": transaction.createdAt!.formatToReadableDateTime(),
-          "amount":
-              "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
-                  .commaFormat(),
-          "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
-              .commaFormat(),
-          "breakdown": {
-            "Bank Name": transaction.metadata?.vendor?.name ?? '',
-            "Account Number": transaction.accountNumber ?? '',
-            "Total Deducted": transaction.metadata?.amount ?? '',
-          }
-        };
+        if (transaction.status?.toLowerCase() == "completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Bank Name": transaction.bankName ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Deducted": transaction.metadata?.amount ?? '',
+            }
+          };
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Bank Name": transaction.bankName ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Deducted": transaction.metadata?.amount ?? '',
+            }
+          };
+        } else if (transaction.status?.toLowerCase() == "pending") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            "breakdown": {
+              "Bank Name": transaction.bankName ?? '',
+              "Account Number": transaction.accountNumber ?? '',
+              "Total Deducted": transaction.metadata?.amount ?? '',
+            }
+          };
+        }
         break;
       default:
         details = {

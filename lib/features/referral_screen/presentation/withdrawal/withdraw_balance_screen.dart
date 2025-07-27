@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -70,140 +71,149 @@ class WithdrawReferallScreen extends HookConsumerWidget {
         showAction: false,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              const Text(
-                'Transfer referral earnings to your local bank.',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                ),
-              ),
-              const Gap(16),
-              Container(
-                padding: const EdgeInsets.all(24),
-                width: double.infinity,
-                decoration: ShapeDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade500
-                      : Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+        },
+        behavior: HitTestBehavior.translucent,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                const Text(
+                  'Transfer referral earnings to your local bank.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Select Bank Account',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
+                const Gap(16),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  width: double.infinity,
+                  decoration: ShapeDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Select Bank Account',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                        ),
                       ),
-                    ),
-                    const Gap(8),
-                    BankInfoCard(
-                      showStrength: false,
-                      image: selectedBank?["image"] ?? PlaceholderAssets.gtbank,
-                      name: selectedBank?["name"] ??
-                          (localBanks?.isNotEmpty == true
-                              ? localBanks?.first.bankName
-                              : 'Select Bank'),
-                      status: bank?.status ?? '',
-                      percentage: "${bank?.strength ?? 100}%",
-                      actNumber: selectedBank?["actNumber"] ??
-                          (localBanks?.isNotEmpty == true
-                              ? localBanks?.first.accountNumber
-                              : 'N/A'),
-                      actName: selectedBank?["actName"] ??
-                          (localBanks?.isNotEmpty == true
-                              ? localBanks?.first.accountName
-                              : 'N/A'),
-                      onTap: () => _showAddBankDetailsSheet(context),
-                    ),
-                    const Gap(24),
-                    CustomTextField(
-                      controller: amountController,
-                      label: "Amount",
-                      // Optional
-                      keyboardType: TextInputType.number,
-                    ),
-                    const Gap(24),
-                    FullButton(
-                      text: "Continue",
-                      width: double.infinity,
-                      height: 48,
-                      onPressed: () {
-                        if (!formKey.currentState!.validate()) {
-                          return;
-                        }
+                      const Gap(8),
+                      BankInfoCard(
+                        showStrength: false,
+                        image:
+                            selectedBank?["image"] ?? PlaceholderAssets.gtbank,
+                        name: selectedBank?["name"] ??
+                            (localBanks?.isNotEmpty == true
+                                ? localBanks?.first.bankName
+                                : 'Select Bank'),
+                        status: bank?.status ?? '',
+                        percentage: "${bank?.strength ?? 100}%",
+                        actNumber: selectedBank?["actNumber"] ??
+                            (localBanks?.isNotEmpty == true
+                                ? localBanks?.first.accountNumber
+                                : 'N/A'),
+                        actName: selectedBank?["actName"] ??
+                            (localBanks?.isNotEmpty == true
+                                ? localBanks?.first.accountName
+                                : 'N/A'),
+                        onTap: () => _showAddBankDetailsSheet(context),
+                      ),
+                      const Gap(24),
+                      CustomTextField(
+                        controller: amountController,
+                        label: "Amount",
+                        // Optional
+                        keyboardType: TextInputType.number,
+                      ),
+                      const Gap(24),
+                      FullButton(
+                        text: "Continue",
+                        width: double.infinity,
+                        height: 48,
+                        onPressed: () {
+                          if (!formKey.currentState!.validate()) {
+                            return;
+                          }
 
-                        if (int.parse(amountController.text.trim()) >
-                            (referralBalance ?? 0)) {
-                          ToastService().showToast(
-                            NotificationType.error,
-                            message: 'Insufficient balance',
-                          );
-                          return;
-                        }
+                          if (int.parse(amountController.text.trim()) >
+                              (referralBalance ?? 0)) {
+                            ToastService().showToast(
+                              NotificationType.error,
+                              message: 'Insufficient balance',
+                            );
+                            return;
+                          }
 
-                        if (int.parse(amountController.text.trim()) < 50 ||
-                            int.parse(amountController.text.trim()) > 5000000) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message:
-                                'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
-                          );
-                          return;
-                        }
-                        final acctNo = selectedBank?["actNumber"] ??
-                            localBanks?.first.accountNumber ??
-                            '';
-                        final acctName = selectedBank?["actName"] ??
-                            localBanks?.first.accountName ??
-                            '';
-                        final bankName = selectedBank?["name"] ??
-                            localBanks?.first.bankName ??
-                            '';
-                        final bankCode = selectedBank?["bankCode"] ??
-                            localBanks?.first.bankCode ??
-                            '';
+                          if (int.parse(amountController.text.trim()) < 50 ||
+                              int.parse(amountController.text.trim()) >
+                                  5000000) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message:
+                                  'Withdrawal amount must be between NGN 100 and NGN 5,000,000',
+                            );
+                            return;
+                          }
+                          final acctNo = selectedBank?["actNumber"] ??
+                              localBanks?.first.accountNumber ??
+                              '';
+                          final acctName = selectedBank?["actName"] ??
+                              localBanks?.first.accountName ??
+                              '';
+                          final bankName = selectedBank?["name"] ??
+                              localBanks?.first.bankName ??
+                              '';
+                          final bankCode = selectedBank?["bankCode"] ??
+                              localBanks?.first.bankCode ??
+                              '';
 
-                        if (bankName.isEmpty ||
-                            acctNo.isEmpty ||
-                            acctName.isEmpty ||
-                            bankCode.isEmpty) {
-                          ToastService().showToast(
-                            NotificationType.info,
-                            message: 'Please select valid bank details.',
-                          );
-                          return;
-                        }
-                        context.router.push(TransactinRoute(
-                          isHome: false,
-                          acctNo: acctNo,
-                          amount: int.parse(amountController.text.trim()),
-                          referall: true,
-                          accountName: acctName,
-                          bankName: bankName,
-                          bankCode: bankCode,
-                        ));
-                      },
-                      textColor: Colors.white,
-                      color: AppColors.primaryColor.shade500,
-                    ),
-                  ],
+                          if (bankName.isEmpty ||
+                              acctNo.isEmpty ||
+                              acctName.isEmpty ||
+                              bankCode.isEmpty) {
+                            ToastService().showToast(
+                              NotificationType.info,
+                              message: 'Please select valid bank details.',
+                            );
+                            return;
+                          }
+                          context.router.push(TransactinRoute(
+                            isHome: false,
+                            acctNo: acctNo,
+                            amount: int.parse(amountController.text.trim()),
+                            referall: true,
+                            accountName: acctName,
+                            bankName: bankName,
+                            bankCode: bankCode,
+                          ));
+                        },
+                        textColor: Colors.white,
+                        color: AppColors.primaryColor.shade500,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Gap(150),
-            ],
+                const Gap(150),
+              ],
+            ),
           ),
         ),
       ),
