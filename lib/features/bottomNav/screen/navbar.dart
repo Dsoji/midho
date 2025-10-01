@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
@@ -23,7 +24,8 @@ class NaviBarScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
+    final userDetails = ref.watch(authenticationControllerProvider).userDetails;
+    final isEcode = userDetails.value?.ecode ?? false;
     useEffect(() {
       final box = Hive.box('data');
       box.put('is_auth', false);
@@ -48,12 +50,12 @@ class NaviBarScreen extends HookConsumerWidget {
     }, []);
 
     return AutoTabsRouter(
-      routes: const [
-        HomeRoute(),
-        CryptoRoute(),
-        TransactionHistoryRoute(),
-        GiftCardRoute(),
-        ProfileRoute(),
+      routes: [
+        const HomeRoute(),
+        const CryptoRoute(),
+        const TransactionHistoryRoute(),
+        if (isEcode) const GiftCardRoute(),
+        const ProfileRoute(),
       ],
       builder: (context, child) {
         final tabsRouter = AutoTabsRouter.of(context);
@@ -87,10 +89,8 @@ class NaviBarScreen extends HookConsumerWidget {
                     ? AppColors.darkBorder
                     : Colors.white,
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(5, (index) {
+              child: Builder(
+                builder: (context) {
                   final items = [
                     {
                       'icon': IconsaxPlusBold.home_2,
@@ -106,11 +106,12 @@ class NaviBarScreen extends HookConsumerWidget {
                       'imagePath': ImageAssets.logo2,
                       'label': 'Transactions',
                     },
-                    {
-                      'icon': HugeIcons.strokeRoundedGiftCard,
-                      'inactiveIcon': HugeIcons.strokeRoundedGiftCard,
-                      'label': 'Gift Cards',
-                    },
+                    if (isEcode)
+                      {
+                        'icon': HugeIcons.strokeRoundedGiftCard,
+                        'inactiveIcon': HugeIcons.strokeRoundedGiftCard,
+                        'label': 'Gift Cards',
+                      },
                     {
                       'icon': HugeIcons.strokeRoundedUser,
                       'inactiveIcon': HugeIcons.strokeRoundedUser,
@@ -118,17 +119,23 @@ class NaviBarScreen extends HookConsumerWidget {
                     },
                   ];
 
-                  return BottomNav(
-                    index: index,
-                    onTap: () => tabsRouter.setActiveIndex(index),
-                    icon: items[index]['icon'] as IconData?,
-                    imagePath: items[index]['imagePath'] as String?,
-                    label: items[index]['label'] as String,
-                    color: activeIndex == index
-                        ? AppColors.primaryColor.shade500
-                        : AppColors.secondaryColor.shade200,
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(items.length, (index) {
+                      return BottomNav(
+                        index: index,
+                        onTap: () => tabsRouter.setActiveIndex(index),
+                        icon: items[index]['icon'] as IconData?,
+                        imagePath: items[index]['imagePath'] as String?,
+                        label: items[index]['label'] as String,
+                        color: activeIndex == index
+                            ? AppColors.primaryColor.shade500
+                            : AppColors.secondaryColor.shade200,
+                      );
+                    }),
                   );
-                }),
+                },
               ),
             ),
           ),

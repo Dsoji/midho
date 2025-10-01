@@ -42,6 +42,8 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
     final conversionRate = useState<num?>(0); // Start with 0
     final rateId = useState<String?>(null);
     final availableCurrencies = useState<List<String>>([]);
+    final userDetails = ref.watch(authenticationControllerProvider).userDetails;
+    final isEcode = userDetails.value?.ecode ?? false;
 
     final selectedCategory = useState<String>("Select Sub-Category");
     void showDataPlanSheet(BuildContext context) {
@@ -67,7 +69,7 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       );
     }
 
-    final tabController = useTabController(initialLength: 2);
+    final tabController = useTabController(initialLength: isEcode ? 2 : 1);
     final currentTab = useState(0);
 
 // Listen to tab changes and update currentTab
@@ -98,10 +100,15 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
         if (selectedRate.value != null) {
           final matchedRate = selectedRate.value!;
 
-          // Update conversion rate based on current tab
-          conversionRate.value = currentTab.value == 0
-              ? matchedRate.ecodeRate ?? 0.0
-              : matchedRate.rate ?? 0.0;
+          // Update conversion rate based on current tab or isEcode status
+          if (isEcode) {
+            conversionRate.value = currentTab.value == 0
+                ? matchedRate.ecodeRate ?? 0.0
+                : matchedRate.rate ?? 0.0;
+          } else {
+            // When E-Code is disabled, always use physical card rate
+            conversionRate.value = matchedRate.rate ?? 0.0;
+          }
 
           rateId.value = matchedRate.id;
           exchangeCurrency.value = matchedRate.exchangeCurrency ?? '';
@@ -114,7 +121,13 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
       }
 
       return null;
-    }, [selectedPlan.value, currentTab.value, rates, selectedRate.value]);
+    }, [
+      selectedPlan.value,
+      currentTab.value,
+      rates,
+      selectedRate.value,
+      isEcode
+    ]);
 
     useEffect(() {
       if (rates != null && rates.isNotEmpty) {
@@ -341,60 +354,63 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                       ),
                     ),
                     const Gap(24),
-                    Container(
-                      height: 48,
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: theme.brightness == Brightness.dark
-                            ? AppColors.secondaryColor.shade700
-                            : const Color(0xFFF7F7F7),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: SegmentedTabControl(
-                          tabPadding: const EdgeInsets.all(0),
-                          controller: tabController,
-                          indicatorPadding: const EdgeInsets.all(0),
-                          barDecoration: BoxDecoration(
-                            color: theme.brightness == Brightness.dark
-                                ? AppColors.secondaryColor.shade500
-                                : AppColors.greyColor.shade600,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          indicatorDecoration: BoxDecoration(
-                            color: theme.brightness == Brightness.dark
-                                ? AppColors.darkBorder
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          tabs: [
-                            SegmentTab(
-                              label: 'E-Code',
-                              backgroundColor: Colors.transparent,
-                              selectedTextColor:
-                                  theme.brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                              textColor: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black54,
+                    // Only show segmented control if E-Code is enabled
+                    if (isEcode) ...[
+                      Container(
+                        height: 48,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade700
+                              : const Color(0xFFF7F7F7),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: SegmentedTabControl(
+                            tabPadding: const EdgeInsets.all(0),
+                            controller: tabController,
+                            indicatorPadding: const EdgeInsets.all(0),
+                            barDecoration: BoxDecoration(
+                              color: theme.brightness == Brightness.dark
+                                  ? AppColors.secondaryColor.shade500
+                                  : AppColors.greyColor.shade600,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            SegmentTab(
-                              label: 'Physical Card',
-                              backgroundColor: Colors.transparent,
-                              selectedTextColor:
-                                  theme.brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                              textColor: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black54,
+                            indicatorDecoration: BoxDecoration(
+                              color: theme.brightness == Brightness.dark
+                                  ? AppColors.darkBorder
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          ],
+                            tabs: [
+                              SegmentTab(
+                                label: 'E-Code',
+                                backgroundColor: Colors.transparent,
+                                selectedTextColor:
+                                    theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                textColor: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black54,
+                              ),
+                              SegmentTab(
+                                label: 'Physical Card',
+                                backgroundColor: Colors.transparent,
+                                selectedTextColor:
+                                    theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                textColor: theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black54,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const Gap(24),
+                      const Gap(24),
+                    ],
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text('Sub-Category',
@@ -690,7 +706,9 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                             amount:
                                 int.tryParse(usdController.text.trim()) ?? 0,
                             rates: selectedRate.value?.id,
-                            isCode: tabController.index == 0 ? true : false,
+                            isCode: isEcode
+                                ? (tabController.index == 0 ? true : false)
+                                : false,
                             currency: selectedPlan.value,
                           ),
                         );

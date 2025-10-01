@@ -4,6 +4,9 @@ import 'bank.dart';
 import 'wallet.dart';
 
 class UserProfileModel {
+  String? medium;
+  bool? deleted;
+  bool? ecode;
   String? id;
   String? email;
   String? firstname;
@@ -23,6 +26,9 @@ class UserProfileModel {
   Wallet? wallet;
 
   UserProfileModel({
+    this.medium,
+    this.deleted,
+    this.ecode,
     this.id,
     this.email,
     this.firstname,
@@ -49,6 +55,9 @@ class UserProfileModel {
 
   factory UserProfileModel.fromMap(Map<String, dynamic> data) {
     return UserProfileModel(
+      medium: data['medium'] as String?,
+      deleted: data['deleted'] as bool?,
+      ecode: data['ecode'] as bool?,
       id: data['_id'] as String?,
       email: data['email'] as String?,
       firstname: data['firstname'] as String?,
@@ -78,6 +87,9 @@ class UserProfileModel {
   }
 
   Map<String, dynamic> toMap() => {
+        'medium': medium,
+        'deleted': deleted,
+        'ecode': ecode,
         '_id': id,
         'email': email,
         'firstname': firstname,
@@ -111,6 +123,9 @@ class UserProfileModel {
   String toJson() => json.encode(toMap());
 
   UserProfileModel copyWith({
+    String? medium,
+    bool? deleted,
+    bool? ecode,
     String? id,
     String? email,
     String? firstname,
@@ -130,6 +145,9 @@ class UserProfileModel {
     Wallet? wallet,
   }) {
     return UserProfileModel(
+      medium: medium ?? this.medium,
+      deleted: deleted ?? this.deleted,
+      ecode: ecode ?? this.ecode,
       id: id ?? this.id,
       email: email ?? this.email,
       firstname: firstname ?? this.firstname,

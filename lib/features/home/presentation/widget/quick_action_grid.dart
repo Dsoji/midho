@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/toast/toast.dart';
@@ -28,6 +29,8 @@ class QuickActionsGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final userDetails = ref.watch(authenticationControllerProvider).userDetails;
+    final isEcode = userDetails.value?.ecode ?? false;
     final quickActionsProvider = Provider<List<ActionItem>>((ref) {
       return [
         ActionItem(
@@ -44,20 +47,22 @@ class QuickActionsGrid extends ConsumerWidget {
             tabsRouter.setActiveIndex(1);
           },
         ),
-        ActionItem(
-          HugeIcons.strokeRoundedGiftCard,
-          "Sell Gift Cards",
-          theme.brightness == Brightness.dark
-              ? const Color(0xFF00E18E)
-              : AppColors.primaryColor,
-          onTap: () {
-            final tabsRouter = AutoTabsRouter.of(
-              context,
-            );
+        if (isEcode == true) ...[
+          ActionItem(
+            HugeIcons.strokeRoundedGiftCard,
+            "Sell Gift Cards",
+            theme.brightness == Brightness.dark
+                ? const Color(0xFF00E18E)
+                : AppColors.primaryColor,
+            onTap: () {
+              final tabsRouter = AutoTabsRouter.of(
+                context,
+              );
 
-            tabsRouter.setActiveIndex(3);
-          },
-        ),
+              tabsRouter.setActiveIndex(3);
+            },
+          ),
+        ],
         ActionItem(
           HugeIcons.strokeRoundedSmartPhone01,
           "Buy Airtime",
