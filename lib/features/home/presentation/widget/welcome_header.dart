@@ -14,7 +14,7 @@ class WelcomeHeader extends HookConsumerWidget {
     final theme = Theme.of(context);
 
     final userInfo = ref.watch(authenticationControllerProvider).userDetails;
-
+    final isEcode = userInfo.value?.ecode ?? false;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -31,13 +31,21 @@ class WelcomeHeader extends HookConsumerWidget {
             children: [
               // Avatar
               GestureDetector(
-                onTap: () {
-                  final tabsRouter = AutoTabsRouter.of(
-                    context,
-                  );
-
-                  tabsRouter.setActiveIndex(4);
-                },
+                onTap: isEcode
+                    ? () {
+                        final tabsRouter = AutoTabsRouter.of(
+                          context,
+                        );
+                        tabsRouter.setActiveIndex(
+                            4); // ecode -> GiftCard present -> Profile at 4
+                      }
+                    : () {
+                        final tabsRouter = AutoTabsRouter.of(
+                          context,
+                        );
+                        tabsRouter
+                            .setActiveIndex(3); // no GiftCard -> Profile at 3
+                      },
                 child: Container(
                   height: 48,
                   width: 48,
