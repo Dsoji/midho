@@ -130,7 +130,7 @@ class TransactionRepository {
   Future<Result<FailureHandler, GiftCartTransaction>> sellCrypto({
     String? id,
     String? name,
-    int? amount,
+    double? amount,
     String? comment,
     List<String>? files,
   }) async {

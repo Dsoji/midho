@@ -19,7 +19,8 @@ class TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    logger.d(
+        "${transactions.exchangeCurrency} ${((transactions.amount ?? 0) * (transactions.rate ?? 0)) - (transactions.fee ?? 0)}");
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -110,7 +111,7 @@ class TransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "${transactions.exchangeCurrency} ${(transactions.amount ?? 0) * (transactions.rate ?? 0) - (transactions.fee ?? 0)}"
+                  "${transactions.exchangeCurrency} ${((transactions.amount ?? 0) * (transactions.rate ?? 0)) - (transactions.fee ?? 0)}"
                       .commaFormat(),
                   style: TextStyle(
                     fontSize: 12,

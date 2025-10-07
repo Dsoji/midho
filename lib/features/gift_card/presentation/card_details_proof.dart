@@ -48,7 +48,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
     final picker = ImagePicker();
 
     Future<void> pickImage() async {
-      if (imageFiles.value.length >= 3) return; // Enforce max limit of 3
+      if (imageFiles.value.length >= 12) return; // Enforce max limit of 3
 
       final pickedFiles = await picker.pickMultiImage();
       final newImages = pickedFiles
@@ -56,7 +56,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
           .where((file) => !imageFiles.value.contains(file))
           .toList();
 
-      imageFiles.value = [...imageFiles.value, ...newImages].take(3).toList();
+      imageFiles.value = [...imageFiles.value, ...newImages].take(12).toList();
     }
 
     void removeImage(int index) {
@@ -163,7 +163,9 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                     const Gap(16),
                     InfoWidget(
                       theme: theme,
-                      text: 'Ensure the codes are visible to avoid delays.',
+                      text: isCode
+                          ? 'Ensure the codes are visible to avoid delays.'
+                          : 'Minimum of 3 and maximum of 12 images allowed.',
                     ),
                     const Gap(16),
                     GestureDetector(
@@ -182,8 +184,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                               : AppColors.greyColor.shade50,
                         ),
                         padding: const EdgeInsets.all(12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Column(
                           children: [
                             if (imageFiles.value.isEmpty) ...[
                               SizedBox(
@@ -215,64 +216,70 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                 ),
                               )
                             ] else ...[
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: List.generate(
-                                  imageFiles.value.length,
-                                  (index) => Stack(
-                                    alignment: Alignment.topRight,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Image.file(
-                                          imageFiles.value[index],
-                                          height: 150,
-                                          width: 100,
-                                          fit: BoxFit.cover,
-                                        ),
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 8,
+                                  mainAxisSpacing: 8,
+                                  childAspectRatio: 0.67, // width/height ratio
+                                ),
+                                itemCount: imageFiles.value.length,
+                                itemBuilder: (context, index) => Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.file(
+                                        imageFiles.value[index],
+                                        height: 150,
+                                        width: 100,
+                                        fit: BoxFit.cover,
                                       ),
-                                      GestureDetector(
-                                        onTap: () => removeImage(index),
-                                        child: const CircleAvatar(
-                                          radius: 12,
-                                          backgroundColor: Colors.red,
-                                          child: Icon(Icons.close,
-                                              color: Colors.white, size: 16),
-                                        ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => removeImage(index),
+                                      child: const CircleAvatar(
+                                        radius: 12,
+                                        backgroundColor: Colors.red,
+                                        child: Icon(Icons.close,
+                                            color: Colors.white, size: 16),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              if (imageFiles.value.length < 3) ...[
-                                GestureDetector(
-                                  onTap: pickImage,
-                                  child: Container(
-                                    height: 150,
-                                    width: 100,
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 12, horizontal: 8),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12, horizontal: 16),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color:
-                                            theme.brightness == Brightness.dark
-                                                ? Colors.white
-                                                : AppColors.greyColor.shade100,
+                              if (imageFiles.value.length < 9) ...[
+                                const SizedBox(height: 8),
+                                Center(
+                                  child: GestureDetector(
+                                    onTap: pickImage,
+                                    child: Container(
+                                      height: 150,
+                                      width: 100,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12, horizontal: 16),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: theme.brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : AppColors.greyColor.shade100,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.transparent,
                                       ),
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.transparent,
-                                    ),
-                                    child: const Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(IconsaxPlusLinear.add_circle,
-                                            size: 20),
-                                      ],
+                                      child: const Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(IconsaxPlusLinear.add_circle,
+                                              size: 20),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -452,6 +459,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
     final String currency,
   ) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         final theme = Theme.of(context);

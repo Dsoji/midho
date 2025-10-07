@@ -212,7 +212,7 @@ class QrCryptoScreen extends HookConsumerWidget {
                       height: 48,
                       onPressed: () {
                         showUploadProofDialog(
-                            context, int.parse(amount), crypto, ref);
+                            context, double.parse(amount), crypto, ref);
                       },
                       textColor: Colors.white,
                       color: AppColors.primaryColor.shade500,
@@ -319,7 +319,7 @@ class QrCryptoScreen extends HookConsumerWidget {
   // Function to show the dialog
   void showUploadProofDialog(
     BuildContext context,
-    int amount,
+    double amount,
     RateData crypto,
     WidgetRef ref,
   ) {

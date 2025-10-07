@@ -9,9 +9,9 @@ class GiftCartTransaction {
   String? status;
   String? baseCurrency;
   String? exchangeCurrency;
-  int? fee;
-  int? rate;
-  int? amount;
+  num? fee;
+  num? rate;
+  num? amount;
   List<dynamic>? files;
   List<dynamic>? proofs;
   bool? ecode;
@@ -62,7 +62,7 @@ class GiftCartTransaction {
       exchangeCurrency: data['exchangeCurrency'] as String?,
       fee: data['fee'] as int?,
       rate: data['rate'] as int?,
-      amount: data['amount'] as int?,
+      amount: data['amount'] as num?,
       files: data['files'] as List<dynamic>?,
       proofs: data['proofs'] as List<dynamic>?,
       ecode: data['ecode'] as bool?,
@@ -130,7 +130,7 @@ class GiftCartTransaction {
     String? exchangeCurrency,
     int? fee,
     int? rate,
-    int? amount,
+    num? amount,
     List<dynamic>? files,
     List<dynamic>? proofs,
     bool? ecode,

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class Origination {
-  int? rate;
+  num? rate;
   num? amount;
 
   Origination({this.rate, this.amount});

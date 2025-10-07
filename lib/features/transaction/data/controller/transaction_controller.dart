@@ -179,7 +179,7 @@ class TransactionController extends StateNotifier<TransactionState> {
   Future<bool> sellCrypto({
     String? id,
     String? name,
-    int? amount,
+    double? amount,
     String? comment,
     List<String>? files,
   }) async {
