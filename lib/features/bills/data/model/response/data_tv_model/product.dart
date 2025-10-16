@@ -3,7 +3,7 @@ import 'dart:convert';
 class Product {
   String? id;
   String? name;
-  int? amount;
+  double? amount;
 
   Product({this.id, this.name, this.amount});
 
@@ -13,7 +13,11 @@ class Product {
   factory Product.fromMap(Map<String, dynamic> data) => Product(
         id: data['id'] as String?,
         name: data['name'] as String?,
-        amount: data['amount'] as int?,
+        amount: (data['amount'] is num)
+            ? (data['amount'] as num).toDouble()
+            : (data['amount'] is String)
+                ? double.tryParse(data['amount'])
+                : null,
       );
 
   Map<String, dynamic> toMap() => {
@@ -37,7 +41,7 @@ class Product {
   Product copyWith({
     String? id,
     String? name,
-    int? amount,
+    double? amount,
   }) {
     return Product(
       id: id ?? this.id,

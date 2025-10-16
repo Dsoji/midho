@@ -266,7 +266,7 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                             return;
                           }
 
-                          if (int.parse(amountController.text.trim()) < 50 ||
+                          if (int.parse(amountController.text.trim()) < 100 ||
                               int.parse(amountController.text.trim()) >
                                   5000000) {
                             ToastService().showToast(
@@ -302,6 +302,9 @@ class WithdrawFundsScreen extends HookConsumerWidget {
                           }
 
                           context.router.push(TransactinRoute(
+                            onCustomerButtonPressed: () {
+                              context.router.push(const SupportFaqRoute());
+                            },
                             isHome: true,
                             acctNo: acctNo,
                             referall: false,

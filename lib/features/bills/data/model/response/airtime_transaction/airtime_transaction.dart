@@ -10,9 +10,9 @@ class AirtimeTransaction {
   String? status;
   String? baseCurrency;
   String? exchangeCurrency;
-  int? fee;
-  int? rate;
-  int? amount;
+  double? fee;
+  double? rate;
+  double? amount;
   List<dynamic>? files;
   List<dynamic>? proofs;
   String? accountNumber;
@@ -61,9 +61,21 @@ class AirtimeTransaction {
       status: data['status'] as String?,
       baseCurrency: data['baseCurrency'] as String?,
       exchangeCurrency: data['exchangeCurrency'] as String?,
-      fee: data['fee'] as int?,
-      rate: data['rate'] as int?,
-      amount: data['amount'] as int?,
+      fee: (data['fee'] is num)
+          ? (data['fee'] as num).toDouble()
+          : (data['fee'] is String)
+              ? double.tryParse(data['fee'])
+              : null,
+      rate: (data['rate'] is num)
+          ? (data['rate'] as num).toDouble()
+          : (data['rate'] is String)
+              ? double.tryParse(data['rate'])
+              : null,
+      amount: (data['amount'] is num)
+          ? (data['amount'] as num).toDouble()
+          : (data['amount'] is String)
+              ? double.tryParse(data['amount'])
+              : null,
       files: data['files'] as List<dynamic>?,
       proofs: data['proofs'] as List<dynamic>?,
       accountNumber: data['accountNumber'] as String?,
@@ -131,9 +143,9 @@ class AirtimeTransaction {
     String? status,
     String? baseCurrency,
     String? exchangeCurrency,
-    int? fee,
-    int? rate,
-    int? amount,
+    double? fee,
+    double? rate,
+    double? amount,
     List<dynamic>? files,
     List<dynamic>? proofs,
     String? accountNumber,

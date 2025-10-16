@@ -65,7 +65,7 @@ class User {
         updatedAt: data['updatedAt'] == null
             ? null
             : DateTime.parse(data['updatedAt'] as String),
-        v: data['__v'] as int?,
+        v: (data['__v'] as num?)?.toInt(),
         fcmToken: data['fcmToken'] as String?,
         banks: (data['banks'] as List<dynamic>?)
             ?.map((e) => Bank.fromMap(e as Map<String, dynamic>))

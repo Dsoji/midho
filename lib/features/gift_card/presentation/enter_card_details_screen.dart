@@ -8,6 +8,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
@@ -22,6 +23,8 @@ import '../../../common/widgets/custom_textfield.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../transaction/data/model/response/rates_model/datum.dart';
 import '../data/model/response/gift_card_model/datum.dart';
+
+final logger = Logger();
 
 @RoutePage()
 class EnterCardDetailsScreen extends HookConsumerWidget {
@@ -94,7 +97,36 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
             )
             .toList();
 
-        itemRates.value = matchedRates;
+        // De-duplicate rates by ID to avoid multiple DropdownMenuItems matching the same value
+        final Set<String> seenIds = <String>{};
+        final List<RateData> uniqueMatchedRates = <RateData>[];
+        for (final rate in matchedRates) {
+          final String id = rate.id ?? '';
+          if (id.isEmpty) {
+            uniqueMatchedRates.add(rate);
+            continue;
+          }
+          if (!seenIds.contains(id)) {
+            seenIds.add(id);
+            uniqueMatchedRates.add(rate);
+          }
+        }
+
+        itemRates.value = uniqueMatchedRates;
+
+        // Ensure currently selected value exists in the new unique list; otherwise reset it
+        if (selectedRate.value != null) {
+          final String? currentId = selectedRate.value!.id;
+          final int index = uniqueMatchedRates.indexWhere(
+            (r) => (r.id != null && r.id == currentId),
+          );
+          if (index == -1) {
+            selectedRate.value = null;
+          } else {
+            // Replace with the instance from the items list to ensure identity match
+            selectedRate.value = uniqueMatchedRates[index];
+          }
+        }
 
         // Only update conversion rate if a specific rate is selected
         if (selectedRate.value != null) {
@@ -699,12 +731,12 @@ class EnterCardDetailsScreen extends HookConsumerWidget {
                           );
                           return;
                         }
-
+                        logger.d(usdController.text.trim());
                         context.router.push(
                           CardDetailsProofRoute(
                             giftCard: giftCard,
                             amount:
-                                int.tryParse(usdController.text.trim()) ?? 0,
+                                double.tryParse(usdController.text.trim()) ?? 0,
                             rates: selectedRate.value?.id,
                             isCode: isEcode
                                 ? (tabController.index == 0 ? true : false)

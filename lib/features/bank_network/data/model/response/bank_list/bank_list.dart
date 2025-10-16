@@ -3,7 +3,7 @@ import 'dart:convert';
 class BanlList {
   String? code;
   String? name;
-  int? strength;
+  num? strength;
   String? status;
 
   BanlList({this.code, this.name, this.strength, this.status});
@@ -16,7 +16,7 @@ class BanlList {
   factory BanlList.fromMap(Map<String, dynamic> data) => BanlList(
         code: data['code'] as String?,
         name: data['name'] as String?,
-        strength: data['strength'] as int?,
+        strength: data['strength'] as num?,
         status: data['status'] as String?,
       );
 
@@ -42,7 +42,7 @@ class BanlList {
   BanlList copyWith({
     String? code,
     String? name,
-    int? strength,
+    num? strength,
     String? status,
   }) {
     return BanlList(

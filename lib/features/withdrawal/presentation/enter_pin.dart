@@ -59,6 +59,7 @@ class TransactinScreen extends HookConsumerWidget {
     required this.accountName,
     required this.bankName,
     required this.bankCode,
+    required this.onCustomerButtonPressed,
   });
   final bool isHome;
   final String acctNo;
@@ -67,7 +68,7 @@ class TransactinScreen extends HookConsumerWidget {
   final String accountName;
   final String bankName;
   final String bankCode;
-
+  final VoidCallback onCustomerButtonPressed;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinController = useTextEditingController();
@@ -99,7 +100,7 @@ class TransactinScreen extends HookConsumerWidget {
           transaction ?? AirtimeTransaction(),
         );
       } else {
-        showWithdrawalFailedDialog(context);
+        showWithdrawalFailedDialog(context, onCustomerButtonPressed);
       }
     }
 
@@ -357,16 +358,22 @@ class TransactinScreen extends HookConsumerWidget {
     );
   }
 
-  void showWithdrawalFailedDialog(BuildContext context) {
+  void showWithdrawalFailedDialog(
+    BuildContext context,
+    VoidCallback onCustomerButtonPressed,
+  ) {
     showDialog(
       context: AutoRouter.of(context).navigatorKey.currentContext!,
-      builder: (context) => const WithdrawalFailedDialog(),
+      builder: (context) => WithdrawalFailedDialog(
+          onCustomerButtonPressed: onCustomerButtonPressed),
     );
   }
 }
 
 class WithdrawalFailedDialog extends StatelessWidget {
-  const WithdrawalFailedDialog({super.key});
+  final VoidCallback onCustomerButtonPressed;
+  const WithdrawalFailedDialog(
+      {super.key, required this.onCustomerButtonPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -430,7 +437,8 @@ class WithdrawalFailedDialog extends StatelessWidget {
           // Back to Dashboard
           TextButton(
             onPressed: () {
-              context.router.push(const SupportFaqRoute());
+              Navigator.pop(context);
+              onCustomerButtonPressed();
             },
             child: Text(
               "Contact Support",

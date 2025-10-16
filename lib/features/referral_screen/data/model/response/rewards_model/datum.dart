@@ -45,7 +45,7 @@ class Datum {
           ? null
           : Referee.fromMap(
               Map<String, dynamic>.from(normalizedData['referee'] as Map)),
-      amount: normalizedData['amount'] as int?,
+      amount: (normalizedData['amount'] as num?)?.toInt(),
       status: normalizedData['status'] as String?,
       asset: normalizedData['asset'] == null
           ? null
@@ -57,7 +57,7 @@ class Datum {
       updatedAt: normalizedData['updatedAt'] == null
           ? null
           : DateTime.parse(normalizedData['updatedAt'] as String),
-      v: normalizedData['__v'] as int?,
+      v: (normalizedData['__v'] as num?)?.toInt(),
     );
   }
 

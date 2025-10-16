@@ -162,9 +162,9 @@ class WithdrawReferallScreen extends HookConsumerWidget {
                             return;
                           }
 
-                          if (int.parse(amountController.text.trim()) < 50 ||
+                          if (int.parse(amountController.text.trim()) < 100 ||
                               int.parse(amountController.text.trim()) >
-                                  5000000) {
+                                  10000000) {
                             ToastService().showToast(
                               NotificationType.info,
                               message:
@@ -196,6 +196,10 @@ class WithdrawReferallScreen extends HookConsumerWidget {
                             return;
                           }
                           context.router.push(TransactinRoute(
+                            onCustomerButtonPressed: () {
+                              Navigator.pop(context);
+                              context.router.push(const SupportFaqRoute());
+                            },
                             isHome: false,
                             acctNo: acctNo,
                             amount: int.parse(amountController.text.trim()),

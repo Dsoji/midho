@@ -19,8 +19,8 @@ class AirtimeElectricModel {
       name: data['name'] as String?,
       logo: data['logo'] as String?,
       id: data['id'] as String?,
-      min: data['min'] as int?,
-      max: data['max'] as int?,
+      min: (data['min'] as num?)?.toInt(),
+      max: (data['max'] as num?)?.toInt(),
     );
   }
 

@@ -8,6 +8,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:shimmer/shimmer.dart';
@@ -22,6 +23,8 @@ import '../../suggestion_box/data/response/upload_response/upload_response.dart'
 import '../../withdrawal/presentation/widget/info_widget.dart';
 import '../data/model/response/gift_card_model/datum.dart';
 
+final logger = Logger();
+
 @RoutePage()
 class CardDetailsProofScreen extends HookConsumerWidget {
   const CardDetailsProofScreen({
@@ -33,7 +36,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
     required this.currency,
   });
   final GiftCardData giftCard;
-  final int amount;
+  final num amount;
   final String? rates;
   final bool isCode;
   final String currency;
@@ -165,7 +168,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                       theme: theme,
                       text: isCode
                           ? 'Ensure the codes are visible to avoid delays.'
-                          : 'Minimum of 3 and maximum of 12 images allowed.',
+                          : 'Maximum of 12 images allowed.',
                     ),
                     const Gap(16),
                     GestureDetector(
@@ -251,36 +254,17 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                   ],
                                 ),
                               ),
-                              if (imageFiles.value.length < 9) ...[
-                                const SizedBox(height: 8),
+                              if (imageFiles.value.length < 12) ...[
                                 Center(
-                                  child: GestureDetector(
-                                    onTap: pickImage,
-                                    child: Container(
-                                      height: 150,
-                                      width: 100,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12, horizontal: 16),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: theme.brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : AppColors.greyColor.shade100,
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.transparent,
-                                      ),
-                                      child: const Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(IconsaxPlusLinear.add_circle,
-                                              size: 20),
-                                        ],
-                                      ),
-                                    ),
+                                  child: OutlinButton(
+                                    text: "Upload More",
+                                    onPressed: pickImage,
+                                    width: 150,
+                                    height: 40,
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                    bgColor: Colors.transparent,
                                   ),
                                 ),
                               ]
@@ -292,6 +276,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                   ],
                   const Gap(20),
                   // Continue Button
+
                   FullButton(
                     isLoading: isCode == false
                         ? ref
@@ -376,6 +361,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                           );
                         }
                       } else {
+                        logger.d(amount);
                         if (codeController.text.isNotEmpty) {
                           final result = await transactionService.sellGiftCards(
                               id: rates ?? '',

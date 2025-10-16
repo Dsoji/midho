@@ -50,18 +50,18 @@ class RateData {
         name: data['name'] as String?,
         baseCurrency: data['baseCurrency'] as String?,
         exchangeCurrency: data['exchangeCurrency'] as String?,
-        moq: data['moq'] as int?,
+        moq: (data['moq'] as num?)?.toInt(),
         rate: (data['rate'] as num?)?.toDouble(),
         active: data['active'] as bool?,
         category: data['category'] as String?,
-        ecodeRate: data['ecodeRate'] as int?,
+        ecodeRate: (data['ecodeRate'] as num?)?.toInt(),
         createdAt: data['createdAt'] == null
             ? null
             : DateTime.parse(data['createdAt'] as String),
         updatedAt: data['updatedAt'] == null
             ? null
             : DateTime.parse(data['updatedAt'] as String),
-        v: data['__v'] as int?,
+        v: (data['__v'] as num?)?.toInt(),
         datumFor: data['for'] as String?,
         icon: data['icon'] as String?,
         symbol: data['symbol'] as String?,

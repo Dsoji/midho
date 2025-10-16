@@ -213,7 +213,7 @@ class TransactionController extends StateNotifier<TransactionState> {
   Future<bool> sellGiftCards({
     String? id,
     String? name,
-    int? amount,
+    num? amount,
     String? comment,
     List<String>? files,
     bool? ecode,
