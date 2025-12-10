@@ -10,6 +10,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/bottomNav/app_router.gr.dart';
+import 'package:mdiho/features/gift_card/presentation/widget/standAlone.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -106,13 +107,13 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                     CustomTextField(
                       controller: codeController,
                       label: "Code ",
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const Gap(16),
                     CustomTextField(
                       controller: pinController,
                       label: "Pin (Optional)",
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const Gap(16),
                   ],
@@ -336,11 +337,14 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                   Navigator.pop(context);
                                 },
                                 () {
-                                  context.router.push(
-                                    GiftStandAloneTransactionDetailsRoute(
-                                      type: transaction?.type ?? '',
-                                      status: transaction?.status ?? '',
-                                      transaction: transaction!,
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          GiftStandAloneTransactionDetailsScreen(
+                                        type: transaction?.type ?? '',
+                                        status: transaction?.status ?? '',
+                                        transaction: transaction!,
+                                      ),
                                     ),
                                   );
                                 },
@@ -390,13 +394,23 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                 Navigator.pop(context);
                               },
                               () {
-                                context.router.push(
-                                  GiftStandAloneTransactionDetailsRoute(
-                                    type: transaction?.type ?? '',
-                                    status: transaction?.status ?? '',
-                                    transaction: transaction!,
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        GiftStandAloneTransactionDetailsScreen(
+                                      type: transaction?.type ?? '',
+                                      status: transaction?.status ?? '',
+                                      transaction: transaction!,
+                                    ),
                                   ),
                                 );
+                                // context.router.push(
+                                //   GiftStandAloneTransactionDetailsRoute(
+                                //     type: transaction?.type ?? '',
+                                //     status: transaction?.status ?? '',
+                                //     transaction: transaction!,
+                                //   ),
+                                // );
                               },
                               transaction?.id ?? '',
                               giftCard.name ?? '',
