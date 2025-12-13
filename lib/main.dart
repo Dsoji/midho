@@ -16,21 +16,35 @@ import 'package:mdiho/swift_app.dart';
 final logger = Logger();
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-  await Hive.openBox('data');
+    // Add timeout and error handling for Firebase initialization
+    try {
+      await Firebase.initializeApp(
+              options: DefaultFirebaseOptions.currentPlatform)
+          .timeout(const Duration(seconds: 10));
+    } catch (e) {
+      debugPrint("Firebase initialization failed: $e");
+      // Continue without Firebase if it fails
+    }
 
-  await _getAndSaveDeviceId();
-  await NotificationService.initializeFCM();
-  // WidgetsBinding.instance.addObserver(AppLifecycleHandler());
-  setUpLocator();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  runApp(ProviderScope(child: MyApp()));
+    await Hive.initFlutter();
+    await Hive.openBox('data');
+
+    await _getAndSaveDeviceId();
+    await NotificationService.initializeFCM();
+    // WidgetsBinding.instance.addObserver(AppLifecycleHandler());
+    setUpLocator();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    runApp(ProviderScope(child: MyApp()));
+  }, (error, stackTrace) {
+    debugPrint("Error: $error");
+    debugPrint("Stack Trace: $stackTrace");
+  });
 }
 
 Future<void> _getAndSaveDeviceId() async {
