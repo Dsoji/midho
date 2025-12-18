@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:mdiho/common/extension/string/string_extension.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/res/assets.dart';
@@ -9,11 +8,41 @@ import '../../../authentication/data/controller/authentication_controller.dart';
 
 class SummaryCards extends HookConsumerWidget {
   const SummaryCards({super.key});
+
+  // Add this helper function to format numbers with K/M suffixes
+  String _formatCompactNumber(num value) {
+    if (value >= 1000000) {
+      final millions = value / 1000000;
+      if (millions % 1 == 0) {
+        return '${millions.toInt()}M';
+      } else {
+        return '${millions.toStringAsFixed(2)}M'
+            .replaceAll(RegExp(r'\.?0+$'), '');
+      }
+    } else if (value >= 1000) {
+      final thousands = value / 1000;
+      if (thousands % 1 == 0) {
+        return '${thousands.toInt()}k';
+      } else {
+        return '${thousands.toStringAsFixed(2)}k'
+            .replaceAll(RegExp(r'\.?0+$'), '');
+      }
+    } else {
+      return value.toStringAsFixed(0);
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+
+    // Update line 30 to use the new formatting
+    // Extract the number from the string, format it, then add currency
+    const inflowValue = 10000000000000000; // or get from userInfo
+    final formattedInflow = _formatCompactNumber(inflowValue);
+
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -27,17 +56,15 @@ class SummaryCards extends HookConsumerWidget {
           _buildCard(
             title: "Total In-Flow",
             amount:
-                "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}"
-                    .commaFormat(),
+                "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}",
             iconImage: ImageAssets.logo2,
-            context: context, // use your preferred icon
+            context: context,
           ),
           const SizedBox(width: 16),
           _buildCard(
               title: "Total Withdrawal",
               amount:
-                  "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.outFlow ?? 0}"
-                      .commaFormat(),
+                  "${userInfo?.wallet?.currency ?? ''} ${_formatCompactNumber(userInfo?.wallet?.outFlow ?? 0)}",
               icon: HugeIcons.strokeRoundedArrowUp03,
               context: context),
         ],
@@ -81,15 +108,22 @@ class SummaryCards extends HookConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  amount,
-                  style: TextStyle(
-                    color: theme.brightness == Brightness.light
-                        ? const Color(0xFF1B1B1B)
-                        : AppColors.blueColor.shade50,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: '',
+                // Wrap the amount Text with FittedBox to make it shrink
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      amount,
+                      style: TextStyle(
+                        color: theme.brightness == Brightness.light
+                            ? const Color(0xFF1B1B1B)
+                            : AppColors.blueColor.shade50,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: '',
+                      ),
+                    ),
                   ),
                 ),
                 iconImage != null

@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:hive_flutter/hive_flutter.dart';
 
 var box = Hive.box('data');
-String storedToken = box.get('fcm_token');
+String storedToken = box.get('fcm_token') ?? '';
 
 @immutable
 class SignUpPayload extends MapView<String, dynamic> {
