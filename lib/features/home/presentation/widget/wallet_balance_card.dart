@@ -76,44 +76,55 @@ class WalletBalanceCard extends HookConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: isBalanceVisible
-                          ? TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '${userInfo?.wallet?.currency ?? ''} ',
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          text: isBalanceVisible
+                              ? TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          '${userInfo?.wallet?.currency ?? ''} ',
+                                      style: TextStyle(
+                                        color: theme.brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : AppColors.primaryColor.shade700,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: '',
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          '${userInfo?.wallet?.mainBalance ?? 0}'
+                                              .commaFormat(),
+                                      // text: '${1000000000 ?? 0}'.commaFormat(),
+                                      style: TextStyle(
+                                        color: theme.brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : AppColors.primaryColor.shade700,
+                                        fontSize: 29,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: '',
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : const TextSpan(
+                                  text: "••••••••",
                                   style: TextStyle(
-                                    color: theme.brightness == Brightness.dark
-                                        ? Colors.white
-                                        : AppColors.primaryColor.shade700,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: '',
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '${userInfo?.wallet?.mainBalance ?? 0}'
-                                      .commaFormat(),
-                                  style: TextStyle(
-                                    color: theme.brightness == Brightness.dark
-                                        ? Colors.white
-                                        : AppColors.primaryColor.shade700,
+                                    color: Colors.white,
                                     fontSize: 29,
                                     fontWeight: FontWeight.w600,
                                     fontFamily: '',
                                   ),
                                 ),
-                              ],
-                            )
-                          : const TextSpan(
-                              text: "••••••••",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 29,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: '',
-                              ),
-                            ),
+                        ),
+                      ),
                     ),
                     const Gap(8),
                     GestureDetector(
