@@ -13,9 +13,9 @@ class Pagination {
   }
 
   factory Pagination.fromMap(Map<String, dynamic> data) => Pagination(
-        page: data['page'] as int?,
-        limit: data['limit'] as int?,
-        pages: data['pages'] as int?,
+        page: (data['page'] as num?)?.toInt(),
+        limit: (data['limit'] as num?)?.toInt(),
+        pages: (data['pages'] as num?)?.toInt(),
       );
 
   Map<String, dynamic> toMap() => {

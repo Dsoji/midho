@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:logger/logger.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 
@@ -25,6 +26,8 @@ final balanceVisibilityProvider =
   (ref) => BalanceVisibilityNotifier(),
 );
 
+final logger = Logger();
+
 // Wallet Balance Card Widget
 class WalletBalanceCard extends HookConsumerWidget {
   final double balance;
@@ -40,6 +43,7 @@ class WalletBalanceCard extends HookConsumerWidget {
     final userInfo =
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final theme = Theme.of(context);
+    logger.d(userInfo?.wallet?.mainBalance);
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(

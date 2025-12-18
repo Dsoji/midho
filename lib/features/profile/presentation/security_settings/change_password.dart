@@ -8,6 +8,7 @@ import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/toast/toast.dart';
+import '../../../../common/utils/validator.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../../common/widgets/custom_textfield.dart';
@@ -24,6 +25,7 @@ class ChangePasswordScreen extends HookConsumerWidget {
     final newPswrdController = useTextEditingController();
     final confirmPswrdController = useTextEditingController();
     final authService = ref.read(authenticationControllerProvider.notifier);
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -33,122 +35,131 @@ class ChangePasswordScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                "Create a strong password to protect your account.",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Create a strong password to protect your account.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
-            ),
-            const Gap(10),
-            Container(
-              decoration: ShapeDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.darkBorder
-                    : AppColors.whiteColor.shade100,
-                shape: const RoundedRectangleBorder(),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomTextField(
-                    controller: pswrdController,
-                    label: "Current Password",
-                    prefixIcon: const Icon(
-                      IconsaxPlusLinear.lock,
-                      color: Colors.grey,
-                      size: 21,
-                    ), // Optional
-                    isPassword: true,
-                  ),
-                  const Gap(28),
-                  InfoWidget(
-                    theme: theme,
-                    text:
-                        "Use at least 8 characters, including numbers and special characters",
-                  ),
-                  const Gap(40),
-                  CustomTextField(
-                    controller: newPswrdController,
-                    label: "New Password",
-                    prefixIcon: const Icon(
-                      IconsaxPlusLinear.lock,
-                      color: Colors.grey,
-                      size: 21,
-                    ), // Optional
-                    isPassword: true,
-                  ),
-                  const Gap(28),
-                  CustomTextField(
-                    controller: confirmPswrdController,
-                    label: "Confirm New Password",
-                    prefixIcon: const Icon(
-                      IconsaxPlusLinear.lock,
-                      color: Colors.grey,
-                      size: 21,
-                    ), // Optional
-                    isPassword: true,
-                  ),
-                  const Gap(28),
-                  InfoWidget(
-                    theme: theme,
-                    text:
-                        "Avoid using easily guessable information like names or birthdates.",
-                  ),
-                  const Gap(25),
-                  FullButton(
-                    isLoading: ref
-                        .watch(authenticationControllerProvider)
-                        .forgotPassword
-                        .isLoading,
-                    text: "Save Changes",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () async {
-                      // Navigator.pop(context);
-                      if (confirmPswrdController.text.trim() ==
-                          newPswrdController.text.trim()) {
-                        final result = await authService.changePassword(
-                          newPswrdController.text.trim(),
-                          pswrdController.text.trim(),
-                        );
-                        if (result == true) {
-                          Navigator.pop(context);
+              const Gap(10),
+              Container(
+                decoration: ShapeDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.darkBorder
+                      : AppColors.whiteColor.shade100,
+                  shape: const RoundedRectangleBorder(),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomTextField(
+                      controller: pswrdController,
+                      label: "Current Password",
+                      prefixIcon: const Icon(
+                        IconsaxPlusLinear.lock,
+                        color: Colors.grey,
+                        size: 21,
+                      ), // Optional
+                      isPassword: true,
+                      validator: (value) =>
+                          Validators.requiredField(value, "Current Password"),
+                    ),
+                    const Gap(28),
+                    InfoWidget(
+                      theme: theme,
+                      text:
+                          "Use at least 8 characters, including numbers and special characters",
+                    ),
+                    const Gap(40),
+                    CustomTextField(
+                      controller: newPswrdController,
+                      label: "New Password",
+                      prefixIcon: const Icon(
+                        IconsaxPlusLinear.lock,
+                        color: Colors.grey,
+                        size: 21,
+                      ), // Optional
+                      isPassword: true,
+                      validator: (value) =>
+                          Validators.requiredField(value, "New Password"),
+                    ),
+                    const Gap(28),
+                    CustomTextField(
+                      controller: confirmPswrdController,
+                      label: "Confirm New Password",
+                      prefixIcon: const Icon(
+                        IconsaxPlusLinear.lock,
+                        color: Colors.grey,
+                        size: 21,
+                      ), // Optional
+                      isPassword: true,
+                      validator: Validators.passwordValidator,
+                    ),
+                    const Gap(28),
+                    InfoWidget(
+                      theme: theme,
+                      text:
+                          "Avoid using easily guessable information like names or birthdates.",
+                    ),
+                    const Gap(25),
+                    FullButton(
+                      isLoading: ref
+                          .watch(authenticationControllerProvider)
+                          .forgotPassword
+                          .isLoading,
+                      text: "Save Changes",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) return;
+                        // Navigator.pop(context);
+                        if (confirmPswrdController.text.trim() ==
+                            newPswrdController.text.trim()) {
+                          final result = await authService.changePassword(
+                            newPswrdController.text.trim(),
+                            pswrdController.text.trim(),
+                          );
+                          if (result == true) {
+                            Navigator.pop(context);
+                          }
+                        } else {
+                          ToastService().showToast(
+                            NotificationType.info,
+                            message: 'Passwords do not match.',
+                          );
                         }
-                      } else {
-                        ToastService().showToast(
-                          NotificationType.info,
-                          message: 'Passwords do not match.',
-                        );
-                      }
-                    },
-                    textColor: Colors.white,
-                    color: AppColors.primaryColor.shade500,
-                  ),
-                  FullButton(
-                    text: "Cancel",
-                    width: double.infinity,
-                    height: 48,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    textColor: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                    color: Colors.transparent,
-                  ),
-                ],
+                      },
+                      textColor: Colors.white,
+                      color: AppColors.primaryColor.shade500,
+                    ),
+                    FullButton(
+                      text: "Cancel",
+                      width: double.infinity,
+                      height: 48,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      textColor: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                      color: Colors.transparent,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Gap(150),
-          ],
+              const Gap(150),
+            ],
+          ),
         ),
       ),
     );

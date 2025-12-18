@@ -70,7 +70,7 @@ class Datum {
       updatedAt: normalizedData['updatedAt'] == null
           ? null
           : DateTime.parse(normalizedData['updatedAt'] as String),
-      v: normalizedData['__v'] as int?,
+      v: (normalizedData['__v'] as num?)?.toInt(),
     );
   }
 

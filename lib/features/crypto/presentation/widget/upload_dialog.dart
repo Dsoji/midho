@@ -43,7 +43,7 @@ void showCryptoDialog({
   required WidgetRef ref,
   required VoidCallback onSecondaryAction,
   required VoidCallback onDone,
-  required int amount,
+  required double amount,
   required RateData crypto,
 }) {
   showDialog(
@@ -65,7 +65,7 @@ class _CryptoDialogContent extends HookConsumerWidget {
   final WidgetRef ref;
   final VoidCallback onSecondaryAction;
   final VoidCallback onDone;
-  final int amount;
+  final double amount;
   final RateData crypto;
 
   const _CryptoDialogContent({

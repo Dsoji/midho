@@ -12,8 +12,8 @@ class TransactionData {
   String? status;
   String? baseCurrency;
   String? exchangeCurrency;
-  int? fee;
-  int? rate;
+  num? fee;
+  num? rate;
   num? amount;
   List<dynamic>? files;
   List<dynamic>? proofs;
@@ -26,7 +26,7 @@ class TransactionData {
   bool? deleted;
   DateTime? createdAt;
   DateTime? updatedAt;
-  int? v;
+  num? v;
   String? accountNumber;
   Metadata? metadata;
   String? bankName;
@@ -74,8 +74,8 @@ class TransactionData {
         status: data['status'] as String?,
         baseCurrency: data['baseCurrency'] as String?,
         exchangeCurrency: data['exchangeCurrency'] as String?,
-        fee: data['fee'] as int?,
-        rate: data['rate'] as int?,
+        fee: data['fee'] as num?,
+        rate: data['rate'] as num?,
         amount: data['amount'] as num?,
         files: data['files'] as List<dynamic>?,
         proofs: data['proofs'] as List<dynamic>?,
@@ -96,7 +96,7 @@ class TransactionData {
         updatedAt: data['updatedAt'] == null
             ? null
             : DateTime.parse(data['updatedAt'] as String),
-        v: data['__v'] as int?,
+        v: data['__v'] as num?,
         accountNumber: data['accountNumber'] as String?,
         metadata: data['metadata'] == null
             ? null
@@ -152,8 +152,8 @@ class TransactionData {
     String? status,
     String? baseCurrency,
     String? exchangeCurrency,
-    int? fee,
-    int? rate,
+    num? fee,
+    num? rate,
     num? amount,
     List<dynamic>? files,
     List<dynamic>? proofs,
@@ -166,7 +166,7 @@ class TransactionData {
     bool? deleted,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? v,
+    num? v,
     String? accountNumber,
     Metadata? metadata,
     String? bankName,

@@ -110,8 +110,8 @@ class TransactionPinScreen extends HookConsumerWidget {
               );
             },
             onSecondaryAction: () {
-              context.router.push(const BuyAirtimeRoute());
-              Navigator.of(context).pop;
+              context.router.popUntil(
+                  (route) => route.settings.name == BuyAirtimeRoute.name);
             },
             primaryButtonColor: Colors.orange,
             backgroundColor: Colors.blue.shade900,
@@ -164,8 +164,7 @@ class TransactionPinScreen extends HookConsumerWidget {
                   .read(transactionControllerProvider.notifier)
                   .getTransactions();
               context.router.popUntil(
-                  (route) => route.settings.name == BuyAirtimeRoute.name);
-              Navigator.of(context).pop;
+                  (route) => route.settings.name == BuyDataRoute.name);
             },
             primaryButtonColor: Colors.orange,
             backgroundColor: Colors.blue.shade900,
@@ -208,8 +207,7 @@ class TransactionPinScreen extends HookConsumerWidget {
             },
             onSecondaryAction: () {
               context.router.popUntil(
-                  (route) => route.settings.name == BuyDataRoute.name);
-              Navigator.of(context).pop;
+                  (route) => route.settings.name == ElectricityBillRoute.name);
             },
             primaryButtonColor: AppColors.primaryColor,
             backgroundColor: Colors.blue.shade900,
@@ -253,7 +251,6 @@ class TransactionPinScreen extends HookConsumerWidget {
             onSecondaryAction: () {
               context.router.popUntil(
                   (route) => route.settings.name == CableBillRoute.name);
-              Navigator.of(context).pop;
             },
             primaryButtonColor: AppColors.primaryColor,
             backgroundColor: Colors.white,
@@ -641,7 +638,9 @@ class WithdrawalFailedDialog extends StatelessWidget {
 
           // Back to Dashboard
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              context.router.push(const SupportFaqRoute());
+            },
             child: Text(
               "Contact Support",
               style: TextStyle(

@@ -288,17 +288,23 @@ extension StringExtension on String {
 
   String commaFormat() {
     try {
-      // Match optional prefix/suffix around the number
-      final match =
-          RegExp(r'^([^\d\-]*?)\s*([\d,]+)\s*([^\d]*)$').firstMatch(this);
+      // Match optional prefix/suffix and a number that may include commas and decimals
+      final match = RegExp(
+        r'^([^\d\-]*?)\s*([\-]?(?:\d{1,3}(?:,\d{3})*|\d+)(?:\.\d+)?)\s*([^\d]*)$',
+      ).firstMatch(this);
 
       if (match != null) {
         final prefix = match.group(1)?.trim() ?? '';
         final numberPart = match.group(2)?.replaceAll(',', '') ?? '0';
         final suffix = match.group(3)?.trim() ?? '';
 
-        final value = int.parse(numberPart);
-        final formatted = NumberFormat('#,###').format(value);
+        final value = num.parse(numberPart);
+        final hasFraction = (value is double) ? (value % 1 != 0) : false;
+
+        final formatted = hasFraction
+            ? NumberFormat('#,##0.##')
+                .format(value) // keeps decimals only if non-zero
+            : NumberFormat('#,###').format(value);
 
         final hasPrefix = prefix.isNotEmpty;
         final hasSuffix = suffix.isNotEmpty;

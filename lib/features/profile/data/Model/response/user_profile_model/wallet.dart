@@ -3,15 +3,15 @@ import 'dart:convert';
 class Wallet {
   String? id;
   String? user;
-  int? mainBalance;
-  int? referralBalance;
-  int? lifetimeReferralBalance;
+  double? mainBalance;
+  double? referralBalance;
+  double? lifetimeReferralBalance;
   String? currency;
   bool? locked;
   DateTime? createdAt;
   DateTime? updatedAt;
-  int? inFlow;
-  int? outFlow;
+  double? inFlow;
+  double? outFlow;
 
   Wallet({
     this.id,
@@ -35,9 +35,21 @@ class Wallet {
   factory Wallet.fromMap(Map<String, dynamic> data) => Wallet(
         id: data['_id'] as String?,
         user: data['user'] as String?,
-        mainBalance: data['mainBalance'] as int?,
-        referralBalance: data['referralBalance'] as int?,
-        lifetimeReferralBalance: data['lifetimeReferralBalance'] as int?,
+        mainBalance: (data['mainBalance'] is num)
+            ? (data['mainBalance'] as num).toDouble()
+            : (data['mainBalance'] is String)
+                ? double.tryParse(data['mainBalance'])
+                : null,
+        referralBalance: (data['referralBalance'] is num)
+            ? (data['referralBalance'] as num).toDouble()
+            : (data['referralBalance'] is String)
+                ? double.tryParse(data['referralBalance'])
+                : null,
+        lifetimeReferralBalance: (data['lifetimeReferralBalance'] is num)
+            ? (data['lifetimeReferralBalance'] as num).toDouble()
+            : (data['lifetimeReferralBalance'] is String)
+                ? double.tryParse(data['lifetimeReferralBalance'])
+                : null,
         currency: data['currency'] as String?,
         locked: data['locked'] as bool?,
         createdAt: data['createdAt'] == null
@@ -46,8 +58,16 @@ class Wallet {
         updatedAt: data['updatedAt'] == null
             ? null
             : DateTime.parse(data['updatedAt'] as String),
-        inFlow: data['inflow'] as int?,
-        outFlow: data['outflow'] as int?,
+        inFlow: (data['inflow'] is num)
+            ? (data['inflow'] as num).toDouble()
+            : (data['inflow'] is String)
+                ? double.tryParse(data['inflow'])
+                : null,
+        outFlow: (data['outflow'] is num)
+            ? (data['outflow'] as num).toDouble()
+            : (data['outflow'] is String)
+                ? double.tryParse(data['outflow'])
+                : null,
       );
 
   Map<String, dynamic> toMap() => {
@@ -80,15 +100,15 @@ class Wallet {
   Wallet copyWith({
     String? id,
     String? user,
-    int? mainBalance,
-    int? referralBalance,
-    int? lifetimeReferralBalance,
+    double? mainBalance,
+    double? referralBalance,
+    double? lifetimeReferralBalance,
     String? currency,
     bool? locked,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? inFlow,
-    int? outFlow,
+    double? inFlow,
+    double? outFlow,
   }) {
     return Wallet(
       id: id ?? this.id,

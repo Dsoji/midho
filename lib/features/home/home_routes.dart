@@ -49,5 +49,20 @@ final homeRoutes = AutoRoute(
     AutoRoute(
       page: SupportFaqRoute.page,
     ),
+    AutoRoute(
+      page: WithdrawReferallRoute.page,
+    ),
+    AutoRoute(
+      page: GiftCardRoute.page,
+    ),
+    AutoRoute(
+      page: EnterCardDetailsRoute.page,
+    ),
+    AutoRoute(
+      page: CardDetailsProofRoute.page,
+    ),
+    AutoRoute(
+      page: TransactinRoute.page,
+    ),
   ],
 );

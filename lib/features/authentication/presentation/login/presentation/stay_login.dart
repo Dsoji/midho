@@ -131,7 +131,7 @@ class StayLoginScreen extends HookConsumerWidget {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              context.router.push(const ForgotPasswordRoute());
+                              context.router.push(ForgotPasswordRoute());
                             },
                             child: Text(
                               "Forgot Password",

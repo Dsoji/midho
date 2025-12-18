@@ -342,7 +342,7 @@ class CardDetailsProofRoute
   CardDetailsProofRoute({
     _i55.Key? key,
     required _i57.GiftCardData giftCard,
-    required int amount,
+    required num amount,
     required String? rates,
     required bool isCode,
     required String currency,
@@ -392,7 +392,7 @@ class CardDetailsProofRouteArgs {
 
   final _i57.GiftCardData giftCard;
 
-  final int amount;
+  final num amount;
 
   final String? rates;
 
@@ -913,10 +913,17 @@ class FaqRoute extends _i54.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i23.ForgotPasswordScreen]
-class ForgotPasswordRoute extends _i54.PageRouteInfo<void> {
-  const ForgotPasswordRoute({List<_i54.PageRouteInfo>? children})
-      : super(
+class ForgotPasswordRoute extends _i54.PageRouteInfo<ForgotPasswordRouteArgs> {
+  ForgotPasswordRoute({
+    _i55.Key? key,
+    bool isLoggedIn = false,
+    List<_i54.PageRouteInfo>? children,
+  }) : super(
           ForgotPasswordRoute.name,
+          args: ForgotPasswordRouteArgs(
+            key: key,
+            isLoggedIn: isLoggedIn,
+          ),
           initialChildren: children,
         );
 
@@ -925,9 +932,30 @@ class ForgotPasswordRoute extends _i54.PageRouteInfo<void> {
   static _i54.PageInfo page = _i54.PageInfo(
     name,
     builder: (data) {
-      return const _i23.ForgotPasswordScreen();
+      final args = data.argsAs<ForgotPasswordRouteArgs>(
+          orElse: () => const ForgotPasswordRouteArgs());
+      return _i23.ForgotPasswordScreen(
+        key: args.key,
+        isLoggedIn: args.isLoggedIn,
+      );
     },
   );
+}
+
+class ForgotPasswordRouteArgs {
+  const ForgotPasswordRouteArgs({
+    this.key,
+    this.isLoggedIn = false,
+  });
+
+  final _i55.Key? key;
+
+  final bool isLoggedIn;
+
+  @override
+  String toString() {
+    return 'ForgotPasswordRouteArgs{key: $key, isLoggedIn: $isLoggedIn}';
+  }
 }
 
 /// generated route for
@@ -1660,6 +1688,7 @@ class TransactinRoute extends _i54.PageRouteInfo<TransactinRouteArgs> {
     required String accountName,
     required String bankName,
     required String bankCode,
+    required _i55.VoidCallback onCustomerButtonPressed,
     List<_i54.PageRouteInfo>? children,
   }) : super(
           TransactinRoute.name,
@@ -1672,6 +1701,7 @@ class TransactinRoute extends _i54.PageRouteInfo<TransactinRouteArgs> {
             accountName: accountName,
             bankName: bankName,
             bankCode: bankCode,
+            onCustomerButtonPressed: onCustomerButtonPressed,
           ),
           initialChildren: children,
         );
@@ -1691,6 +1721,7 @@ class TransactinRoute extends _i54.PageRouteInfo<TransactinRouteArgs> {
         accountName: args.accountName,
         bankName: args.bankName,
         bankCode: args.bankCode,
+        onCustomerButtonPressed: args.onCustomerButtonPressed,
       );
     },
   );
@@ -1706,6 +1737,7 @@ class TransactinRouteArgs {
     required this.accountName,
     required this.bankName,
     required this.bankCode,
+    required this.onCustomerButtonPressed,
   });
 
   final _i55.Key? key;
@@ -1724,9 +1756,11 @@ class TransactinRouteArgs {
 
   final String bankCode;
 
+  final _i55.VoidCallback onCustomerButtonPressed;
+
   @override
   String toString() {
-    return 'TransactinRouteArgs{key: $key, isHome: $isHome, acctNo: $acctNo, amount: $amount, referall: $referall, accountName: $accountName, bankName: $bankName, bankCode: $bankCode}';
+    return 'TransactinRouteArgs{key: $key, isHome: $isHome, acctNo: $acctNo, amount: $amount, referall: $referall, accountName: $accountName, bankName: $bankName, bankCode: $bankCode, onCustomerButtonPressed: $onCustomerButtonPressed}';
   }
 }
 

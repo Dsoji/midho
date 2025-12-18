@@ -42,18 +42,18 @@ class Asset {
         name: data['name'] as String?,
         baseCurrency: data['baseCurrency'] as String?,
         exchangeCurrency: data['exchangeCurrency'] as String?,
-        moq: data['moq'] as int?,
-        rate: data['rate'] as int?,
+        moq: (data['moq'] as num?)?.toInt(),
+        rate: (data['rate'] as num?)?.toInt(),
         active: data['active'] as bool?,
         category: data['category'] as String?,
-        ecodeRate: data['ecodeRate'] as int?,
+        ecodeRate: (data['ecodeRate'] as num?)?.toInt(),
         createdAt: data['createdAt'] == null
             ? null
             : DateTime.parse(data['createdAt'] as String),
         updatedAt: data['updatedAt'] == null
             ? null
             : DateTime.parse(data['updatedAt'] as String),
-        v: data['__v'] as int?,
+        v: (data['__v'] as num?)?.toInt(),
       );
 
   Map<String, dynamic> toMap() => {

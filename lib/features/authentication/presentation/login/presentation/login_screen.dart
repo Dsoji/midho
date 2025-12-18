@@ -142,7 +142,7 @@ class LoginScreen extends HookConsumerWidget {
                             onTap: () {
                               final box = Hive.box('data');
                               box.put('is_auth', true);
-                              context.router.push(const ForgotPasswordRoute());
+                              context.router.push(ForgotPasswordRoute());
                             },
                             child: Text(
                               "Forgot Password",

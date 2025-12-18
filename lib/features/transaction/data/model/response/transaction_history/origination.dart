@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class Origination {
-  int? rate;
+  num? rate;
   num? amount;
 
   Origination({this.rate, this.amount});
@@ -10,7 +10,7 @@ class Origination {
   String toString() => 'Origination(rate: $rate, amount: $amount)';
 
   factory Origination.fromMap(Map<String, dynamic> data) => Origination(
-        rate: data['rate'] as int?,
+        rate: data['rate'] as num?,
         amount: data['amount'] as num?,
       );
 
@@ -32,7 +32,7 @@ class Origination {
   String toJson() => json.encode(toMap());
 
   Origination copyWith({
-    int? rate,
+    num? rate,
     num? amount,
   }) {
     return Origination(

@@ -10,8 +10,8 @@ class Origination {
   String toString() => 'Origination(rate: $rate, amount: $amount)';
 
   factory Origination.fromMap(Map<String, dynamic> data) => Origination(
-        rate: data['rate'] as int?,
-        amount: data['amount'] as int?,
+        rate: (data['rate'] as num?)?.toInt(),
+        amount: (data['amount'] as num?)?.toInt(),
       );
 
   Map<String, dynamic> toMap() => {

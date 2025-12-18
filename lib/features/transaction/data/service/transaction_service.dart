@@ -125,7 +125,7 @@ class TransactionService {
   Future<ResultValue<GiftCartTransaction>> sellCrypto({
     String? id,
     String? name,
-    int? amount,
+    double? amount,
     String? comment,
     List<String>? files,
   }) async {
@@ -149,14 +149,14 @@ class TransactionService {
         return GiftCartTransaction.fromMap(data);
       },
       showErrorToast: true,
-      showSuccessToast: false,
+      showSuccessToast: true,
     );
   }
 
   Future<ResultValue<GiftCartTransaction>> sellGiftCards({
     String? id,
     String? name,
-    int? amount,
+    num? amount,
     String? comment,
     List<String>? files,
     bool? ecode,

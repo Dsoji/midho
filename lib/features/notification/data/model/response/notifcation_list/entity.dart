@@ -59,9 +59,9 @@ class Entity {
         status: data['status'] as String?,
         baseCurrency: data['baseCurrency'] as String?,
         exchangeCurrency: data['exchangeCurrency'] as String?,
-        fee: data['fee'] as int?,
-        rate: data['rate'] as int?,
-        amount: data['amount'] as int?,
+        fee: (data['fee'] as num?)?.toInt(),
+        rate: (data['rate'] as num?)?.toInt(),
+        amount: (data['amount'] as num?)?.toInt(),
         files: (data['files'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList(),
@@ -85,7 +85,7 @@ class Entity {
         updatedAt: data['updatedAt'] == null
             ? null
             : DateTime.parse(data['updatedAt'] as String),
-        v: data['__v'] as int?,
+        v: (data['__v'] as num?)?.toInt(),
       );
   Map<String, dynamic> toMap() => {
         'user': user,

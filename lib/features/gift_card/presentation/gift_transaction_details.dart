@@ -8,6 +8,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/utils/date_utils.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:screenshot/screenshot.dart';
 
 import '../../../common/mixin/share_mixin.dart';
@@ -124,7 +125,9 @@ class GiftTransactionDetailsScreen extends HookWidget with ShareMixin {
                     text: "Contact Support",
                     width: double.infinity,
                     height: 60,
-                    onPressed: () {},
+                    onPressed: () {
+                      context.router.push(const SupportFaqRoute());
+                    },
                     textColor: theme.brightness == Brightness.dark
                         ? Colors.white
                         : Colors.black,

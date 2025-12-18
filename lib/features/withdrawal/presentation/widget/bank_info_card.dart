@@ -241,9 +241,11 @@ class BankInfoCard2 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final color = int.parse(percentage.replaceAll('%', '')) <= 49
+    final int parsedPercentage =
+        int.tryParse(percentage.replaceAll('%', '')) ?? 0;
+    final Color color = parsedPercentage <= 49
         ? Colors.red
-        : int.parse(percentage.replaceAll('%', '')) <= 79
+        : parsedPercentage <= 79
             ? Colors.amber
             : Colors.green;
     return GestureDetector(
