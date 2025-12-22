@@ -35,6 +35,10 @@
 		<true/>
 		<key>NSFaceIDUsageDescription</key>
 		<string>Swift swap uses the face ID to authenticate users during login and transactions</string>
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera to verify your identity.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We need access to your microphone for video verification.</string>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>remote-notification</string>

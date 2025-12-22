@@ -10,8 +10,10 @@ import 'package:logger/logger.dart';
 import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/home/presentation/widget/welcome_header.dart';
+import 'package:mdiho/features/kyc/verification_method.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
+import '../../kyc/presentation/widget/kyc_dialog.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/theme_notifier.dart';
@@ -104,6 +106,27 @@ class HomeScreen extends HookConsumerWidget {
       }
       return null;
     }, [userInfo?.theme]);
+
+    useEffect(() {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => KycDialog(
+              onCompleteKyc: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const VerificationMethodScreen()));
+                // TODO: Navigate to verification method
+              },
+            ),
+          );
+        }
+      });
+      return null;
+    }, []);
 
     return PopScope(
       canPop: false, // Prevent default back navigation

@@ -28,7 +28,7 @@ class BankNetworkScreen extends HookConsumerWidget {
       return null;
     }, [banks]);
 
-    if (banks == null)
+    if (banks == null) {
       return SafeArea(
         child: ListView.separated(
           padding: const EdgeInsets.symmetric(
@@ -40,6 +40,7 @@ class BankNetworkScreen extends HookConsumerWidget {
           itemBuilder: (_, __) => const CryptoCardShimmer(),
         ),
       );
+    }
 
     return Scaffold(
       appBar: const CustomAppBar(
