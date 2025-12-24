@@ -17,6 +17,7 @@ class ProfileState {
   final AsyncValue<SuggestionPayload> suggestion;
   final AsyncValue<String> feedBack;
   final AsyncValue<List<BanlList>> banks;
+  final AsyncValue<String> kycVerification;
 
   const ProfileState({
     required this.profilePayload,
@@ -29,6 +30,7 @@ class ProfileState {
     required this.suggestion,
     required this.feedBack,
     required this.banks,
+    required this.kycVerification,
   });
 
   factory ProfileState.initial() {
@@ -43,6 +45,7 @@ class ProfileState {
       suggestion: AsyncValue.data(SuggestionPayload()),
       feedBack: const AsyncValue.data(''),
       banks: const AsyncValue.data([]),
+      kycVerification: const AsyncValue.data(''),
     );
   }
 
@@ -59,6 +62,7 @@ class ProfileState {
     AsyncValue<SuggestionPayload>? suggestion,
     AsyncValue<String>? feedBack,
     AsyncValue<List<BanlList>>? banks,
+    AsyncValue<String>? kycVerification,
   }) {
     return ProfileState(
       profilePayload: profilePayload ?? this.profilePayload,
@@ -71,6 +75,7 @@ class ProfileState {
       suggestion: suggestion ?? this.suggestion,
       feedBack: feedBack ?? this.feedBack,
       banks: banks ?? this.banks,
+      kycVerification: kycVerification ?? this.kycVerification,
     );
   }
 }

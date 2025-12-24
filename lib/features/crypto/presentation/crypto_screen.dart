@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mdiho/features/home/presentation/widget/kyc_card.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -110,6 +111,7 @@ class CryptoScreen extends HookConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      const CompletedKycCard(),
                       const Gap(52),
                       const Icon(Icons.info_outline,
                           color: Colors.grey, size: 48),
@@ -125,6 +127,7 @@ class CryptoScreen extends HookConsumerWidget {
 
               return Column(
                 children: [
+                  const CompletedKycCard(),
                   Expanded(
                     child: ListView.separated(
                       padding: const EdgeInsets.all(16),

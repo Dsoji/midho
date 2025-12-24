@@ -7,12 +7,17 @@ class UserProfileModel {
   String? medium;
   bool? deleted;
   bool? ecode;
+  bool? kyc;
+  bool? enforceKyc;
+  int? attempt;
   String? id;
   String? email;
   String? firstname;
   String? lastname;
   String? phone;
   String? country;
+  String? referral;
+  String? device;
   bool? locked;
   bool? pushAlert;
   bool? emailAlert;
@@ -29,12 +34,17 @@ class UserProfileModel {
     this.medium,
     this.deleted,
     this.ecode,
+    this.kyc,
+    this.enforceKyc,
+    this.attempt,
     this.id,
     this.email,
     this.firstname,
     this.lastname,
     this.phone,
     this.country,
+    this.referral,
+    this.device,
     this.locked,
     this.pushAlert,
     this.emailAlert,
@@ -50,7 +60,7 @@ class UserProfileModel {
 
   @override
   String toString() {
-    return 'UserProfileModel(id: $id, email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, country: $country, locked: $locked, pushAlert: $pushAlert, emailAlert: $emailAlert, theme: $theme, biometrics: $biometrics, username: $username, createdAt: $createdAt, updatedAt: $updatedAt, fcmToken: $fcmToken, banks: $banks, id: $id, wallet: $wallet)';
+    return 'UserProfileModel(id: $id, email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, country: $country, referral: $referral, device: $device, locked: $locked, pushAlert: $pushAlert, emailAlert: $emailAlert, theme: $theme, biometrics: $biometrics, username: $username, createdAt: $createdAt, updatedAt: $updatedAt, fcmToken: $fcmToken, banks: $banks, wallet: $wallet, kyc: $kyc, enforceKyc: $enforceKyc, attempt: $attempt)';
   }
 
   factory UserProfileModel.fromMap(Map<String, dynamic> data) {
@@ -58,12 +68,17 @@ class UserProfileModel {
       medium: data['medium'] as String?,
       deleted: data['deleted'] as bool?,
       ecode: data['ecode'] as bool?,
+      kyc: data['kyc'] as bool?,
+      enforceKyc: data['enforceKYC'] as bool?,
+      attempt: data['attempt'] is num ? (data['attempt'] as num).toInt() : null,
       id: data['_id'] as String?,
       email: data['email'] as String?,
       firstname: data['firstname'] as String?,
       lastname: data['lastname'] as String?,
       phone: data['phone'] as String?,
       country: data['country'] as String?,
+      referral: data['referral'] as String?,
+      device: data['device'] as String?,
       locked: data['locked'] as bool?,
       pushAlert: data['pushAlert'] as bool?,
       emailAlert: data['emailAlert'] as bool?,
@@ -90,12 +105,17 @@ class UserProfileModel {
         'medium': medium,
         'deleted': deleted,
         'ecode': ecode,
+        'kyc': kyc,
+        'enforceKYC': enforceKyc,
+        'attempt': attempt,
         '_id': id,
         'email': email,
         'firstname': firstname,
         'lastname': lastname,
         'phone': phone,
         'country': country,
+        'referral': referral,
+        'device': device,
         'locked': locked,
         'pushAlert': pushAlert,
         'emailAlert': emailAlert,
@@ -126,12 +146,17 @@ class UserProfileModel {
     String? medium,
     bool? deleted,
     bool? ecode,
+    bool? kyc,
+    bool? enforceKyc,
+    int? attempt,
     String? id,
     String? email,
     String? firstname,
     String? lastname,
     String? phone,
     String? country,
+    String? referral,
+    String? device,
     bool? locked,
     bool? pushAlert,
     bool? emailAlert,
@@ -148,12 +173,17 @@ class UserProfileModel {
       medium: medium ?? this.medium,
       deleted: deleted ?? this.deleted,
       ecode: ecode ?? this.ecode,
+      kyc: kyc ?? this.kyc,
+      enforceKyc: enforceKyc ?? this.enforceKyc,
+      attempt: attempt ?? this.attempt,
       id: id ?? this.id,
       email: email ?? this.email,
       firstname: firstname ?? this.firstname,
       lastname: lastname ?? this.lastname,
       phone: phone ?? this.phone,
       country: country ?? this.country,
+      referral: referral ?? this.referral,
+      device: device ?? this.device,
       locked: locked ?? this.locked,
       pushAlert: pushAlert ?? this.pushAlert,
       emailAlert: emailAlert ?? this.emailAlert,

@@ -2,6 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/bank_network/data/model/response/bank_list/bank_list.dart';
+import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
 import '../../../../common/api/api.dart';
@@ -234,6 +235,25 @@ class ProfileeService {
       },
       showErrorToast: true,
       showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<String>> kycVerification({
+    required KycPayload payload,
+  }) async {
+    return await apiRequestHelper.handleApiRequest<String>(
+      () => apiClient.post(
+        'user/kyc/verify',
+        header: {
+          'Authorization': 'Bearer $accessToken',
+        },
+        data: payload,
+      ),
+      parser: (data) {
+        return BaseModel.toRawString(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: true,
     );
   }
 }

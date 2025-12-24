@@ -155,7 +155,9 @@ class BvnVerificationScreen extends HookConsumerWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SelfieVerificationScreen(),
+                      builder: (context) => SelfieVerificationScreen(
+                        bvn: bvnController.text,
+                      ),
                     ),
                   );
                 },

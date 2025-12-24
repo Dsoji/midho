@@ -1,17 +1,29 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mdiho/features/kyc/bvn_verification.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 import 'package:mdiho/common/widgets/custom_app_bar.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
+import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SelfieVerificationScreen extends HookConsumerWidget {
-  const SelfieVerificationScreen({super.key});
+  const SelfieVerificationScreen({
+    super.key,
+    this.bvn,
+    this.nin,
+  });
+
+  /// Only one of [bvn] or [nin] should be provided.
+  final String? bvn;
+  final String? nin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,6 +31,7 @@ class SelfieVerificationScreen extends HookConsumerWidget {
     final controller = useState<CameraController?>(null);
     final isCameraInitialized = useState(false);
     final isLoading = useState(false);
+    final isVerifying = useState(false);
 
     useEffect(() {
       return () {
@@ -129,7 +142,9 @@ class SelfieVerificationScreen extends HookConsumerWidget {
                               width: 150,
                               height: 45,
                               onPressed: () {
-                                isLoading.value ? null : initializeCamera;
+                                if (!isLoading.value) {
+                                  initializeCamera();
+                                }
                               },
                               textColor: Colors.black,
                             ),
@@ -166,8 +181,65 @@ class SelfieVerificationScreen extends HookConsumerWidget {
                 text: "Verify",
                 width: double.infinity,
                 height: 50,
-                onPressed: () {
-                  // Handle verification logic (e.g. capture image)
+                isLoading: ref
+                    .watch(profileControllerProvider)
+                    .kycVerification
+                    .isLoading,
+                onPressed: () async {
+                  if (controller.value == null ||
+                      !controller.value!.value.isInitialized) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please start the camera first.'),
+                      ),
+                    );
+                    return;
+                  }
+
+                  try {
+                    // Capture selfie
+                    final image = await controller.value!.takePicture();
+                    final bytes = await File(image.path).readAsBytes();
+                    final selfieBase64 = base64Encode(bytes);
+
+                    // Build payload
+                    final payload = KycPayload(
+                      bvn: bvn,
+                      nin: nin,
+                      selfie: selfieBase64,
+                    );
+
+                    final controllerNotifier = ref.read(
+                      profileControllerProvider.notifier,
+                    );
+
+                    final success =
+                        await controllerNotifier.kycVerification(payload);
+
+                    if (!context.mounted) return;
+
+                    if (success) {
+                      Navigator.of(context).popUntil(
+                        (route) => route.isFirst,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content:
+                              Text('Failed to submit KYC. Please try again.'),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error capturing selfie: $e'),
+                      ),
+                    );
+                  } finally {
+                    isVerifying.value = false;
+                  }
                 },
                 textColor: Colors.white,
                 color: AppColors.primaryColor,
@@ -176,7 +248,7 @@ class SelfieVerificationScreen extends HookConsumerWidget {
               const Gap(24),
 
               // Footer Security Note
-              VerifyEncryptWidget(theme: theme), const Gap(20),
+              const Gap(20),
             ],
           ),
         ),

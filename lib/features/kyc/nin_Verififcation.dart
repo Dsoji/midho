@@ -10,7 +10,6 @@ import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
 import 'package:mdiho/features/kyc/bvn_verification.dart';
 import 'package:mdiho/features/kyc/selfie_verification.dart';
-import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 class NINVerificationScreen extends HookConsumerWidget {
   const NINVerificationScreen({super.key});
@@ -139,7 +138,9 @@ class NINVerificationScreen extends HookConsumerWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SelfieVerificationScreen(),
+                      builder: (context) => SelfieVerificationScreen(
+                        nin: ninController.text,
+                      ),
                     ),
                   );
                 },

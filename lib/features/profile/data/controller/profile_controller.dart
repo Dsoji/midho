@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
+import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 
 import '../repository/profile_repository.dart';
@@ -274,6 +275,28 @@ class ProfileController extends StateNotifier<ProfileState> {
       (success) {
         state = state.copyWith(
           banks: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> kycVerification(KycPayload payload) async {
+    state = state.copyWith(kycVerification: const AsyncValue.loading());
+
+    final result =
+        await _authenticationRepository.kycVerification(payload: payload);
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          kycVerification: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          kycVerification: AsyncValue.data(success),
         );
         return true;
       },

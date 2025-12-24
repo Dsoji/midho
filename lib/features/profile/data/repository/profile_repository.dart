@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/utils/multiple_results.dart';
 import 'package:mdiho/common/utils/utils.dart';
+import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
@@ -261,6 +262,29 @@ class ProfileRepository {
                 message: 'Failed to fetch banks',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to fetch banks'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, String>> kycVerification({
+    required KycPayload payload,
+  }) async {
+    try {
+      final data = await authService.kycVerification(payload: payload);
+
+      if (data.isSuccess) {
+        return Success(data.value ?? '');
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to verify KYC',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to verify KYC'),
               ),
         );
       }

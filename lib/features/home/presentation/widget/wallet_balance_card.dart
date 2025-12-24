@@ -6,6 +6,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../bottomNav/app_router.gr.dart';
@@ -246,6 +247,34 @@ class ReferralsCard extends HookConsumerWidget {
                     color: theme.brightness == Brightness.dark
                         ? Colors.white
                         : AppColors.primaryColor.shade700,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                GestureDetector(
+                  onTap: () async {
+                    final url = Uri.parse(
+                      'https://youtu.be/89T7CI3jgIg?si=LGqppcWQwfimt2nG',
+                    );
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url,
+                          mode: LaunchMode.externalApplication);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: theme.brightness == Brightness.dark
+                          ? const Color(0xFF1B1B1B)
+                          : AppColors.blueColor.shade100,
+                    ),
+                    child: Icon(
+                      Icons.north_west,
+                      size: 14,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : AppColors.primaryColor.shade700,
+                    ),
                   ),
                 ),
               ],
