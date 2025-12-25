@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/bank_network/data/model/response/bank_list/bank_list.dart';
 import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
+import 'package:mdiho/features/profile/data/Model/response/platform_details/platform_details.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
 import '../../../../common/api/api.dart';
@@ -255,6 +256,22 @@ class ProfileeService {
       },
       showErrorToast: true,
       showSuccessToast: true,
+    );
+  }
+
+  Future<ResultValue<PlatformDetails>> getPlatform() async {
+    return await apiRequestHelper.handleApiRequest<PlatformDetails>(
+      () => apiClient.get(
+        'platform',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return PlatformDetails.fromMap(data);
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
     );
   }
 }

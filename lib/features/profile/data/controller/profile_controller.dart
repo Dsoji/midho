@@ -302,4 +302,25 @@ class ProfileController extends StateNotifier<ProfileState> {
       },
     );
   }
+
+  Future<bool> getPlatform() async {
+    state = state.copyWith(platform: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getPlatform();
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          platform: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          platform: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
 }

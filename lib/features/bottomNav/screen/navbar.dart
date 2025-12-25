@@ -9,6 +9,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/res/assets.dart';
@@ -26,6 +28,111 @@ class NaviBarScreen extends HookConsumerWidget {
     final theme = Theme.of(context);
     final userDetails = ref.watch(authenticationControllerProvider).userDetails;
     final isEcode = userDetails.value?.ecode ?? false;
+
+    // Load package info asynchronously
+    final packageInfoAsync = useFuture(PackageInfo.fromPlatform());
+    final hasLogged = useRef(false);
+
+    // Track if platform info has been logged
+    final hasLoggedPlatform = useRef(false);
+
+    // Fetch platform info once on mount
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref.read(profileControllerProvider.notifier).getPlatform();
+      });
+      return null;
+    }, []);
+
+    // Log package info once when available
+    useEffect(() {
+      if (packageInfoAsync.hasData &&
+          packageInfoAsync.data != null &&
+          !hasLogged.value) {
+        final packageInfo = packageInfoAsync.data!;
+        hasLogged.value = true;
+
+        logger.d('App Name: ${packageInfo.appName}');
+        logger.d('Package Name: ${packageInfo.packageName}');
+        logger.d('App Version: ${packageInfo.version}');
+        logger.d('Build Number: ${packageInfo.buildNumber}');
+
+        debugPrint('═══════════════════════════════════════');
+        debugPrint('📱 App Name: ${packageInfo.appName}');
+        debugPrint('📦 Package Name: ${packageInfo.packageName}');
+        debugPrint('🔢 App Version: ${packageInfo.version}');
+        debugPrint('🏗️ Build Number: ${packageInfo.buildNumber}');
+        debugPrint('═══════════════════════════════════════');
+      } else if (packageInfoAsync.hasError && !hasLogged.value) {
+        hasLogged.value = true;
+        logger.e('Error loading package info: ${packageInfoAsync.error}');
+        debugPrint('❌ Error loading package info: ${packageInfoAsync.error}');
+      }
+      return null;
+    }, [packageInfoAsync.hasData, packageInfoAsync.hasError]);
+
+    // Check platform info periodically without causing rebuilds
+    useEffect(() {
+      // Check immediately
+      void checkPlatform() async {
+        if (hasLoggedPlatform.value) return;
+
+        final platformAsync = ref.watch(profileControllerProvider).platform;
+
+        // Log the state for debugging
+        debugPrint('🔍 Platform AsyncValue state:');
+        debugPrint('  - hasData: ${platformAsync.hasValue}');
+        debugPrint('  - isLoading: ${platformAsync.isLoading}');
+        debugPrint('  - hasError: ${platformAsync.hasError}');
+
+        platformAsync.when(
+          data: (platform) {
+            // Check if platform has actual data (not just empty object)
+            if (platform.data != null || platform.status == true) {
+              hasLoggedPlatform.value = true;
+              final androidVersion = platform.data?.androidVersion;
+              final iosVersion = platform.data?.iosVersion;
+
+              logger.d('Platform: $platform');
+              logger.d('Platform Status: ${platform.status}');
+              logger.d('Platform Message: ${platform.message}');
+              logger.d('Android Version: $androidVersion');
+              logger.d('iOS Version: $iosVersion');
+
+              debugPrint('═══════════════════════════════════════');
+              debugPrint('🖥️ Platform Data Loaded');
+              debugPrint('📊 Status: ${platform.status}');
+              debugPrint('💬 Message: ${platform.message}');
+              debugPrint('📱 Android Version: $androidVersion');
+              debugPrint('🍎 iOS Version: $iosVersion');
+              debugPrint('═══════════════════════════════════════');
+            } else {
+              debugPrint('⚠️ Platform data is empty/null');
+            }
+          },
+          loading: () {
+            debugPrint('⏳ Platform data is still loading...');
+          },
+          error: (error, stackTrace) {
+            hasLoggedPlatform.value = true; // Don't keep retrying on error
+            logger.e('Error loading platform: $error');
+            debugPrint('❌ Error loading platform: $error');
+            debugPrint('❌ Stack trace: $stackTrace');
+          },
+        );
+      }
+
+      // Check immediately
+      checkPlatform();
+
+      // Check again after delays (in case it loads asynchronously)
+      Future.delayed(const Duration(seconds: 1), checkPlatform);
+      Future.delayed(const Duration(seconds: 3), checkPlatform);
+      Future.delayed(const Duration(seconds: 5), checkPlatform);
+
+      return null;
+    }, []);
+
     useEffect(() {
       final box = Hive.box('data');
       box.put('is_auth', false);

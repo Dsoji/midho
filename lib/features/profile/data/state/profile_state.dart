@@ -1,5 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
+import 'package:mdiho/features/profile/data/Model/response/platform_details/platform_details.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
@@ -18,6 +19,7 @@ class ProfileState {
   final AsyncValue<String> feedBack;
   final AsyncValue<List<BanlList>> banks;
   final AsyncValue<String> kycVerification;
+  final AsyncValue<PlatformDetails> platform;
 
   const ProfileState({
     required this.profilePayload,
@@ -31,6 +33,7 @@ class ProfileState {
     required this.feedBack,
     required this.banks,
     required this.kycVerification,
+    required this.platform,
   });
 
   factory ProfileState.initial() {
@@ -46,6 +49,7 @@ class ProfileState {
       feedBack: const AsyncValue.data(''),
       banks: const AsyncValue.data([]),
       kycVerification: const AsyncValue.data(''),
+      platform: AsyncValue.data(PlatformDetails()),
     );
   }
 
@@ -63,6 +67,7 @@ class ProfileState {
     AsyncValue<String>? feedBack,
     AsyncValue<List<BanlList>>? banks,
     AsyncValue<String>? kycVerification,
+    AsyncValue<PlatformDetails>? platform,
   }) {
     return ProfileState(
       profilePayload: profilePayload ?? this.profilePayload,
@@ -76,6 +81,7 @@ class ProfileState {
       feedBack: feedBack ?? this.feedBack,
       banks: banks ?? this.banks,
       kycVerification: kycVerification ?? this.kycVerification,
+      platform: platform ?? this.platform,
     );
   }
 }

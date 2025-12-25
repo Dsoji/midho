@@ -7,6 +7,7 @@ import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_
 
 import '../../../authentication/data/model/payload/profile_payload.dart';
 import '../../../bank_network/data/model/response/bank_list/bank_list.dart';
+import '../Model/response/platform_details/platform_details.dart';
 import '../Model/response/user_profile_model/user_profile_model.dart';
 import '../service/profile_service.dart';
 
@@ -285,6 +286,27 @@ class ProfileRepository {
                 message: 'Failed to verify KYC',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to verify KYC'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, PlatformDetails>> getPlatform() async {
+    try {
+      final data = await authService.getPlatform();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? PlatformDetails());
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to get platform',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to get platform'),
               ),
         );
       }
