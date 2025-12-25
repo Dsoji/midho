@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -63,22 +64,24 @@ class SelfieVerificationScreen extends HookConsumerWidget {
         if (!cameraStatus.isGranted) {
           if (cameraStatus.isPermanentlyDenied) {
             if (!currentContext.mounted) return;
-            ScaffoldMessenger.of(currentContext).showSnackBar(
-              const SnackBar(
-                content: Text(
+            Fluttertoast.showToast(
+              msg:
                   'Camera permission is permanently denied. Please enable it in settings.',
-                ),
-                duration: Duration(seconds: 4),
-              ),
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
             );
           } else {
             if (!currentContext.mounted) return;
-            ScaffoldMessenger.of(currentContext).showSnackBar(
-              const SnackBar(
-                content:
-                    Text('Camera permission is required to take a selfie.'),
-                duration: Duration(seconds: 3),
-              ),
+            Fluttertoast.showToast(
+              msg: 'Camera permission is required to take a selfie.',
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
             );
           }
           return;
@@ -91,11 +94,13 @@ class SelfieVerificationScreen extends HookConsumerWidget {
 
         if (cameras.isEmpty) {
           if (!currentContext.mounted) return;
-          ScaffoldMessenger.of(currentContext).showSnackBar(
-            const SnackBar(
-              content: Text('No cameras available on this device.'),
-              duration: Duration(seconds: 3),
-            ),
+          Fluttertoast.showToast(
+            msg: 'No cameras available on this device.',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
           );
           return;
         }
@@ -128,13 +133,13 @@ class SelfieVerificationScreen extends HookConsumerWidget {
         debugPrint('Error initializing camera: $e');
         final errorContext = contextRef.value;
         if (errorContext != null && errorContext.mounted) {
-          ScaffoldMessenger.of(errorContext).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Failed to initialize camera: ${e.toString()}',
-              ),
-              duration: const Duration(seconds: 4),
-            ),
+          Fluttertoast.showToast(
+            msg: 'Failed to initialize camera: ${e.toString()}',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
           );
         }
       } finally {
@@ -155,11 +160,13 @@ class SelfieVerificationScreen extends HookConsumerWidget {
         debugPrint('Error capturing image: $e');
         final errorContext = contextRef.value;
         if (errorContext != null && errorContext.mounted) {
-          ScaffoldMessenger.of(errorContext).showSnackBar(
-            SnackBar(
-              content: Text('Error capturing image: $e'),
-              duration: const Duration(seconds: 3),
-            ),
+          Fluttertoast.showToast(
+            msg: 'Error capturing image: $e',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
           );
         }
       } finally {
@@ -388,36 +395,46 @@ class SelfieVerificationScreen extends HookConsumerWidget {
                     .watch(profileControllerProvider)
                     .kycVerification
                     .isLoading,
-                isDisabled: capturedImagePath.value == null,
                 onPressed: () async {
                   if (capturedImagePath.value == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please capture a selfie first.'),
-                      ),
+                    Fluttertoast.showToast(
+                      msg: 'Please capture a selfie first.',
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
                     );
                     return;
                   }
 
                   try {
-                    // Use captured image
+                    // Use captured image (commented out for testing with dummy data)
                     final bytes =
                         await File(capturedImagePath.value!).readAsBytes();
                     final selfieBase64 = base64Encode(bytes);
 
-                    // Build payload
+                    // Build payload with dummy data for testing
                     final payload = KycPayload(
-                      bvn: bvn,
-                      nin: nin,
-                      selfie: selfieBase64,
-                    );
+                        bvn: bvn ?? '', // Dummy BVN for testing
+                        nin: nin ?? '', // Dummy NIN for testing
+                        selfie: selfieBase64
+                        // Dummy base64 image for testing
+                        );
+                    print(payload);
+                    debugPrint(
+                        'KYC Verification: Starting request with payload keys: ${payload.keys}');
 
                     final controllerNotifier = ref.read(
                       profileControllerProvider.notifier,
                     );
 
+                    debugPrint(
+                        'KYC Verification: Calling kycVerification method');
                     final success =
                         await controllerNotifier.kycVerification(payload);
+                    debugPrint(
+                        'KYC Verification: Request completed with success: $success');
 
                     if (!context.mounted) return;
 
@@ -426,19 +443,25 @@ class SelfieVerificationScreen extends HookConsumerWidget {
                         (route) => route.isFirst,
                       );
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content:
-                              Text('Failed to submit KYC. Please try again.'),
-                        ),
+                      Fluttertoast.showToast(
+                        msg: 'Failed to submit KYC. Please try again.',
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
                       );
                     }
                   } catch (e) {
+                    print(e);
                     if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error capturing selfie: $e'),
-                      ),
+                    Fluttertoast.showToast(
+                      msg: 'Error capturing selfie: $e',
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
                     );
                   } finally {
                     isVerifying.value = false;

@@ -250,6 +250,7 @@ class ProfileeService {
         data: payload,
       ),
       parser: (data) {
+        logger.d('KYC Verification: Response data: $data');
         return BaseModel.toRawString(data);
       },
       showErrorToast: true,
