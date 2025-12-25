@@ -108,6 +108,7 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                       controller: codeController,
                       label: "Code ",
                       keyboardType: TextInputType.emailAddress,
+                      maxLines: null,
                     ),
                     const Gap(16),
                     CustomTextField(

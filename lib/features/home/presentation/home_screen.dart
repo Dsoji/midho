@@ -11,7 +11,7 @@ import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.da
 import 'package:mdiho/features/home/presentation/widget/kyc_card.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/home/presentation/widget/welcome_header.dart';
-import 'package:mdiho/features/kyc/verification_method.dart';
+import 'package:mdiho/features/kyc/presentation/verification_method.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 

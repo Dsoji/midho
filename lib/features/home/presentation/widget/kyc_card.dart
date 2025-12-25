@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 import 'package:mdiho/common/res/assets.dart';
-import 'package:mdiho/features/kyc/verification_method.dart';
+import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/features/kyc/presentation/verification_method.dart';
 
-class CompletedKycCard extends StatelessWidget {
-  const CompletedKycCard({super.key});
-
+class CompletedKycCard extends HookConsumerWidget {
+  const CompletedKycCard({super.key, this.radiues = 16});
+  final double radiues;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(authenticationControllerProvider).userDetails;
+    final kycStatus = userAsync.maybeWhen(
+      data: (user) => user.kyc,
+      orElse: () => null,
+    );
+    final enforceKyc = userAsync.maybeWhen(
+      data: (user) => user.enforceKyc,
+      orElse: () => null,
+    );
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -31,7 +43,7 @@ class CompletedKycCard extends StatelessWidget {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radiues),
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF3B82F6).withOpacity(0.3),
@@ -41,7 +53,7 @@ class CompletedKycCard extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radiues),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -80,14 +92,16 @@ class CompletedKycCard extends StatelessWidget {
                           const Text(
                             'Complete Your KYC!',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color(0xFFBFEFFF),
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           const Gap(4),
                           Text(
-                            'You can still continue exchanging but it\'s best to complete your KYC now to get access to new feature coming soon',
+                            enforceKyc == true
+                                ? 'You need to complete your kyc to continue trading crypto'
+                                : 'You can still continue exchanging but it\'s best to complete your KYC now to get access to new feature coming soon',
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(

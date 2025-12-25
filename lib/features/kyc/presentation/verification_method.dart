@@ -3,8 +3,8 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:mdiho/common/res/app_colors.dart';
-import 'package:mdiho/features/kyc/bvn_verification.dart';
-import 'package:mdiho/features/kyc/nin_Verififcation.dart';
+import 'package:mdiho/features/kyc/presentation/bvn_verification.dart';
+import 'package:mdiho/features/kyc/presentation/nin_Verififcation.dart';
 
 class VerificationMethodScreen extends HookConsumerWidget {
   const VerificationMethodScreen({super.key});
@@ -124,7 +124,7 @@ class VerificationMethodScreen extends HookConsumerWidget {
                               color: Color(0xFFD9F7FF),
                               shape: BoxShape.circle,
                             ),
-                            child: Center(child: Text('🔒'))),
+                            child: const Center(child: Text('🔒'))),
                         const Gap(12),
                         Expanded(
                           child: Column(
@@ -215,7 +215,7 @@ class _VerificationOptionCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Gap(16),
+                const Gap(16),
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(

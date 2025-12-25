@@ -9,7 +9,7 @@ import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_app_bar.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
-import 'package:mdiho/features/kyc/selfie_verification.dart';
+import 'package:mdiho/features/kyc/presentation/selfie_verification.dart';
 
 class BvnVerificationScreen extends HookConsumerWidget {
   const BvnVerificationScreen({super.key});
