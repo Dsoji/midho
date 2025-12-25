@@ -1,11 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
 import 'package:mdiho/common/res/app_colors.dart';
+import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
+import 'package:mdiho/features/profile/data/state/profile_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../authentication/data/controller/authentication_controller.dart';
@@ -45,6 +48,46 @@ class WalletBalanceCard extends HookConsumerWidget {
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final theme = Theme.of(context);
     logger.d(userInfo?.wallet?.mainBalance);
+    final platform = ref.watch(profileControllerProvider).platform;
+
+    // Listen to platform state changes and log them
+    useEffect(() {
+      platform.when(
+        data: (data) {
+          debugPrint('📺 Platform data object: $data');
+          debugPrint('📺 Full PlatformDetails: $data');
+        },
+        loading: () {
+          logger.d('Platform loading...');
+          debugPrint('⏳ Platform loading...');
+        },
+        error: (error, stackTrace) {
+          logger.e('Platform error: $error');
+          debugPrint('❌ Platform error: $error');
+        },
+      );
+      return null;
+    }, [platform]);
+
+    // Also use ref.listen to track state changes
+    ref.listen<ProfileState>(
+      profileControllerProvider,
+      (previous, next) {
+        final previousPlatform = previous?.platform;
+        final nextPlatform = next.platform;
+
+        if (previousPlatform != nextPlatform) {
+          debugPrint('🔄 Platform state changed!');
+          nextPlatform.when(
+            data: (data) {
+              debugPrint('✅ New platform data: ${data.youtube}');
+            },
+            loading: () => debugPrint('⏳ Platform loading...'),
+            error: (error, _) => debugPrint('❌ Platform error: $error'),
+          );
+        }
+      },
+    );
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -188,8 +231,86 @@ class WalletBalanceCard extends HookConsumerWidget {
           ),
           const Gap(6),
           const ReferralsCard(),
+          const Gap(6),
+          platform.when(
+            data: (data) {
+              final youtubeUrl = data.youtube;
+              if (youtubeUrl != null && youtubeUrl.isNotEmpty) {
+                return YoutubeCard(youtubeUrl: youtubeUrl);
+              }
+              return const SizedBox.shrink();
+            },
+            loading: () => const SizedBox.shrink(),
+            error: (error, stackTrace) {
+              debugPrint('❌ Platform error in widget: $error');
+              return const SizedBox.shrink();
+            },
+          ),
           const Gap(2),
         ],
+      ),
+    );
+  }
+}
+
+class YoutubeCard extends HookConsumerWidget {
+  const YoutubeCard({super.key, required this.youtubeUrl});
+  final String? youtubeUrl;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    logger.d('youtubeUrl: $youtubeUrl');
+    return InkWell(
+      onTap: () {
+        launchUrl(Uri.parse(youtubeUrl ?? ""),
+            mode: LaunchMode.externalApplication);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.brightness == Brightness.dark
+              ? AppColors.secondaryColor.shade600
+              : const Color(0xFFF6F8FE),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Youtube',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.primaryColor.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.brightness == Brightness.dark
+                        ? const Color(0xFF1B1B1B)
+                        : AppColors.blueColor.shade50,
+                  ),
+                  child: Icon(
+                    Icons.north_east,
+                    size: 14,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : AppColors.primaryColor.shade700,
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -247,34 +368,6 @@ class ReferralsCard extends HookConsumerWidget {
                     color: theme.brightness == Brightness.dark
                         ? Colors.white
                         : AppColors.primaryColor.shade700,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                GestureDetector(
-                  onTap: () async {
-                    final url = Uri.parse(
-                      'https://youtu.be/89T7CI3jgIg?si=LGqppcWQwfimt2nG',
-                    );
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url,
-                          mode: LaunchMode.externalApplication);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: theme.brightness == Brightness.dark
-                          ? const Color(0xFF1B1B1B)
-                          : AppColors.blueColor.shade100,
-                    ),
-                    child: Icon(
-                      Icons.north_west,
-                      size: 14,
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : AppColors.primaryColor.shade700,
-                    ),
                   ),
                 ),
               ],

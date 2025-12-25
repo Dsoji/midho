@@ -1,6 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
-import 'package:mdiho/features/profile/data/Model/response/platform_details/platform_details.dart';
+import 'package:mdiho/features/profile/data/Model/response/platform_details/data.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 

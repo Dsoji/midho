@@ -38,140 +38,148 @@ class BvnVerificationScreen extends HookConsumerWidget {
         showAction: false,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Gap(10),
-              Text(
-                'Bank verification number',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: theme.textTheme.bodyLarge?.color,
+        child: GestureDetector(
+          onTap: () {
+            // Dismiss keyboard when tapping outside
+            FocusScope.of(context).unfocus();
+          },
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Gap(10),
+                Text(
+                  'Bank verification number',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: theme.textTheme.bodyLarge?.color,
+                  ),
                 ),
-              ),
-              const Gap(8),
-              Text(
-                'Enter your bank Bank verification number to proceed',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontSize: 14,
-                  height: 1.4,
+                const Gap(8),
+                Text(
+                  'Enter your bank Bank verification number to proceed',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
                 ),
-              ),
-              const Gap(32),
+                const Gap(32),
 
-              // Input
-              CustomTextField(
-                controller: bvnController,
-                label: "Bank verification number",
-                hintText: "Enter BVN",
-                keyboardType: TextInputType.number,
-                maxLength: 11,
-              ),
-
-              const Gap(24),
-
-              // Info Box
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade400
-                      : const Color(0xFFF9FAFB),
-                  borderRadius: BorderRadius.circular(8),
+                // Input
+                CustomTextField(
+                  controller: bvnController,
+                  label: "Bank verification number",
+                  hintText: "Enter BVN",
+                  keyboardType: TextInputType.number,
+                  maxLength: 11,
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      HugeIcons.strokeRoundedInformationCircle,
-                      size: 20,
-                      color: theme.iconTheme.color,
-                    ),
-                    const Gap(12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              text:
-                                  'You can retrieve your national identity number by dialing ',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: 12,
-                                height: 1.5,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: '*565*0#',
-                                  style: const TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      // Handle tap
-                                    },
+
+                const Gap(24),
+
+                // Info Box
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade400
+                        : const Color(0xFFF9FAFB),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        HugeIcons.strokeRoundedInformationCircle,
+                        size: 20,
+                        color: theme.iconTheme.color,
+                      ),
+                      const Gap(12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                text:
+                                    'You can retrieve your national identity number by dialing ',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontSize: 12,
+                                  height: 1.5,
                                 ),
-                              ],
+                                children: [
+                                  TextSpan(
+                                    text: '*565*0#',
+                                    style: TextStyle(
+                                      color: theme.brightness == Brightness.dark
+                                          ? Colors.white
+                                          : AppColors.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        // Handle tap
+                                      },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const Gap(8),
-                          Text(
-                            'Important Notes:',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
+                            const Gap(8),
+                            Text(
+                              'Important Notes:',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                          const Gap(4),
-                          _buildBulletPoint(
-                              'It works on MTN, Airtel, Glo, and 9mobile.',
-                              theme),
-                          _buildBulletPoint(
-                              'Your SIM must be the one linked to your BVN.',
-                              theme),
-                          _buildBulletPoint(
-                              'A small service fee usually applies (₦20-₦30 depending on the network).',
-                              theme),
-                        ],
+                            const Gap(4),
+                            _buildBulletPoint(
+                                'It works on MTN, Airtel, Glo, and 9mobile.',
+                                theme),
+                            _buildBulletPoint(
+                                'Your SIM must be the one linked to your BVN.',
+                                theme),
+                            _buildBulletPoint(
+                                'A small service fee usually applies (₦20-₦30 depending on the network).',
+                                theme),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-              const Gap(140),
+                const Gap(140),
 
-              // Submit Button
-              FullButton(
-                text: "Submit for Verification",
-                width: double.infinity,
-                height: 50,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SelfieVerificationScreen(
-                        bvn: bvnController.text,
+                // Submit Button
+                FullButton(
+                  text: "Submit for Verification",
+                  width: double.infinity,
+                  height: 50,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SelfieVerificationScreen(
+                          bvn: bvnController.text,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                textColor: Colors.white,
-                color: AppColors.primaryColor,
-                isDisabled: !isButtonEnabled.value,
-              ),
+                    );
+                  },
+                  textColor: Colors.white,
+                  color: AppColors.primaryColor,
+                  isDisabled: !isButtonEnabled.value,
+                ),
 
-              const Gap(24),
+                const Gap(24),
 
-              // Footer
-              VerifyEncryptWidget(theme: theme),
-              const Gap(20),
-            ],
+                // Footer
+                VerifyEncryptWidget(theme: theme),
+                const Gap(20),
+              ],
+            ),
           ),
         ),
       ),

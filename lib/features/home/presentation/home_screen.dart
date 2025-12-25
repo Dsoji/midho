@@ -45,6 +45,7 @@ class HomeScreen extends HookConsumerWidget {
     ref.read(transactionControllerProvider.notifier).getCableTvPlans();
     ref.read(transactionControllerProvider.notifier).getAirtimePlans();
     ref.read(transactionControllerProvider.notifier).getElectricalPlans();
+    ref.read(profileControllerProvider.notifier).getPlatform();
   }
 
   @override

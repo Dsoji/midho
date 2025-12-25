@@ -1,9 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/bank_network/data/model/response/bank_list/bank_list.dart';
 import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
-import 'package:mdiho/features/profile/data/Model/response/platform_details/platform_details.dart';
+import 'package:mdiho/features/profile/data/Model/response/platform_details/data.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
 import '../../../../common/api/api.dart';
@@ -268,7 +269,13 @@ class ProfileeService {
         },
       ),
       parser: (data) {
-        return PlatformDetails.fromMap(data);
+        logger.d('platform data (raw): $data');
+        debugPrint('📦 Platform API Response (raw): $data');
+        final platformDetails = PlatformDetails.fromMap(data);
+        logger.d('platform data (parsed): ${platformDetails.toString()}');
+        debugPrint('📦 Platform Details (parsed):');
+        debugPrint('   - youtube: ${platformDetails.youtube}');
+        return platformDetails;
       },
       showErrorToast: true,
       showSuccessToast: false,

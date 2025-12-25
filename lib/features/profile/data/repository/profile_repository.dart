@@ -2,12 +2,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/utils/multiple_results.dart';
 import 'package:mdiho/common/utils/utils.dart';
 import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
+import 'package:mdiho/features/profile/data/Model/response/platform_details/data.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
 import '../../../authentication/data/model/payload/profile_payload.dart';
 import '../../../bank_network/data/model/response/bank_list/bank_list.dart';
-import '../Model/response/platform_details/platform_details.dart';
 import '../Model/response/user_profile_model/user_profile_model.dart';
 import '../service/profile_service.dart';
 

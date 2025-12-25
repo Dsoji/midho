@@ -88,23 +88,12 @@ class NaviBarScreen extends HookConsumerWidget {
         platformAsync.when(
           data: (platform) {
             // Check if platform has actual data (not just empty object)
-            if (platform.data != null || platform.status == true) {
+            if (platform.youtube != null || platform.youtube != '') {
               hasLoggedPlatform.value = true;
-              final androidVersion = platform.data?.androidVersion;
-              final iosVersion = platform.data?.iosVersion;
-
               logger.d('Platform: $platform');
-              logger.d('Platform Status: ${platform.status}');
-              logger.d('Platform Message: ${platform.message}');
-              logger.d('Android Version: $androidVersion');
-              logger.d('iOS Version: $iosVersion');
-
               debugPrint('═══════════════════════════════════════');
               debugPrint('🖥️ Platform Data Loaded');
-              debugPrint('📊 Status: ${platform.status}');
-              debugPrint('💬 Message: ${platform.message}');
-              debugPrint('📱 Android Version: $androidVersion');
-              debugPrint('🍎 iOS Version: $iosVersion');
+              debugPrint('� YouTube URL: ${platform.youtube}');
               debugPrint('═══════════════════════════════════════');
             } else {
               debugPrint('⚠️ Platform data is empty/null');

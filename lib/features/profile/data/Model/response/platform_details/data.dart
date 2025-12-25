@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Data {
+class PlatformDetails {
   String? id;
   String? iosVersion;
   String? androidVersion;
@@ -9,7 +9,7 @@ class Data {
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  Data({
+  PlatformDetails({
     this.id,
     this.iosVersion,
     this.androidVersion,
@@ -24,7 +24,7 @@ class Data {
     return 'Data(id: $id, iosVersion: $iosVersion, androidVersion: $androidVersion, forceVersion: $forceVersion, youtube: $youtube, createdAt: $createdAt, updatedAt: $updatedAt, id: $id)';
   }
 
-  factory Data.fromMap(Map<String, dynamic> data) => Data(
+  factory PlatformDetails.fromMap(Map<String, dynamic> data) => PlatformDetails(
         id: data['_id'] as String?,
         iosVersion: data['iosVersion'] as String?,
         androidVersion: data['androidVersion'] as String?,
@@ -52,8 +52,8 @@ class Data {
   /// `dart:convert`
   ///
   /// Parses the string and returns the resulting Json object as [Data].
-  factory Data.fromJson(String data) {
-    return Data.fromMap(json.decode(data) as Map<String, dynamic>);
+  factory PlatformDetails.fromJson(String data) {
+    return PlatformDetails.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
@@ -61,7 +61,7 @@ class Data {
   /// Converts [Data] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  Data copyWith({
+  PlatformDetails copyWith({
     String? id,
     String? iosVersion,
     String? androidVersion,
@@ -70,7 +70,7 @@ class Data {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Data(
+    return PlatformDetails(
       id: id ?? this.id,
       iosVersion: iosVersion ?? this.iosVersion,
       androidVersion: androidVersion ?? this.androidVersion,
