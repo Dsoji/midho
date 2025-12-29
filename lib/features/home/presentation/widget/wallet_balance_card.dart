@@ -280,9 +280,10 @@ class YoutubeCard extends HookConsumerWidget {
             Row(
               children: [
                 Text(
-                  'Youtube',
+                  maxLines: 2,
+                  'Click here to learn to trade on the app',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     color: theme.brightness == Brightness.dark
                         ? Colors.white
                         : AppColors.primaryColor.shade700,

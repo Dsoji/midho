@@ -31,6 +31,7 @@ class OnboardingScreen extends HookConsumerWidget {
       box.put('is_auth', true);
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await Permission.notification.request();
+        await Permission.camera.request();
       });
       return null;
     }, []);

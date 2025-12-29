@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -8,6 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/common/utils/version_helper.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -35,6 +38,8 @@ class NaviBarScreen extends HookConsumerWidget {
 
     // Track if platform info has been logged
     final hasLoggedPlatform = useRef(false);
+    // Track if update screen has been shown
+    final updateScreenShown = useRef(false);
 
     // Fetch platform info once on mount
     useEffect(() {
@@ -74,10 +79,9 @@ class NaviBarScreen extends HookConsumerWidget {
     // Check platform info periodically without causing rebuilds
     useEffect(() {
       // Check immediately
-      void checkPlatform() async {
-        if (hasLoggedPlatform.value) return;
-
+      Future<void> checkPlatform() async {
         final platformAsync = ref.watch(profileControllerProvider).platform;
+        final packageInfo = packageInfoAsync.data;
 
         // Log the state for debugging
         debugPrint('🔍 Platform AsyncValue state:');
@@ -86,27 +90,71 @@ class NaviBarScreen extends HookConsumerWidget {
         debugPrint('  - hasError: ${platformAsync.hasError}');
 
         platformAsync.when(
-          data: (platform) {
+          data: (platform) async {
             // Check if platform has actual data (not just empty object)
-            if (platform.youtube != null || platform.youtube != '') {
-              hasLoggedPlatform.value = true;
-              logger.d('Platform: $platform');
-              debugPrint('═══════════════════════════════════════');
-              debugPrint('🖥️ Platform Data Loaded');
-              debugPrint('� YouTube URL: ${platform.youtube}');
-              debugPrint('═══════════════════════════════════════');
+            if (platform.youtube != null && platform.youtube != '') {
+              if (!hasLoggedPlatform.value) {
+                hasLoggedPlatform.value = true;
+                logger.d('Platform: $platform');
+                debugPrint('═══════════════════════════════════════');
+                debugPrint('🖥️ Platform Data Loaded');
+                debugPrint('📺 YouTube URL: ${platform.youtube}');
+                debugPrint('📱 iOS Version: ${platform.iosVersion}');
+                debugPrint('🤖 Android Version: ${platform.androidVersion}');
+                debugPrint('🔒 Force Update: ${platform.forceVersion}');
+                debugPrint('═══════════════════════════════════════');
+              }
+
+              // Check for version update
+              if (packageInfo != null &&
+                  !updateScreenShown.value &&
+                  context.mounted) {
+                final currentVersion = packageInfo.version;
+
+                final isRequired = await VersionHelper.isUpdateRequired(
+                  platformData: platform,
+                  currentVersion: currentVersion,
+                );
+                debugPrint('🔄 isRequired: $isRequired');
+
+                if (isRequired) {
+                  updateScreenShown.value = true;
+                  final isForce = VersionHelper.isForceUpdate(platform);
+
+                  debugPrint('🔄 Update required!');
+                  debugPrint('   Current: $currentVersion');
+                  debugPrint(
+                      '   Required: ${Platform.isIOS ? platform.iosVersion : platform.androidVersion}');
+                  debugPrint('   Force update: $isForce');
+
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) {
+                      context.router.push(
+                        ForceUpdateRoute(
+                          isForceUpdate: isForce,
+                          platformData: platform,
+                        ),
+                      );
+                    }
+                  });
+                }
+              }
             } else {
-              debugPrint('⚠️ Platform data is empty/null');
+              if (!hasLoggedPlatform.value) {
+                debugPrint('⚠️ Platform data is empty/null');
+              }
             }
           },
           loading: () {
             debugPrint('⏳ Platform data is still loading...');
           },
           error: (error, stackTrace) {
-            hasLoggedPlatform.value = true; // Don't keep retrying on error
-            logger.e('Error loading platform: $error');
-            debugPrint('❌ Error loading platform: $error');
-            debugPrint('❌ Stack trace: $stackTrace');
+            if (!hasLoggedPlatform.value) {
+              hasLoggedPlatform.value = true; // Don't keep retrying on error
+              logger.e('Error loading platform: $error');
+              debugPrint('❌ Error loading platform: $error');
+              debugPrint('❌ Stack trace: $stackTrace');
+            }
           },
         );
       }
@@ -120,7 +168,7 @@ class NaviBarScreen extends HookConsumerWidget {
       Future.delayed(const Duration(seconds: 5), checkPlatform);
 
       return null;
-    }, []);
+    }, [packageInfoAsync.hasData]);
 
     useEffect(() {
       final box = Hive.box('data');

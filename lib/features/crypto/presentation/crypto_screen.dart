@@ -185,7 +185,7 @@ class CryptoScreen extends HookConsumerWidget {
 
               return Column(
                 children: [
-                  const CompletedKycCard(radiues: 0),
+                  if (kycStatus == false) const CompletedKycCard(radiues: 0),
                   Expanded(
                     child: ListView.separated(
                       padding: const EdgeInsets.all(16),
