@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 
@@ -35,8 +36,37 @@ class SummaryCards extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final userInfo =
-        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final userDetailsAsync = ref.watch(authenticationControllerProvider).userDetails;
+    // Safely extract userInfo without throwing on error states
+    // Use previous data during loading to prevent blank screen flash
+    final previousUserInfo = useRef<dynamic>(null);
+    
+    // Get current value safely to initialize ref (only if in data state)
+    dynamic currentValue;
+    userDetailsAsync.maybeWhen(
+      data: (user) {
+        currentValue = user;
+        if (previousUserInfo.value == null) {
+          previousUserInfo.value = user;
+        }
+      },
+      orElse: () {},
+    );
+    
+    final userInfo = userDetailsAsync.when(
+      data: (user) {
+        previousUserInfo.value = user;
+        return user;
+      },
+      loading: () {
+        // Return previous data during loading
+        return previousUserInfo.value ?? currentValue;
+      },
+      error: (_, __) {
+        // Return previous data on error
+        return previousUserInfo.value ?? currentValue;
+      },
+    );
 
     // Update line 30 to use the new formatting
     // Extract the number from the string, format it, then add currency

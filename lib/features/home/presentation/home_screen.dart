@@ -20,6 +20,7 @@ import '../../../common/theme_notifier.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bottomNav/app_router.gr.dart';
 import '../../kyc/presentation/widget/kyc_dialog.dart';
+import '../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/summary_card.dart';
 import 'widget/wallet_balance_card.dart';
@@ -79,24 +80,52 @@ class HomeScreen extends HookConsumerWidget {
 
     int backPressCounter = 0;
     DateTime? lastBackPressTime;
-    final userInfo =
-        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final userAsync = ref.watch(authenticationControllerProvider).userDetails;
+
+    // Safely extract userInfo without throwing on error states
+    // Use previous data during loading to prevent blank screen flash
+    final previousUserInfo = useRef<UserProfileModel?>(null);
+
+    // Get current value safely to initialize ref (only if in data state)
+    UserProfileModel? currentValue;
+    userAsync.maybeWhen(
+      data: (user) {
+        currentValue = user;
+        if (previousUserInfo.value == null) {
+          previousUserInfo.value = user;
+        }
+      },
+      orElse: () {},
+    );
+
+    // Initialize with current data if available, or get from AsyncValue
+    final userInfo = userAsync.when(
+      data: (user) {
+        previousUserInfo.value = user;
+        return user;
+      },
+      loading: () {
+        // Return previous data during loading to prevent blank screen
+        // Use current value if ref not set yet (shouldn't happen, but safety check)
+        return previousUserInfo.value ?? currentValue ?? UserProfileModel();
+      },
+      error: (_, __) {
+        // Return previous data on error to prevent blank screen
+        return previousUserInfo.value ?? currentValue ?? UserProfileModel();
+      },
+    );
 
     useEffect(() {
       final box = Hive.box('data');
-      box.put('biometric', userInfo?.biometrics ?? false);
+      box.put('biometric', userInfo.biometrics ?? false);
       return null;
-    }, [userInfo?.biometrics]);
-
-    useEffect(() {
-      return null;
-    }, []);
+    }, [userInfo.biometrics]);
 
 // Automatically sync theme once userInfo is available
     useEffect(() {
-      if (userInfo?.theme != null) {
+      if (userInfo.theme != null) {
         Future.microtask(() {
-          final userTheme = userInfo!.theme!.toLowerCase().trim();
+          final userTheme = userInfo.theme!.toLowerCase().trim();
           final themeNotifier = ref.read(themeProvider.notifier);
 
           if (userTheme == 'light') {
@@ -107,9 +136,8 @@ class HomeScreen extends HookConsumerWidget {
         });
       }
       return null;
-    }, [userInfo?.theme]);
+    }, [userInfo.theme]);
 
-    final userAsync = ref.watch(authenticationControllerProvider).userDetails;
     final kycStatus = userAsync.maybeWhen(
       data: (user) => user.kyc,
       orElse: () => null,
@@ -119,9 +147,17 @@ class HomeScreen extends HookConsumerWidget {
       orElse: () => null,
     );
 
+    // Track if dialog has been shown to prevent multiple dialogs
+    final dialogShown = useRef(false);
+
     useEffect(() {
       // Only show dialog when KYC is incomplete and enforcement is required
-      if (kycStatus == false && enforceKyc == true) {
+      // Also ensure we haven't shown it already and context is mounted
+      if (kycStatus == false &&
+          enforceKyc == true &&
+          !dialogShown.value &&
+          context.mounted) {
+        dialogShown.value = true;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (context.mounted) {
             showDialog(
@@ -140,6 +176,10 @@ class HomeScreen extends HookConsumerWidget {
             );
           }
         });
+      }
+      // Reset dialog flag if KYC status changes
+      if (kycStatus == true) {
+        dialogShown.value = false;
       }
       return null;
     }, [kycStatus, enforceKyc]);

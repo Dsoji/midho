@@ -13,7 +13,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../bottomNav/app_router.gr.dart';
-import '../../../transaction/data/controller/transaction_controller.dart';
 
 // StateNotifier for Balance Visibility
 class BalanceVisibilityNotifier extends StateNotifier<bool> {
@@ -44,8 +43,37 @@ class WalletBalanceCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
-    final userInfo =
-        ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
+    final userDetailsAsync = ref.watch(authenticationControllerProvider).userDetails;
+    // Safely extract userInfo without throwing on error states
+    // Use previous data during loading to prevent blank screen flash
+    final previousUserInfo = useRef<dynamic>(null);
+    
+    // Get current value safely to initialize ref (only if in data state)
+    dynamic currentValue;
+    userDetailsAsync.maybeWhen(
+      data: (user) {
+        currentValue = user;
+        if (previousUserInfo.value == null) {
+          previousUserInfo.value = user;
+        }
+      },
+      orElse: () {},
+    );
+    
+    final userInfo = userDetailsAsync.when(
+      data: (user) {
+        previousUserInfo.value = user;
+        return user;
+      },
+      loading: () {
+        // Return previous data during loading
+        return previousUserInfo.value ?? currentValue;
+      },
+      error: (_, __) {
+        // Return previous data on error
+        return previousUserInfo.value ?? currentValue;
+      },
+    );
     final theme = Theme.of(context);
     logger.d(userInfo?.wallet?.mainBalance);
     final platform = ref.watch(profileControllerProvider).platform;
@@ -323,8 +351,6 @@ class ReferralsCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final refCount =
-        ref.watch(transactionControllerProvider).referals.valueOrNull?.data;
     final balanceState =
         ref.watch(authenticationControllerProvider).userDetails;
     return InkWell(
