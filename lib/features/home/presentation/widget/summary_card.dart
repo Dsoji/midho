@@ -6,6 +6,7 @@ import 'package:hugeicons/hugeicons.dart';
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/res/assets.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
+import 'wallet_balance_card.dart';
 
 class SummaryCards extends HookConsumerWidget {
   const SummaryCards({super.key});
@@ -36,11 +37,13 @@ class SummaryCards extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final userDetailsAsync = ref.watch(authenticationControllerProvider).userDetails;
+    final isBalanceVisible = ref.watch(balanceVisibilityProvider);
+    final userDetailsAsync =
+        ref.watch(authenticationControllerProvider).userDetails;
     // Safely extract userInfo without throwing on error states
     // Use previous data during loading to prevent blank screen flash
     final previousUserInfo = useRef<dynamic>(null);
-    
+
     // Get current value safely to initialize ref (only if in data state)
     dynamic currentValue;
     userDetailsAsync.maybeWhen(
@@ -52,7 +55,7 @@ class SummaryCards extends HookConsumerWidget {
       },
       orElse: () {},
     );
-    
+
     final userInfo = userDetailsAsync.when(
       data: (user) {
         previousUserInfo.value = user;
@@ -89,6 +92,7 @@ class SummaryCards extends HookConsumerWidget {
                 "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}",
             iconImage: ImageAssets.logo2,
             context: context,
+            isBalanceVisible: isBalanceVisible,
           ),
           const SizedBox(width: 16),
           _buildCard(
@@ -96,7 +100,8 @@ class SummaryCards extends HookConsumerWidget {
               amount:
                   "${userInfo?.wallet?.currency ?? ''} ${_formatCompactNumber(userInfo?.wallet?.outFlow ?? 0)}",
               icon: HugeIcons.strokeRoundedArrowUp03,
-              context: context),
+              context: context,
+              isBalanceVisible: isBalanceVisible),
         ],
       ),
     );
@@ -106,6 +111,7 @@ class SummaryCards extends HookConsumerWidget {
     required String title,
     required String amount,
     required BuildContext context,
+    required bool isBalanceVisible,
     String? iconImage,
     IconData? icon,
   }) {
@@ -144,7 +150,7 @@ class SummaryCards extends HookConsumerWidget {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      amount,
+                      isBalanceVisible ? amount : '••••••',
                       style: TextStyle(
                         color: theme.brightness == Brightness.light
                             ? const Color(0xFF1B1B1B)

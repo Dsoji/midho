@@ -43,11 +43,12 @@ class WalletBalanceCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isBalanceVisible = ref.watch(balanceVisibilityProvider);
-    final userDetailsAsync = ref.watch(authenticationControllerProvider).userDetails;
+    final userDetailsAsync =
+        ref.watch(authenticationControllerProvider).userDetails;
     // Safely extract userInfo without throwing on error states
     // Use previous data during loading to prevent blank screen flash
     final previousUserInfo = useRef<dynamic>(null);
-    
+
     // Get current value safely to initialize ref (only if in data state)
     dynamic currentValue;
     userDetailsAsync.maybeWhen(
@@ -59,7 +60,7 @@ class WalletBalanceCard extends HookConsumerWidget {
       },
       orElse: () {},
     );
-    
+
     final userInfo = userDetailsAsync.when(
       data: (user) {
         previousUserInfo.value = user;
@@ -190,10 +191,12 @@ class WalletBalanceCard extends HookConsumerWidget {
                                     ),
                                   ],
                                 )
-                              : const TextSpan(
+                              : TextSpan(
                                   text: "••••••••",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: theme.brightness == Brightness.light
+                                        ? const Color(0xFF1B1B1B)
+                                        : AppColors.blueColor.shade50,
                                     fontSize: 29,
                                     fontWeight: FontWeight.w600,
                                     fontFamily: '',
@@ -351,6 +354,7 @@ class ReferralsCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isBalanceVisible = ref.watch(balanceVisibilityProvider);
     final balanceState =
         ref.watch(authenticationControllerProvider).userDetails;
     return InkWell(
@@ -401,8 +405,10 @@ class ReferralsCard extends HookConsumerWidget {
             ),
             balanceState.when(
               data: (userData) => Text(
-                '${userData.wallet?.currency ?? '₦'} ${userData.wallet?.referralBalance ?? '0.00'}'
-                    .commaFormat(),
+                isBalanceVisible
+                    ? '${userData.wallet?.currency ?? '₦'} ${userData.wallet?.referralBalance ?? '0.00'}'
+                        .commaFormat()
+                    : '••••••',
                 style: TextStyle(
                   fontSize: 16,
                   color: theme.brightness == Brightness.dark
@@ -413,7 +419,7 @@ class ReferralsCard extends HookConsumerWidget {
                 ),
               ),
               loading: () => Text(
-                '0.00',
+                isBalanceVisible ? '0.00' : '••••••',
                 style: TextStyle(
                   fontSize: 16,
                   color: theme.brightness == Brightness.dark
@@ -424,7 +430,7 @@ class ReferralsCard extends HookConsumerWidget {
                 ),
               ),
               error: (_, __) => Text(
-                '₦0.00',
+                isBalanceVisible ? '₦0.00' : '••••••',
                 style: TextStyle(
                   fontSize: 16,
                   color: theme.brightness == Brightness.dark
