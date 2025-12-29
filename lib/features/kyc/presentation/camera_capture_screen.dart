@@ -1,8 +1,13 @@
+import 'dart:io';
+import 'dart:math' as math;
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:image/image.dart' as img;
 import 'package:mdiho/common/res/app_colors.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CameraCaptureScreen extends HookWidget {
@@ -23,9 +28,10 @@ class CameraCaptureScreen extends HookWidget {
     final flashMode = useState<FlashMode>(FlashMode.off);
     final currentCameraIndex = useState<int>(0);
     final camerasList = useState<List<CameraDescription>>([]);
+    final isDisposed = useRef(false);
 
     Future<void> initializeCamera() async {
-      if (!context.mounted) return;
+      if (!context.mounted || isDisposed.value) return;
 
       try {
         isLoading.value = true;
@@ -84,13 +90,18 @@ class CameraCaptureScreen extends HookWidget {
 
         await cameraController.initialize();
 
-        if (!context.mounted) {
+        if (isDisposed.value || !context.mounted) {
           await cameraController.dispose();
           return;
         }
 
-        controller.value = cameraController;
-        isCameraInitialized.value = true;
+        // Double check before setting controller
+        if (!isDisposed.value) {
+          controller.value = cameraController;
+          isCameraInitialized.value = true;
+        } else {
+          await cameraController.dispose();
+        }
       } catch (e) {
         debugPrint('Error initializing camera: $e');
         if (context.mounted) {
@@ -102,7 +113,9 @@ class CameraCaptureScreen extends HookWidget {
     }
 
     Future<void> toggleFlash() async {
-      if (controller.value == null || !controller.value!.value.isInitialized) {
+      if (isDisposed.value ||
+          controller.value == null ||
+          !controller.value!.value.isInitialized) {
         return;
       }
 
@@ -113,15 +126,20 @@ class CameraCaptureScreen extends HookWidget {
                 ? FlashMode.always
                 : FlashMode.off;
 
-        await controller.value!.setFlashMode(newFlashMode);
-        flashMode.value = newFlashMode;
+        final cameraController = controller.value;
+        if (cameraController != null && !isDisposed.value) {
+          await cameraController.setFlashMode(newFlashMode);
+          if (!isDisposed.value) {
+            flashMode.value = newFlashMode;
+          }
+        }
       } catch (e) {
         debugPrint('Error toggling flash: $e');
       }
     }
 
     Future<void> flipCamera() async {
-      if (camerasList.value.length < 2) return;
+      if (isDisposed.value || camerasList.value.length < 2) return;
       if (controller.value == null || !controller.value!.value.isInitialized) {
         return;
       }
@@ -130,7 +148,14 @@ class CameraCaptureScreen extends HookWidget {
         final currentIndex = currentCameraIndex.value;
         final newIndex = (currentIndex + 1) % camerasList.value.length;
 
-        await controller.value!.dispose();
+        final oldController = controller.value;
+        if (oldController != null) {
+          await oldController.dispose();
+        }
+
+        if (isDisposed.value || !context.mounted) {
+          return;
+        }
 
         final newCameraController = CameraController(
           camerasList.value[newIndex],
@@ -140,7 +165,7 @@ class CameraCaptureScreen extends HookWidget {
 
         await newCameraController.initialize();
 
-        if (!context.mounted) {
+        if (isDisposed.value || !context.mounted) {
           await newCameraController.dispose();
           return;
         }
@@ -148,37 +173,310 @@ class CameraCaptureScreen extends HookWidget {
         // Restore flash mode
         await newCameraController.setFlashMode(flashMode.value);
 
-        controller.value = newCameraController;
-        currentCameraIndex.value = newIndex;
+        if (!isDisposed.value) {
+          controller.value = newCameraController;
+          currentCameraIndex.value = newIndex;
+        } else {
+          await newCameraController.dispose();
+        }
       } catch (e) {
         debugPrint('Error flipping camera: $e');
       }
     }
 
+    // Process image with blur - optimized to prevent crashes
+    Future<img.Image> _processImageWithBlur(
+      img.Image decodedImage,
+      double ovalCenterX,
+      double ovalCenterY,
+      double ovalRadiusX,
+      double ovalRadiusY,
+      BuildContext context,
+    ) async {
+      final imageWidth = decodedImage.width;
+      final imageHeight = decodedImage.height;
+
+      // Apply blur to the entire image (with reduced radius for performance)
+      final blurred = img.gaussianBlur(decodedImage, radius: 12);
+
+      // Create result image by blending blurred and sharp images
+      final resultImage = img.Image(width: imageWidth, height: imageHeight);
+
+      // Feather distance for smooth transition (in pixels)
+      const featherDistance = 20.0;
+
+      // Process in chunks to allow periodic context checks
+      const chunkSize = 50; // Process 50 rows at a time
+
+      for (int startY = 0; startY < imageHeight; startY += chunkSize) {
+        // Check if context is still mounted periodically
+        if (startY % (chunkSize * 4) == 0 && !context.mounted) {
+          throw Exception('Context no longer mounted');
+        }
+
+        final endY = math.min(startY + chunkSize, imageHeight);
+
+        for (int y = startY; y < endY; y++) {
+          for (int x = 0; x < imageWidth; x++) {
+            // Check if point is inside ellipse
+            final dx = (x - ovalCenterX) / ovalRadiusX;
+            final dy = (y - ovalCenterY) / ovalRadiusY;
+            final distance = dx * dx + dy * dy;
+
+            final originalPixel = decodedImage.getPixel(x, y);
+            final blurredPixel = blurred.getPixel(x, y);
+
+            if (distance <= 1.0) {
+              // Inside oval - use original sharp image
+              resultImage.setPixel(x, y, originalPixel);
+            } else {
+              // Outside oval - calculate distance from oval edge for smooth transition
+              final edgeDistance = (math.sqrt(distance) - 1.0) *
+                  math.min(ovalRadiusX, ovalRadiusY);
+
+              if (edgeDistance < featherDistance) {
+                // In feather zone - blend between sharp and blurred
+                final blendFactor =
+                    (edgeDistance / featherDistance).clamp(0.0, 1.0);
+                final r = (originalPixel.r * (1 - blendFactor) +
+                        blurredPixel.r * blendFactor)
+                    .round()
+                    .clamp(0, 255);
+                final g = (originalPixel.g * (1 - blendFactor) +
+                        blurredPixel.g * blendFactor)
+                    .round()
+                    .clamp(0, 255);
+                final b = (originalPixel.b * (1 - blendFactor) +
+                        blurredPixel.b * blendFactor)
+                    .round()
+                    .clamp(0, 255);
+                final a = originalPixel.a;
+                resultImage.setPixel(x, y,
+                    img.ColorRgba8(r.toInt(), g.toInt(), b.toInt(), a.toInt()));
+              } else {
+                // Far outside oval - use fully blurred image
+                resultImage.setPixel(x, y, blurredPixel);
+              }
+            }
+          }
+        }
+      }
+
+      return resultImage;
+    }
+
     Future<void> captureImage() async {
-      if (controller.value == null || !controller.value!.value.isInitialized) {
+      // Check if widget is disposed or controller is invalid
+      if (isDisposed.value ||
+          controller.value == null ||
+          !controller.value!.value.isInitialized) {
         return;
       }
 
+      // Store controller reference to avoid accessing disposed controller
+      final cameraController = controller.value;
+      if (cameraController == null) return;
+
       try {
         isCapturing.value = true;
-        final image = await controller.value!.takePicture();
+
+        // Check again before taking picture
+        if (isDisposed.value || !cameraController.value.isInitialized) {
+          isCapturing.value = false;
+          return;
+        }
+
+        final image = await cameraController.takePicture();
+
+        // Check if disposed after async operation
+        if (isDisposed.value || !context.mounted) {
+          isCapturing.value = false;
+          return;
+        }
+
+        // Get screen dimensions (excluding SafeArea)
+        if (!context.mounted) {
+          isCapturing.value = false;
+          return;
+        }
+
+        final screenSize = MediaQuery.of(context).size;
+        final safeAreaTop = MediaQuery.of(context).padding.top;
+        final safeAreaBottom = MediaQuery.of(context).padding.bottom;
+        final availableHeight =
+            screenSize.height - safeAreaTop - safeAreaBottom;
+
+        // Oval dimensions (from the guide) - this represents the visible preview area
+        const ovalWidth = 280.0;
+        const ovalHeight = 360.0;
+
+        // Calculate oval position (centered on available screen area)
+        final ovalLeft = (screenSize.width - ovalWidth) / 2;
+        final ovalTop = (availableHeight - ovalHeight) / 2 + safeAreaTop;
+
+        // Load the captured image
+        final imageBytes = await File(image.path).readAsBytes();
+        var decodedImage = img.decodeImage(imageBytes);
+
+        if (decodedImage == null) {
+          throw Exception('Failed to decode image');
+        }
+
+        // Limit image size to prevent memory issues (max 2000px on longest side)
+        const maxDimension = 2000;
+        if (decodedImage.width > maxDimension ||
+            decodedImage.height > maxDimension) {
+          final scale =
+              maxDimension / math.max(decodedImage.width, decodedImage.height);
+          decodedImage = img.copyResize(
+            decodedImage,
+            width: (decodedImage.width * scale).round(),
+            height: (decodedImage.height * scale).round(),
+          );
+        }
+
+        // Get camera preview size and actual image size
+        // Use stored reference instead of accessing controller.value
+        if (isDisposed.value || !cameraController.value.isInitialized) {
+          isCapturing.value = false;
+          return;
+        }
+        final previewSize = cameraController.value.previewSize;
+        final imageWidth = decodedImage.width;
+        final imageHeight = decodedImage.height;
+
+        // Validate image dimensions
+        if (imageWidth <= 0 || imageHeight <= 0) {
+          throw Exception('Invalid image dimensions');
+        }
+
+        // Calculate how the preview is displayed on screen
+        // The preview fills the screen, so we need to account for aspect ratio
+        final previewAspectRatio = previewSize != null
+            ? previewSize.height / previewSize.width
+            : imageHeight / imageWidth;
+        final screenAspectRatio = availableHeight / screenSize.width;
+
+        // Determine if preview is letterboxed or pillarboxed
+        double displayWidth, displayHeight, offsetX, offsetY;
+
+        if (previewAspectRatio > screenAspectRatio) {
+          // Preview is taller - letterboxed (black bars on top/bottom)
+          displayWidth = screenSize.width;
+          displayHeight = screenSize.width * previewAspectRatio;
+          offsetX = 0;
+          offsetY = (availableHeight - displayHeight) / 2;
+        } else {
+          // Preview is wider - pillarboxed (black bars on left/right)
+          displayHeight = availableHeight;
+          displayWidth = availableHeight / previewAspectRatio;
+          offsetX = (screenSize.width - displayWidth) / 2;
+          offsetY = 0;
+        }
+
+        // Map oval coordinates from screen space to image space (for blur effect)
+        final ovalRelativeX = (ovalLeft - offsetX) / displayWidth;
+        final ovalRelativeY = (ovalTop - offsetY - safeAreaTop) / displayHeight;
+        final ovalRelativeWidth = ovalWidth / displayWidth;
+        final ovalRelativeHeight = ovalHeight / displayHeight;
+
+        // Calculate oval region in image coordinates (for blur effect)
+        final ovalX = (ovalRelativeX * imageWidth).round();
+        final ovalY = (ovalRelativeY * imageHeight).round();
+        final ovalImgWidth = (ovalRelativeWidth * imageWidth).round();
+        final ovalImgHeight = (ovalRelativeHeight * imageHeight).round();
+
+        // Calculate oval center and radii in image coordinates (for blur effect)
+        final ovalCenterX = ovalX + ovalImgWidth / 2;
+        final ovalCenterY = ovalY + ovalImgHeight / 2;
+        final ovalRadiusX = ovalImgWidth / 2;
+        final ovalRadiusY = ovalImgHeight / 2;
+
+        // Validate radii to prevent division by zero
+        if (ovalRadiusX <= 0 || ovalRadiusY <= 0) {
+          throw Exception('Invalid oval dimensions');
+        }
+
+        // Check again before heavy processing
+        if (isDisposed.value || !context.mounted) {
+          isCapturing.value = false;
+          return;
+        }
+
+        // Process image with blur (chunked processing to prevent UI blocking)
+        final processedImage = await _processImageWithBlur(
+          decodedImage,
+          ovalCenterX,
+          ovalCenterY,
+          ovalRadiusX,
+          ovalRadiusY,
+          context,
+        );
+
+        // Final check before saving
+        if (isDisposed.value || !context.mounted) {
+          isCapturing.value = false;
+          return;
+        }
+
+        // Use the full processed image (no cropping) - oval represents the visible preview
+        // Save the full image with blurred background outside oval
+        final directory = await getTemporaryDirectory();
+        final croppedImagePath =
+            '${directory.path}/cropped_selfie_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final croppedImageFile = File(croppedImagePath);
+        await croppedImageFile
+            .writeAsBytes(img.encodeJpg(processedImage, quality: 90));
+
+        // Delete the original full image
+        try {
+          await File(image.path).delete();
+        } catch (e) {
+          debugPrint('Error deleting original image: $e');
+        }
+
         isCapturing.value = false;
 
         if (context.mounted) {
-          onImageCaptured(image.path);
+          onImageCaptured(croppedImagePath);
           Navigator.pop(context);
         }
       } catch (e) {
         debugPrint('Error capturing image: $e');
-        isCapturing.value = false;
+        if (!isDisposed.value) {
+          isCapturing.value = false;
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error capturing image: $e'),
+              ),
+            );
+          }
+        }
       }
     }
 
     useEffect(() {
       initializeCamera();
       return () {
-        controller.value?.dispose();
+        // Mark as disposed first to prevent any new operations
+        isDisposed.value = true;
+
+        // Dispose camera controller safely
+        final cameraController = controller.value;
+        if (cameraController != null) {
+          try {
+            // Check if already disposed
+            if (cameraController.value.isInitialized) {
+              cameraController.dispose().catchError((e) {
+                debugPrint('Error disposing camera controller: $e');
+              });
+            }
+          } catch (e) {
+            debugPrint('Error disposing camera controller: $e');
+          }
+          controller.value = null;
+        }
       };
     }, []);
 
@@ -206,30 +504,6 @@ class CameraCaptureScreen extends HookWidget {
                 ),
               ),
 
-            // Dotted border on left and right
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              child: CustomPaint(
-                size: const Size(2, double.infinity),
-                painter: DottedLinePainter(
-                  color: AppColors.primaryColor.withOpacity(0.5),
-                ),
-              ),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              child: CustomPaint(
-                size: const Size(2, double.infinity),
-                painter: DottedLinePainter(
-                  color: AppColors.primaryColor.withOpacity(0.5),
-                ),
-              ),
-            ),
-
             // Face positioning oval guide
             if (isCameraInitialized.value)
               Center(
@@ -245,7 +519,7 @@ class CameraCaptureScreen extends HookWidget {
             // Instructions
             if (isCameraInitialized.value)
               Positioned(
-                top: 60,
+                bottom: 120,
                 left: 0,
                 right: 0,
                 child: Column(
@@ -282,14 +556,8 @@ class CameraCaptureScreen extends HookWidget {
               right: 0,
               child: Container(
                 height: 100,
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? const Color(0xFF1E3A5F)
-                      : const Color(0xFF1E3A5F),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
+                decoration: const BoxDecoration(
+                  color: Colors.transparent,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
