@@ -8,10 +8,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/gift_card/data/controller/gift_card_controller.dart';
-import 'package:mdiho/features/home/presentation/widget/kyc_card.dart';
 import 'package:mdiho/features/home/presentation/widget/transaction_tile.dart';
 import 'package:mdiho/features/home/presentation/widget/welcome_header.dart';
-import 'package:mdiho/features/kyc/presentation/verification_method.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:mdiho/features/transaction/data/controller/transaction_controller.dart';
 
@@ -19,7 +17,6 @@ import '../../../common/res/app_colors.dart';
 import '../../../common/theme_notifier.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bottomNav/app_router.gr.dart';
-import '../../kyc/presentation/widget/kyc_dialog.dart';
 import '../../profile/data/Model/response/user_profile_model/user_profile_model.dart';
 import 'widget/quick_action_grid.dart';
 import 'widget/summary_card.dart';
@@ -138,51 +135,6 @@ class HomeScreen extends HookConsumerWidget {
       return null;
     }, [userInfo.theme]);
 
-    final kycStatus = userAsync.maybeWhen(
-      data: (user) => user.kyc,
-      orElse: () => null,
-    );
-    final enforceKyc = userAsync.maybeWhen(
-      data: (user) => user.enforceKyc,
-      orElse: () => null,
-    );
-
-    // Track if dialog has been shown to prevent multiple dialogs
-    final dialogShown = useRef(false);
-
-    useEffect(() {
-      // Only show dialog when KYC is incomplete and enforcement is required
-      // Also ensure we haven't shown it already and context is mounted
-      if (kycStatus == false &&
-          enforceKyc == true &&
-          !dialogShown.value &&
-          context.mounted) {
-        dialogShown.value = true;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (context.mounted) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => KycDialog(
-                onCompleteKyc: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const VerificationMethodScreen(),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-        });
-      }
-      // Reset dialog flag if KYC status changes
-      if (kycStatus == true) {
-        dialogShown.value = false;
-      }
-      return null;
-    }, [kycStatus, enforceKyc]);
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) async {
@@ -246,23 +198,22 @@ class HomeScreen extends HookConsumerWidget {
 
               return Future.delayed(const Duration(seconds: 1));
             },
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: const SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
-                  const WelcomeHeader(),
-                  const Gap(16),
-                  const WalletBalanceCard(
+                  WelcomeHeader(),
+                  Gap(16),
+                  WalletBalanceCard(
                     balance: 9500000,
                   ),
-                  if (kycStatus == false) const CompletedKycCard(),
-                  const Gap(12),
-                  const SummaryCards(),
-                  const Gap(16),
-                  const QuickActionsGrid(),
-                  const Gap(16),
-                  const TransactionCard(),
-                  const Gap(
+                  Gap(12),
+                  SummaryCards(),
+                  Gap(16),
+                  QuickActionsGrid(),
+                  Gap(16),
+                  TransactionCard(),
+                  Gap(
                     50,
                   )
                 ],

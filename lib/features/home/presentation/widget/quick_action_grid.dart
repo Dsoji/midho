@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/features/kyc/presentation/verification_method.dart';
+import 'package:mdiho/features/kyc/presentation/widget/kyc_dialog.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/toast/toast.dart';
@@ -23,7 +26,7 @@ class ActionItem {
 // Riverpod Provider for Quick Actions List
 
 // Quick Actions Widget
-class QuickActionsGrid extends ConsumerWidget {
+class QuickActionsGrid extends HookConsumerWidget {
   const QuickActionsGrid({super.key});
 
   @override
@@ -31,6 +34,54 @@ class QuickActionsGrid extends ConsumerWidget {
     final theme = Theme.of(context);
     final userDetails = ref.watch(authenticationControllerProvider).userDetails;
     final isEcode = userDetails.value?.ecode ?? false;
+    final userAsync = ref.watch(authenticationControllerProvider).userDetails;
+
+    final kycStatus = userAsync.maybeWhen(
+      data: (user) => user.kyc,
+      orElse: () => null,
+    );
+    final enforceKyc = userAsync.maybeWhen(
+      data: (user) => user.enforceKyc,
+      orElse: () => null,
+    );
+
+    // Track if dialog has been shown to prevent multiple dialogs
+    final dialogShown = useRef(false);
+
+    useEffect(() {
+      // Only show dialog when KYC is incomplete and enforcement is required
+      // Also ensure we haven't shown it already and context is mounted
+      if (kycStatus == false &&
+          enforceKyc == true &&
+          !dialogShown.value &&
+          context.mounted) {
+        dialogShown.value = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => KycDialog(
+                onCompleteKyc: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const VerificationMethodScreen(),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+        });
+      }
+      // Reset dialog flag if KYC status changes
+      if (kycStatus == true) {
+        dialogShown.value = false;
+      }
+      return null;
+    }, [kycStatus, enforceKyc]);
+
     final quickActionsProvider = Provider<List<ActionItem>>((ref) {
       return [
         ActionItem(
@@ -40,11 +91,27 @@ class QuickActionsGrid extends ConsumerWidget {
               ? const Color(0xFFF89F33)
               : AppColors.primaryColor,
           onTap: () {
-            final tabsRouter = AutoTabsRouter.of(
-              context,
-            );
+            if (kycStatus == false && enforceKyc == true) {
+              showDialog(
+                context: context,
+                builder: (context) => KycDialog(
+                  onCompleteKyc: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VerificationMethodScreen(),
+                      ),
+                    );
+                  },
+                ),
+              );
+            } else {
+              final tabsRouter = AutoTabsRouter.of(
+                context,
+              );
 
-            tabsRouter.setActiveIndex(1);
+              tabsRouter.setActiveIndex(1);
+            }
           },
         ),
         if (isEcode == true) ...[
@@ -136,6 +203,7 @@ class QuickActionsGrid extends ConsumerWidget {
       ];
     });
     final actions = ref.watch(quickActionsProvider);
+
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(

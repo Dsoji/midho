@@ -10,6 +10,7 @@ import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
 import 'package:mdiho/features/kyc/presentation/bvn_verification.dart';
 import 'package:mdiho/features/kyc/presentation/selfie_verification.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class NINVerificationScreen extends HookConsumerWidget {
   const NINVerificationScreen({super.key});
@@ -141,7 +142,8 @@ class NINVerificationScreen extends HookConsumerWidget {
                   text: "Submit for Verification",
                   width: double.infinity,
                   height: 50,
-                  onPressed: () {
+                  onPressed: () async {
+                    await Permission.camera.request();
                     Navigator.push(
                       context,
                       MaterialPageRoute(

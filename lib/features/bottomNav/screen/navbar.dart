@@ -12,6 +12,8 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/common/utils/version_helper.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
+import 'package:mdiho/features/kyc/presentation/verification_method.dart';
+import 'package:mdiho/features/kyc/presentation/widget/kyc_dialog.dart';
 import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -193,6 +195,54 @@ class NaviBarScreen extends HookConsumerWidget {
       return () {};
     }, []);
 
+    final userAsync = ref.watch(authenticationControllerProvider).userDetails;
+
+    final kycStatus = userAsync.maybeWhen(
+      data: (user) => user.kyc,
+      orElse: () => null,
+    );
+    final enforceKyc = userAsync.maybeWhen(
+      data: (user) => user.enforceKyc,
+      orElse: () => null,
+    );
+
+    // Track if dialog has been shown to prevent multiple dialogs
+    final dialogShown = useRef(false);
+
+    useEffect(() {
+      // Only show dialog when KYC is incomplete and enforcement is required
+      // Also ensure we haven't shown it already and context is mounted
+      if (kycStatus == false &&
+          enforceKyc == true &&
+          !dialogShown.value &&
+          context.mounted) {
+        dialogShown.value = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => KycDialog(
+                onCompleteKyc: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const VerificationMethodScreen(),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+        });
+      }
+      // Reset dialog flag if KYC status changes
+      if (kycStatus == true) {
+        dialogShown.value = false;
+      }
+      return null;
+    }, [kycStatus, enforceKyc]);
+
     return AutoTabsRouter(
       routes: [
         const HomeRoute(),
@@ -269,7 +319,29 @@ class NaviBarScreen extends HookConsumerWidget {
                     children: List.generate(items.length, (index) {
                       return BottomNav(
                         index: index,
-                        onTap: () => tabsRouter.setActiveIndex(index),
+                        onTap: () {
+                          // Only check KYC for index 1 (Crypto tab)
+                          if (index == 1 &&
+                              kycStatus == false &&
+                              enforceKyc == true) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => KycDialog(
+                                onCompleteKyc: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const VerificationMethodScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          } else {
+                            tabsRouter.setActiveIndex(index);
+                          }
+                        },
                         icon: items[index]['icon'] as IconData?,
                         imagePath: items[index]['imagePath'] as String?,
                         label: items[index]['label'] as String,

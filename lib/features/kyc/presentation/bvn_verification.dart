@@ -10,6 +10,7 @@ import 'package:mdiho/common/widgets/custom_app_bar.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
 import 'package:mdiho/features/kyc/presentation/selfie_verification.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class BvnVerificationScreen extends HookConsumerWidget {
   const BvnVerificationScreen({super.key});
@@ -28,6 +29,21 @@ class BvnVerificationScreen extends HookConsumerWidget {
       bvnController.addListener(listener);
       return () => bvnController.removeListener(listener);
     }, [bvnController]);
+
+    Future<void> requestCameraPermission() async {
+      var status = await Permission.camera.status;
+
+      if (status.isGranted) {
+        print("Camera permission is granted");
+      } else if (status.isDenied) {
+        final Map<Permission, PermissionStatus> statuses = await [
+          Permission.camera,
+        ].request();
+        // Handle the new status
+      } else if (status.isPermanentlyDenied) {
+        openAppSettings();
+      }
+    }
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -158,15 +174,19 @@ class BvnVerificationScreen extends HookConsumerWidget {
                   text: "Submit for Verification",
                   width: double.infinity,
                   height: 50,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SelfieVerificationScreen(
-                          bvn: bvnController.text,
+                  onPressed: () async {
+                    await requestCameraPermission();
+                    var status = await Permission.camera.status;
+                    if (status.isGranted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SelfieVerificationScreen(
+                            bvn: bvnController.text,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor,
