@@ -10,7 +10,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:logger/logger.dart';
+import 'package:mdiho/common/services/shorebird_update_service.dart';
 import 'package:mdiho/common/utils/version_helper.dart';
+import 'package:mdiho/common/widgets/patch_update_dialog.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
 import 'package:mdiho/features/kyc/presentation/verification_method.dart';
 import 'package:mdiho/features/kyc/presentation/widget/kyc_dialog.dart';
@@ -42,6 +44,10 @@ class NaviBarScreen extends HookConsumerWidget {
     final hasLoggedPlatform = useRef(false);
     // Track if update screen has been shown
     final updateScreenShown = useRef(false);
+    // Track if Shorebird update has been checked
+    final hasCheckedShorebirdUpdate = useRef(false);
+
+    final shorebirdUpdateService = ref.watch(shorebirdUpdateServiceProvider);
 
     // Fetch platform info once on mount
     useEffect(() {
@@ -195,6 +201,25 @@ class NaviBarScreen extends HookConsumerWidget {
       return () {};
     }, []);
 
+    // Check for Shorebird patch updates on navbar mount
+    useEffect(() {
+      if (!hasCheckedShorebirdUpdate.value) {
+        hasCheckedShorebirdUpdate.value = true;
+        Future.delayed(const Duration(seconds: 2), () async {
+          try {
+            final isUpdateAvailable =
+                await shorebirdUpdateService.checkForUpdate();
+            if (isUpdateAvailable && context.mounted) {
+              _startAutomaticUpdate(context, shorebirdUpdateService);
+            }
+          } catch (e) {
+            logger.e('Error checking for patch update: $e');
+          }
+        });
+      }
+      return null;
+    }, []);
+
     final userAsync = ref.watch(authenticationControllerProvider).userDetails;
 
     final kycStatus = userAsync.maybeWhen(
@@ -205,43 +230,6 @@ class NaviBarScreen extends HookConsumerWidget {
       data: (user) => user.enforceKyc,
       orElse: () => null,
     );
-
-    // Track if dialog has been shown to prevent multiple dialogs
-    final dialogShown = useRef(false);
-
-    useEffect(() {
-      // Only show dialog when KYC is incomplete and enforcement is required
-      // Also ensure we haven't shown it already and context is mounted
-      if (kycStatus == false &&
-          enforceKyc == true &&
-          !dialogShown.value &&
-          context.mounted) {
-        dialogShown.value = true;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (context.mounted) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => KycDialog(
-                onCompleteKyc: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const VerificationMethodScreen(),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-        });
-      }
-      // Reset dialog flag if KYC status changes
-      if (kycStatus == true) {
-        dialogShown.value = false;
-      }
-      return null;
-    }, [kycStatus, enforceKyc]);
 
     return AutoTabsRouter(
       routes: [
@@ -271,92 +259,176 @@ class NaviBarScreen extends HookConsumerWidget {
               },
               child: child, // AutoRoute handles this properly
             ),
-            bottomNavigationBar: Container(
-              height: 85,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: ShapeDecoration(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0),
-                ),
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.darkBorder
-                    : Colors.white,
-              ),
-              child: Builder(
-                builder: (context) {
-                  final items = [
-                    {
-                      'icon': IconsaxPlusBold.home_2,
-                      'inactiveIcon': IconsaxPlusLinear.home_2,
-                      'label': 'Home',
-                    },
-                    {
-                      'icon': HugeIcons.strokeRoundedBitcoinTransaction,
-                      'inactiveIcon': HugeIcons.strokeRoundedBitcoinTransaction,
-                      'label': 'Crypto',
-                    },
-                    {
-                      'imagePath': ImageAssets.logo2,
-                      'label': 'Transactions',
-                    },
-                    if (isEcode)
-                      {
-                        'icon': HugeIcons.strokeRoundedGiftCard,
-                        'inactiveIcon': HugeIcons.strokeRoundedGiftCard,
-                        'label': 'Gift Cards',
-                      },
-                    {
-                      'icon': HugeIcons.strokeRoundedUser,
-                      'inactiveIcon': HugeIcons.strokeRoundedUser,
-                      'label': 'Profile',
-                    },
-                  ];
+            bottomNavigationBar: Builder(
+              builder: (context) {
+                final mediaQuery = MediaQuery.of(context);
+                final screenHeight = mediaQuery.size.height;
+                final screenWidth = mediaQuery.size.width;
+                final isSmallScreen = screenHeight < 700 || screenWidth < 360;
 
-                  return Row(
+                // Responsive dimensions
+                final navBarHeight = isSmallScreen ? 70.0 : 85.0;
+                final horizontalPadding = isSmallScreen ? 12.0 : 20.0;
+                final verticalPadding = isSmallScreen ? 6.0 : 8.0;
+                final borderRadius = isSmallScreen ? 20.0 : 24.0;
+
+                final items = [
+                  {
+                    'icon': IconsaxPlusBold.home_2,
+                    'inactiveIcon': IconsaxPlusLinear.home_2,
+                    'label': 'Home',
+                  },
+                  {
+                    'icon': HugeIcons.strokeRoundedBitcoinTransaction,
+                    'inactiveIcon': HugeIcons.strokeRoundedBitcoinTransaction,
+                    'label': 'Crypto',
+                  },
+                  {
+                    'imagePath': ImageAssets.logo2,
+                    'label': 'Transactions',
+                  },
+                  if (isEcode)
+                    {
+                      'icon': HugeIcons.strokeRoundedGiftCard,
+                      'inactiveIcon': HugeIcons.strokeRoundedGiftCard,
+                      'label': 'Gift Cards',
+                    },
+                  {
+                    'icon': HugeIcons.strokeRoundedUser,
+                    'inactiveIcon': HugeIcons.strokeRoundedUser,
+                    'label': 'Profile',
+                  },
+                ];
+
+                return Container(
+                  height: navBarHeight + mediaQuery.padding.bottom,
+                  width: double.infinity,
+                  padding: EdgeInsets.only(
+                    left: horizontalPadding,
+                    right: horizontalPadding,
+                    top: verticalPadding,
+                    bottom: mediaQuery.padding.bottom + verticalPadding,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.darkBorder
+                        : Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(borderRadius),
+                      topRight: Radius.circular(borderRadius),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(items.length, (index) {
-                      return BottomNav(
-                        index: index,
-                        onTap: () {
-                          // Only check KYC for index 1 (Crypto tab)
-                          if (index == 1 &&
-                              kycStatus == false &&
-                              enforceKyc == true) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => KycDialog(
-                                onCompleteKyc: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const VerificationMethodScreen(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          } else {
-                            tabsRouter.setActiveIndex(index);
-                          }
-                        },
-                        icon: items[index]['icon'] as IconData?,
-                        imagePath: items[index]['imagePath'] as String?,
-                        label: items[index]['label'] as String,
-                        color: activeIndex == index
-                            ? AppColors.primaryColor.shade500
-                            : AppColors.secondaryColor.shade200,
-                      );
-                    }),
-                  );
-                },
-              ),
+                    children: List.generate(
+                      items.length,
+                      (index) {
+                        return BottomNav(
+                          index: index,
+                          onTap: () {
+                            // Only check KYC for index 1 (Crypto tab)
+                            if (index == 1 &&
+                                kycStatus == false &&
+                                enforceKyc == true) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => KycDialog(
+                                  onCompleteKyc: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const VerificationMethodScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              tabsRouter.setActiveIndex(index);
+                            }
+                          },
+                          icon: items[index]['icon'] as IconData?,
+                          imagePath: items[index]['imagePath'] as String?,
+                          label: items[index]['label'] as String,
+                          color: activeIndex == index
+                              ? AppColors.primaryColor.shade500
+                              : AppColors.secondaryColor.shade200,
+                          isSmallScreen: isSmallScreen,
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         );
       },
     );
   }
+}
+
+// Helper functions for Shorebird update handling
+void _startAutomaticUpdate(
+  BuildContext context,
+  ShorebirdUpdateService updateService,
+) {
+  // Get the navigator context from the root
+  final navigatorContext = Navigator.of(context, rootNavigator: true).context;
+
+  // Show the update progress dialog (dismissible)
+  showDialog(
+    context: navigatorContext,
+    barrierDismissible: true,
+    builder: (dialogContext) => PatchUpdateDialog(
+      onDismiss: () {
+        logger.d('User dismissed update dialog');
+      },
+    ),
+  );
+
+  // Automatically start downloading the update
+  updateService
+      .downloadUpdate(
+    onProgress: () {},
+    onError: (error) {
+      logger.e('Update error: $error');
+      if (navigatorContext.mounted) {
+        // Close the progress dialog if still open
+        Navigator.of(navigatorContext, rootNavigator: true).pop();
+        ScaffoldMessenger.of(navigatorContext).showSnackBar(
+          SnackBar(
+            content: Text('Update failed: $error'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    },
+  )
+      .then((success) {
+    if (success && navigatorContext.mounted) {
+      // Close the progress dialog
+      Navigator.of(navigatorContext, rootNavigator: true).pop();
+      // Show completion dialog
+      _showUpdateCompleteDialog(navigatorContext);
+    }
+  });
+}
+
+void _showUpdateCompleteDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (dialogContext) => const PatchUpdateCompleteDialog(),
+  );
 }

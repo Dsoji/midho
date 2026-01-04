@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:auto_route/auto_route.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ Future<Map<String, dynamic>> _processImageInIsolate(
   };
 }
 
+@RoutePage()
 class CameraCaptureScreen extends HookWidget {
   const CameraCaptureScreen({
     super.key,

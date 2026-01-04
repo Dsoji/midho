@@ -323,4 +323,25 @@ class ProfileController extends StateNotifier<ProfileState> {
       },
     );
   }
+
+  Future<bool> getLeaderboard() async {
+    state = state.copyWith(leaderboard: const AsyncValue.loading());
+
+    final result = await _authenticationRepository.getLeaderboard();
+
+    return result.when(
+      (error) {
+        state = state.copyWith(
+          leaderboard: AsyncValue.error(error, StackTrace.current),
+        );
+        return false;
+      },
+      (success) {
+        state = state.copyWith(
+          leaderboard: AsyncValue.data(success),
+        );
+        return true;
+      },
+    );
+  }
 }

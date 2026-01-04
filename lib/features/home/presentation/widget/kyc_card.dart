@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -5,7 +6,7 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:mdiho/common/res/app_colors.dart';
 import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/features/authentication/data/controller/authentication_controller.dart';
-import 'package:mdiho/features/kyc/presentation/verification_method.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 
 class CompletedKycCard extends HookConsumerWidget {
   const CompletedKycCard({super.key, this.radiues = 16});
@@ -24,12 +25,7 @@ class CompletedKycCard extends HookConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const VerificationMethodScreen(),
-          ),
-        );
+        context.router.push(const VerificationMethodRoute());
       },
       child: Container(
         margin: const EdgeInsets.only(top: 16),

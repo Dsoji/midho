@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,9 +10,10 @@ import 'package:mdiho/common/res/assets.dart';
 import 'package:mdiho/common/widgets/custom_app_bar.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
-import 'package:mdiho/features/kyc/presentation/selfie_verification.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+@RoutePage()
 class BvnVerificationScreen extends HookConsumerWidget {
   const BvnVerificationScreen({super.key});
 
@@ -178,14 +180,8 @@ class BvnVerificationScreen extends HookConsumerWidget {
                     await requestCameraPermission();
                     var status = await Permission.camera.status;
                     if (status.isGranted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SelfieVerificationScreen(
-                            bvn: bvnController.text,
-                          ),
-                        ),
-                      );
+                      context.router.push(
+                          SelfieVerificationRoute(bvn: bvnController.text));
                     }
                   },
                   textColor: Colors.white,

@@ -111,6 +111,7 @@ class MyApp extends HookConsumerWidget {
         ));
       };
     }, []);
+
     final mediaQuery = MediaQuery.of(context);
     final scale =
         mediaQuery.textScaler.clamp(minScaleFactor: 0.8, maxScaleFactor: 1.2);

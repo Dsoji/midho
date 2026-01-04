@@ -1,11 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:mdiho/common/res/app_colors.dart';
-import 'package:mdiho/features/kyc/presentation/bvn_verification.dart';
-import 'package:mdiho/features/kyc/presentation/nin_Verififcation.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart'
+    show BvnVerificationRoute, NINVerificationRoute;
 
+@RoutePage()
 class VerificationMethodScreen extends HookConsumerWidget {
   const VerificationMethodScreen({super.key});
 
@@ -45,12 +47,7 @@ class VerificationMethodScreen extends HookConsumerWidget {
                   'Fast and widely supported. Uses your Bank Verification Number, Automatically matches your bank records, Secure & encrypted',
               icon: HugeIcons.strokeRoundedBank,
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BvnVerificationScreen(),
-                  ),
-                );
+                context.router.push(const BvnVerificationRoute());
               },
             ),
             const Gap(16),
@@ -60,12 +57,7 @@ class VerificationMethodScreen extends HookConsumerWidget {
                   'Government-issued ID verification. Uses your National Identification Number, Works without bank linkage, Secure & encrypted',
               icon: HugeIcons.strokeRoundedBank,
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NINVerificationScreen(),
-                  ),
-                );
+                context.router.push(const NINVerificationRoute());
               },
             ),
             const Gap(32),

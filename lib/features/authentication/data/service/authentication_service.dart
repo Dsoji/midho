@@ -50,7 +50,7 @@ class AuthenticationService {
           'password': password,
           'biometrics': biometric,
           'device': deviceId,
-          'fcmToken': 'sjnconw12',
+          'fcmToken': storedToken,
         },
       ),
       parser: (data) {

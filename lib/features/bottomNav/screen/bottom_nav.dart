@@ -10,6 +10,7 @@ class BottomNav extends StatelessWidget {
     required this.onTap,
     required this.color,
     required this.label,
+    this.isSmallScreen = false,
   });
 
   final IconData? icon; // Icon can be nullable now
@@ -18,34 +19,48 @@ class BottomNav extends StatelessWidget {
   final String label;
   final int index;
   final void Function()? onTap;
+  final bool isSmallScreen;
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = isSmallScreen ? 20.0 : 24.0;
+    final fontSize = isSmallScreen ? 10.0 : 12.0;
+    final padding = isSmallScreen ? 4.0 : 8.0;
+    final gapSize = isSmallScreen ? 2.0 : 4.0;
+
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(padding),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null)
               Icon(
                 icon,
-                size: 24,
+                size: iconSize,
                 color: color,
               )
             else if (imagePath != null)
               Image.asset(
                 imagePath!,
-                height: 24,
-                width: 24,
+                height: iconSize,
+                width: iconSize,
                 color: color, // Optional: apply color tint
               ),
-            const Gap(4),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: color, fontSize: 12),
+            Gap(gapSize),
+            Flexible(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: color,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

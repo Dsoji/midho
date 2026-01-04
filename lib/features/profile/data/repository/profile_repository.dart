@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/utils/multiple_results.dart';
 import 'package:mdiho/common/utils/utils.dart';
 import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
+import 'package:mdiho/features/leaderboard/model/leader_board_list/leader_board_list.dart';
 import 'package:mdiho/features/profile/data/Model/response/platform_details/data.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
@@ -307,6 +308,27 @@ class ProfileRepository {
                 message: 'Failed to get platform',
                 stackTrace: StackTrace.current,
                 exception: Exception('Failed to get platform'),
+              ),
+        );
+      }
+    } on FailureHandler catch (failure) {
+      return Error(failure);
+    }
+  }
+
+  Future<Result<FailureHandler, List<LeaderBoardList>>> getLeaderboard() async {
+    try {
+      final data = await authService.getLeaderboard();
+
+      if (data.isSuccess) {
+        return Success(data.value ?? <LeaderBoardList>[]);
+      } else {
+        return Error(
+          data.error ??
+              FailureHandler(
+                message: 'Failed to get leaderboard',
+                stackTrace: StackTrace.current,
+                exception: Exception('Failed to get leaderboard'),
               ),
         );
       }

@@ -23,8 +23,16 @@ class OnboardingScreen extends HookConsumerWidget {
     final pageController = usePageController();
     final currentPage = useState(0);
     final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
     final containerWidth = screenWidth * 0.8;
+    // Calculate responsive heights based on screen size
+    final isSmallScreen = screenHeight < 700;
+    final topPadding = isSmallScreen ? 20.0 : 50.0;
+    final containerHeight = isSmallScreen
+        ? screenHeight * 0.55
+        : (screenHeight * 0.6).clamp(400.0, 500.0);
     final box = Hive.box('data');
     // Get the current theme mode
     useEffect(() {
@@ -73,7 +81,7 @@ class OnboardingScreen extends HookConsumerWidget {
 
     useEffect(() {
       Timer? timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-        if (pageController.hasClients) {
+        if (pageController.hasClients && pageController.page != null) {
           int nextPage = (pageController.page!.toInt() + 1) % pages.length;
           pageController.animateToPage(
             nextPage,
@@ -120,106 +128,119 @@ class OnboardingScreen extends HookConsumerWidget {
             ? AppColors.secondaryColor.shade600
             : const Color(0xFFF7F7F7),
         body: SafeArea(
-          child: Column(
-            children: [
-              const Gap(50),
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade600
-                      : Colors.white, // Dynamic Background
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                width: containerWidth,
-                height: 500,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: PageView.builder(
-                        controller: pageController,
-                        itemCount: pages.length,
-                        onPageChanged: (index) => currentPage.value = index,
-                        itemBuilder: (context, index) => pages[index],
-                      ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final availableHeight = constraints.maxHeight;
+              final needsScroll = availableHeight <
+                  (containerHeight +
+                      topPadding +
+                      200); // Approximate button area
+
+              final content = Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Gap(topPadding),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: theme.brightness == Brightness.dark
+                          ? AppColors.secondaryColor.shade600
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          pages.length,
-                          (index) => Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                            width: currentPage.value == index ? 28.0 : 11.0,
-                            height: 8.0,
-                            decoration: BoxDecoration(
-                              color: currentPage.value == index
-                                  ? AppColors.primaryColor.shade500
-                                  : theme.brightness == Brightness.dark
-                                      ? AppColors.whiteColor.shade800
-                                      : AppColors.whiteColor.shade600,
-                              borderRadius: BorderRadius.circular(4.0),
+                    width: containerWidth,
+                    height: containerHeight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: containerHeight - (isSmallScreen ? 50 : 60),
+                          child: PageView.builder(
+                            controller: pageController,
+                            itemCount: pages.length,
+                            onPageChanged: (index) => currentPage.value = index,
+                            itemBuilder: (context, index) => pages[index],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: isSmallScreen ? 12.0 : 16.0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              pages.length,
+                              (index) => Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                width: currentPage.value == index ? 28.0 : 11.0,
+                                height: 8.0,
+                                decoration: BoxDecoration(
+                                  color: currentPage.value == index
+                                      ? AppColors.primaryColor.shade500
+                                      : theme.brightness == Brightness.dark
+                                          ? AppColors.whiteColor.shade800
+                                          : AppColors.whiteColor.shade600,
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              const Gap(20),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 16.0),
-                child: Column(
-                  children: [
-                    FullButton(
-                      text: "Get Started",
-                      width: double.infinity,
-                      height: 48,
-                      onPressed: () async {
-                        final box = Hive.box('data');
-                        await box.put('onboarding_seen', true);
-                        context.router.push(const RegistrationRoute());
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => const RegistrationScreen(),
-                        //   ),
-                        // );
-                      },
-                      textColor: Colors.white,
-                      color: AppColors.primaryColor.shade500,
+                  ),
+                  Gap(isSmallScreen ? 16 : 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 16.0),
+                    child: Column(
+                      children: [
+                        FullButton(
+                          text: "Get Started",
+                          width: double.infinity,
+                          height: 48,
+                          onPressed: () async {
+                            final box = Hive.box('data');
+                            await box.put('onboarding_seen', true);
+                            context.router.push(const RegistrationRoute());
+                          },
+                          textColor: Colors.white,
+                          color: AppColors.primaryColor.shade500,
+                        ),
+                        const SizedBox(height: 10),
+                        FullButton(
+                          text: "Sign In",
+                          width: double.infinity,
+                          height: 48,
+                          onPressed: () async {
+                            final box = Hive.box('data');
+                            await box.put('onboarding_seen', true);
+                            context.router.push(const LoginRoute());
+                          },
+                          textColor: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : const Color(0xFFFAFAFA),
+                        ),
+                        Gap(isSmallScreen ? 16 : 24),
+                      ],
                     ),
-                    const SizedBox(height: 10),
-                    FullButton(
-                      text: "Sign In",
-                      width: double.infinity,
-                      height: 48,
-                      onPressed: () async {
-                        final box = Hive.box('data');
-                        await box.put('onboarding_seen', true);
-                        context.router.push(const LoginRoute());
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => const LoginScreen(),
-                        //   ),
-                        // );
-                      },
-                      textColor: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade400
-                          : const Color(0xFFFAFAFA),
-                    ),
-                    const Gap(24),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+
+              if (needsScroll) {
+                return SingleChildScrollView(
+                  child: content,
+                );
+              } else {
+                return Center(
+                  child: content,
+                );
+              }
+            },
           ),
         ),
       ),
@@ -246,48 +267,68 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
     final containerWidth = screenWidth * 0.8;
-    return SingleChildScrollView(
+    final isSmallScreen = screenHeight < 700;
+    // Responsive image height
+    final imageHeight = isSmallScreen
+        ? (screenHeight * 0.25).clamp(180.0, 250.0)
+        : (screenHeight * 0.3).clamp(250.0, 300.0);
+    // Responsive font sizes
+    final titleFontSize = isSmallScreen ? 20.0 : 24.0;
+    final descriptionFontSize = isSmallScreen ? 14.0 : 16.0;
+    final verticalSpacing = isSmallScreen ? 8.0 : 12.0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            height: 300, // Adjusted for smaller screens
+            height: imageHeight,
             width: containerWidth,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(
-                  image,
-                ),
+                image: AssetImage(image),
+                fit: BoxFit.contain,
               ),
-              // Dynamic Background
               borderRadius: BorderRadius.circular(20),
             ),
           ),
-          const Gap(12),
+          Gap(verticalSpacing),
           Text(
             title,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: titleFontSize,
               fontWeight: FontWeight.bold,
               color: theme.brightness == Brightness.dark
                   ? Colors.white
                   : AppColors.primaryColor,
             ),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          const Gap(10),
+          Gap(isSmallScreen ? 6 : 10),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 12 : 16,
+            ),
             child: Text(
               description,
               style: TextStyle(
-                  fontSize: 16,
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.secondaryColor.shade100
-                      : AppColors.secondaryColor.shade200),
+                fontSize: descriptionFontSize,
+                height: 1.4,
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.secondaryColor.shade100
+                    : AppColors.secondaryColor.shade200,
+              ),
               textAlign: TextAlign.center,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,10 +9,11 @@ import 'package:mdiho/common/res/app_colors.dart';
 import 'package:mdiho/common/widgets/custom_app_bar.dart';
 import 'package:mdiho/common/widgets/custom_buttons.dart';
 import 'package:mdiho/common/widgets/custom_textfield.dart';
+import 'package:mdiho/features/bottomNav/app_router.gr.dart';
 import 'package:mdiho/features/kyc/presentation/bvn_verification.dart';
-import 'package:mdiho/features/kyc/presentation/selfie_verification.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+@RoutePage()
 class NINVerificationScreen extends HookConsumerWidget {
   const NINVerificationScreen({super.key});
 
@@ -144,14 +146,8 @@ class NINVerificationScreen extends HookConsumerWidget {
                   height: 50,
                   onPressed: () async {
                     await Permission.camera.request();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SelfieVerificationScreen(
-                          nin: ninController.text,
-                        ),
-                      ),
-                    );
+                    context.router
+                        .push(SelfieVerificationRoute(nin: ninController.text));
                   },
                   textColor: Colors.white,
                   color: AppColors.primaryColor,

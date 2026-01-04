@@ -65,10 +65,10 @@ class KycDialog extends StatelessWidget {
               ),
               const Gap(8),
               Text(
-                'To start trading crypto, you need to complete a quick KYC verification.',
+                'To start trading crypto, you need to complete a \nquick KYC verification.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontSize: 12,
-                  height: 1.4,
+                  height: 1.6,
                 ),
               ),
               const Gap(24),

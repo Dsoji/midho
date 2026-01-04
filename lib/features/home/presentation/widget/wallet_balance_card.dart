@@ -314,14 +314,14 @@ class YoutubeCard extends HookConsumerWidget {
                   maxLines: 2,
                   'Click here to learn to trade on the app',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 13,
                     color: theme.brightness == Brightness.dark
                         ? Colors.white
                         : AppColors.primaryColor.shade700,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(width: 6),
+                const Gap(25),
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(

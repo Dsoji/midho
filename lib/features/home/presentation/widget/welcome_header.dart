@@ -14,7 +14,10 @@ class WelcomeHeader extends HookConsumerWidget {
     final theme = Theme.of(context);
 
     final userInfo = ref.watch(authenticationControllerProvider).userDetails;
-    final isEcode = userInfo.value?.ecode ?? false;
+    final isEcode = userInfo.maybeWhen(
+      data: (user) => user.ecode ?? false,
+      orElse: () => false,
+    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(

@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -33,7 +32,10 @@ class QuickActionsGrid extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final userDetails = ref.watch(authenticationControllerProvider).userDetails;
-    final isEcode = userDetails.value?.ecode ?? false;
+    final isEcode = userDetails.maybeWhen(
+      data: (user) => user.ecode ?? false,
+      orElse: () => false,
+    );
     final userAsync = ref.watch(authenticationControllerProvider).userDetails;
 
     final kycStatus = userAsync.maybeWhen(
@@ -44,43 +46,6 @@ class QuickActionsGrid extends HookConsumerWidget {
       data: (user) => user.enforceKyc,
       orElse: () => null,
     );
-
-    // Track if dialog has been shown to prevent multiple dialogs
-    final dialogShown = useRef(false);
-
-    useEffect(() {
-      // Only show dialog when KYC is incomplete and enforcement is required
-      // Also ensure we haven't shown it already and context is mounted
-      if (kycStatus == false &&
-          enforceKyc == true &&
-          !dialogShown.value &&
-          context.mounted) {
-        dialogShown.value = true;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (context.mounted) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => KycDialog(
-                onCompleteKyc: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const VerificationMethodScreen(),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-        });
-      }
-      // Reset dialog flag if KYC status changes
-      if (kycStatus == true) {
-        dialogShown.value = false;
-      }
-      return null;
-    }, [kycStatus, enforceKyc]);
 
     final quickActionsProvider = Provider<List<ActionItem>>((ref) {
       return [

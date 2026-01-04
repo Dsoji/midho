@@ -1,12 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../../../common/res/app_colors.dart';
-import '../../../../common/res/assets.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
-import 'wallet_balance_card.dart';
+
+// StateNotifier for Inflow Visibility
+class InflowVisibilityNotifier extends StateNotifier<bool> {
+  InflowVisibilityNotifier() : super(true);
+
+  void toggleVisibility() {
+    state = !state;
+  }
+}
+
+// StateNotifier for Withdrawal Visibility
+class WithdrawalVisibilityNotifier extends StateNotifier<bool> {
+  WithdrawalVisibilityNotifier() : super(true);
+
+  void toggleVisibility() {
+    state = !state;
+  }
+}
+
+// Riverpod Provider for Inflow Visibility
+final inflowVisibilityProvider =
+    StateNotifierProvider<InflowVisibilityNotifier, bool>(
+  (ref) => InflowVisibilityNotifier(),
+);
+
+// Riverpod Provider for Withdrawal Visibility
+final withdrawalVisibilityProvider =
+    StateNotifierProvider<WithdrawalVisibilityNotifier, bool>(
+  (ref) => WithdrawalVisibilityNotifier(),
+);
 
 class SummaryCards extends HookConsumerWidget {
   const SummaryCards({super.key});
@@ -34,10 +62,21 @@ class SummaryCards extends HookConsumerWidget {
     }
   }
 
+  // Function to hide or show the inflow amount
+  String _getInflowDisplayAmount(String amount, bool isBalanceVisible) {
+    return isBalanceVisible ? amount : '••••••';
+  }
+
+  // Function to hide or show the withdrawal amount
+  String _getWithdrawalDisplayAmount(String amount, bool isBalanceVisible) {
+    return isBalanceVisible ? amount : '••••••';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isBalanceVisible = ref.watch(balanceVisibilityProvider);
+    final isInflowVisible = ref.watch(inflowVisibilityProvider);
+    final isWithdrawalVisible = ref.watch(withdrawalVisibilityProvider);
     final userDetailsAsync =
         ref.watch(authenticationControllerProvider).userDetails;
     // Safely extract userInfo without throwing on error states
@@ -71,11 +110,6 @@ class SummaryCards extends HookConsumerWidget {
       },
     );
 
-    // Update line 30 to use the new formatting
-    // Extract the number from the string, format it, then add currency
-    const inflowValue = 10000000000000000; // or get from userInfo
-    final formattedInflow = _formatCompactNumber(inflowValue);
-
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -89,19 +123,21 @@ class SummaryCards extends HookConsumerWidget {
           _buildCard(
             title: "Total In-Flow",
             amount:
-                "${userInfo?.wallet?.currency ?? ''} ${userInfo?.wallet?.inFlow ?? 0}",
-            iconImage: ImageAssets.logo2,
+                "${userInfo?.wallet?.currency ?? ''}  ${_formatCompactNumber(userInfo?.wallet?.inFlow ?? 0)}",
             context: context,
-            isBalanceVisible: isBalanceVisible,
+            isBalanceVisible: isInflowVisible,
+            isInflow: true,
+            ref: ref,
           ),
           const SizedBox(width: 16),
           _buildCard(
               title: "Total Withdrawal",
               amount:
                   "${userInfo?.wallet?.currency ?? ''} ${_formatCompactNumber(userInfo?.wallet?.outFlow ?? 0)}",
-              icon: HugeIcons.strokeRoundedArrowUp03,
               context: context,
-              isBalanceVisible: isBalanceVisible),
+              isBalanceVisible: isWithdrawalVisible,
+              isInflow: false,
+              ref: ref),
         ],
       ),
     );
@@ -112,10 +148,13 @@ class SummaryCards extends HookConsumerWidget {
     required String amount,
     required BuildContext context,
     required bool isBalanceVisible,
-    String? iconImage,
-    IconData? icon,
+    required bool isInflow,
+    required WidgetRef ref,
   }) {
     final theme = Theme.of(context);
+    final displayAmount = isInflow
+        ? _getInflowDisplayAmount(amount, isBalanceVisible)
+        : _getWithdrawalDisplayAmount(amount, isBalanceVisible);
 
     return Expanded(
       child: Container(
@@ -150,7 +189,7 @@ class SummaryCards extends HookConsumerWidget {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      isBalanceVisible ? amount : '••••••',
+                      displayAmount,
                       style: TextStyle(
                         color: theme.brightness == Brightness.light
                             ? const Color(0xFF1B1B1B)
@@ -162,30 +201,38 @@ class SummaryCards extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                iconImage != null
-                    ? Image.asset(
-                        iconImage,
-                        width: 18,
-                        height: 18,
-                        fit: BoxFit.contain,
-                      )
-                    : Container(
-                        width: 18,
-                        height: 18,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF0040E1),
-                        ),
-                        child: Center(
-                          child: HugeIcon(
-                            icon: icon ?? Icons.help,
-                            size: 13, // Smaller than the container
-                            color: theme.brightness == Brightness.dark
-                                ? Colors.black
-                                : Colors.white,
-                          ),
-                        ),
-                      )
+                GestureDetector(
+                  onTap: () {
+                    if (isInflow) {
+                      ref
+                          .read(inflowVisibilityProvider.notifier)
+                          .toggleVisibility();
+                    } else {
+                      ref
+                          .read(withdrawalVisibilityProvider.notifier)
+                          .toggleVisibility();
+                    }
+                  },
+                  child: Container(
+                    width: 18,
+                    height: 18,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFF0040E1),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        isBalanceVisible
+                            ? IconsaxPlusLinear.eye
+                            : IconsaxPlusLinear.eye_slash,
+                        size: 13,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.black
+                            : Colors.white,
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ],

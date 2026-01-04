@@ -10,8 +10,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
-import '../../kyc/presentation/verification_method.dart';
-import '../../kyc/presentation/widget/kyc_dialog.dart';
 import 'widget/crypto_card_widget.dart';
 
 @RoutePage()
@@ -27,55 +25,13 @@ class CryptoScreen extends HookConsumerWidget {
       data: (user) => user.kyc,
       orElse: () => null,
     );
-    final enforceKyc = userAsync.maybeWhen(
-      data: (user) => user.enforceKyc,
-      orElse: () => null,
-    );
 
     // Track if dialog has been shown to prevent duplicates
-    final dialogShown = useRef(false);
     final contextRef = useRef<BuildContext?>(null);
-    final shouldShowDialog = kycStatus == false && enforceKyc == true;
 
     // Store context ref during build (safe to do)
     contextRef.value = context;
 
-    // Show dialog every time screen is displayed
-    useEffect(() {
-      if (!shouldShowDialog) {
-        dialogShown.value = false;
-        return null;
-      }
-
-      // Show dialog after frame is built
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final currentContext = contextRef.value;
-        if (currentContext != null &&
-            currentContext.mounted &&
-            ModalRoute.of(currentContext)?.isCurrent == true &&
-            !dialogShown.value) {
-          dialogShown.value = true;
-          showDialog(
-            context: currentContext,
-            barrierDismissible: false,
-            builder: (dialogContext) => KycDialog(
-              isDismissible: false,
-              onCompleteKyc: () {
-                dialogShown.value = false; // Reset when dialog is closed
-                Navigator.push(
-                  dialogContext,
-                  MaterialPageRoute(
-                    builder: (navContext) => const VerificationMethodScreen(),
-                  ),
-                );
-              },
-            ),
-          );
-        }
-      });
-
-      return null;
-    }, [shouldShowDialog]);
     return PopScope(
       canPop: false, // Prevent default back navigation
       onPopInvoked: (didPop) {
@@ -169,7 +125,8 @@ class CryptoScreen extends HookConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const CompletedKycCard(radiues: 0),
+                      if (kycStatus == false)
+                        const CompletedKycCard(radiues: 0),
                       const Gap(52),
                       const Icon(Icons.info_outline,
                           color: Colors.grey, size: 48),

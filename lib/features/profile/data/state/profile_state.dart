@@ -1,5 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/features/authentication/data/model/payload/profile_payload.dart';
+import 'package:mdiho/features/leaderboard/model/leader_board_list/leader_board_list.dart';
 import 'package:mdiho/features/profile/data/Model/response/platform_details/data.dart';
 import 'package:mdiho/features/suggestion_box/data/payload/suggestion_payload.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
@@ -20,6 +21,7 @@ class ProfileState {
   final AsyncValue<List<BanlList>> banks;
   final AsyncValue<String> kycVerification;
   final AsyncValue<PlatformDetails> platform;
+  final AsyncValue<List<LeaderBoardList>> leaderboard;
 
   const ProfileState({
     required this.profilePayload,
@@ -34,6 +36,7 @@ class ProfileState {
     required this.banks,
     required this.kycVerification,
     required this.platform,
+    required this.leaderboard,
   });
 
   factory ProfileState.initial() {
@@ -50,6 +53,7 @@ class ProfileState {
       banks: const AsyncValue.data([]),
       kycVerification: const AsyncValue.data(''),
       platform: AsyncValue.data(PlatformDetails()),
+      leaderboard: const AsyncValue.data([]),
     );
   }
 
@@ -68,6 +72,7 @@ class ProfileState {
     AsyncValue<List<BanlList>>? banks,
     AsyncValue<String>? kycVerification,
     AsyncValue<PlatformDetails>? platform,
+    AsyncValue<List<LeaderBoardList>>? leaderboard,
   }) {
     return ProfileState(
       profilePayload: profilePayload ?? this.profilePayload,
@@ -82,6 +87,7 @@ class ProfileState {
       banks: banks ?? this.banks,
       kycVerification: kycVerification ?? this.kycVerification,
       platform: platform ?? this.platform,
+      leaderboard: leaderboard ?? this.leaderboard,
     );
   }
 }

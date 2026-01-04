@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:mdiho/features/bank_network/data/model/response/bank_list/bank_list.dart';
 import 'package:mdiho/features/kyc/data/model/kyc_payload.dart';
+import 'package:mdiho/features/leaderboard/model/leader_board_list/leader_board_list.dart';
 import 'package:mdiho/features/profile/data/Model/response/platform_details/data.dart';
 import 'package:mdiho/features/support_faq/data/model/response/faq_response/faq_response.dart';
 
@@ -276,6 +277,24 @@ class ProfileeService {
         debugPrint('📦 Platform Details (parsed):');
         debugPrint('   - youtube: ${platformDetails.youtube}');
         return platformDetails;
+      },
+      showErrorToast: true,
+      showSuccessToast: false,
+    );
+  }
+
+  Future<ResultValue<List<LeaderBoardList>>> getLeaderboard() async {
+    return await apiRequestHelper.handleApiRequest<List<LeaderBoardList>>(
+      () => apiClient.get(
+        'leaderboard',
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      ),
+      parser: (data) {
+        return (data as List<dynamic>)
+            .map((e) => LeaderBoardList.fromMap(e))
+            .toList();
       },
       showErrorToast: true,
       showSuccessToast: false,

@@ -44,14 +44,14 @@ class EnvironmentConfig {
     switch (environment) {
       case Environment.prod:
         return EnvironmentConfig(
-          appTitle: 'TAO',
+          appTitle: 'SwiftSwap',
           environment: Environment.prod,
           baseUrl: 'https://mdihobackend.onrender.com/v1/',
           apiKey: 'prod-api-key',
         );
       case Environment.stg:
         return EnvironmentConfig(
-          appTitle: 'TAO Staging',
+          appTitle: 'SwiftSwap Staging',
           environment: Environment.stg,
           baseUrl: 'https://mdihobackend.onrender.com/v1/',
           apiKey: 'stg-api-key',
@@ -59,7 +59,7 @@ class EnvironmentConfig {
       default: // dev
 
         return EnvironmentConfig(
-          appTitle: 'TAO Dev',
+          appTitle: 'SwiftSwap Dev',
           environment: Environment.dev,
           baseUrl: 'https://mdihobackend.onrender.com/v1/',
           apiKey: 'dev-api-key',

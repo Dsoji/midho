@@ -11,6 +11,27 @@ final homeRoutes = AutoRoute(
       page: WithdrawFundsRoute.page,
     ),
     AutoRoute(
+      page: VerificationMethodRoute.page,
+    ),
+    AutoRoute(
+      page: BvnVerificationRoute.page,
+    ),
+    AutoRoute(
+      page: NINVerificationRoute.page,
+    ),
+    AutoRoute(
+      page: SelfieVerificationRoute.page,
+    ),
+    AutoRoute(
+      page: KycErrorRoute.page,
+    ),
+    AutoRoute(
+      page: KycSuccessRoute.page,
+    ),
+    AutoRoute(
+      page: CameraCaptureRoute.page,
+    ),
+    AutoRoute(
       page: TransactionPinRoute.page,
     ),
     AutoRoute(
