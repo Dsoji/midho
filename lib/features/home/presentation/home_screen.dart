@@ -233,9 +233,9 @@ class HomeScreen extends HookConsumerWidget {
                   const Gap(16),
                   const QuickActionsGrid(),
                   const Gap(16),
-                  const TransactionCard(),
-                  const Gap(16),
                   const LeaderboardEmptyStateCard(),
+                  const Gap(16),
+                  const TransactionCard(),
                   const Gap(
                     50,
                   )
@@ -313,6 +313,43 @@ class ReferralButton extends StatelessWidget {
 class LeaderboardEmptyStateCard extends HookConsumerWidget {
   const LeaderboardEmptyStateCard({super.key});
 
+  Widget _buildHeader(BuildContext context, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const SizedBox(width: 22), // Space for icon alignment
+              const Gap(8),
+              Text(
+                'Username',
+                style: TextStyle(
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.grey.shade600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          Text(
+            'Monthly traded value',
+            style: TextStyle(
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey.shade600,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -359,7 +396,7 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
           state.when(
             loading: () => Column(
               children: List.generate(
-                3,
+                2,
                 (_) => const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: CryptoCardShimmer(),
@@ -404,13 +441,21 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
 
               return Column(
                 children: [
-                  ...rewards.take(3).expand((reward) => [
+                  _buildHeader(context, theme),
+                  Divider(
+                    height: 1,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : Colors.grey.shade300,
+                  ),
+                  ...rewards.take(2).expand((reward) => [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.all(6),
@@ -438,28 +483,15 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  RichText(
-                                    text: TextSpan(
-                                      style: DefaultTextStyle.of(context)
-                                          .style
-                                          .copyWith(fontSize: 14),
-                                      children: [
-                                        const TextSpan(
-                                            text: "Monthly traded value "),
-                                        TextSpan(
-                                          text: '${reward.totalTradingValue}'
-                                              .formatAsNaira(),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
-                                            fontFamily: '',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ],
+                              ),
+                              Text(
+                                '${reward.totalTradingValue}'.formatAsNaira(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                  fontFamily: '',
+                                ),
                               ),
                             ],
                           ),
@@ -490,7 +522,7 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
               );
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               decoration: BoxDecoration(
                 color: theme.brightness == Brightness.dark
                     ? AppColors.secondaryColor.shade400
@@ -507,7 +539,7 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
                 child: Text(
                   'View Leaderboard ',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: theme.brightness == Brightness.dark
                         ? Colors.white

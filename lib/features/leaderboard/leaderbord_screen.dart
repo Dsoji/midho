@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mdiho/common/extension/string/string_extension.dart';
@@ -8,11 +10,20 @@ import 'package:mdiho/features/profile/data/controller/profile_controller.dart';
 import '../../../common/res/app_colors.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 
+@RoutePage()
 class LeaderboardScreen extends HookConsumerWidget {
   const LeaderboardScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    // Fetch leaderboard data when screen is first mounted
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(profileControllerProvider.notifier).getLeaderboard();
+      });
+      return null;
+    }, []);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -76,82 +87,132 @@ class RewardItem {
 class RewardsList extends HookConsumerWidget {
   const RewardsList({super.key});
 
+  Widget _buildHeader(BuildContext context, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const SizedBox(width: 22), // Space for icon alignment
+              const Gap(8),
+              Text(
+                'Username',
+                style: TextStyle(
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.grey.shade600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          Text(
+            'Monthly traded value',
+            style: TextStyle(
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey.shade600,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final state = ref.watch(profileControllerProvider).leaderboard;
+    final state = ref.watch(
+      profileControllerProvider.select((state) => state.leaderboard),
+    );
 
     return state.when(
       loading: () => state.maybeWhen(
         data: (data) {
           final leaderboard = data;
-          return ListView.separated(
-            itemCount: leaderboard.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            separatorBuilder: (context, index) => Divider(
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeader(context, theme),
+              Divider(
                 height: 1,
                 color: theme.brightness == Brightness.dark
                     ? AppColors.secondaryColor.shade500
-                    : Colors.grey.shade300),
-            itemBuilder: (context, index) {
-              final leaderboardItem = leaderboard[index];
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.brightness == Brightness.dark
-                            ? AppColors.secondaryColor.shade400
-                            : const Color(0xFFF9F9FB),
-                      ),
-                      child: Icon(Icons.arrow_downward,
-                          size: 12,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : const Color(0xFF2B2B2B)),
-                    ),
-                    const Gap(8),
-                    Text(
-                      '${leaderboardItem.user?.username}',
-                      style: TextStyle(
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.grey.shade600,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    Row(
+                    : Colors.grey.shade300,
+              ),
+              ListView.separated(
+                itemCount: leaderboard.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                separatorBuilder: (context, index) => Divider(
+                    height: 1,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.secondaryColor.shade500
+                        : Colors.grey.shade300),
+                itemBuilder: (context, index) {
+                  final leaderboardItem = leaderboard[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const SizedBox(width: 8),
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context)
-                                .style
-                                .copyWith(fontSize: 16),
-                            children: [
-                              const TextSpan(text: "Monthly traded value"),
-                              TextSpan(
-                                text: '${leaderboardItem.totalTradingValue}'
-                                    .formatAsNaira(),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: ''),
-                              ),
-                            ],
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: theme.brightness == Brightness.dark
+                                ? AppColors.secondaryColor.shade400
+                                : const Color(0xFFF9F9FB),
                           ),
+                          child: Icon(Icons.arrow_downward,
+                              size: 12,
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : const Color(0xFF2B2B2B)),
+                        ),
+                        const Gap(8),
+                        Text(
+                          '${leaderboardItem.user?.username}',
+                          style: TextStyle(
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.grey.shade600,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700),
+                        ),
+                        Row(
+                          children: [
+                            const SizedBox(width: 8),
+                            RichText(
+                              text: TextSpan(
+                                style: DefaultTextStyle.of(context)
+                                    .style
+                                    .copyWith(fontSize: 16),
+                                children: [
+                                  TextSpan(
+                                    text: '${leaderboardItem.totalTradingValue}'
+                                        .formatAsNaira(),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: ''),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ],
           );
         },
         orElse: () {
@@ -197,73 +258,72 @@ class RewardsList extends HookConsumerWidget {
             ),
           );
         }
-        return ListView.separated(
-          itemCount: leaderboard.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          separatorBuilder: (context, index) => Divider(
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildHeader(context, theme),
+            Divider(
               height: 1,
               color: theme.brightness == Brightness.dark
                   ? AppColors.secondaryColor.shade500
-                  : Colors.grey.shade300),
-          itemBuilder: (context, index) {
-            final leaderboardItem = leaderboard[index];
+                  : Colors.grey.shade300,
+            ),
+            ListView.separated(
+              itemCount: leaderboard.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              separatorBuilder: (context, index) => Divider(
+                  height: 1,
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.secondaryColor.shade500
+                      : Colors.grey.shade300),
+              itemBuilder: (context, index) {
+                final leaderboardItem = leaderboard[index];
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.secondaryColor.shade400
-                          : const Color(0xFFF9F9FB),
-                    ),
-                    child: Icon(Icons.arrow_downward,
-                        size: 12,
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : const Color(0xFF2B2B2B)),
-                  ),
-                  const Gap(8),
-                  Text(
-                    '${leaderboardItem.user?.username}',
-                    style: TextStyle(
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.grey.shade600,
-                        fontSize: 14),
-                  ),
-                  const Gap(8),
-                  Row(
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RichText(
-                        text: TextSpan(
-                          style: DefaultTextStyle.of(context)
-                              .style
-                              .copyWith(fontSize: 14),
-                          children: [
-                            const TextSpan(text: "Monthly traded value "),
-                            TextSpan(
-                              text: '${leaderboardItem.totalTradingValue}'
-                                  .formatAsNaira(),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: '',
-                                  fontSize: 12),
-                            ),
-                          ],
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.brightness == Brightness.dark
+                              ? AppColors.secondaryColor.shade400
+                              : const Color(0xFFF9F9FB),
+                        ),
+                        child: Icon(Icons.arrow_upward,
+                            size: 12,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : const Color(0xFF2B2B2B)),
+                      ),
+                      const Gap(8),
+                      Text(
+                        '${leaderboardItem.user?.username}',
+                        style: TextStyle(
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.grey.shade600,
+                            fontSize: 14),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${leaderboardItem.totalTradingValue}'.formatAsNaira(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                          fontFamily: '',
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            );
-          },
+                );
+              },
+            ),
+          ],
         );
       },
     );

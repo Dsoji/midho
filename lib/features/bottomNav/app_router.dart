@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:mdiho/features/crypto/crypto_route.dart';
-import 'package:mdiho/features/force_update/presentation/force_update_screen.dart';
 import 'package:mdiho/features/gift_card/gift_card_route.dart';
 import 'package:mdiho/features/profile/profile_route.dart';
 import 'package:mdiho/features/splash/splash_route.dart';
@@ -50,6 +49,7 @@ class AppRouter extends RootStackRouter {
           children: [
             splashScreenRoute,
             homeRoutes,
+            AutoRoute(page: LeaderboardRoute.page),
             giftCardRoutes,
             cryptoRoutes,
             transactionRoutes,
