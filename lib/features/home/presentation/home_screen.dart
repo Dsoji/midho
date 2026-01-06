@@ -231,9 +231,9 @@ class HomeScreen extends HookConsumerWidget {
                   const Gap(12),
                   const SummaryCards(),
                   const Gap(16),
-                  const QuickActionsGrid(),
-                  const Gap(16),
                   const LeaderboardEmptyStateCard(),
+                  const Gap(16),
+                  const QuickActionsGrid(),
                   const Gap(16),
                   const TransactionCard(),
                   const Gap(

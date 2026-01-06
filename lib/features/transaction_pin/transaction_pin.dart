@@ -8,6 +8,7 @@ import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../../common/res/app_colors.dart';
+import '../../../../common/utils/checksum_helper.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../common/widgets/success_dialog.dart';
@@ -74,14 +75,28 @@ class TransactionPinScreen extends HookConsumerWidget {
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final biometricEnabled = userInfo?.biometrics ?? false;
 
+    // Generate a fixed time window for the duration of this screen's lifecycle
+    final timeWindow =
+        useMemoized(() => ChecksumHelper.get10SecondTimeWindow());
+
     void handleDialog() async {
       if (selectedType == "Airtime") {
+        // Generate checksum with current 30-second window
+        final checksum = ChecksumHelper.generateBillChecksum(
+          assetId: assetId,
+          amount: amount,
+          accountNumber: accountNumber,
+          transactionType: 'Airtime',
+          timeWindow: timeWindow,
+        );
+
         final result =
             await ref.read(transactionControllerProvider.notifier).buyAirtime(
                   assetId: assetId ?? '',
                   amount: amount != null ? int.parse(amount!) : 0,
                   accountNumber: accountNumber ?? '',
                   pin: biometricEnabled ? "biometrics" : pinController.text,
+                  checksum: checksum,
                 );
 
         if (result == true) {
@@ -119,11 +134,20 @@ class TransactionPinScreen extends HookConsumerWidget {
           );
         }
       } else if (selectedType == "Data") {
+        final checksum = ChecksumHelper.generateBillChecksum(
+          assetId: assetId,
+          amount: null,
+          accountNumber: accountNumber,
+          transactionType: 'Data',
+          timeWindow: timeWindow,
+        );
+
         final result =
             await ref.read(transactionControllerProvider.notifier).buyData(
                   assetId: assetId ?? '',
                   accountNumber: accountNumber ?? '',
                   pin: biometricEnabled ? "biometrics" : pinController.text,
+                  checksum: checksum,
                 );
         final airtimeTransactions =
             ref.watch(transactionControllerProvider).buyData.valueOrNull;
@@ -172,6 +196,14 @@ class TransactionPinScreen extends HookConsumerWidget {
           );
         }
       } else if (selectedType == "Electricity") {
+        final checksum = ChecksumHelper.generateBillChecksum(
+          assetId: assetId,
+          amount: amount,
+          accountNumber: accountNumber,
+          transactionType: 'Electricity',
+          timeWindow: timeWindow,
+        );
+
         final result = await ref
             .read(transactionControllerProvider.notifier)
             .buyElectricity(
@@ -179,6 +211,7 @@ class TransactionPinScreen extends HookConsumerWidget {
               amount: amount != null ? int.parse(amount!) : 0,
               accountNumber: accountNumber ?? '',
               pin: pinController.text,
+              checksum: checksum,
             );
         final airtimeTransactions =
             ref.watch(transactionControllerProvider).buyData.valueOrNull;
@@ -215,11 +248,20 @@ class TransactionPinScreen extends HookConsumerWidget {
           );
         }
       } else if (selectedType == "DSTV") {
+        final checksum = ChecksumHelper.generateBillChecksum(
+          assetId: assetId,
+          amount: null,
+          accountNumber: accountNumber,
+          transactionType: 'CableTv',
+          timeWindow: timeWindow,
+        );
+
         final result =
             await ref.read(transactionControllerProvider.notifier).buyCableTv(
                   assetId: assetId ?? '',
                   accountNumber: accountNumber ?? '',
                   pin: pinController.text,
+                  checksum: checksum,
                 );
         final airtimeTransactions =
             ref.watch(transactionControllerProvider).buyData.valueOrNull;

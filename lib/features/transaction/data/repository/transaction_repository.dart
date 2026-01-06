@@ -133,6 +133,7 @@ class TransactionRepository {
     double? amount,
     String? comment,
     List<String>? files,
+    required String checksum,
   }) async {
     try {
       final data = await transactionService.sellCrypto(
@@ -141,6 +142,7 @@ class TransactionRepository {
         amount: amount,
         comment: comment,
         files: files,
+        checksum: checksum,
       );
 
       if (data.isSuccess) {
@@ -169,6 +171,7 @@ class TransactionRepository {
     bool? ecode,
     String? code,
     String? pin,
+    required String checksum,
   }) async {
     try {
       final data = await transactionService.sellGiftCards(
@@ -180,6 +183,7 @@ class TransactionRepository {
         ecode: ecode,
         code: code,
         pin: pin,
+        checksum: checksum,
       );
 
       if (data.isSuccess) {
@@ -371,6 +375,7 @@ class TransactionRepository {
     required int amount,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     try {
       final data = await transactionService.buyAirtime(
@@ -378,6 +383,7 @@ class TransactionRepository {
         amount: amount,
         accountNumber: accountNumber,
         pin: pin,
+        checksum: checksum,
       );
 
       if (data.isSuccess) {
@@ -401,12 +407,14 @@ class TransactionRepository {
     required String assetId,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     try {
       final data = await transactionService.buyData(
         assetId: assetId,
         accountNumber: accountNumber,
         pin: pin,
+        checksum: checksum,
       );
 
       if (data.isSuccess) {
@@ -431,6 +439,7 @@ class TransactionRepository {
     required int amount,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     try {
       final data = await transactionService.buyElectricity(
@@ -438,6 +447,7 @@ class TransactionRepository {
         amount: amount,
         accountNumber: accountNumber,
         pin: pin,
+        checksum: checksum,
       );
 
       if (data.isSuccess) {
@@ -461,12 +471,14 @@ class TransactionRepository {
     required String assetId,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     try {
       final data = await transactionService.buyCableTv(
         assetId: assetId,
         accountNumber: accountNumber,
         pin: pin,
+        checksum: checksum,
       );
 
       if (data.isSuccess) {
@@ -683,6 +695,7 @@ class TransactionRepository {
     String? bankName,
     String? bankCode,
     required String pin,
+    required String checksum,
   }) async {
     try {
       final data = await transactionService.withdrawal(
@@ -693,6 +706,7 @@ class TransactionRepository {
         accountName: accountName,
         bankName: bankName,
         bankCode: bankCode,
+        checksum: checksum,
       );
 
       if (data.isSuccess) {

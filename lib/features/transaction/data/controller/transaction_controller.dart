@@ -182,6 +182,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     double? amount,
     String? comment,
     List<String>? files,
+    required String checksum,
   }) async {
     state = state.copyWith(sellCrypto: const AsyncValue.loading());
 
@@ -191,6 +192,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       amount: amount,
       comment: comment,
       files: files,
+      checksum: checksum,
     );
     return result.when(
       (error) {
@@ -219,6 +221,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     bool? ecode,
     String? code,
     String? pin,
+    required String checksum,
   }) async {
     state = state.copyWith(sellGiftCards: const AsyncValue.loading());
 
@@ -231,6 +234,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       pin: pin,
       ecode: ecode,
       code: code,
+      checksum: checksum,
     );
     return result.when(
       (error) {
@@ -429,6 +433,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     required int amount,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     state = state.copyWith(buyAirtime: const AsyncValue.loading());
 
@@ -437,6 +442,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       amount: amount,
       accountNumber: accountNumber,
       pin: pin,
+      checksum: checksum,
     );
     return result.when(
       (error) {
@@ -460,6 +466,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     required String assetId,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     state = state.copyWith(buyData: const AsyncValue.loading());
 
@@ -467,6 +474,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       assetId: assetId,
       accountNumber: accountNumber,
       pin: pin,
+      checksum: checksum,
     );
     return result.when(
       (error) {
@@ -490,6 +498,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     required int amount,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     state = state.copyWith(buyElectricity: const AsyncValue.loading());
 
@@ -498,6 +507,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       amount: amount,
       accountNumber: accountNumber,
       pin: pin,
+      checksum: checksum,
     );
     return result.when(
       (error) {
@@ -521,6 +531,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     required String assetId,
     required String accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     state = state.copyWith(buyCableTv: const AsyncValue.loading());
 
@@ -528,6 +539,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       assetId: assetId,
       accountNumber: accountNumber,
       pin: pin,
+      checksum: checksum,
     );
     return result.when(
       (error) {
@@ -639,6 +651,7 @@ class TransactionController extends StateNotifier<TransactionState> {
     required String pin,
     String? bankName,
     String? bankCode,
+    required String checksum,
   }) async {
     state = state.copyWith(withdrawal: const AsyncValue.loading());
 
@@ -650,6 +663,7 @@ class TransactionController extends StateNotifier<TransactionState> {
       accountName: accountName,
       bankName: bankName,
       bankCode: bankCode,
+      checksum: checksum,
     );
 
     return result.when(

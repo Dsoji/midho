@@ -127,6 +127,7 @@ class TransactionService {
     String? name,
     double? amount,
     String? comment,
+    required String checksum,
     List<String>? files,
   }) async {
     return apiRequestHelper.handleApiRequest(
@@ -142,7 +143,8 @@ class TransactionService {
           },
           "amount": amount,
           "files": files,
-          "comment": comment
+          "comment": comment,
+          "checksum": checksum,
         },
       ),
       parser: (data) {
@@ -162,6 +164,7 @@ class TransactionService {
     bool? ecode,
     String? code,
     String? pin,
+    required String checksum,
   }) async {
     return apiRequestHelper.handleApiRequest(
       () => apiClient.post(
@@ -179,6 +182,7 @@ class TransactionService {
           "ecode": ecode,
           "code": code, // required only when ecode is true
           "pin": pin, // required only when ecode is true
+          "checksum": checksum,
           "comment": comment
         },
       ),
@@ -335,6 +339,7 @@ class TransactionService {
     int? amount,
     String? accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyAirtime', header: {
@@ -343,6 +348,7 @@ class TransactionService {
       }, data: {
         "asset": {"id": assetId},
         "amount": amount,
+        "checksum": checksum,
         "accountNumber": accountNumber,
       }),
       parser: (data) {
@@ -357,6 +363,7 @@ class TransactionService {
     String? assetId,
     String? accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyMobileData', header: {
@@ -364,6 +371,7 @@ class TransactionService {
         'pin': pin,
       }, data: {
         "asset": {"id": assetId},
+        "checksum": checksum,
         "accountNumber": accountNumber,
       }),
       parser: (data) {
@@ -379,6 +387,7 @@ class TransactionService {
     int? amount,
     String? accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyElectricity', header: {
@@ -387,6 +396,7 @@ class TransactionService {
       }, data: {
         "asset": {"id": assetId},
         "amount": amount,
+        "checksum": checksum,
         "accountNumber": accountNumber,
       }),
       parser: (data) {
@@ -401,6 +411,7 @@ class TransactionService {
     String? assetId,
     String? accountNumber,
     required String pin,
+    required String checksum,
   }) async {
     return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/buyCableTv', header: {
@@ -408,6 +419,7 @@ class TransactionService {
         'pin': pin,
       }, data: {
         "asset": {"id": assetId},
+        "checksum": checksum,
         "accountNumber": accountNumber,
       }),
       parser: (data) {
@@ -497,6 +509,7 @@ class TransactionService {
     String? bankName,
     String? bankCode,
     required String pin,
+    required String checksum,
   }) async {
     return apiRequestHelper.handleApiRequest<AirtimeTransaction>(
       () => apiClient.post('user/tx/withdraw', header: {
@@ -508,6 +521,7 @@ class TransactionService {
         "accountName": accountName,
         "bankName": bankName,
         "bankCode": bankCode,
+        "checksum": checksum,
         "origination": {
           "referral":
               referall // pass true when withdrawing from referral balance

@@ -16,6 +16,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../common/res/app_colors.dart';
 import '../../../common/toast/toast.dart';
+import '../../../common/utils/checksum_helper.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../../common/widgets/custom_buttons.dart';
 import '../../../common/widgets/custom_textfield.dart';
@@ -50,6 +51,10 @@ class CardDetailsProofScreen extends HookConsumerWidget {
 
     final imageFiles = useState<List<File>>([]);
     final picker = ImagePicker();
+
+    // Generate a fixed time window for the duration of this screen's lifecycle
+    final timeWindow =
+        useMemoized(() => ChecksumHelper.get10SecondTimeWindow());
 
     Future<void> pickImage() async {
       if (imageFiles.value.length >= 12) return; // Enforce max limit of 3
@@ -307,6 +312,25 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                 .valueOrNull;
                             List<String> paths =
                                 getPathsFromUploadResponse(uploadedFiles);
+
+                            // Generate checksum right before API call with current time window
+                            final checksum =
+                                ChecksumHelper.generateGiftCardChecksum(
+                              assetId: rates,
+                              name: giftCard.name,
+                              amount: amount,
+                              code: codeController.text.trim().isEmpty
+                                  ? null
+                                  : codeController.text.trim(),
+                              pin: pinController.text.trim().isEmpty
+                                  ? null
+                                  : pinController.text.trim(),
+                              ecode: false,
+                              comment: 'Just a comment',
+                              files: paths, // Pass files for count calculation
+                              timeWindow: timeWindow,
+                            );
+
                             final result =
                                 await transactionService.sellGiftCards(
                                     id: rates ?? '',
@@ -320,7 +344,8 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                         : codeController.text.trim(),
                                     files: paths,
                                     ecode: false,
-                                    comment: 'Just a comment');
+                                    comment: 'Just a comment',
+                                    checksum: checksum);
                             if (result == true) {
                               await ref
                                   .read(transactionControllerProvider.notifier)
@@ -368,6 +393,22 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                       } else {
                         logger.d(amount);
                         if (codeController.text.isNotEmpty) {
+                          // Generate checksum right before API call
+                          final checksum =
+                              ChecksumHelper.generateGiftCardChecksum(
+                            assetId: rates,
+                            name: giftCard.name,
+                            amount: amount,
+                            code: codeController.text.trim(),
+                            pin: pinController.text.trim().isEmpty
+                                ? null
+                                : pinController.text.trim(),
+                            ecode: true,
+                            comment: 'Just a comment',
+                            files: [], // Code flow doesn't use files
+                            timeWindow: timeWindow,
+                          );
+
                           final result = await transactionService.sellGiftCards(
                               id: rates ?? '',
                               name: giftCard.name ?? '',
@@ -380,7 +421,8 @@ class CardDetailsProofScreen extends HookConsumerWidget {
                                   : codeController.text.trim(),
                               files: [],
                               ecode: true,
-                              comment: 'Just a comment');
+                              comment: 'Just a comment',
+                              checksum: checksum);
                           if (result == true) {
                             final transaction = ref
                                 .watch(transactionControllerProvider)

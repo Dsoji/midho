@@ -11,6 +11,7 @@ import 'package:mdiho/features/withdrawal/presentation/widget/info_widget.dart';
 
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/toast/toast.dart';
+import '../../../../common/utils/checksum_helper.dart';
 import '../../../authentication/data/controller/authentication_controller.dart';
 import '../../../gift_card/data/model/response/gift_cart_transaction/gift_cart_transaction.dart';
 import '../../../suggestion_box/data/response/upload_response/upload_response.dart';
@@ -83,6 +84,10 @@ class _CryptoDialogContent extends HookConsumerWidget {
     final isLoading =
         ref.watch(authenticationControllerProvider).imageUpload.isLoading;
 
+    // Generate a fixed time window for the duration of this dialog's lifecycle
+    final timeWindow =
+        useMemoized(() => ChecksumHelper.get10SecondTimeWindow());
+
     return Dialog(
       backgroundColor: theme.brightness == Brightness.dark
           ? AppColors.darkBorder
@@ -135,6 +140,7 @@ class _CryptoDialogContent extends HookConsumerWidget {
                         child: Divider(
                           color: Colors.grey,
                           thickness: 1,
+                          endIndent: 0,
                           indent: 8,
                         ),
                       ),
@@ -156,12 +162,23 @@ class _CryptoDialogContent extends HookConsumerWidget {
             ImageUploadWidget(
               isLoading: isLoading,
               onImagesUploaded: (paths) async {
+                // Generate checksum right before API call with current time window
+                final checksum = ChecksumHelper.generateCryptoChecksum(
+                  id: crypto.id,
+                  name: crypto.name,
+                  amount: amount,
+                  comment: 'Just a comment',
+                  files: paths,
+                  timeWindow: timeWindow,
+                );
+
                 final result = await transactionService.sellCrypto(
                   id: crypto.id ?? '',
                   name: crypto.name ?? '',
                   amount: amount,
                   files: paths,
                   comment: 'Just a comment',
+                  checksum: checksum,
                 );
                 if (result == true) {
                   final transaction =

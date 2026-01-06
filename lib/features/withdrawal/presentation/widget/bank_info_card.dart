@@ -92,79 +92,81 @@ class BankInfoCard extends HookConsumerWidget {
               ),
             ),
             const Gap(12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-                  ),
-                ),
-                const Gap(12),
-                if (percentage != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: color,
-                          radius: 3,
-                        ),
-                        const Gap(4),
-                        Text(
-                          status!,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'at $percentage',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                if (!isAddBank) ...[
-                  const Gap(12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    actNumber,
+                    name,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: theme.brightness == Brightness.dark
                           ? Colors.white
-                          : const Color(0xFF707070),
+                          : Colors.black,
                     ),
                   ),
                   const Gap(12),
-                  Text(
-                    actName,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.white
-                          : AppColors.greyColor.shade500,
+                  if (percentage != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: color,
+                            radius: 3,
+                          ),
+                          const Gap(4),
+                          Text(
+                            status!,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: 1),
+                          Text(
+                            'at $percentage',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
+                  if (!isAddBank) ...[
+                    const Gap(12),
+                    Text(
+                      actNumber,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color(0xFF707070),
+                      ),
+                    ),
+                    const Gap(12),
+                    Text(
+                      actName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.greyColor.shade500,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
             const Spacer(),
             icon == Icons.more_horiz

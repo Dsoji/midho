@@ -11,6 +11,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../common/res/app_colors.dart';
 import '../../../../common/widgets/custom_buttons.dart';
 import '../../../common/toast/toast.dart';
+import '../../../common/utils/checksum_helper.dart';
 import '../../../common/widgets/custom_app_bar.dart';
 import '../../authentication/data/controller/authentication_controller.dart';
 import '../../bills/data/model/response/airtime_transaction/airtime_transaction.dart';
@@ -79,8 +80,23 @@ class TransactinScreen extends HookConsumerWidget {
         ref.watch(authenticationControllerProvider).userDetails.valueOrNull;
     final biometricEnabled = userInfo?.biometrics ?? false;
     final bioenabled = useState(biometricEnabled);
+
+    // Generate a fixed time window for the duration of this screen's lifecycle
+    final timeWindow =
+        useMemoized(() => ChecksumHelper.get10SecondTimeWindow());
+
     void handleDialog(bool isBiometric) async {
       ref.read(authenticationControllerProvider.notifier).fetchProfile();
+      final checksum = ChecksumHelper.generateWithdrawalChecksum(
+        acctNo: acctNo,
+        amount: amount,
+        referall: referall,
+        accountName: accountName,
+        bankName: bankName,
+        bankCode: bankCode,
+        pin: isBiometric ? "biometrics" : pinController.text,
+        timeWindow: timeWindow,
+      );
       final result =
           await ref.read(transactionControllerProvider.notifier).withdraw(
                 acctNo: acctNo,
@@ -90,6 +106,7 @@ class TransactinScreen extends HookConsumerWidget {
                 accountName: accountName,
                 bankName: bankName,
                 bankCode: bankCode,
+                checksum: checksum,
               );
 
       if (result) {
