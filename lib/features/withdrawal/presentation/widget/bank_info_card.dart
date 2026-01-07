@@ -110,12 +110,13 @@ class BankInfoCard extends HookConsumerWidget {
                   if (percentage != null) ...[
                     Container(
                       padding: const EdgeInsets.all(6),
+                      width: 150,
                       decoration: BoxDecoration(
                         color: color.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
                           CircleAvatar(
                             backgroundColor: color,
@@ -168,7 +169,7 @@ class BankInfoCard extends HookConsumerWidget {
                 ],
               ),
             ),
-            const Spacer(),
+            const Gap(10),
             icon == Icons.more_horiz
                 ? PopupMenuButton<int>(
                     itemBuilder: (context) => [

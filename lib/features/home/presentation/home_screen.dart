@@ -363,6 +363,7 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
         color: theme.brightness == Brightness.dark
             ? AppColors.darkBorder
             : Colors.white,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
