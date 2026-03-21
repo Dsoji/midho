@@ -80,32 +80,36 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
                       : Colors.white,
                 ),
                 child: _buildTransactionSummary(transactionDetails, context)),
-            const Gap(20),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                "Breakdown",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.whiteColor
-                      : Colors.black,
+            if (transactionDetails["breakdown"] != null &&
+                (transactionDetails["breakdown"] as Map).isNotEmpty) ...[
+              const Gap(20),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  "Breakdown",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: theme.brightness == Brightness.dark
+                        ? AppColors.whiteColor
+                        : Colors.black,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.darkBorder
-                    : Colors.white,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.darkBorder
+                      : Colors.white,
+                ),
+                child: _buildBreakdown(
+                  transactionDetails["breakdown"], context,
+                  proofs, // Passes any proof screenshots from the transaction details to the breakdown widget
+                ),
               ),
-              child: _buildBreakdown(
-                transactionDetails["breakdown"], context,
-                proofs, // Passes any proof screenshots from the transaction details to the breakdown widget
-              ),
-            ),
+            ],
             if (showAppBar == true)
               Column(
                 children: [
@@ -732,6 +736,107 @@ class TransactionDetailsScreen extends HookWidget with ShareMixin {
           };
         }
         break;
+      case "DEBIT":
+        if (transaction.status?.toLowerCase() == "completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            // "breakdown": {
+            //   "Bank Name": transaction.bankName ?? '',
+            //   "Account Number": transaction.accountNumber ?? '',
+            //   "Total Deducted": transaction.metadata?.amount ?? '',
+            // }
+          };
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            // "breakdown": {
+            //   "Bank Name": transaction.bankName ?? '',
+            //   "Account Number": transaction.accountNumber ?? '',
+            //   "Reason for Failure": transaction.reason ?? '',
+            //   "Proof of Failure": "View Screenshot",
+            // }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            // "breakdown": {
+            //   "Bank Name": transaction.bankName ?? '',
+            //   "Account Number": transaction.accountNumber ?? '',
+            //   "Total Deducted": transaction.metadata?.amount ?? '',
+            // }
+          };
+        }
+        break;
+      case "CREDIT":
+        if (transaction.status?.toLowerCase() == "completed") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            // "breakdown": {
+            //   "Bank Name": transaction.bankName ?? '',
+            //   "Account Number": transaction.accountNumber ?? '',
+            //   "Total Deducted": transaction.metadata?.amount ?? '',
+            // }
+          };
+        } else if (transaction.status?.toLowerCase() == "failed" ||
+            transaction.status?.toLowerCase() == "rejected") {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            // "breakdown": {
+            //   "Bank Name": transaction.bankName ?? '',
+            //   "Account Number": transaction.accountNumber ?? '',
+            //   "Reason for Failure": transaction.reason ?? '',
+            //   "Proof of Failure": "View Screenshot",
+            // }
+          };
+        } else {
+          details = {
+            "transactionId": transaction.id,
+            "dateTime": transaction.createdAt!.formatToReadableDateTime(),
+            "amount":
+                "${transaction.exchangeCurrency} ${(transaction.amount ?? 0) * (transaction.rate ?? 0) - (transaction.fee ?? 0)}"
+                    .commaFormat(),
+            "fee": '${transaction.exchangeCurrency}  ${transaction.fee}'
+                .commaFormat(),
+            // "breakdown": {
+            //   "Bank Name": transaction.bankName ?? '',
+            //   "Account Number": transaction.accountNumber ?? '',
+            //   "Total Deducted": transaction.metadata?.amount ?? '',
+            // }
+          };
+        }
+        break;
+
       default:
         details = {
           "transactionId": "N/A",

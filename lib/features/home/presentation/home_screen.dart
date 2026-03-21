@@ -404,20 +404,51 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
                 ),
               ),
             ),
-            error: (error, _) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.warning_amber_outlined,
-                      size: 48, color: Colors.red),
-                  const Gap(12),
-                  Text('Failed to load rewards.',
-                      style: TextStyle(color: Colors.red[600], fontSize: 16)),
-                  const Gap(6),
-                  Text(error.toString(),
+            error: (error, _) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Gap(12),
+                    Text(
+                      'Unable to load leaderboard',
+                      style: TextStyle(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Gap(4),
+                    Text(
+                      'Something went wrong while fetching data.',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12)),
-                ],
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Gap(12),
+                    GestureDetector(
+                      onTap: () {
+                        // Retry fetching leaderboard
+                        ref
+                            .read(profileControllerProvider.notifier)
+                            .getLeaderboard();
+                      },
+                      child: const Text(
+                        "Tap to retry",
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             data: (data) {
@@ -475,7 +506,7 @@ class LeaderboardEmptyStateCard extends HookConsumerWidget {
                                   ),
                                   const Gap(8),
                                   Text(
-                                    '${reward.user?.username}',
+                                    reward.user?.username ?? "User",
                                     style: TextStyle(
                                       color: theme.brightness == Brightness.dark
                                           ? Colors.white

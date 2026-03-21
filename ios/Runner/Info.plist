@@ -39,8 +39,7 @@
 	<string>We need access to your camera to verify your identity.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need access to your microphone for video verification.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized notifications.</string>
+
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
